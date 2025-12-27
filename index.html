@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rider Tracker</title>
-    
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Rider%20Tracker%22,%22short_name%22:%22Rider%22,%22start_url%22:%22/Rider/%22,%22display%22:%22standalone%22,%22background_color%22:%22#121212%22,%22theme_color%22:%22#121212%22,%22icons%22:[{%22src%22:%22https://raw.githubusercontent.com/madcarbone-ctrl/Rider/main/icon.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22,%22purpose%22:%22any%20maskable%22}]}">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" href="https://raw.githubusercontent.com/madcarbone-ctrl/Rider/main/icon.png">
-
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --primary: #00f2ea; --secondary: #ff9d00; --text: #ffffff; --danger: #ff4b2b; --success: #4caf50; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 50px; }
         .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px dashed #333; }
         h2 { color: var(--primary); text-transform: uppercase; font-size: 0.9rem; margin-top: 0; text-align: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -24,6 +20,9 @@
         .label { font-size: 0.65rem; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
         .target-box { border: 1px solid #444; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
         .lordo-label { color: var(--danger); font-weight: bold; font-size: 1.1rem; }
+        /* Stile per lo Storico */
+        .history-item { display: flex; justify-content: space-between; align-items: center; background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; border-left: 4px solid var(--primary); }
+        .del-btn { background: var(--danger); color: white; width: 30px; padding: 5px; border-radius: 5px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -41,28 +40,26 @@
         </div>
         <div class="target-box" style="margin-top:15px;">
             <span class="label">🎯 TARGET NETTO (€)</span>
-            <input type="number" id="target-input" placeholder="Vuoto" oninput="updateUI()">
+            <input type="number" id="target-input" placeholder="Imposta Target" oninput="updateUI()">
             <p><span class="label">LORDO DA FARE:</span><span id="lordo-necessario" class="lordo-label">0.00 €</span></p>
         </div>
     </div>
 
     <div class="card" style="border-color: var(--secondary);">
         <h2>⛽ REGISTRA RIFORNIMENTO</h2>
-        <span class="label">DATA (G/M/A)</span>
         <div class="grid-3">
-            <input type="number" id="ref-g" placeholder="G"><input type="number" id="ref-m" placeholder="M"><input type="number" id="ref-a" placeholder="A">
+            <input type="number" id="ref-g" placeholder="G"><input type="number" id="ref-m" placeholder="M"><input type="number" id="ref-a" placeholder="2025" value="2025">
         </div>
         <div class="grid">
-            <input type="number" id="ref-euro" placeholder="Euro €"><input type="number" id="ref-litri" placeholder="€/l">
+            <input type="number" id="ref-euro" placeholder="Euro €"><input type="number" id="ref-litri" placeholder="Prezzo €/l">
         </div>
         <button class="btn-save" onclick="saveRifornimento()">SALVA BENZINA</button>
     </div>
 
     <div class="card" style="border-color: #00897b;">
         <h2>➕ REGISTRA SESSIONE</h2>
-        <span class="label">DATA (G/M/A)</span>
         <div class="grid-3">
-            <input type="number" id="sess-g" placeholder="G"><input type="number" id="sess-m" placeholder="M"><input type="number" id="sess-a" placeholder="A">
+            <input type="number" id="sess-g" placeholder="G"><input type="number" id="sess-m" placeholder="M"><input type="number" id="sess-a" placeholder="2025" value="2025">
         </div>
         <div class="grid">
             <input type="number" id="sess-lordo" placeholder="Lordo €"><input type="number" id="sess-ore" placeholder="Ore">
@@ -73,47 +70,74 @@
         <button class="btn-session" onclick="saveSessione()">SALVA GIORNATA</button>
     </div>
 
+    <div class="card">
+        <h2>📜 STORICO ATTIVITÀ</h2>
+        <div id="lista-storico"></div>
+    </div>
+
     <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; margin-top:20px; width:100%; border-radius:8px; padding:10px;">RESET TOTALE DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v5')) || { sessioni: [], rifornimenti: [], target: "" };
+        let db = JSON.parse(localStorage.getItem('rider_db_final_v6')) || { sessioni: [], rifornimenti: [], target: "" };
 
         function updateUI() {
             const target = document.getElementById('target-input').value;
             db.target = target;
             document.getElementById('lordo-necessario').innerText = target ? (target / 0.8).toFixed(2) + " €" : "0.00 €";
+            
             let tNetto = 0, tOre = 0, tKm = 0, tLit = 0;
-            db.sessioni.forEach(s => { tNetto += (s.lordo * 0.8); tOre += parseFloat(s.ore || 0); tKm += (parseFloat(s.km || 0) - parseFloat(s.scarto || 0)); });
-            db.rifornimenti.forEach(r => { if(r.euro && r.prezzo) tLit += (r.euro / r.prezzo); });
+            const lista = document.getElementById('lista-storico');
+            lista.innerHTML = "";
+
+            db.sessioni.forEach((s, idx) => {
+                tNetto += (s.lordo * 0.8);
+                tOre += parseFloat(s.ore || 0);
+                tKm += (parseFloat(s.km || 0) - parseFloat(s.scarto || 0));
+                lista.innerHTML += `<div class="history-item">
+                    <span>📅 ${s.data}<br><b>${(s.lordo*0.8).toFixed(2)}€</b> (${s.ore}h)</span>
+                    <button class="del-btn" onclick="deleteItem('sessioni', ${idx})">X</button>
+                </div>`;
+            });
+
+            db.rifornimenti.forEach((r, idx) => {
+                if(r.euro && r.prezzo) tLit += (r.euro / r.prezzo);
+                lista.innerHTML += `<div class="history-item" style="border-left-color: var(--secondary)">
+                    <span>⛽ ${r.data}<br><b>${r.euro}€</b> (${(r.euro/r.prezzo).toFixed(2)}L)</span>
+                    <button class="del-btn" onclick="deleteItem('rifornimenti', ${idx})">X</button>
+                </div>`;
+            });
+            
             document.getElementById('netto-totale').innerText = tNetto.toFixed(2) + " €";
             document.getElementById('ore-totali').innerText = tOre.toFixed(1);
             document.getElementById('netto-ora').innerText = tOre > 0 ? (tNetto / tOre).toFixed(2) : "0.00";
             document.getElementById('media-km').innerText = tLit > 0 ? (tKm / tLit).toFixed(1) : "0.0";
             document.getElementById('progresso-target').innerText = (target > 0) ? Math.min((tNetto / target * 100), 100).toFixed(0) + "%" : "0%";
-            localStorage.setItem('rider_db_final_v5', JSON.stringify(db));
+            localStorage.setItem('rider_db_final_v6', JSON.stringify(db));
         }
 
         function saveRifornimento() {
             const e = document.getElementById('ref-euro').value, p = document.getElementById('ref-litri').value, g = document.getElementById('ref-g').value, m = document.getElementById('ref-m').value, a = document.getElementById('ref-a').value;
             if(!e || !p || !g || !m || !a) return alert("Dati incompleti!");
             db.rifornimenti.push({ euro: parseFloat(e), prezzo: parseFloat(p), data: `${g}/${m}/${a}` });
-            alert("Benzina salvata!"); updateUI();
+            updateUI();
         }
 
         function saveSessione() {
             const l = document.getElementById('sess-lordo').value, g = document.getElementById('sess-g').value, m = document.getElementById('sess-m').value, a = document.getElementById('sess-a').value, o = document.getElementById('sess-ore').value;
             if(!l || !g || !m || !a || !o) return alert("Dati incompleti!");
             db.sessioni.push({ lordo: parseFloat(l), data: `${g}/${m}/${a}`, ore: parseFloat(o), km: document.getElementById('sess-km').value || 0, scarto: document.getElementById('sess-scarto').value || 0 });
-            alert("Giornata salvata!"); updateUI();
+            updateUI();
         }
 
-        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_final_v5'); location.reload(); } }
-        document.getElementById('target-input').value = db.target; updateUI();
-        
-        // Service Worker finto per forzare l'installazione
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGZ1bmN0aW9uKGV2ZW50KSB7IH0pOw==', { scope: './' });
+        function deleteItem(type, index) {
+            if(confirm("Vuoi eliminare questa voce?")) {
+                db[type].splice(index, 1);
+                updateUI();
+            }
         }
+
+        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_final_v6'); location.reload(); } }
+        document.getElementById('target-input').value = db.target; updateUI();
     </script>
 </body>
 </html>
