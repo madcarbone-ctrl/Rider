@@ -40,7 +40,6 @@
         
         .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
 
-        /* Correzione per evitare la barra laterale */
         .grid-compact { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -48,6 +47,9 @@
             margin-bottom: 5px; 
             width: 100%;
         }
+
+        /* Testo leggermente più piccolo per i campi tripli per evitare scroll */
+        .grid-compact input { font-size: 11px; }
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
@@ -151,9 +153,9 @@
             </div>
         </div>
         <div class="grid-compact">
-            <input type="number" id="sessKm" placeholder="Km Fine">
-            <input type="number" id="sessScarto" placeholder="Km Inizio">
-            <input type="number" id="sessL100" step="0.1" placeholder="l/100km">
+            <input type="number" id="sessKm" placeholder="Km percorsi">
+            <input type="number" id="sessScarto" placeholder="Scarto">
+            <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
@@ -163,11 +165,11 @@
     <div class="footer-credits">Rider Tracker V. 1.0 - by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v88')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v89')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
-        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v88', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Dati azzerati!"); }
+        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v89', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Dati azzerati!"); }
         
         function popolaMenuDate() {
             const d = new Date();
@@ -200,7 +202,7 @@
                 showToast("✅ Turno salvato!"); 
             }
         }
-        function salva() { localStorage.setItem('rider_pro_v88', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v89', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmLav = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
