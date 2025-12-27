@@ -81,15 +81,12 @@
     <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; margin-top:20px; width:100%; border-radius:8px; padding:10px;">RESET TOTALE DATI</button>
 
     <script>
-        // Caricamento database
-        let db = JSON.parse(localStorage.getItem('rider_db_v7')) || { sessioni: [], rifornimenti: [], target: "" };
+        let db = JSON.parse(localStorage.getItem('rider_db_v8')) || { sessioni: [], rifornimenti: [], target: "" };
 
-        // Popolamento elenchi data
         function popolaDate() {
             const giorni = [document.getElementById('ref-g'), document.getElementById('sess-g')];
             const mesi = [document.getElementById('ref-m'), document.getElementById('sess-m')];
             const anni = [document.getElementById('ref-a'), document.getElementById('sess-a')];
-
             giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
             mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
             anni.forEach(sel => { for(let i=2025; i<=2040; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
@@ -100,7 +97,7 @@
             db.target = target;
             document.getElementById('lordo-necessario').innerText = target ? (target / 0.8).toFixed(2) + " €" : "0.00 €";
             
-            let tNetto = 0, tOre = 0, tKm = 0, tLit = 0;
+            let tNetto = 0, tOre = 0, tKm = 0, tLitriTotali = 0;
             const lista = document.getElementById('lista-storico');
             lista.innerHTML = "";
 
@@ -111,34 +108,38 @@
             });
 
             db.rifornimenti.forEach((r, idx) => {
-                if(r.euro && r.prezzo) tLit += (r.euro / r.prezzo);
+                if(r.euro && r.prezzo) tLitriTotali += (r.euro / r.prezzo);
                 lista.innerHTML += `<div class="history-item" style="border-left-color: var(--secondary)"><span>⛽ ${r.data}<br><b>${r.euro}€</b> (${(r.euro/r.prezzo).toFixed(2)}L)</span><button class="del-btn" onclick="deleteItem('rifornimenti', ${idx})">X</button></div>`;
             });
             
             document.getElementById('netto-totale').innerText = tNetto.toFixed(2) + " €";
             document.getElementById('ore-totali').innerText = tOre.toFixed(1);
             document.getElementById('netto-ora').innerText = tOre > 0 ? (tNetto / tOre).toFixed(2) : "0.00";
-            document.getElementById('media-km').innerText = tLit > 0 ? (tKm / tLit).toFixed(1) : "0.0";
+            
+            // Calcolo Media KM/L intelligente
+            // Se tKm è 0 o tLitriTotali è 0, mostra 0.0
+            document.getElementById('media-km').innerText = (tLitriTotali > 0 && tKm > 0) ? (tKm / tLitriTotali).toFixed(1) : "0.0";
+            
             document.getElementById('progresso-target').innerText = (target > 0) ? Math.min((tNetto / target * 100), 100).toFixed(0) + "%" : "0%";
-            localStorage.setItem('rider_db_v7', JSON.stringify(db));
+            localStorage.setItem('rider_db_v8', JSON.stringify(db));
         }
 
         function saveRifornimento() {
             const e = document.getElementById('ref-euro').value, p = document.getElementById('ref-litri').value, g = document.getElementById('ref-g').value, m = document.getElementById('ref-m').value, a = document.getElementById('ref-a').value;
-            if(!e || !p || !g || !m || !a) return alert("Seleziona data e importi!");
+            if(!e || !p || !g || !m || !a) return alert("Inserisci tutti i dati!");
             db.rifornimenti.push({ euro: parseFloat(e), prezzo: parseFloat(p), data: `${g}/${m}/${a}` });
             updateUI();
         }
 
         function saveSessione() {
             const l = document.getElementById('sess-lordo').value, g = document.getElementById('sess-g').value, m = document.getElementById('sess-m').value, a = document.getElementById('sess-a').value, o = document.getElementById('sess-ore').value;
-            if(!l || !o || !g || !m || !a) return alert("Seleziona data, lordo e ore!");
+            if(!l || !o || !g || !m || !a) return alert("Dati incompleti!");
             db.sessioni.push({ lordo: parseFloat(l), data: `${g}/${m}/${a}`, ore: parseFloat(o), km: document.getElementById('sess-km').value || 0, scarto: document.getElementById('sess-scarto').value || 0 });
             updateUI();
         }
 
         function deleteItem(type, index) { if(confirm("Eliminare?")) { db[type].splice(index, 1); updateUI(); } }
-        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_v7'); location.reload(); } }
+        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_v8'); location.reload(); } }
         
         popolaDate();
         document.getElementById('target-input').value = db.target;
