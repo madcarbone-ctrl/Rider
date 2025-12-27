@@ -40,7 +40,6 @@
         .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
         .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 34px; }
 
-        /* CRONOLOGIA DETTAGLIATA */
         .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .history-date { color: #00CCBC; font-size: 10px; font-weight: 900; margin-bottom: 6px; display: block; border-bottom: 1px solid #333; padding-bottom: 4px; }
         .history-main-info { display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 8px; align-items: center; }
@@ -138,11 +137,10 @@
 
     <div id="storico"></div>
     <button class="btn-reset-all" onclick="apriModal()">⚠️ AZZERA TUTTI I DATI</button>
-    <div class="footer-credits">Rider Tracker Pro V. 92 - by Marco Carbone</div>
+    <div class="footer-credits">Rider Tracker Pro V. 93 - by Marco Carbone</div>
 
     <script>
-        // Carico il DB con il nuovo nome versione per evitare conflitti
-        let db = JSON.parse(localStorage.getItem('rider_pro_v92')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v93')) || { sessioni: [], rifornimenti: [], target: 0 };
         
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
@@ -173,11 +171,7 @@
         }
 
         function aggiungiSessione() {
-            let km = parseFloat(document.getElementById('sessKm').value) || 0;
-            let s = parseFloat(document.getElementById('sessScarto').value) || 0;
-            let o = parseFloat(document.getElementById('sessOre').value) || 0;
-            let l = parseFloat(document.getElementById('sessLordo').value) || 0;
-            let c = parseFloat(document.getElementById('sessL100').value) || 0;
+            let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
             if(l > 0 || km > 0) { 
                 db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); 
                 salva(); 
@@ -186,21 +180,18 @@
             }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v92', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v93', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totL = 0, totO = 0, kmLav = 0, kmAss = 0, litriT = 0, costoB = 0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
 
             db.sessioni.forEach(s => {
-                totL += s.lordo;
-                totO += s.ore;
-                let kEttivi = Math.max(0, s.km - s.scarto);
-                kmLav += kEttivi;
-                kmAss += s.km;
-                let lt = (kEttivi / 100) * s.l100;
-                litriT += lt;
-                costoB += (lt * uP);
+                totL += s.lordo; totO += s.ore;
+                let kE = Math.max(0, s.km - s.scarto);
+                kmLav += kE; kmAss += s.km;
+                let lt = (kE / 100) * s.l100;
+                litriT += lt; costoB += (lt * uP);
             });
 
             let nA = (totL * 0.8) - costoB;
@@ -220,7 +211,6 @@
             document.getElementById('oreTotali').innerText = totO.toFixed(1);
             document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
             
-            // Media km/l dell'ultimo turno
             let lastS = db.sessioni[db.sessioni.length-1];
             document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
 
@@ -239,8 +229,8 @@
                 let dIT = d[2]+"/"+d[1]+"/"+d[0];
                 
                 if(item.tipo === 'S') {
-                    let kEttivi = Math.max(0, item.km - item.scarto);
-                    let nS = (item.lordo * 0.8) - ((kEttivi / 100) * item.l100 * uP);
+                    let kE = Math.max(0, item.km - item.scarto);
+                    let nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
                     h += `
                     <div class="session-item">
                         <span class="history-date">${dIT} - SESSIONE TURNO</span>
@@ -249,7 +239,7 @@
                             <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span>
                         </div>
                         <div class="history-grid-details">
-                            <div>Km Percorsi: <b>${kEttivi}</b></div>
+                            <div>Km Percorsi: <b>${kE}</b></div>
                             <div>Ore: <b>${item.ore}h</b></div>
                             <div>Consumo: <b>${item.l100} l/100</b></div>
                             <div>Scarto: <b>${item.scarto} km</b></div>
@@ -257,10 +247,18 @@
                         <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button>
                     </div>`;
                 } else {
+                    // SEZIONE BENZINA STILE V60
+                    let litriCalcolati = (item.euro / item.prezzo).toFixed(2);
                     h += `
                     <div class="session-item" style="border-left-color: #ffa500;">
-                        <span class="history-date" style="color:#ffa500;">${dIT} - AGGIORNAMENTO PREZZO</span>
-                        <span>Prezzo Salvato: <b>€ ${item.prezzo.toFixed(3)} / litro</b></span>
+                        <span class="history-date" style="color:#ffa500;">${dIT} - RIFORNIMENTO / PREZZO</span>
+                        <div class="history-main-info">
+                            <span>Spesa: <b style="color:#ffa500;">€ ${item.euro.toFixed(2)}</b></span>
+                        </div>
+                        <div class="history-grid-details">
+                            <div>Prezzo: <b>€ ${item.prezzo.toFixed(3)}/l</b></div>
+                            <div>Litri immessi: <b>${litriCalcolati} L</b></div>
+                        </div>
                         <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button>
                     </div>`;
                 }
@@ -269,9 +267,7 @@
         }
 
         function elimina(t, id) { if(confirm("Eliminare questa voce?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
-        
-        popolaMenuDate(); 
-        calcola();
+        popolaMenuDate(); calcola();
         document.getElementById('targetInput').value = db.target > 0 ? db.target : "";
     </script>
 </body>
