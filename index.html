@@ -7,7 +7,7 @@
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; }
         .card { background: #1e1e1e; padding: 8px; border-radius: 12px; border: 1px solid #333; margin-bottom: 8px; }
-        h3 { color: #00CCBC; margin: 0 0 8px 0; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        h3 { color: #00CCBC; margin: 0 0 8px 0; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
         
         /* Griglia 3x3 Ultra Compatta */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
@@ -35,9 +35,7 @@
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
 
         .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #00CCBC; position: relative; font-size: 12px; }
-
-        /* Credits Style */
-        .footer-credits { text-align: center; padding: 20px 10px 30px 10px; color: #555; font-size: 10px; letter-spacing: 0.5px; }
+        .footer-credits { text-align: center; padding: 20px 10px 30px 10px; color: #555; font-size: 10px; letter-spacing: 0.5px; font-style: italic; }
 
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -46,7 +44,7 @@
 <body>
     <div id="toast"></div>
     <div class="card">
-        <h3>📊 RIEPILOGO ATTIVITÀ</h3>
+        <h3>🚀 RIDER TRACKER</h3>
         
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
@@ -74,14 +72,14 @@
     </div>
 
     <div class="card" style="border-color: #ffa50044; padding-bottom: 2px;">
-        <h3 style="margin-bottom:4px;">⛽ Rifornimento</h3>
+        <h3 style="margin-bottom:4px; font-size: 9px;">⛽ Rifornimento</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="fDay" style="height:30px; padding:2px;"></select><select id="fMonth" style="height:30px; padding:2px;"></select><select id="fYear" style="height:30px; padding:2px;"></select></div>
         <div class="grid"><input type="number" id="fuelEuro" placeholder="Euro €" style="height:30px;"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l" style="height:30px;"></div>
         <button class="btn-fuel" onclick="aggiungiBenza()" style="padding: 8px;">SALVA</button>
     </div>
 
     <div class="card" style="border-color: #00ccbc44; padding-bottom: 2px;">
-        <h3 style="margin-bottom:4px;">➕ Sessione</h3>
+        <h3 style="margin-bottom:4px; font-size: 9px;">➕ Sessione</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="sDay" style="height:30px; padding:2px;"></select><select id="sMonth" style="height:30px; padding:2px;"></select><select id="sYear" style="height:30px; padding:2px;"></select></div>
         <div class="grid"><input type="number" id="sessKm" placeholder="Km Tot" style="height:30px;"><input type="number" id="sessScarto" placeholder="Scarto" style="height:30px;"></div>
         <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €" style="height:30px;"><input type="number" id="sessOre" step="0.1" placeholder="Ore" style="height:30px;"></div>
@@ -98,7 +96,7 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v47')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v48')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -116,7 +114,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v47', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v48', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
