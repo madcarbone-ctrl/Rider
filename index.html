@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker</title>
-
+    <title>Rider Tracker Pro</title>
     <link rel="manifest" href="data:application/manifest+json,{ %22name%22: %22Rider Tracker%22, %22short_name%22: %22Rider%22, %22start_url%22: %22.%22, %22display%22: %22standalone%22, %22background_color%22: %22%23121212%22, %22theme_color%22: %22%23121212%22, %22icons%22: [ { %22src%22: %22https://cdn-icons-png.flaticon.com/512/3198/3198336.png%22, %22sizes%22: %22512x512%22, %22type%22: %22image/png%22 } ] }">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#121212">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3198/3198336.png">
-
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 10px 10px 10px; }
         .card { background: #1e1e1e; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; }
         h3 { color: #00CCBC; margin: 0 0 10px 0; text-align: center; font-size: 14px; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
+        input, select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; border-top: 1px solid #333; padding-top: 12px; margin-top: 15px; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
@@ -33,7 +26,7 @@
 </head>
 <body>
     <div class="card">
-        <h3>📊 Riepilogo (Target 500€)</h3>
+        <h3>📊 Riepilogo Attività</h3>
         <div class="grid">
             <div><span class="stat-label">Netto Reale (-Benza)</span><br><span id="nettoReale" class="stat-val">0.00</span> €</div>
             <div><span class="stat-label">Progresso</span><br><span id="progressoPerc" class="stat-val" style="color:#00CCBC">0%</span></div>
@@ -56,9 +49,9 @@
     <div class="card" style="border-color: #ffa50044;">
         <h3>⛽ Registra Rifornimento</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <input type="number" id="fDay" placeholder="GG">
-            <input type="number" id="fMonth" placeholder="MM">
-            <input type="number" id="fYear" placeholder="AAAA">
+            <select id="fDay"></select>
+            <select id="fMonth"></select>
+            <select id="fYear"></select>
         </div>
         <div class="grid">
             <input type="number" id="fuelEuro" placeholder="Euro €">
@@ -70,9 +63,9 @@
     <div class="card" style="border-color: #00ccbc44;">
         <h3>➕ Registra Sessione</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <input type="number" id="sDay" placeholder="GG">
-            <input type="number" id="sMonth" placeholder="MM">
-            <input type="number" id="sYear" placeholder="AAAA">
+            <select id="sDay"></select>
+            <select id="sMonth"></select>
+            <select id="sYear"></select>
         </div>
         <div class="grid">
             <input type="number" id="sessKm" placeholder="Km Totali">
@@ -82,23 +75,26 @@
             <input type="number" id="sessLordo" step="0.01" placeholder="Lordo €">
             <input type="number" id="sessOre" step="0.1" placeholder="Ore Lavoro">
         </div>
-        <input type="number" id="sessL100" step="0.1" placeholder="l/100 km (es. 2.5)">
+        <input type="number" id="sessL100" step="0.1" placeholder="l/100 km (es. 4.0)">
         <button class="btn-add" onclick="aggiungiSessione()">SALVA SESSIONE</button>
     </div>
 
     <div id="storico"></div>
+    <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v24_1')) || { sessioni: [], rifornimenti: [], target: 500 };
-        document.getElementById('targetInput').value = db.target;
+        let db = JSON.parse(localStorage.getItem('rider_pro_v25')) || { sessioni: [], rifornimenti: [], target: 500 };
 
-        const d = new Date();
-        const setToday = (prefix) => {
-            document.getElementById(prefix + 'Day').value = d.getDate();
-            document.getElementById(prefix + 'Month').value = d.getMonth() + 1;
-            document.getElementById(prefix + 'Year').value = d.getFullYear();
+        function popolaMenuDate() {
+            const giorni = [document.getElementById('fDay'), document.getElementById('sDay')];
+            const mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')];
+            const anni = [document.getElementById('fYear'), document.getElementById('sYear')];
+            const d = new Date();
+
+            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            anni.forEach(sel => { for(let i=2025; i<=2040; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
         }
-        setToday('f'); setToday('s');
 
         function salvaTarget() {
             db.target = parseFloat(document.getElementById('targetInput').value) || 0;
@@ -141,14 +137,14 @@
         }
 
         function salva() {
-            localStorage.setItem('rider_pro_v24_1', JSON.stringify(db));
+            localStorage.setItem('rider_pro_v25', JSON.stringify(db));
             calcola();
         }
 
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0);
             let totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0);
-            let ultimoPrezzo = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.75;
+            let ultimoPrezzo = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             
             let costoBenzaStimato = db.sessioni.reduce((acc, s) => {
                 let kmLavoro = Math.max(0, s.km - s.scarto);
@@ -201,10 +197,11 @@
             document.getElementById('storico').innerHTML = h;
         }
 
-        function elimina(tipo, id) {
-            if(confirm("Eliminare?")) { db[tipo] = db[tipo].filter(item => item.id !== id); salva(); }
-        }
+        function elimina(tipo, id) { if(confirm("Eliminare?")) { db[tipo] = db[tipo].filter(item => item.id !== id); salva(); } }
+        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
 
+        popolaMenuDate();
+        document.getElementById('targetInput').value = db.target;
         calcola();
     </script>
 </body>
