@@ -10,14 +10,15 @@
         .card { background: #1e1e1e; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; }
         h3 { color: #00CCBC; margin: 0 0 10px 0; text-align: center; font-size: 14px; text-transform: uppercase; }
         input, select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; text-align: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; border-top: 1px solid #333; padding-top: 12px; margin-top: 15px; }
         button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
-        .stat-val { font-size: 15px; font-weight: bold; color: #fff; }
-        .stat-label { font-size: 9px; color: #aaa; text-transform: uppercase; }
+        .stat-val { font-size: 13px; font-weight: bold; color: #fff; display: block; margin-top: 2px; }
+        .stat-label { font-size: 8px; color: #aaa; text-transform: uppercase; white-space: nowrap; }
         .target-box { background: #2a2a2a; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #555; }
         .session-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #00CCBC; font-size: 13px; position: relative; }
         .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
@@ -26,14 +27,11 @@
 <body>
     <div class="card">
         <h3>📊 Riepilogo Attività</h3>
-        <div class="grid">
-            <div><span class="stat-label">Lordo Totale</span><br><span id="lordoTotale" class="stat-val" style="color:#00CCBC">0.00</span> €</div>
-            <div><span class="stat-label">Netto Reale</span><br><span id="nettoReale" class="stat-val">0.00</span> €</div>
-        </div>
-        
-        <div class="grid" style="margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
-            <div><span class="stat-label">Costo Benzina</span><br><span id="costoBenzaTot" class="stat-val" style="color:#ff4444">0.00</span> €</div>
-            <div><span class="stat-label">Litri Consumati</span><br><span id="litriTot" class="stat-val">0.0</span> L</div>
+        <div class="grid-4">
+            <div><span class="stat-label">Lordo</span><span id="lordoTotale" class="stat-val" style="color:#00CCBC">0.00</span></div>
+            <div><span class="stat-label">Netto</span><span id="nettoReale" class="stat-val">0.00</span></div>
+            <div><span class="stat-label">Benza €</span><span id="costoBenzaTot" class="stat-val" style="color:#ff4444">0.00</span></div>
+            <div><span class="stat-label">Litri</span><span id="litriTot" class="stat-val">0.0</span></div>
         </div>
 
         <div class="target-box">
@@ -85,7 +83,7 @@
     <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v27')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v28')) || { sessioni: [], rifornimenti: [], target: 500 };
 
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')];
@@ -134,7 +132,7 @@
             document.getElementById('sessL100').value = "";
         }
 
-        function salva() { localStorage.setItem('rider_pro_v27', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v28', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0);
