@@ -28,15 +28,15 @@
     <div class="card">
         <h3>📊 Riepilogo Attività</h3>
         <div class="grid">
+            <div><span class="stat-label">Lordo Totale</span><br><span id="lordoTotale" class="stat-val" style="color:#00CCBC">0.00</span> €</div>
             <div><span class="stat-label">Netto Reale (-Benza)</span><br><span id="nettoReale" class="stat-val">0.00</span> €</div>
-            <div><span class="stat-label">Progresso</span><br><span id="progressoPerc" class="stat-val" style="color:#00CCBC">0%</span></div>
         </div>
         <div class="target-box">
             <label class="stat-label">🎯 TARGET NETTO (€)</label>
             <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:5px; padding:8px;">
-            <div style="margin-top:5px;">
-                <span class="stat-label" style="color:#888">Lordo da fare:</span><br>
-                <span id="lordoMancante" class="stat-val" style="color:#ff4444">0.00</span> <span class="stat-val">€</span>
+            <div class="grid" style="margin-top:5px;">
+                <div><span class="stat-label">Lordo da fare:</span><br><span id="lordoMancante" class="stat-val" style="color:#ff4444">0.00</span> €</div>
+                <div style="text-align:right;"><span class="stat-label">Progresso</span><br><span id="progressoPerc" class="stat-val">0%</span></div>
             </div>
         </div>
         <div class="grid-triple">
@@ -49,9 +49,7 @@
     <div class="card" style="border-color: #ffa50044;">
         <h3>⛽ Registra Rifornimento</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <select id="fDay"></select>
-            <select id="fMonth"></select>
-            <select id="fYear"></select>
+            <select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select>
         </div>
         <div class="grid">
             <input type="number" id="fuelEuro" placeholder="Euro €">
@@ -63,9 +61,7 @@
     <div class="card" style="border-color: #00ccbc44;">
         <h3>➕ Registra Sessione</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <select id="sDay"></select>
-            <select id="sMonth"></select>
-            <select id="sYear"></select>
+            <select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select>
         </div>
         <div class="grid">
             <input type="number" id="sessKm" placeholder="Km Totali">
@@ -80,17 +76,16 @@
     </div>
 
     <div id="storico"></div>
-    <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px;">RESET TUTTI I DATI</button>
+    <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v25')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v26')) || { sessioni: [], rifornimenti: [], target: 500 };
 
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')];
             const mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')];
             const anni = [document.getElementById('fYear'), document.getElementById('sYear')];
             const d = new Date();
-
             giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
             anni.forEach(sel => { for(let i=2025; i<=2040; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
@@ -126,20 +121,14 @@
             let ore = parseFloat(document.getElementById('sessOre').value) || 0;
             let lordo = parseFloat(document.getElementById('sessLordo').value) || 0;
             let l100 = parseFloat(document.getElementById('sessL100').value) || 0;
-            
             db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 });
             salva();
-            document.getElementById('sessKm').value = "";
-            document.getElementById('sessScarto').value = "";
-            document.getElementById('sessOre').value = "";
-            document.getElementById('sessLordo').value = "";
+            document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = "";
+            document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = "";
             document.getElementById('sessL100').value = "";
         }
 
-        function salva() {
-            localStorage.setItem('rider_pro_v25', JSON.stringify(db));
-            calcola();
-        }
+        function salva() { localStorage.setItem('rider_pro_v26', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0);
@@ -154,20 +143,19 @@
 
             let nettoAttuale = (totLordo * 0.8) - costoBenzaStimato;
             let mancanoNetto = Math.max(0, db.target - nettoAttuale);
-            
             let ultimaMediaKml = 0;
             if(db.sessioni.length > 0) {
                 let ultimoL100 = db.sessioni[db.sessioni.length-1].l100;
                 ultimaMediaKml = ultimoL100 > 0 ? (100 / ultimoL100) : 0;
             }
 
+            document.getElementById('lordoTotale').innerText = totLordo.toFixed(2);
             document.getElementById('nettoReale').innerText = nettoAttuale.toFixed(2);
             document.getElementById('oreTotali').innerText = totOre.toFixed(1);
             document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoAttuale / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = ultimaMediaKml.toFixed(1);
             document.getElementById('progressoPerc').innerText = db.target > 0 ? Math.round((nettoAttuale / db.target) * 100) + "%" : "0%";
             document.getElementById('lordoMancante').innerText = (mancanoNetto * 1.25).toFixed(2);
-            
             renderStorico(ultimoPrezzo);
         }
 
@@ -179,8 +167,7 @@
                 let dIT = p[2] + "/" + p[1] + "/" + p[0];
                 if(item.tipo === 'S') {
                     let kmLavoro = Math.max(0, item.km - item.scarto);
-                    let litriSess = (kmLavoro / 100) * item.l100;
-                    let nS = (item.lordo * 0.8) - (litriSess * ultimoP);
+                    let nS = (item.lordo * 0.8) - ((kmLavoro / 100) * item.l100 * ultimoP);
                     h += `<div class="session-item">
                         <span style="color:#888">${dIT}</span><br>
                         <b>Lordo: ${item.lordo.toFixed(2)}€</b> <span class="tag-netto">Netto: ${nS.toFixed(2)}€</span><br>
