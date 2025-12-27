@@ -9,7 +9,6 @@
         .card { background: #1e1e1e; padding: 8px; border-radius: 12px; border: 1px solid #333; margin-bottom: 8px; }
         h3 { color: #00CCBC; margin: 0 0 8px 0; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
         
-        /* Griglia 3x3 Ultra Compatta */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #252525; padding: 4px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 40px; display: flex; flex-direction: column; justify-content: center; }
         
@@ -73,14 +72,22 @@
 
     <div class="card" style="border-color: #ffa50044; padding-bottom: 2px;">
         <h3 style="margin-bottom:4px; font-size: 9px;">⛽ Rifornimento</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="fDay" style="height:30px; padding:2px;"></select><select id="fMonth" style="height:30px; padding:2px;"></select><select id="fYear" style="height:30px; padding:2px;"></select></div>
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;">
+            <select id="fDay" style="height:30px; padding:2px;"></select>
+            <select id="fMonth" style="height:30px; padding:2px;"></select>
+            <select id="fYear" style="height:30px; padding:2px;"></select>
+        </div>
         <div class="grid"><input type="number" id="fuelEuro" placeholder="Euro €" style="height:30px;"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l" style="height:30px;"></div>
         <button class="btn-fuel" onclick="aggiungiBenza()" style="padding: 8px;">SALVA</button>
     </div>
 
     <div class="card" style="border-color: #00ccbc44; padding-bottom: 2px;">
         <h3 style="margin-bottom:4px; font-size: 9px;">➕ Sessione</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="sDay" style="height:30px; padding:2px;"></select><select id="sMonth" style="height:30px; padding:2px;"></select><select id="sYear" style="height:30px; padding:2px;"></select></div>
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;">
+            <select id="sDay" style="height:30px; padding:2px;"></select>
+            <select id="sMonth" style="height:30px; padding:2px;"></select>
+            <select id="sYear" style="height:30px; padding:2px;"></select>
+        </div>
         <div class="grid"><input type="number" id="sessKm" placeholder="Km Tot" style="height:30px;"><input type="number" id="sessScarto" placeholder="Scarto" style="height:30px;"></div>
         <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €" style="height:30px;"><input type="number" id="sessOre" step="0.1" placeholder="Ore" style="height:30px;"></div>
         <input type="number" id="sessL100" step="0.1" placeholder="l/100 km" style="height:30px;">
@@ -88,56 +95,54 @@
     </div>
 
     <div id="storico"></div>
-    
     <button onclick="resettutto()" style="background:transparent; color:#333; padding:5px; font-size:9px; width:100%; border:none; margin-top: 10px;">RESET DATI</button>
-
-    <div class="footer-credits">
-        Rider Tracker V. 1.0 by Marco Carbone
-    </div>
+    <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v48')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v50')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
+        
         function popolaMenuDate() {
-            const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
-            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            anni.forEach(y => { for(let i=2025; i<=2028; i++) y.innerHTML += `<option value="${i}">${i}</option>`; });
+            const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], 
+                  mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], 
+                  anni = [document.getElementById('fYear'), document.getElementById('sYear')],
+                  d = new Date();
+            
+            const gOggi = d.getDate();
+            const mOggi = d.getMonth() + 1;
+            const aOggi = d.getFullYear();
+
+            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==gOggi?'selected':''}>${i}</option>`; });
+            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==mOggi?'selected':''}>${i}</option>`; });
+            anni.forEach(sel => { for(let i=2025; i<=2028; i++) sel.innerHTML += `<option value="${i}" ${i==aOggi?'selected':''}>${i}</option>`; });
         }
+
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function creaDataISO(prefix) { return document.getElementById(prefix+'Year').value + "-" + document.getElementById(prefix+'Month').value.padStart(2,'0') + "-" + document.getElementById(prefix+'Day').value.padStart(2,'0'); }
+        function creaDataISO(prefix) { 
+            let g = document.getElementById(prefix+'Day').value, m = document.getElementById(prefix+'Month').value, a = document.getElementById(prefix+'Year').value;
+            return a + "-" + m.padStart(2,'0') + "-" + g.padStart(2,'0'); 
+        }
         function aggiungiBenza() {
-            let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; showToast("✅ Benzinata!"); }
+            let data = creaDataISO('f'), e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data, euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; showToast("✅ Benzinata!"); }
         }
         function aggiungiSessione() {
-            let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
+            let data = creaDataISO('s'), km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
+            if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v48', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v50', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
-            let kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
-            let litriT = 0, costoB = db.sessioni.reduce((acc, s) => {
-                let kmL = Math.max(0, s.km - s.scarto);
-                let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP);
-            }, 0);
-            let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA);
-            let perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
-            document.getElementById('pBar').style.width = perc + "%";
-            document.getElementById('progressoPerc').innerText = perc + "%";
-            document.getElementById('lordoTotale').innerText = totLordo.toFixed(2);
-            document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
-            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2);
-            document.getElementById('litriTot').innerText = litriT.toFixed(1);
-            document.getElementById('kmAssoluti').innerText = kmAssoluti;
-            document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
-            document.getElementById('oreTotali').innerText = totOre.toFixed(1);
-            document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
+            let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
+            let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { let kmL = Math.max(0, s.km - s.scarto); let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP); }, 0);
+            let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA), perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
+            document.getElementById('pBar').style.width = perc + "%"; document.getElementById('progressoPerc').innerText = perc + "%";
+            document.getElementById('lordoTotale').innerText = totLordo.toFixed(2); document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
+            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
+            document.getElementById('kmAssoluti').innerText = kmAssoluti; document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
+            document.getElementById('oreTotali').innerText = totOre.toFixed(1); document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
-            document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2);
-            document.getElementById('statusLabel').innerText = perc >= 100 ? "COMPLETATO" : "IN CORSO";
+            document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); document.getElementById('statusLabel').innerText = perc >= 100 ? "COMPLETATO" : "IN CORSO";
             renderStorico(ultimoP);
         }
         function renderStorico(uP) {
