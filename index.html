@@ -38,6 +38,12 @@
             <div><span class="stat-label">Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
             <div><span class="stat-label">Litri</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
         </div>
+        
+        <div class="row-single" style="margin-top: 12px; border-top: 1px solid #333; padding-top: 10px; background: #252525; border-radius: 8px; padding-bottom: 5px;">
+            <div><span class="stat-label">KM LAVORO</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
+            <div><span class="stat-label">KM TOTALI</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
+        </div>
+
         <div class="target-box">
             <label class="stat-label">🎯 TARGET NETTO (€)</label>
             <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:5px; padding:8px;">
@@ -64,7 +70,10 @@
         <h3>➕ Registra Sessione</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;"><select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select></div>
         <div class="grid"><input type="number" id="sessKm" placeholder="Km Totali"><input type="number" id="sessScarto" placeholder="Scarto Km"></div>
-        <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"><input type="number" id="sessOre" step="0.1" placeholder="Ore Lavoro"></div>
+        <div class="grid">
+            <input type="number" id="sessLordo" step="0.01" placeholder="Lordo €">
+            <input type="number" id="sessOre" step="0.1" placeholder="Ore Lavoro">
+        </div>
         <input type="number" id="sessL100" step="0.1" placeholder="l/100 km (es. 4.0)">
         <button class="btn-add" onclick="aggiungiSessione()">SALVA SESSIONE</button>
     </div>
@@ -73,7 +82,7 @@
     <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v37')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v39')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -91,9 +100,11 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; showToast("✅ Sessione salvata!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v37', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v39', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+            let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
+            let kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
             let litriT = 0, costoB = db.sessioni.reduce((acc, s) => {
                 let kmL = Math.max(0, s.km - s.scarto);
                 let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP);
@@ -103,6 +114,8 @@
             document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
             document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2);
             document.getElementById('litriTot').innerText = litriT.toFixed(1);
+            document.getElementById('kmAssoluti').innerText = kmAssoluti;
+            document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
             document.getElementById('oreTotali').innerText = totOre.toFixed(1);
             document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
