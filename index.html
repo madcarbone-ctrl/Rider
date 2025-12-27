@@ -6,67 +6,74 @@
     <title>Rider Tracker Pro</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; }
-        .card { background: #1e1e1e; padding: 10px; border-radius: 12px; border: 1px solid #333; margin-bottom: 12px; }
-        h3 { color: #00CCBC; margin: 0 0 8px 0; text-align: center; font-size: 12px; text-transform: uppercase; }
-        .row-single { display: flex; justify-content: space-between; align-items: center; text-align: center; gap: 2px; }
-        .row-single div { flex: 1; min-width: 0; }
+        .card { background: #1e1e1e; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 12px; }
+        h3 { color: #00CCBC; margin: 0 0 10px 0; text-align: center; font-size: 12px; text-transform: uppercase; }
+        
+        /* Nuova Griglia per il riepilogo superiore */
+        .stats-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: center; margin-bottom: 10px; }
+        .stats-main-grid div { display: flex; flex-direction: column; justify-content: center; }
+
+        .row-single { display: flex; justify-content: space-around; align-items: center; text-align: center; gap: 10px; }
+        .row-single div { flex: 1; }
+
         input, select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         
-        /* Progress Bar Style */
-        .progress-container { width: 100%; background: #333; border-radius: 20px; height: 18px; margin-top: 5px; position: relative; overflow: hidden; border: 1px solid #444; }
+        .progress-container { width: 100%; background: #333; border-radius: 20px; height: 20px; margin-top: 8px; position: relative; overflow: hidden; border: 1px solid #444; }
         .progress-bar { height: 100%; background: #00CCBC; width: 0%; transition: width 0.5s ease-in-out; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
 
-        .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px; }
-        .grid-triple div { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+        .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; border-top: 1px solid #333; padding-top: 12px; margin-top: 10px; }
+        .grid-triple div { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
         
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-del { width: auto; padding: 4px 8px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
+        .btn-del { width: auto; padding: 5px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
         
-        .stat-val { font-size: 13px; font-weight: bold; color: #fff; }
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 2px; }
+        .stat-val { font-size: 15px; font-weight: bold; color: #fff; }
+        .stat-label { font-size: 8px; color: #aaa; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px; }
         
-        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); font-size: 13px; font-weight: bold; border: 1px solid #00CCBC; }
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; border: 1px solid #00CCBC; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         
-        .target-box { background: #2a2a2a; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #555; }
-        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #00CCBC; font-size: 12px; position: relative; }
-        .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
+        .target-box { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-top: 12px; border: 1px dashed #555; }
+        .session-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00CCBC; font-size: 13px; position: relative; }
+        .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
     <div id="toast"></div>
     <div class="card">
         <h3>📊 Riepilogo Attività</h3>
-        <div class="row-single">
+        
+        <div class="stats-main-grid">
             <div><span class="stat-label">Lordo</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
             <div><span class="stat-label">Netto</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
             <div><span class="stat-label">Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
             <div><span class="stat-label">Litri</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
         </div>
         
-        <div class="row-single" style="margin-top: 8px; border-top: 1px solid #333; padding-top: 8px; background: #252525; border-radius: 8px; padding-bottom: 4px;">
+        <div class="row-single" style="margin-top: 10px; border-top: 1px solid #333; padding: 10px 0; background: #252525; border-radius: 8px;">
             <div><span class="stat-label">KM LAVORO</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
             <div><span class="stat-label">KM TOTALI</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
         </div>
 
         <div class="target-box">
             <label class="stat-label">🎯 TARGET NETTO (€)</label>
-            <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:4px; padding:6px; height: 34px;">
+            <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:5px;">
             
             <div class="progress-container">
                 <div id="pBar" class="progress-bar"></div>
                 <div id="progressoPerc" class="progress-text">0%</div>
             </div>
 
-            <div class="row-single" style="margin-top:8px;">
-                <div style="text-align:left;"><span class="stat-label">Lordo da fare:</span><span class="stat-val" style="color:#ff4444; font-size: 13px;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div style="text-align:right;"><span class="stat-label">Stato</span><span class="stat-val" style="font-size: 10px; color:#aaa;">In corso</span></div>
+            <div class="row-single" style="margin-top:10px;">
+                <div style="text-align:left;"><span class="stat-label">Lordo da fare:</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+                <div style="text-align:right;"><span class="stat-label">Status</span><span class="stat-val" style="font-size: 10px; color:#aaa;">In corso</span></div>
             </div>
         </div>
         
@@ -94,10 +101,10 @@
     </div>
 
     <div id="storico"></div>
-    <button onclick="resettutto()" style="background:#333; color:#888; padding:8px; font-size:9px; margin-top:15px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
+    <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v41')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v42')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -115,7 +122,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; showToast("✅ Sessione salvata!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v41', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v42', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
@@ -126,7 +133,6 @@
             }, 0);
             let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA);
             
-            // Logica Barra Progresso
             let perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('progressoPerc').innerText = perc + "%";
@@ -149,9 +155,9 @@
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kmL = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kmL / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span style="color:#888">${dIT}</span><br><b style="color:#00CCBC">Lordo: € ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span><br><b>Ore: ${item.ore}h</b> | lavorativi km ${kmL} <span style="font-size:10px; color:#aaa;">(scarto km ${item.scarto})</span><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:8px;">X</button></div>`;
+                    h += `<div class="session-item"><span style="color:#888">${dIT}</span><br><b style="color:#00CCBC">Lordo: € ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span><br><b>Ore: ${item.ore}h</b> | lavorativi km ${kmL} <span style="font-size:10px; color:#aaa;">(scarto km ${item.scarto})</span><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button></div>`;
                 } else {
-                    h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;"><span style="color:#888">${dIT}</span> | ⛽ <b>RIFORNIMENTO € ${item.euro.toFixed(2)}</b><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:8px;">X</button></div>`;
+                    h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;"><span style="color:#888">${dIT}</span> | ⛽ <b>RIFORNIMENTO € ${item.euro.toFixed(2)}</b><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button></div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h;
