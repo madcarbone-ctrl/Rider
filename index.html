@@ -9,12 +9,13 @@
         .card { background: #1e1e1e; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 12px; }
         h3 { color: #00CCBC; margin: 0 0 12px 0; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Griglia principale con spazio tra le colonne */
-        .stats-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
-        .stat-item { display: flex; flex-direction: column; align-items: center; background: #252525; padding: 8px; border-radius: 8px; }
+        /* Griglia principale monetaria */
+        .stats-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .stat-item { display: flex; flex-direction: column; align-items: center; background: #252525; padding: 8px; border-radius: 8px; border: 1px solid #333; }
 
-        /* KM Zone spaziosa */
-        .km-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; padding: 10px; background: #252525; border-radius: 8px; border: 1px solid #333; }
+        /* Area Tecnica (KM, Ore, Media) */
+        .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
+        .tech-item { background: #252525; padding: 8px; border-radius: 8px; border: 1px solid #333; text-align: center; }
         
         input, select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -23,26 +24,24 @@
         .progress-bar { height: 100%; background: #00CCBC; width: 0%; transition: width 0.6s ease; }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: bold; color: #fff; }
 
-        .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px; }
-        
         button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; padding: 5px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
         
-        /* Font e Label migliorati */
-        .stat-val { font-size: 15px; font-weight: bold; color: #fff; margin-top: 4px; }
-        .stat-label { font-size: 9px; color: #aaa; text-transform: uppercase; font-weight: 600; }
+        .stat-val { font-size: 14px; font-weight: bold; color: #fff; margin-top: 2px; }
+        .stat-label { font-size: 8px; color: #aaa; text-transform: uppercase; font-weight: 600; }
         
         .target-box { background: #2a2a2a; padding: 12px; border-radius: 10px; margin-top: 15px; border: 1px solid #444; }
         .target-info { display: flex; justify-content: space-between; margin-top: 8px; }
 
         #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); border: 1px solid #00CCBC; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         .session-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00CCBC; position: relative; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -57,9 +56,16 @@
             <div class="stat-item"><span class="stat-label">Litri</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
         </div>
         
-        <div class="km-row">
-            <div style="text-align: center;"><span class="stat-label">KM LAVORO</span><br><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
-            <div style="text-align: center;"><span class="stat-label">KM TOTALI</span><br><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
+        <div class="tech-grid">
+            <div class="tech-item"><span class="stat-label">KM LAVORO</span><br><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
+            <div class="tech-item"><span class="stat-label">KM TOTALI</span><br><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
+            <div class="tech-item"><span class="stat-label">Ore Lavoro</span><br><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="tech-item"><span class="stat-label">Media KM/L</span><br><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+        </div>
+
+        <div class="stat-item" style="margin-top: 8px; width: auto; flex-direction: row; justify-content: space-between; padding: 10px 15px;">
+            <span class="stat-label">Netto/Ora</span>
+            <span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span>
         </div>
 
         <div class="target-box">
@@ -75,12 +81,6 @@
                 <div><span class="stat-label">Lordo da fare:</span><br><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
                 <div style="text-align:right;"><span class="stat-label">Status:</span><br><span class="stat-val" style="color:#aaa; font-size: 13px;">In corso</span></div>
             </div>
-        </div>
-        
-        <div class="grid-triple">
-            <div class="stat-item"><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="stat-item"><span class="stat-label">Netto/Ora</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
-            <div class="stat-item"><span class="stat-label">Media KM/L</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
         </div>
     </div>
 
@@ -104,13 +104,13 @@
     <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v43')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v44')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
             giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            anni.forEach(sel => { for(let i=2025; i<=2040; i++) sel.innerHTML += `<option value="${i}">${i}</option>`; });
+            years = [fYear, sYear]; years.forEach(y => { for(let i=2025; i<=2030; i++) y.innerHTML += `<option value="${i}">${i}</option>`; });
         }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function creaDataISO(prefix) { return document.getElementById(prefix+'Year').value + "-" + document.getElementById(prefix+'Month').value.padStart(2,'0') + "-" + document.getElementById(prefix+'Day').value.padStart(2,'0'); }
@@ -122,7 +122,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; showToast("✅ Sessione salvata!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v43', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v44', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
