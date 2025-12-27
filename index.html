@@ -5,81 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Rider Tracker Pro</title>
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 4px 5px 4px; overflow-x: hidden; width: 100vw; }
-        .card { background: #1e1e1e; padding: 4px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px; box-sizing: border-box; width: 100%; }
+        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 6px 10px 6px; overflow-x: hidden; }
+        .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; box-sizing: border-box; }
         
-        .main-title { color: #00CCBC; margin: 2px 0 6px 0; text-align: center; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .main-title { color: #00CCBC; margin: 4px 0 10px 0; text-align: center; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
         
-        /* TITOLI SEZIONI COMPATTI */
-        .section-title { color: #00CCBC; margin: 0 0 4px 0; text-align: center; font-size: 11px; text-transform: uppercase; font-weight: 800; display: block; line-height: 1.2; }
+        /* TITOLI SEZIONI CENTRATI E INGRANDITI */
+        .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
         
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .data-box { background: #252525; padding: 1px; border-radius: 5px; border: 1px solid #333; text-align: center; min-height: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 34px; display: flex; flex-direction: column; justify-content: center; }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 0px; }
+        .stat-val { font-size: 12px; font-weight: bold; color: #fff; line-height: 1; }
 
         input, select { 
-            height: 30px; 
+            height: 34px; 
             background: #2a2a2a; 
             border: 1px solid #444; 
             color: white; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             box-sizing: border-box; 
-            font-size: 13px; 
+            font-size: 14px; 
             text-align: center;
             -webkit-appearance: none;
             margin: 0;
-            padding: 0 3px;
+            padding: 0 4px;
         }
 
-        .compact-row { display: flex; gap: 3px; align-items: stretch; margin-bottom: 3px; width: 100%; }
-        .date-group { display: flex; gap: 2px; }
-        .sel-small { width: 35px; }
-        .sel-year { width: 50px; }
+        .compact-row { display: flex; gap: 4px; align-items: stretch; margin-bottom: 5px; width: 100%; }
+        .date-group { display: flex; gap: 2px; flex-shrink: 0; }
+        .sel-small { width: 38px; }
+        .sel-year { width: 55px; }
         
-        .input-group-fill { display: flex; gap: 3px; flex: 1; }
+        .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
         .input-group-fill input { flex: 1; min-width: 0; }
 
-        .grid-compact { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-bottom: 3px; }
+        .grid-compact { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 5px; }
 
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 8px; height: 20px; margin: 4px 0 2px 0; position: relative; overflow: hidden; border: 1px solid #333; }
+        /* BARRA PERCENTUALE INGRANDITA */
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: 900; color: #fff; text-shadow: 1px 1px 1px #000; z-index: 2; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
 
-        button { width: 100%; height: 34px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 11px; }
+        button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-del { width: auto; height: 20px; padding: 0 6px; background: #ff4444; color: white; font-size: 8px; border:none; border-radius:3px; }
-        .btn-reset-all { background: #600; color: #fcc; margin-top: 10px; height: 30px; font-size: 10px; }
+        .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
+        .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 34px; }
 
-        .target-box { margin-top: 4px; background: #222; padding: 4px; border-radius: 8px; border: 1px solid #333; }
-        .target-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .target-item { background: #2a2a2a; padding: 2px; border-radius: 5px; border: 1px solid #444; text-align: center; min-height: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .target-input-field { background: transparent !important; border: 1px solid #00CCBC !important; color: #fff; width: 80%; height: 18px !important; border-radius: 3px; font-weight: bold; font-size: 12px; }
+        .target-box { margin-top: 6px; background: #222; padding: 6px; border-radius: 10px; border: 1px solid #333; }
+        .target-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .target-item { background: #2a2a2a; padding: 4px 2px; border-radius: 6px; border: 1px solid #444; text-align: center; min-height: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .target-input-field { background: transparent !important; border: 1px solid #00CCBC !important; color: #fff; width: 85%; height: 22px !important; border-radius: 4px; font-weight: bold; font-size: 13px; }
         
-        .session-item { background: #252525; padding: 5px 8px; border-radius: 6px; margin-bottom: 4px; border-left: 3px solid #00CCBC; position: relative; font-size: 10px; }
-        .history-date { color: #888; font-size: 8px; font-weight: bold; margin-bottom: 1px; display: block; }
-        .tag-netto { background: #00CCBC; color: #000; padding: 0px 3px; border-radius: 2px; font-weight: bold; margin-left: 3px; }
-        .footer-credits { text-align: center; padding: 10px 10px 30px 10px; color: #444; font-size: 9px; font-style: italic; }
+        .session-item { background: #252525; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #00CCBC; position: relative; font-size: 11px; }
+        .history-date { color: #888; font-size: 9px; font-weight: bold; margin-bottom: 2px; display: block; }
+        .tag-netto { background: #00CCBC; color: #000; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 4px; }
+        .footer-credits { text-align: center; padding: 15px 10px 40px 10px; color: #555; font-size: 10px; font-style: italic; font-weight: bold; }
 
-        #toast { visibility: hidden; min-width: 120px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 6px; position: fixed; z-index: 3000; left: 50%; bottom: 15px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 10px; }
+        #toast { visibility: hidden; min-width: 150px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 8px; position: fixed; z-index: 3000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 11px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: #252525; padding: 12px; border-radius: 10px; border: 1px solid #ff4444; width: 100%; max-width: 250px; text-align: center; }
-        .modal-buttons { display: flex; gap: 6px; margin-top: 10px; }
+        .modal-content { background: #252525; padding: 15px; border-radius: 12px; border: 1px solid #ff4444; width: 100%; max-width: 280px; text-align: center; }
+        .modal-buttons { display: flex; gap: 8px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="customModal" class="modal-overlay">
         <div class="modal-content">
-            <div style="color:#ff4444; font-weight:bold; margin-bottom:5px; font-size:13px;">⚠️ ATTENZIONE</div>
-            <div style="font-size:11px;">Eliminare tutti i dati?</div>
+            <div style="color:#ff4444; font-weight:bold; margin-bottom:8px; font-size:14px;">⚠️ ATTENZIONE</div>
+            <div style="font-size:12px;">Eliminare tutti i dati?</div>
             <div class="modal-buttons">
-                <button style="background:#444; color:#fff; height:30px;" onclick="chiudiModal()">Annulla</button>
-                <button style="background:#ff4444; color:#fff; height:30px;" onclick="confermaReset()">OK</button>
+                <button style="background:#444; color:#fff; height:32px;" onclick="chiudiModal()">Annulla</button>
+                <button style="background:#ff4444; color:#fff; height:32px;" onclick="confermaReset()">OK</button>
             </div>
         </div>
     </div>
@@ -103,8 +104,8 @@
         <div class="target-box">
             <div class="target-grid">
                 <div class="target-item"><span class="stat-label">TARGET</span><input type="number" id="targetInput" class="target-input-field" oninput="salvaTarget()" placeholder="0"></div>
-                <div class="target-item" style="border-color:#ff444455;"><span class="stat-label">LORDO REQ.</span><span class="stat-val" style="color:#ff4444; font-size:10px;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div class="target-item" style="border-color:#00CCBC55;"><span class="stat-label">GG LAV.</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC; font-size:12px;">0</span></div>
+                <div class="target-item" style="border-color:#ff444455;"><span class="stat-label">LORDO REQ.</span><span class="stat-val" style="color:#ff4444; font-size:12px;">€ <span id="lordoMancante">0.00</span></span></div>
+                <div class="target-item" style="border-color:#00CCBC55;"><span class="stat-label">GG LAV.</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC; font-size:14px;">0</span></div>
             </div>
             <div class="progress-container">
                 <div id="pBar" class="progress-bar"></div>
@@ -126,7 +127,7 @@
                 <input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l">
             </div>
         </div>
-        <button class="btn-fuel" onclick="aggiungiBenza()" style="height:32px;">SALVA RIFORNIMENTO</button>
+        <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
     </div>
 
     <div class="card" style="border-color: #00ccbc44;">
@@ -147,19 +148,19 @@
             <input type="number" id="sessScarto" placeholder="Scarto">
             <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
         </div>
-        <button class="btn-add" onclick="aggiungiSessione()" style="height:32px;">SALVA SESSIONE</button>
+        <button class="btn-add" onclick="aggiungiSessione()">SALVA SESSIONE</button>
     </div>
 
     <div id="storico"></div>
-    <button class="btn-reset-all" onclick="apriModal()">⚠️ AZZERA DATI</button>
+    <button class="btn-reset-all" onclick="apriModal()">⚠️ AZZERA TUTTA LA SCHERMATA</button>
     <div class="footer-credits">Rider Tracker V. 1.0 - by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v80')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v81')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
-        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v80', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Reset!"); }
+        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v81', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Reset!"); }
         
         function popolaMenuDate() {
             const d = new Date();
@@ -182,7 +183,7 @@
                 showToast("✅ Sessione!"); 
             }
         }
-        function salva() { localStorage.setItem('rider_pro_v80', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v81', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmLav = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
@@ -204,18 +205,18 @@
             renderStorico(uP);
         }
         function renderStorico(uP) {
-            let h = "<span class='section-title' style='margin-top:5px;'>📜 STORICO</span>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
+            let h = "<span class='section-title' style='margin-top:10px;'>📜 STORICO COMPLETO</span>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kmL = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kmL / 100) * item.l100 * uP);
                     h += `<div class="session-item"><span class="history-date">${dIT} - SESSIONE</span>
                          <span>Lordo: <b>€ ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span></span>
-                         <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:8px; top:5px;">ELIMINA</button></div>`;
+                         <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:8px;">ELIMINA</button></div>`;
                 } else {
-                    h += `<div class="session-item" style="border-left-color: #ffa500;"><span class="history-date">${dIT} - BENZA</span>
+                    h += `<div class="session-item" style="border-left-color: #ffa500;"><span class="history-date">${dIT} - RIFORNIMENTO</span>
                          <span>Spesa: <b>€ ${item.euro.toFixed(2)}</b></span>
-                         <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:8px; top:5px;">ELIMINA</button></div>`;
+                         <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:8px;">ELIMINA</button></div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h;
