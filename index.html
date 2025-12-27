@@ -7,58 +7,43 @@
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; }
         * { box-sizing: border-box; }
-
         .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; width: 100%; max-width: 100%; }
-        
         .main-title { color: #00CCBC; margin: 2px 0 10px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; opacity: 0.8; }
         .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
-        
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; }
-        
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; }
-
         input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
-
         .compact-row { display: flex; gap: 4px; margin-bottom: 5px; width: 100%; }
         .date-group { display: flex; gap: 2px; flex-shrink: 0; }
         .sel-small { width: 38px; font-size: 12px; }
         .sel-year { width: 55px; font-size: 12px; }
         .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
-
         .grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 5px; width: 100%; }
         .grid-compact input { font-size: 11px; }
-
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
-
         button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
         .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 34px; }
-
         .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .history-date { color: #00CCBC; font-size: 10px; font-weight: 900; margin-bottom: 6px; display: block; border-bottom: 1px solid #333; padding-bottom: 4px; }
         .history-main-info { display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 8px; align-items: center; }
         .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 11px; }
         .history-grid-details { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #aaa; font-size: 10px; }
         .history-grid-details b { color: #fff; }
-
-        /* Credits stile versione 70 */
         .footer-credits { text-align: center; padding: 20px 0 40px 0; color: #444; font-size: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        
         #toast { visibility: hidden; min-width: 150px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 8px; position: fixed; z-index: 3000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 11px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
-        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; }
         .modal-content { background: #252525; padding: 15px; border-radius: 12px; border: 1px solid #ff4444; width: 280px; text-align: center; }
     </style>
 </head>
 <body>
-
     <div id="customModal" class="modal-overlay">
         <div class="modal-content">
             <div style="color:#ff4444; font-weight:bold; margin-bottom:8px;">⚠️ ATTENZIONE</div>
@@ -69,29 +54,24 @@
             </div>
         </div>
     </div>
-
     <div id="toast"></div>
-
     <div class="card">
         <div class="main-title">🚀 RIDER TRACKER PRO</div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
             <div class="data-box"><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
             <div class="data-box"><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            
             <div class="data-box"><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
             <div class="data-box"><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
             <div class="data-box"><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
-            
             <div class="data-box"><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
             <div class="data-box"><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
             <div class="data-box"><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
         </div>
-
         <div class="target-box" style="margin-top:8px;">
             <div class="summary-grid">
                 <div class="data-box" style="background:transparent;"><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:80%; margin:0 auto;" oninput="salvaTarget()"></div>
-                <div class="data-box" style="background:transparent;"><span class="stat-label">MANCANTE</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+                <div class="data-box" style="background:transparent;"><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
                 <div class="data-box" style="background:transparent;"><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
             </div>
             <div class="progress-container">
@@ -100,7 +80,6 @@
             </div>
         </div>
     </div>
-
     <div class="card" style="border-color: #ffa50044;">
         <span class="section-title" style="color: #ffa500;">⛽ PREZZO CARBURANTE</span>
         <div class="compact-row">
@@ -116,7 +95,6 @@
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()">SALVA PREZZO</button>
     </div>
-
     <div class="card" style="border-color: #00ccbc44;">
         <span class="section-title">➕ AGGIUNGI TURNO</span>
         <div class="compact-row">
@@ -137,140 +115,69 @@
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
-
     <div id="storico"></div>
     <button class="btn-reset-all" onclick="apriModal()">⚠️ AZZERA TUTTI I DATI</button>
     <div class="footer-credits">RIDER TRACKER V. 1.0 - BY MARCO CARBONE</div>
-
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
-        
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
         function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; salva(); chiudiModal(); showToast("🗑️ Dati azzerati!"); }
-        
         function popolaMenuDate() {
             const d = new Date();
-            const g = [document.getElementById('fDay'), document.getElementById('sDay')], 
-                  m = [document.getElementById('fMonth'), document.getElementById('sMonth')], 
-                  a = [document.getElementById('fYear'), document.getElementById('sYear')];
+            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
             g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
             a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2028; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
-
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function creaDataISO(p) { return document.getElementById(p+'Year').value + "-" + document.getElementById(p+'Month').value.padStart(2,'0') + "-" + document.getElementById(p+'Day').value.padStart(2,'0'); }
-        
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { 
-                db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); 
-                salva(); 
-                document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = ""; 
-                showToast("✅ Prezzo aggiornato!"); 
-            }
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = ""; showToast("✅ Prezzo aggiornato!"); }
         }
-
         function aggiungiSessione() {
             let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(l > 0 || km > 0) { 
-                db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); 
-                salva(); 
-                ['sessKm','sessScarto','sessOre','sessLordo','sessL100'].forEach(id => document.getElementById(id).value = "");
-                showToast("✅ Turno salvato!"); 
-            }
+            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); ['sessKm','sessScarto','sessOre','sessLordo','sessL100'].forEach(id => document.getElementById(id).value = ""); showToast("✅ Turno salvato!"); }
         }
-
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
-
         function calcola() {
             let totL = 0, totO = 0, kmLav = 0, kmAss = 0, litriT = 0, costoB = 0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-
             db.sessioni.forEach(s => {
                 totL += s.lordo; totO += s.ore;
-                let kE = Math.max(0, s.km - s.scarto);
-                kmLav += kE; kmAss += s.km;
-                let lt = (kE / 100) * s.l100;
-                litriT += lt; costoB += (lt * uP);
+                let kE = Math.max(0, s.km - s.scarto); kmLav += kE; kmAss += s.km;
+                let lt = (kE / 100) * s.l100; litriT += lt; costoB += (lt * uP);
             });
-
-            let nA = (totL * 0.8) - costoB;
-            let mancN = Math.max(0, db.target - nA);
-            let perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
-
+            let nA = (totL * 0.8) - costoB, mancN = Math.max(0, db.target - nA), perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('progressoPerc').innerText = perc >= 100 ? "OBIETTIVO RAGGIUNTO! 🎉" : perc + "%";
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = (mancN * 1.25).toFixed(2);
-            document.getElementById('lordoTotale').innerText = totL.toFixed(2);
-            document.getElementById('nettoReale').innerText = nA.toFixed(2);
-            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2);
-            document.getElementById('litriTot').innerText = litriT.toFixed(1);
-            document.getElementById('kmAssoluti').innerText = kmAss;
-            document.getElementById('kmLavoroTot').innerText = kmLav;
-            document.getElementById('oreTotali').innerText = totO.toFixed(1);
-            document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
-            
-            let lastS = db.sessioni[db.sessioni.length-1];
-            document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
-
+            document.getElementById('lordoTotale').innerText = totL.toFixed(2); document.getElementById('nettoReale').innerText = nA.toFixed(2);
+            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
+            document.getElementById('kmAssoluti').innerText = kmAss; document.getElementById('kmLavoroTot').innerText = kmLav;
+            document.getElementById('oreTotali').innerText = totO.toFixed(1); document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
+            let lastS = db.sessioni[db.sessioni.length-1]; document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
             renderStorico(uP);
         }
-
         function renderStorico(uP) {
-            let h = "<span class='section-title' style='margin-top:10px;'>📜 CRONOLOGIA ATTIVITÀ</span>";
-            let tutti = [
-                ...db.sessioni.map(s => ({...s, tipo: 'S'})), 
-                ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))
-            ];
-            
+            let h = "<span class='section-title' style='margin-top:10px;'>📜 CRONOLOGIA ATTIVITÀ</span>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => b.id - a.id).forEach(item => {
-                let d = item.data.split("-");
-                let dIT = d[2]+"/"+d[1]+"/"+d[0];
-                
+                let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
-                    let kE = Math.max(0, item.km - item.scarto);
-                    let nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
-                    h += `
-                    <div class="session-item">
-                        <span class="history-date">${dIT} - SESSIONE TURNO</span>
-                        <div class="history-main-info">
-                            <span>Lordo: <b>€ ${item.lordo.toFixed(2)}</b></span>
-                            <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span>
-                        </div>
-                        <div class="history-grid-details">
-                            <div>Km Percorsi: <b>${kE}</b></div>
-                            <div>Ore: <b>${item.ore}h</b></div>
-                            <div>Consumo: <b>${item.l100} l/100</b></div>
-                            <div>Scarto: <b>${item.scarto} km</b></div>
-                        </div>
-                        <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button>
-                    </div>`;
+                    let kE = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
+                    h += `<div class="session-item"><span class="history-date">${dIT} - SESSIONE TURNO</span><div class="history-main-info"><span>Lordo: <b>€ ${item.lordo.toFixed(2)}</b></span><span class="tag-netto">Netto: € ${nS.toFixed(2)}</span></div><div class="history-grid-details"><div>Km Percorsi: <b>${kE}</b></div><div>Ore: <b>${item.ore}h</b></div><div>Consumo: <b>${item.l100} l/100</b></div><div>Scarto: <b>${item.scarto} km</b></div></div><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
                 } else {
                     let litriCalcolati = (item.euro / item.prezzo).toFixed(2);
-                    h += `
-                    <div class="session-item" style="border-left-color: #ffa500;">
-                        <span class="history-date" style="color:#ffa500;">${dIT} - RIFORNIMENTO / PREZZO</span>
-                        <div class="history-main-info">
-                            <span>Spesa: <b style="color:#ffa500;">€ ${item.euro.toFixed(2)}</b></span>
-                        </div>
-                        <div class="history-grid-details">
-                            <div>Prezzo: <b>€ ${item.prezzo.toFixed(3)}/l</b></div>
-                            <div>Litri immessi: <b>${litriCalcolati} L</b></div>
-                        </div>
-                        <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button>
-                    </div>`;
+                    h += `<div class="session-item" style="border-left-color: #ffa500;"><span class="history-date" style="color:#ffa500;">${dIT} - RIFORNIMENTO / PREZZO</span><div class="history-main-info"><span>Spesa: <b style="color:#ffa500;">€ ${item.euro.toFixed(2)}</b></span></div><div class="history-grid-details"><div>Prezzo: <b>€ ${item.prezzo.toFixed(3)}/l</b></div><div>Litri immessi: <b>${litriCalcolati} L</b></div></div><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h;
         }
-
         function elimina(t, id) { if(confirm("Eliminare questa voce?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
-        popolaMenuDate(); calcola();
-        document.getElementById('targetInput').value = db.target > 0 ? db.target : "";
+        popolaMenuDate(); calcola(); document.getElementById('targetInput').value = db.target > 0 ? db.target : "";
     </script>
 </body>
 </html>
