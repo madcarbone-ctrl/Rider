@@ -31,7 +31,6 @@
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:6px; }
         
-        /* PULSANTE RESET EVIDENTE */
         .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 20px; border: 1px solid #ff4444; }
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
@@ -112,10 +111,10 @@
 
     <button class="btn-reset-all" onclick="resettutto()">⚠️ AZZERA TUTTA LA SCHERMATA</button>
     
-    <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
+    <div class="footer-credits">Rider Tracker V. 1.0</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v60')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v61')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -144,7 +143,7 @@
             }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v60', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v61', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
@@ -186,14 +185,13 @@
 
         function elimina(t, id) { if(confirm("Confermi di voler eliminare questa voce?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
         
-        // FUNZIONE RESET CON AVVISO DI CONFERMA
         function resettutto() { 
-            let conferma1 = confirm("⚠️ ATTENZIONE: Questa azione cancellerà DEFINITIVAMENTE tutti i dati (storico, rifornimenti e target).");
-            if(conferma1) {
-                let conferma2 = confirm("Sei veramente sicuro? Non potrai tornare indietro!");
-                if(conferma2) {
+            let c1 = confirm("⚠️ ATTENZIONE: Questa azione cancellerà DEFINITIVAMENTE tutti i dati della schermata.");
+            if(c1) {
+                let c2 = confirm("Sei veramente sicuro di voler azzerare tutto?");
+                if(c2) {
                     db = { sessioni: [], rifornimenti: [], target: 0 }; 
-                    localStorage.removeItem('rider_pro_v60');
+                    localStorage.removeItem('rider_pro_v61');
                     document.getElementById('targetInput').value = "";
                     document.querySelectorAll('input').forEach(i => i.value = "");
                     popolaMenuDate(); 
