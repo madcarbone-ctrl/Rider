@@ -12,19 +12,20 @@
             --secondary: #ff9d00;
             --text: #ffffff;
             --danger: #ff4b2b;
+            --success: #4caf50;
         }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px dashed #333; }
-        h2 { color: var(--primary); text-transform: uppercase; font-size: 1rem; margin-top: 0; text-align: center; }
+        h2 { color: var(--primary); text-transform: uppercase; font-size: 0.9rem; margin-top: 0; text-align: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; }
         button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-save { background: var(--secondary); color: black; }
         .btn-session { background: #00897b; color: white; }
-        .stat-val { font-size: 1.2rem; font-weight: bold; }
-        .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .target-box { border: 1px solid #444; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-val { font-size: 1.1rem; font-weight: bold; display: block; }
+        .label { font-size: 0.65rem; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .target-box { border: 1px solid #444; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
         .lordo-label { color: var(--danger); font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
@@ -33,13 +34,19 @@
     <div class="card">
         <h2>📊 RIEPILOGO AVANZATO</h2>
         <div class="grid" style="text-align:center;">
-            <div><span class="label">NETTO TOTALE</span><span id="netto-totale" class="stat-val">0.00 €</span></div>
+            <div><span class="label">NETTO TOTALE</span><span id="netto-totale" class="stat-val" style="color:var(--success)">0.00 €</span></div>
             <div><span class="label">PROGRESSO TARGET</span><span id="progresso-target" class="stat-val">0%</span></div>
         </div>
         
-        <div class="target-box">
+        <div class="grid-3" style="text-align:center; border-top: 1px solid #333; padding-top: 10px;">
+            <div><span class="label">ORE</span><span id="ore-totali" class="stat-val">0.0</span></div>
+            <div><span class="label">NETTO/ORA</span><span id="netto-ora" class="stat-val" style="color:var(--primary)">0.00</span></div>
+            <div><span class="label">MEDIA KM/L</span><span id="media-km" class="stat-val" style="color:var(--secondary)">0.0</span></div>
+        </div>
+
+        <div class="target-box" style="margin-top:15px;">
             <span class="label">🎯 TARGET NETTO (€)</span>
-            <input type="number" id="target-input" placeholder="Esempio: 500" oninput="updateUI()">
+            <input type="number" id="target-input" placeholder="Vuoto" oninput="updateUI()">
             <p><span class="label">LORDO DA FARE:</span><span id="lordo-necessario" class="lordo-label">0.00 €</span></p>
         </div>
     </div>
@@ -81,7 +88,7 @@
     <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; margin-top:20px;">RESET TOTALE DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v2')) || {
+        let db = JSON.parse(localStorage.getItem('rider_db_v3')) || {
             sessioni: [],
             rifornimenti: [],
             target: ""
@@ -95,27 +102,43 @@
             document.getElementById('lordo-necessario').innerText = lordoReq + " €";
             
             let totaleNetto = 0;
+            let totaleOre = 0;
+            let totaleKm = 0;
+            let totaleLitri = 0;
+
             db.sessioni.forEach(s => {
                 totaleNetto += (s.lordo * 0.8);
+                totaleOre += parseFloat(s.ore || 0);
+                totaleKm += parseFloat(s.km || 0) - parseFloat(s.scarto || 0);
+            });
+
+            db.rifornimenti.forEach(r => {
+                if(r.euro && r.prezzo) totaleLitri += (r.euro / r.prezzo);
             });
             
             document.getElementById('netto-totale').innerText = totaleNetto.toFixed(2) + " €";
+            document.getElementById('ore-totali').innerText = totaleOre.toFixed(1);
+            document.getElementById('netto-ora').innerText = totaleOre > 0 ? (totaleNetto / totaleOre).toFixed(2) : "0.00";
+            document.getElementById('media-km').innerText = totaleLitri > 0 ? (totaleKm / totaleLitri).toFixed(1) : "0.0";
             
             if(target > 0) {
                 let prog = (totaleNetto / target * 100).toFixed(0);
                 document.getElementById('progresso-target').innerText = Math.min(prog, 100) + "%";
+            } else {
+                document.getElementById('progresso-target').innerText = "0%";
             }
             
-            localStorage.setItem('rider_db_final_v2', JSON.stringify(db));
+            localStorage.setItem('rider_db_v3', JSON.stringify(db));
         }
 
         function saveRifornimento() {
             const euro = document.getElementById('ref-euro').value;
+            const prezzo = document.getElementById('ref-litri').value;
             const g = document.getElementById('ref-g').value;
             const m = document.getElementById('ref-m').value;
             const a = document.getElementById('ref-a').value;
-            if(!euro || !g || !m || !a) { alert("Inserisci data completa e importo!"); return; }
-            db.rifornimenti.push({ euro: parseFloat(euro), data: `${g}/${m}/${a}` });
+            if(!euro || !g || !m || !a || !prezzo) { alert("Dati incompleti!"); return; }
+            db.rifornimenti.push({ euro: parseFloat(euro), prezzo: parseFloat(prezzo), data: `${g}/${m}/${a}` });
             alert("Benzina salvata!");
             updateUI();
         }
@@ -125,12 +148,13 @@
             const g = document.getElementById('sess-g').value;
             const m = document.getElementById('sess-m').value;
             const a = document.getElementById('sess-a').value;
-            if(!lordo || !g || !m || !a) { alert("Inserisci data completa e lordo!"); return; }
+            const ore = document.getElementById('sess-ore').value;
+            if(!lordo || !g || !m || !a || !ore) { alert("Dati lavoro incompleti!"); return; }
             db.sessioni.push({
                 lordo: parseFloat(lordo),
                 data: `${g}/${m}/${a}`,
-                ore: document.getElementById('sess-ore').value,
-                km: document.getElementById('sess-km').value,
+                ore: parseFloat(ore),
+                km: document.getElementById('sess-km').value || 0,
                 scarto: document.getElementById('sess-scarto').value || 0
             });
             alert("Giornata salvata!");
@@ -139,7 +163,7 @@
 
         function resettutto() {
             if(confirm("Vuoi cancellare tutto?")) {
-                localStorage.removeItem('rider_db_final_v2');
+                localStorage.removeItem('rider_db_v3');
                 location.reload();
             }
         }
