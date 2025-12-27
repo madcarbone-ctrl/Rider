@@ -134,7 +134,7 @@
         function confermaReset() { 
             db = { sessioni: [], rifornimenti: [], target: 0 }; 
             salva(); 
-            document.getElementById('targetInput').value = ""; // Svuota il campo target graficamente
+            document.getElementById('targetInput').value = "";
             chiudiModal(); 
             showToast("🗑️ Tutto azzerato!"); 
         }
@@ -189,7 +189,8 @@
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kE = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span class="history-date">${dIT} - SESSIONE TURNO</span><div class="history-main-info"><span>Lordo: <b>€ ${item.lordo.toFixed(2)}</b></span><span class="tag-netto">Netto: € ${nS.toFixed(2)}</span></div><div class="history-grid-details"><div>Km Percorsi: <b>${kE}</b></div><div>Ore: <b>${item.ore}h</b></div><div>Consumo: <b>${item.l100} l/100</b></div><div>Scarto: <b>${item.scarto} km</b></div></div><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
+                    let kml = item.l100 > 0 ? (100 / item.l100).toFixed(1) : "0.0";
+                    h += `<div class="session-item"><span class="history-date">${dIT} - SESSIONE TURNO</span><div class="history-main-info"><span>Lordo: <b>€ ${item.lordo.toFixed(2)}</b></span><span class="tag-netto">Netto: € ${nS.toFixed(2)}</span></div><div class="history-grid-details"><div>Km Percorsi: <b>${kE}</b></div><div>Ore: <b>${item.ore}h</b></div><div>Consumo: <b>${kml} km/l</b></div><div>Scarto: <b>${item.scarto} km</b></div></div><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
                 } else {
                     let litriCalcolati = (item.euro / item.prezzo).toFixed(2);
                     h += `<div class="session-item" style="border-left-color: #ffa500;"><span class="history-date" style="color:#ffa500;">${dIT} - RIFORNIMENTO / PREZZO</span><div class="history-main-info"><span>Spesa: <b style="color:#ffa500;">€ ${item.euro.toFixed(2)}</b></span></div><div class="history-grid-details"><div>Prezzo: <b>€ ${item.prezzo.toFixed(3)}/l</b></div><div>Litri immessi: <b>${litriCalcolati} L</b></div></div><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
