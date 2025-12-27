@@ -23,19 +23,15 @@
 <body>
 
     <div class="card">
-        <h2>📊 RIEPILOGO REALE</h2>
+        <h2>📊 RIEPILOGO GENERALE</h2>
         <div class="grid" style="text-align:center;">
-            <div><span class="label">NETTO VERO (Esclusa Benza)</span><span id="netto-totale" class="stat-val" style="color:var(--success)">0.00 €</span></div>
-            <div><span class="label">MEDIA MOTO (KM/L)</span><span id="media-kml" class="stat-val" style="color:var(--secondary)">0.0</span></div>
+            <div><span class="label">GUADAGNO NETTO VERO</span><span id="netto-totale" class="stat-val" style="color:var(--success)">0.00 €</span></div>
+            <div><span class="label">MEDIA (KM/L)</span><span id="media-kml" class="stat-val" style="color:var(--secondary)">0.0</span></div>
         </div>
         <div class="grid-3" style="text-align:center; border-top: 1px solid #333; padding-top: 10px;">
             <div><span class="label">ORE TOTALI</span><span id="ore-totali" class="stat-val">0.0</span></div>
-            <div><span class="label">NETTO/ORA</span><span id="netto-ora" class="stat-val" style="color:var(--primary)">0.00</span></div>
+            <div><span id="label-cons" class="label">CONS. L/100KM</span><span id="val-cons" class="stat-val">4.0</span></div>
             <div><span class="label">KM TOTALI</span><span id="km-totali" class="stat-val">0</span></div>
-        </div>
-        <div style="margin-top:15px; text-align:center; border: 1px solid #444; padding: 10px; border-radius: 8px;">
-            <span class="label">⚙️ IMPOSTA CONSUMO (L/100 KM)</span>
-            <input type="number" id="consumo-l100" value="4.0" step="0.1" oninput="updateUI()" style="text-align:center; color:var(--secondary); font-weight:bold;">
         </div>
     </div>
 
@@ -49,7 +45,10 @@
         <div class="grid">
             <input type="number" id="sess-lordo" placeholder="Lordo €"><input type="number" id="sess-ore" placeholder="Ore">
         </div>
-        <input type="number" id="sess-km" placeholder="KM PERCORSI OGGI" style="margin-bottom:10px;">
+        <div class="grid">
+            <input type="number" id="sess-km" placeholder="KM Percorsi">
+            <input type="number" id="consumo-l100" placeholder="L/100 KM" step="0.1">
+        </div>
         <button class="btn-session" onclick="saveSessione()">SALVA GIORNATA</button>
     </div>
 
@@ -58,10 +57,10 @@
         <div id="lista-storico"></div>
     </div>
 
-    <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; width:100%; border-radius:8px; padding:10px;">RESET TUTTO</button>
+    <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; width:100%; border-radius:8px; padding:10px;">RESET TOTALE</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v11')) || { sessioni: [], consumoL100: 4.0 };
+        let db = JSON.parse(localStorage.getItem('rider_db_v12')) || { sessioni: [], ultimoConsumo: 4.0 };
 
         function popolaDate() {
             const giorni = document.getElementById('sess-g'), mesi = document.getElementById('sess-m'), anni = document.getElementById('sess-a');
@@ -71,8 +70,6 @@
         }
 
         function updateUI() {
-            const l100 = parseFloat(document.getElementById('consumo-l100').value) || 0.1;
-            db.consumoL100 = l100;
             let tNettoLordo = 0, tOre = 0, tKm = 0;
             const lista = document.getElementById('lista-storico');
             lista.innerHTML = "";
@@ -84,35 +81,35 @@
                 lista.innerHTML += `<div class="history-item"><span>📅 ${s.data}<br><b>${(s.lordo*0.8).toFixed(2)}€</b> | ${s.km}km</span><button class="del-btn" onclick="deleteItem(${idx})">X</button></div>`;
             });
 
-            // Calcolo KM/L per la media visualizzata
-            const kml = 100 / l100;
-            
-            // Calcolo costo benzina (basato su 1.80€/l)
-            const litriTotali = (tKm * l100) / 100;
-            const costoBenza = litriTotali * 1.80;
+            const cons = db.ultimoConsumo || 4.0;
+            const kml = 100 / cons;
+            const litriTotali = (tKm * cons) / 100;
+            const costoBenza = litriTotali * 1.85; // Media prezzo benzina
             const nettoVero = tNettoLordo - costoBenza;
 
             document.getElementById('netto-totale').innerText = nettoVero.toFixed(2) + " €";
             document.getElementById('media-kml').innerText = kml.toFixed(1);
             document.getElementById('ore-totali').innerText = tOre.toFixed(1);
             document.getElementById('km-totali').innerText = tKm;
-            document.getElementById('netto-ora').innerText = tOre > 0 ? (nettoVero / tOre).toFixed(2) : "0.00";
+            document.getElementById('val-cons').innerText = cons.toFixed(1);
             
-            localStorage.setItem('rider_db_v11', JSON.stringify(db));
+            localStorage.setItem('rider_db_v12', JSON.stringify(db));
         }
 
         function saveSessione() {
-            const l = document.getElementById('sess-lordo').value, g = document.getElementById('sess-g').value, m = document.getElementById('sess-m').value, a = document.getElementById('sess-a').value, o = document.getElementById('sess-ore').value, k = document.getElementById('sess-km').value;
-            if(!l || !o || !g || !m || !a || !k) return alert("Inserisci tutti i dati!");
+            const l = document.getElementById('sess-lordo').value, g = document.getElementById('sess-g').value, m = document.getElementById('sess-m').value, a = document.getElementById('sess-a').value, o = document.getElementById('sess-ore').value, k = document.getElementById('sess-km').value, c = document.getElementById('consumo-l100').value;
+            if(!l || !o || !g || !m || !a || !k || !c) return alert("Compila tutti i campi, incluso il consumo L/100KM!");
+            
+            db.ultimoConsumo = parseFloat(c);
             db.sessioni.push({ lordo: parseFloat(l), data: `${g}/${m}/${a}`, ore: parseFloat(o), km: parseFloat(k) });
             updateUI();
         }
 
         function deleteItem(index) { if(confirm("Eliminare?")) { db.sessioni.splice(index, 1); updateUI(); } }
-        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_v11'); location.reload(); } }
+        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.removeItem('rider_db_v12'); location.reload(); } }
         
         popolaDate();
-        document.getElementById('consumo-l100').value = db.consumoL100;
+        document.getElementById('consumo-l100').value = db.ultimoConsumo;
         updateUI();
     </script>
 </body>
