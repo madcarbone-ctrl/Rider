@@ -50,7 +50,7 @@
         <div class="grid-3">
             <input type="number" id="ref-g" placeholder="G">
             <input type="number" id="ref-m" placeholder="M">
-            <input type="number" id="ref-a" placeholder="A" value="2025">
+            <input type="number" id="ref-a" placeholder="A">
         </div>
         <div class="grid">
             <input type="number" id="ref-euro" placeholder="Euro €">
@@ -65,7 +65,7 @@
         <div class="grid-3">
             <input type="number" id="sess-g" placeholder="G">
             <input type="number" id="sess-m" placeholder="M">
-            <input type="number" id="sess-a" placeholder="A" value="2025">
+            <input type="number" id="sess-a" placeholder="A">
         </div>
         <div class="grid">
             <input type="number" id="sess-lordo" placeholder="Lordo €">
@@ -81,8 +81,7 @@
     <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; margin-top:20px;">RESET TOTALE DATI</button>
 
     <script>
-        // Carica dati puliti
-        let db = JSON.parse(localStorage.getItem('rider_db_final')) || {
+        let db = JSON.parse(localStorage.getItem('rider_db_final_v2')) || {
             sessioni: [],
             rifornimenti: [],
             target: ""
@@ -107,15 +106,16 @@
                 document.getElementById('progresso-target').innerText = Math.min(prog, 100) + "%";
             }
             
-            localStorage.setItem('rider_db_final', JSON.stringify(db));
+            localStorage.setItem('rider_db_final_v2', JSON.stringify(db));
         }
 
         function saveRifornimento() {
             const euro = document.getElementById('ref-euro').value;
             const g = document.getElementById('ref-g').value;
             const m = document.getElementById('ref-m').value;
-            if(!euro || !g || !m) { alert("Inserisci data e importo!"); return; }
-            db.rifornimenti.push({ euro: parseFloat(euro), data: `${g}/${m}` });
+            const a = document.getElementById('ref-a').value;
+            if(!euro || !g || !m || !a) { alert("Inserisci data completa e importo!"); return; }
+            db.rifornimenti.push({ euro: parseFloat(euro), data: `${g}/${m}/${a}` });
             alert("Benzina salvata!");
             updateUI();
         }
@@ -124,10 +124,11 @@
             const lordo = document.getElementById('sess-lordo').value;
             const g = document.getElementById('sess-g').value;
             const m = document.getElementById('sess-m').value;
-            if(!lordo || !g || !m) { alert("Inserisci data e lordo!"); return; }
+            const a = document.getElementById('sess-a').value;
+            if(!lordo || !g || !m || !a) { alert("Inserisci data completa e lordo!"); return; }
             db.sessioni.push({
                 lordo: parseFloat(lordo),
-                data: `${g}/${m}`,
+                data: `${g}/${m}/${a}`,
                 ore: document.getElementById('sess-ore').value,
                 km: document.getElementById('sess-km').value,
                 scarto: document.getElementById('sess-scarto').value || 0
@@ -138,7 +139,7 @@
 
         function resettutto() {
             if(confirm("Vuoi cancellare tutto?")) {
-                localStorage.removeItem('rider_db_final');
+                localStorage.removeItem('rider_db_final_v2');
                 location.reload();
             }
         }
