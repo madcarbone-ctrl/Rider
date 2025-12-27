@@ -18,34 +18,36 @@
         input, select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 6px; box-sizing: border-box; font-size: 14px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         
-        /* BARRA GRADIENTE DINAMICA */
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 18px; margin: 6px 0; position: relative; overflow: hidden; border: 1px solid #333; box-shadow: inset 0 0 5px #000; }
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 18px; margin: 6px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            height: 100%; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
             background: linear-gradient(90deg, #ff4444 0%, #ffa500 30%, #00CCBC 70%, #00ff88 100%);
-            background-size: 100vw 100%; /* Mantiene il gradiente fisso rispetto alla larghezza totale */
-            box-shadow: 0 0 10px rgba(0, 204, 188, 0.3);
+            background-size: 100vw 100%;
         }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
 
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-del { width: auto; padding: 4px 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
+        .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:6px; }
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
         .target-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .target-info { display: flex; justify-content: space-between; margin-top: 2px; align-items: center; min-height: 15px; }
 
-        .blink-win { font-weight: 900; font-size: 10px; color: #00ff88; animation: blinker 0.8s linear infinite; display: none; text-shadow: 0 0 8px rgba(0, 255, 136, 0.6); }
-        @keyframes blinker { 50% { opacity: 0.3; transform: scale(1.05); } }
+        .blink-win { font-weight: 900; font-size: 10px; color: #00ff88; animation: blinker 0.8s linear infinite; display: none; }
+        @keyframes blinker { 50% { opacity: 0.3; } }
 
         #toast { visibility: hidden; min-width: 180px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
 
-        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #00CCBC; position: relative; font-size: 12px; }
+        /* STORICO COMPRENSIBILE */
+        .session-item { background: #252525; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #00CCBC; position: relative; font-size: 12px; line-height: 1.5; }
+        .history-date { color: #888; font-size: 10px; font-weight: bold; margin-bottom: 4px; display: block; }
+        .history-main { display: block; margin-bottom: 2px; }
+        .history-sub { color: #bbb; font-size: 11px; }
+        .tag-netto { background: #00CCBC; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+
         .footer-credits { text-align: center; padding: 20px 10px 30px 10px; color: #555; font-size: 10px; letter-spacing: 0.5px; font-style: italic; }
 
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
@@ -80,12 +82,7 @@
                     <span id="giorniLavorati" class="stat-val" style="color:#00CCBC; font-size: 14px;">0</span>
                 </div>
             </div>
-            
-            <div class="progress-container">
-                <div id="pBar" class="progress-bar"></div>
-                <div id="progressoPerc" class="progress-text">0%</div>
-            </div>
-            
+            <div class="progress-container"><div id="pBar" class="progress-bar"></div><div id="progressoPerc" class="progress-text">0%</div></div>
             <div class="target-info">
                 <div><span class="stat-label">Manca Lordo:</span> <span class="stat-val" style="color:#ff4444; font-size: 11px;">€ <span id="lordoMancante">0.00</span></span></div>
                 <div id="winMsg" class="blink-win">OBIETTIVO RAGGIUNTO !</div>
@@ -114,77 +111,72 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v55')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v56')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
-            const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], 
-                  mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], 
-                  anni = [document.getElementById('fYear'), document.getElementById('sYear')],
-                  d = new Date();
-            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            anni.forEach(sel => { for(let i=2025; i<=2028; i++) sel.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+            const d = new Date();
+            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
+            g.forEach(s => { for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            m.forEach(s => { for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            a.forEach(s => { for(let i=2025; i<=2028; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function creaDataISO(prefix) { 
-            let g = document.getElementById(prefix+'Day').value, m = document.getElementById(prefix+'Month').value, a = document.getElementById(prefix+'Year').value;
-            return a + "-" + m.padStart(2,'0') + "-" + g.padStart(2,'0'); 
-        }
+        function creaDataISO(p) { return document.getElementById(p+'Year').value + "-" + document.getElementById(p+'Month').value.padStart(2,'0') + "-" + document.getElementById(p+'Day').value.padStart(2,'0'); }
 
         function aggiungiBenza() {
-            let data = creaDataISO('f'), e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data, euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; showToast("✅ Benzinata!"); }
+            let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; showToast("✅ Benzinata!"); }
         }
 
         function aggiungiSessione() {
-            let data = creaDataISO('s'), km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
+            let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
+            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v55', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v56', JSON.stringify(db)); calcola(); }
 
         function calcola() {
-            let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
-            
-            let giorniUnici = [...new Set(db.sessioni.map(s => s.data))].length;
-            document.getElementById('giorniLavorati').innerText = giorniUnici;
-
-            let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { let kmL = Math.max(0, s.km - s.scarto); let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP); }, 0);
-            let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA), perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
-            
-            document.getElementById('pBar').style.width = perc + "%"; 
-            document.getElementById('progressoPerc').innerText = perc + "%";
-            document.getElementById('lordoTotale').innerText = totLordo.toFixed(2); document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
+            let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+            let kmAss = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLav = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
+            let gUnici = [...new Set(db.sessioni.map(s => s.data))].length;
+            document.getElementById('giorniLavorati').innerText = gUnici;
+            let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { let k = Math.max(0, s.km - s.scarto); let lt = (k / 100) * s.l100; litriT += lt; return acc + (lt * uP); }, 0);
+            let nA = (totL * 0.8) - costoB, mancN = Math.max(0, db.target - nA), perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
+            document.getElementById('pBar').style.width = perc + "%"; document.getElementById('progressoPerc').innerText = perc + "%";
+            document.getElementById('lordoTotale').innerText = totL.toFixed(2); document.getElementById('nettoReale').innerText = nA.toFixed(2);
             document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
-            document.getElementById('kmAssoluti').innerText = kmAssoluti; document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
-            document.getElementById('oreTotali').innerText = totOre.toFixed(1); document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
+            document.getElementById('kmAssoluti').innerText = kmAss; document.getElementById('kmLavoroTot').innerText = kmLav;
+            document.getElementById('oreTotali').innerText = totO.toFixed(1); document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
-            document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); 
-            
+            document.getElementById('lordoMancante').innerText = (mancN * 1.25).toFixed(2); 
             document.getElementById('winMsg').style.display = (db.target > 0 && perc >= 100) ? "block" : "none";
-
-            renderStorico(ultimoP);
+            renderStorico(uP);
         }
 
         function renderStorico(uP) {
-            let h = "<h3>📜 STORICO</h3>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
+            let h = "<h3>📜 STORICO COMPLETO</h3>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kmL = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kmL / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span style="color:#888; font-size:10px;">${dIT}</span><br><b>L: € ${item.lordo.toFixed(2)}</b> <span style="background:#00CCBC; color:#000; padding:1px 3px; border-radius:3px; font-weight:bold; font-size:10px;">N: € ${nS.toFixed(2)}</span><br>${item.ore}h | ${kmL}km <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:8px;">X</button></div>`;
+                    h += `<div class="session-item"><span class="history-date">${dIT} - SESSIONE DI LAVORO</span>
+                         <span class="history-main">Lordo: <b>€ ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span></span>
+                         <span class="history-sub">Tempo: ${item.ore} Ore | Percorso: ${kmL} Chilometri</span>
+                         <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:25px;">ELIMINA</button></div>`;
                 } else {
-                    h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;"><span style="color:#888; font-size:10px;">${dIT}</span> | ⛽ <b>€ ${item.euro.toFixed(2)}</b><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:8px;">X</button></div>`;
+                    h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;"><span class="history-date">${dIT} - RIFORNIMENTO CARBURANTE</span>
+                         <span class="history-main">Spesa: <b>€ ${item.euro.toFixed(2)}</b></span>
+                         <span class="history-sub">Prezzo Carburante: € ${item.prezzo.toFixed(3)} / Litro</span>
+                         <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:15px;">ELIMINA</button></div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h;
         }
 
-        function elimina(t, id) { if(confirm("Eliminare?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
-        function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
+        function elimina(t, id) { if(confirm("Confermi l'eliminazione?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
+        function resettutto() { if(confirm("Attenzione! Vuoi davvero cancellare TUTTI i dati?")) { localStorage.clear(); location.reload(); } }
         
         popolaMenuDate(); 
         document.getElementById('targetInput').value = db.target > 0 ? db.target : ""; 
