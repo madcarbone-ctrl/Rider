@@ -36,6 +36,9 @@
 
         .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #00CCBC; position: relative; font-size: 12px; }
 
+        /* Credits Style */
+        .footer-credits { text-align: center; padding: 20px 10px 30px 10px; color: #555; font-size: 10px; letter-spacing: 0.5px; }
+
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
@@ -43,7 +46,7 @@
 <body>
     <div id="toast"></div>
     <div class="card">
-        <h3>📊 Riepilogo</h3>
+        <h3>📊 RIEPILOGO ATTIVITÀ</h3>
         
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
@@ -87,10 +90,15 @@
     </div>
 
     <div id="storico"></div>
-    <button onclick="resettutto()" style="background:transparent; color:#555; padding:5px; font-size:9px; width:100%; border:none;">RESET DATI</button>
+    
+    <button onclick="resettutto()" style="background:transparent; color:#333; padding:5px; font-size:9px; width:100%; border:none; margin-top: 10px;">RESET DATI</button>
+
+    <div class="footer-credits">
+        Rider Tracker V. 1.0 by Marco Carbone
+    </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v46')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v47')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -108,7 +116,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v46', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v47', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
@@ -135,7 +143,7 @@
             renderStorico(ultimoP);
         }
         function renderStorico(uP) {
-            let h = "<h3>📜 Storico</h3>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
+            let h = "<h3>📜 STORICO</h3>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
