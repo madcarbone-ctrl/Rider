@@ -60,12 +60,12 @@
         <div class="target-box">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <label class="stat-label" style="margin:0;">🎯 TARGET (€)</label>
-                <input type="number" id="targetInput" oninput="salvaTarget()" style="margin:0; width: 80px; height: 24px; padding: 2px 5px; font-size: 12px; text-align: center;">
+                <input type="number" id="targetInput" oninput="salvaTarget()" placeholder="0" style="margin:0; width: 80px; height: 24px; padding: 2px 5px; font-size: 12px; text-align: center;">
             </div>
             <div class="progress-container"><div id="pBar" class="progress-bar"></div><div id="progressoPerc" class="progress-text">0%</div></div>
             <div class="target-info">
                 <div><span class="stat-label">Manca Lordo:</span> <span class="stat-val" style="color:#ff4444; font-size: 11px;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div style="text-align:right;"><span id="statusLabel" class="stat-val" style="color:#aaa; font-size: 9px;">IN CORSO</span></div>
+                <div style="text-align:right;"><span id="statusLabel" class="stat-val" style="color:#aaa; font-size: 9px;">INSERISCI TARGET</span></div>
             </div>
         </div>
     </div>
@@ -99,7 +99,7 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v50')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v51')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -130,7 +130,7 @@
             let data = creaDataISO('s'), km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v50', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v51', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
@@ -142,7 +142,11 @@
             document.getElementById('kmAssoluti').innerText = kmAssoluti; document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
             document.getElementById('oreTotali').innerText = totOre.toFixed(1); document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
-            document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); document.getElementById('statusLabel').innerText = perc >= 100 ? "COMPLETATO" : "IN CORSO";
+            document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); 
+            let statusText = "IN CORSO";
+            if(db.target <= 0) statusText = "INSERISCI TARGET";
+            else if(perc >= 100) statusText = "COMPLETATO";
+            document.getElementById('statusLabel').innerText = statusText;
             renderStorico(ultimoP);
         }
         function renderStorico(uP) {
@@ -160,7 +164,9 @@
         }
         function elimina(t, id) { if(confirm("Eliminare?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
         function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
-        popolaMenuDate(); document.getElementById('targetInput').value = db.target; calcola();
+        popolaMenuDate(); 
+        document.getElementById('targetInput').value = db.target > 0 ? db.target : ""; 
+        calcola();
     </script>
 </body>
 </html>
