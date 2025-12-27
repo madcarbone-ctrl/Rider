@@ -18,9 +18,17 @@
         input, select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 6px; box-sizing: border-box; font-size: 14px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         
-        .progress-container { width: 100%; background: #121212; border-radius: 10px; height: 16px; margin: 6px 0; position: relative; overflow: hidden; border: 1px solid #444; }
-        .progress-bar { height: 100%; background: #00CCBC; width: 0%; transition: width 0.6s ease; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: bold; color: #fff; }
+        /* BARRA GRADIENTE DINAMICA */
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 18px; margin: 6px 0; position: relative; overflow: hidden; border: 1px solid #333; box-shadow: inset 0 0 5px #000; }
+        .progress-bar { 
+            height: 100%; 
+            width: 0%; 
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: linear-gradient(90deg, #ff4444 0%, #ffa500 30%, #00CCBC 70%, #00ff88 100%);
+            background-size: 100vw 100%; /* Mantiene il gradiente fisso rispetto alla larghezza totale */
+            box-shadow: 0 0 10px rgba(0, 204, 188, 0.3);
+        }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
 
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
@@ -29,11 +37,10 @@
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
         .target-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .target-info { display: flex; justify-content: space-between; margin-top: 2px; align-items: center; }
+        .target-info { display: flex; justify-content: space-between; margin-top: 2px; align-items: center; min-height: 15px; }
 
-        /* Animazione Lampeggiante */
-        .blink-win { font-weight: 900; font-size: 10px; color: #00CCBC; animation: blinker 0.8s linear infinite; display: none; text-shadow: 0 0 5px #00ccbc; }
-        @keyframes blinker { 50% { opacity: 0; color: #ffa500; } }
+        .blink-win { font-weight: 900; font-size: 10px; color: #00ff88; animation: blinker 0.8s linear infinite; display: none; text-shadow: 0 0 8px rgba(0, 255, 136, 0.6); }
+        @keyframes blinker { 50% { opacity: 0.3; transform: scale(1.05); } }
 
         #toast { visibility: hidden; min-width: 180px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
@@ -74,7 +81,10 @@
                 </div>
             </div>
             
-            <div class="progress-container"><div id="pBar" class="progress-bar"></div><div id="progressoPerc" class="progress-text">0%</div></div>
+            <div class="progress-container">
+                <div id="pBar" class="progress-bar"></div>
+                <div id="progressoPerc" class="progress-text">0%</div>
+            </div>
             
             <div class="target-info">
                 <div><span class="stat-label">Manca Lordo:</span> <span class="stat-val" style="color:#ff4444; font-size: 11px;">€ <span id="lordoMancante">0.00</span></span></div>
@@ -104,7 +114,7 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v54')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v55')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -133,7 +143,7 @@
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v54', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v55', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
@@ -145,7 +155,8 @@
             let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { let kmL = Math.max(0, s.km - s.scarto); let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP); }, 0);
             let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA), perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
             
-            document.getElementById('pBar').style.width = perc + "%"; document.getElementById('progressoPerc').innerText = perc + "%";
+            document.getElementById('pBar').style.width = perc + "%"; 
+            document.getElementById('progressoPerc').innerText = perc + "%";
             document.getElementById('lordoTotale').innerText = totLordo.toFixed(2); document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
             document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
             document.getElementById('kmAssoluti').innerText = kmAssoluti; document.getElementById('kmLavoroTot').innerText = kmLavoroTot;
@@ -153,7 +164,6 @@
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
             document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); 
             
-            // Gestione Scritta Obiettivo
             document.getElementById('winMsg').style.display = (db.target > 0 && perc >= 100) ? "block" : "none";
 
             renderStorico(ultimoP);
