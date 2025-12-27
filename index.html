@@ -41,7 +41,6 @@
         #toast { visibility: hidden; min-width: 180px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
 
-        /* STORICO COMPRENSIBILE */
         .session-item { background: #252525; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #00CCBC; position: relative; font-size: 12px; line-height: 1.5; }
         .history-date { color: #888; font-size: 10px; font-weight: bold; margin-bottom: 4px; display: block; }
         .history-main { display: block; margin-bottom: 2px; }
@@ -111,7 +110,7 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v56')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v57')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -132,10 +131,20 @@
 
         function aggiungiSessione() {
             let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
+            if(l > 0 || km > 0) { 
+                db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); 
+                salva(); 
+                // Reset Campi
+                document.getElementById('sessKm').value = ""; 
+                document.getElementById('sessScarto').value = ""; 
+                document.getElementById('sessOre').value = ""; 
+                document.getElementById('sessLordo').value = ""; 
+                document.getElementById('sessL100').value = ""; // Reset consumo
+                showToast("✅ Sessione Salvata!"); 
+            }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v56', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v57', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
