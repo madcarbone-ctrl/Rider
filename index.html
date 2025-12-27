@@ -28,6 +28,7 @@
         .btn-del { width: auto; padding: 4px 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
+        .target-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .target-info { display: flex; justify-content: space-between; margin-top: 2px; }
 
         #toast { visibility: hidden; min-width: 180px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 12px; }
@@ -58,11 +59,19 @@
         </div>
 
         <div class="target-box">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <label class="stat-label" style="margin:0;">🎯 TARGET (€)</label>
-                <input type="number" id="targetInput" oninput="salvaTarget()" placeholder="0" style="margin:0; width: 80px; height: 24px; padding: 2px 5px; font-size: 12px; text-align: center;">
+            <div class="target-row">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <label class="stat-label" style="margin:0;">🎯 TARGET</label>
+                    <input type="number" id="targetInput" oninput="salvaTarget()" placeholder="0" style="margin:0; width: 65px; height: 22px; padding: 2px 5px; font-size: 11px; text-align: center; border-color: #00CCBC;">
+                </div>
+                <div style="text-align: right;">
+                    <span class="stat-label" style="display: block;">GIORNI LAVORATI</span>
+                    <span id="giorniLavorati" class="stat-val" style="color:#00CCBC; font-size: 14px;">0</span>
+                </div>
             </div>
+            
             <div class="progress-container"><div id="pBar" class="progress-bar"></div><div id="progressoPerc" class="progress-text">0%</div></div>
+            
             <div class="target-info">
                 <div><span class="stat-label">Manca Lordo:</span> <span class="stat-val" style="color:#ff4444; font-size: 11px;">€ <span id="lordoMancante">0.00</span></span></div>
                 <div style="text-align:right;"><span id="statusLabel" class="stat-val" style="color:#aaa; font-size: 9px;">INSERISCI TARGET</span></div>
@@ -72,25 +81,17 @@
 
     <div class="card" style="border-color: #ffa50044; padding-bottom: 2px;">
         <h3 style="margin-bottom:4px; font-size: 9px;">⛽ Rifornimento</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;">
-            <select id="fDay" style="height:30px; padding:2px;"></select>
-            <select id="fMonth" style="height:30px; padding:2px;"></select>
-            <select id="fYear" style="height:30px; padding:2px;"></select>
-        </div>
-        <div class="grid"><input type="number" id="fuelEuro" placeholder="Euro €" style="height:30px;"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l" style="height:30px;"></div>
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select></div>
+        <div class="grid"><input type="number" id="fuelEuro" placeholder="Euro €"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l"></div>
         <button class="btn-fuel" onclick="aggiungiBenza()" style="padding: 8px;">SALVA</button>
     </div>
 
     <div class="card" style="border-color: #00ccbc44; padding-bottom: 2px;">
         <h3 style="margin-bottom:4px; font-size: 9px;">➕ Sessione</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;">
-            <select id="sDay" style="height:30px; padding:2px;"></select>
-            <select id="sMonth" style="height:30px; padding:2px;"></select>
-            <select id="sYear" style="height:30px; padding:2px;"></select>
-        </div>
-        <div class="grid"><input type="number" id="sessKm" placeholder="Km Tot" style="height:30px;"><input type="number" id="sessScarto" placeholder="Scarto" style="height:30px;"></div>
-        <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €" style="height:30px;"><input type="number" id="sessOre" step="0.1" placeholder="Ore" style="height:30px;"></div>
-        <input type="number" id="sessL100" step="0.1" placeholder="l/100 km" style="height:30px;">
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select></div>
+        <div class="grid"><input type="number" id="sessKm" placeholder="Km Tot"><input type="number" id="sessScarto" placeholder="Scarto"></div>
+        <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"><input type="number" id="sessOre" step="0.1" placeholder="Ore"></div>
+        <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
         <button class="btn-add" onclick="aggiungiSessione()" style="padding: 8px;">SALVA</button>
     </div>
 
@@ -99,7 +100,7 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v51')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v52')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -107,14 +108,9 @@
                   mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], 
                   anni = [document.getElementById('fYear'), document.getElementById('sYear')],
                   d = new Date();
-            
-            const gOggi = d.getDate();
-            const mOggi = d.getMonth() + 1;
-            const aOggi = d.getFullYear();
-
-            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==gOggi?'selected':''}>${i}</option>`; });
-            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==mOggi?'selected':''}>${i}</option>`; });
-            anni.forEach(sel => { for(let i=2025; i<=2028; i++) sel.innerHTML += `<option value="${i}" ${i==aOggi?'selected':''}>${i}</option>`; });
+            giorni.forEach(sel => { for(let i=1; i<=31; i++) sel.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            mesi.forEach(sel => { for(let i=1; i<=12; i++) sel.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            anni.forEach(sel => { for(let i=2025; i<=2028; i++) sel.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
@@ -122,20 +118,30 @@
             let g = document.getElementById(prefix+'Day').value, m = document.getElementById(prefix+'Month').value, a = document.getElementById(prefix+'Year').value;
             return a + "-" + m.padStart(2,'0') + "-" + g.padStart(2,'0'); 
         }
+
         function aggiungiBenza() {
             let data = creaDataISO('f'), e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data, euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; showToast("✅ Benzinata!"); }
         }
+
         function aggiungiSessione() {
             let data = creaDataISO('s'), km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v51', JSON.stringify(db)); calcola(); }
+
+        function salva() { localStorage.setItem('rider_pro_v52', JSON.stringify(db)); calcola(); }
+
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
+            
+            // Calcolo giorni lavorati unici
+            let giorniUnici = [...new Set(db.sessioni.map(s => s.data))].length;
+            document.getElementById('giorniLavorati').innerText = giorniUnici;
+
             let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { let kmL = Math.max(0, s.km - s.scarto); let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP); }, 0);
             let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA), perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
+            
             document.getElementById('pBar').style.width = perc + "%"; document.getElementById('progressoPerc').innerText = perc + "%";
             document.getElementById('lordoTotale').innerText = totLordo.toFixed(2); document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
             document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
@@ -143,12 +149,14 @@
             document.getElementById('oreTotali').innerText = totOre.toFixed(1); document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
             document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); 
+            
             let statusText = "IN CORSO";
             if(db.target <= 0) statusText = "INSERISCI TARGET";
             else if(perc >= 100) statusText = "COMPLETATO";
             document.getElementById('statusLabel').innerText = statusText;
             renderStorico(ultimoP);
         }
+
         function renderStorico(uP) {
             let h = "<h3>📜 STORICO</h3>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
@@ -162,8 +170,10 @@
             });
             document.getElementById('storico').innerHTML = h;
         }
+
         function elimina(t, id) { if(confirm("Eliminare?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
         function resettutto() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
+        
         popolaMenuDate(); 
         document.getElementById('targetInput').value = db.target > 0 ? db.target : ""; 
         calcola();
