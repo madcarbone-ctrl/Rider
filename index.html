@@ -2,218 +2,133 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rider Tracker</title>
-
-    <link rel="manifest" href="data:application/manifest+json,{ %22name%22: %22Rider Tracker%22, %22short_name%22: %22Rider%22, %22start_url%22: %22.%22, %22display%22: %22standalone%22, %22background_color%22: %22%23121212%22, %22theme_color%22: %22%23121212%22, %22icons%22: [ { %22src%22: %22https://cdn-icons-png.flaticon.com/512/3198/3198336.png%22, %22sizes%22: %22512x512%22, %22type%22: %22image/png%22 } ] }">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#121212">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3198/3198336.png">
-
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: 10px; }
-        .card { background: #1e1e1e; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; }
-        h3 { color: #00CCBC; margin: 0 0 10px 0; text-align: center; font-size: 14px; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; border-top: 1px solid #333; padding-top: 12px; margin-top: 15px; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-add { background: #00CCBC; color: #000; }
-        .btn-fuel { background: #ffa500; color: #000; }
-        .btn-cal { background: #4a90e2; color: white; padding: 10px; font-size: 12px; margin-top: 8px; border-radius: 6px; border:none; width: 100%; }
-        .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:4px; }
-        .stat-val { font-size: 15px; font-weight: bold; color: #fff; }
-        .stat-label { font-size: 9px; color: #aaa; text-transform: uppercase; }
-        .target-box { background: #2a2a2a; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #555; }
-        .session-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #00CCBC; font-size: 13px; position: relative; }
-        .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --primary: #00f2ea;
+            --secondary: #ff9d00;
+            --text: #ffffff;
+            --danger: #ff4b2b;
+        }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px dashed #333; }
+        h2 { color: var(--primary); text-transform: uppercase; font-size: 1rem; margin-top: 0; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-save { background: var(--secondary); color: black; }
+        .btn-session { background: #00897b; color: white; }
+        .stat-val { font-size: 1.2rem; font-weight: bold; }
+        .label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .target-box { border: 1px solid #444; padding: 15px; border-radius: 10px; text-align: center; }
+        .lordo-label { color: var(--danger); font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h3>📊 Riepilogo Avanzato</h3>
-        <div class="grid">
-            <div><span class="stat-label">Netto Totale</span><br><span id="nettoReale" class="stat-val">0.00</span> €</div>
-            <div><span class="stat-label">Progresso Target</span><br><span id="progressoPerc" class="stat-val" style="color:#00CCBC">0%</span></div>
+        <h2>📊 RIEPILOGO AVANZATO</h2>
+        <div class="grid" style="text-align:center;">
+            <div><span class="label">NETTO TOTALE</span><span id="netto-totale" class="stat-val">0.00 €</span></div>
+            <div><span class="label">PROGRESSO TARGET</span><span id="progresso-target" class="stat-val">0%</span></div>
         </div>
         
         <div class="target-box">
-            <label class="stat-label">🎯 TARGET NETTO (€)</label>
-            <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:5px; padding:8px;">
-            <div style="margin-top:5px;">
-                <span class="stat-label" style="color:#888">Lordo da fare:</span><br>
-                <span id="lordoMancante" class="stat-val" style="color:#ff4444">0.00</span> <span class="stat-val">€</span>
-            </div>
-        </div>
-        
-        <div class="grid-triple">
-            <div><span class="stat-label">Ore</span><br><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div><span class="stat-label">Netto/Ora</span><br><span id="nettoOrario" class="stat-val" style="color:#00CCBC">0.00</span></div>
-            <div><span class="stat-label">Media KM/L</span><br><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+            <span class="label">🎯 TARGET NETTO (€)</span>
+            <input type="number" id="target-input" placeholder="Esempio: 500" oninput="updateUI()">
+            <p><span class="label">LORDO DA FARE:</span><span id="lordo-necessario" class="lordo-label">0.00 €</span></p>
         </div>
     </div>
 
-    <div class="card" style="border-color: #ffa50044;">
-        <h3>⛽ Registra Rifornimento</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <input type="number" id="fDay" placeholder="GG">
-            <input type="number" id="fMonth" placeholder="MM">
-            <input type="number" id="fYear" placeholder="AAAA">
-        </div>
+    <div class="card" style="border-color: var(--secondary);">
+        <h2>⛽ REGISTRA RIFORNIMENTO</h2>
         <div class="grid">
-            <input type="number" id="fuelEuro" placeholder="Euro €">
-            <input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l">
+            <input type="number" id="ref-euro" placeholder="Euro €">
+            <input type="number" id="ref-litri" placeholder="€/l">
         </div>
-        <button class="btn-fuel" onclick="aggiungiBenza()">SALVA BENZINA</button>
+        <button class="btn-save" onclick="saveRifornimento()">SALVA BENZINA</button>
     </div>
 
-    <div class="card" style="border-color: #00ccbc44;">
-        <h3>➕ Registra Sessione</h3>
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:10px;">
-            <input type="number" id="sDay" placeholder="GG">
-            <input type="number" id="sMonth" placeholder="MM">
-            <input type="number" id="sYear" placeholder="AAAA">
+    <div class="card" style="border-color: #00897b;">
+        <h2>➕ REGISTRA SESSIONE</h2>
+        <div class="grid">
+            <input type="number" id="sess-lordo" placeholder="Lordo €">
+            <input type="number" id="sess-ore" placeholder="Ore">
         </div>
         <div class="grid">
-            <input type="number" id="sessKm" placeholder="Km Fatti">
-            <input type="number" id="sessOre" step="0.1" placeholder="Ore Lavoro">
+            <input type="number" id="sess-km" placeholder="Km percorsi">
+            <input type="number" id="sess-scarto" placeholder="Scarto Km">
         </div>
-        <div class="grid">
-            <input type="number" id="sessLordo" step="0.01" placeholder="Lordo €">
-            <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
-        </div>
-        <button class="btn-add" onclick="aggiungiSessione()">SALVA SESSIONE</button>
+        <button class="btn-session" onclick="saveSessione()">SALVA GIORNATA</button>
     </div>
 
-    <div id="storico"></div>
+    <button onclick="resettutto()" style="background:#333; color:gray; font-size:0.7rem; margin-top:20px;">RESET TOTALE DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v22')) || { sessioni: [], rifornimenti: [], target: 900 };
-        document.getElementById('targetInput').value = db.target;
+        // DATABASE VUOTO DI DEFAULT
+        let db = JSON.parse(localStorage.getItem('rider_db_clean')) || {
+            sessioni: [],
+            rifornimenti: [],
+            target: ""
+        };
 
-        const d = new Date();
-        const setToday = (prefix) => {
-            document.getElementById(prefix + 'Day').value = d.getDate();
-            document.getElementById(prefix + 'Month').value = d.getMonth() + 1;
-            document.getElementById(prefix + 'Year').value = d.getFullYear();
-        }
-        setToday('f'); setToday('s');
-
-        function salvaTarget() {
-            db.target = parseFloat(document.getElementById('targetInput').value) || 0;
-            salva();
-        }
-
-        function creaDataISO(prefix) {
-            let gg = document.getElementById(prefix + 'Day').value.padStart(2, '0');
-            let mm = document.getElementById(prefix + 'Month').value.padStart(2, '0');
-            let aa = document.getElementById(prefix + 'Year').value;
-            return aa + "-" + mm + "-" + gg;
-        }
-
-        function aggiungiBenza() {
-            let data = creaDataISO('f');
-            let e = parseFloat(document.getElementById('fuelEuro').value);
-            let p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) {
-                db.rifornimenti.push({ id: Date.now(), data, euro: e, prezzo: p });
-                salva();
-                document.getElementById('fuelEuro').value = "";
-            }
-        }
-
-        function aggiungiSessione() {
-            let data = creaDataISO('s');
-            let km = parseFloat(document.getElementById('sessKm').value) || 0;
-            let ore = parseFloat(document.getElementById('sessOre').value) || 0;
-            let lordo = parseFloat(document.getElementById('sessLordo').value) || 0;
-            let l100 = parseFloat(document.getElementById('sessL100').value) || 0;
-            db.sessioni.push({ id: Date.now(), data, km, ore, lordo, l100 });
-            salva();
-            document.getElementById('sessKm').value = "";
-            document.getElementById('sessOre').value = "";
-            document.getElementById('sessLordo').value = "";
-            document.getElementById('sessL100').value = "";
-        }
-
-        function aggiungiAlCalendario(dataISO, lordo, netto, km, ore) {
-            const dateStr = dataISO.replace(/-/g, "");
-            const titolo = "Rider: " + lordo + "€ (" + netto + "€ Netto)";
-            const desc = "Km: " + km + " - Ore: " + ore + "h";
-            const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:" + dateStr + "T090000\nSUMMARY:" + titolo + "\nDESCRIPTION:" + desc + "\nEND:VEVENT\nEND:VCALENDAR";
-            const link = document.createElement('a');
-            link.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
-            link.download = "sessione.ics";
-            link.click();
-        }
-
-        function elimina(tipo, id) {
-            if(confirm("Eliminare?")) { db[tipo] = db[tipo].filter(item => item.id !== id); salva(); }
-        }
-
-        function salva() {
-            localStorage.setItem('rider_pro_v22', JSON.stringify(db));
-            calcola();
-        }
-
-        function calcola() {
-            let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0);
-            let totKm = db.sessioni.reduce((acc, s) => acc + s.km, 0);
-            let totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0);
-            let ultimoPrezzo = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.685;
-            let ultimaMediaKml = 0;
-            if(db.sessioni.length > 0) {
-                let ultimoL100 = db.sessioni[db.sessioni.length-1].l100;
-                ultimaMediaKml = ultimoL100 > 0 ? (100 / ultimoL100) : 0;
-            }
-            let costoBenzaStimato = db.sessioni.reduce((acc, s) => {
-                let litri = (s.km / 100) * s.l100;
-                return acc + (litri * ultimoPrezzo);
-            }, 0);
-            let nettoAttuale = (totLordo * 0.8) - costoBenzaStimato;
-            let mancanoNetto = Math.max(0, db.target - nettoAttuale);
-            let lordoNecessario = mancanoNetto * 1.25; 
-            let nettoOrario = totOre > 0 ? (nettoAttuale / totOre) : 0;
-            document.getElementById('nettoReale').innerText = nettoAttuale.toFixed(2);
-            document.getElementById('oreTotali').innerText = totOre.toFixed(1);
-            document.getElementById('nettoOrario').innerText = nettoOrario.toFixed(2);
-            document.getElementById('mediaKml').innerText = ultimaMediaKml.toFixed(1);
-            document.getElementById('progressoPerc').innerText = db.target > 0 ? Math.round((nettoAttuale / db.target) * 100) + "%" : "0%";
-            document.getElementById('lordoMancante').innerText = lordoNecessario.toFixed(2);
-            renderStorico(ultimoPrezzo);
-        }
-
-        function renderStorico(ultimoP) {
-            let h = "<h3>📜 Storico</h3>";
-            let tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
-            tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
-                let p = item.data.split("-");
-                let dIT = p[2] + "/" + p[1] + "/" + p[0];
-                if(item.tipo === 'S') {
-                    let litriSess = (item.km / 100) * item.l100;
-                    let nS = (item.lordo * 0.8) - (litriSess * ultimoP);
-                    h += `<div class="session-item">
-                        <span style="color:#888">${dIT}</span><br>
-                        <b>Lordo: ${item.lordo.toFixed(2)}€</b> <span class="tag-netto">Netto: ${nS.toFixed(2)}€</span><br>
-                        Km: <b>${item.km}</b> | Ore: <b>${item.ore}h</b><br>
-                        <button class="btn-cal" onclick="aggiungiAlCalendario('${item.data}','${item.lordo}','${nS.toFixed(2)}','${item.km}','${item.ore}')">📅 CALENDARIO</button>
-                        <button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button>
-                    </div>`;
-                } else {
-                    ultimoP = item.prezzo;
-                    h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;">
-                        <span style="color:#888">${dIT}</span> | ⛽ <b>RIFORNIMENTO ${item.euro.toFixed(2)}€</b>
-                        <button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button>
-                    </div>`;
-                }
+        function updateUI() {
+            const target = document.getElementById('target-input').value;
+            db.target = target;
+            
+            // Calcolo Lordo necessario (stima con tassazione/spese al 25%)
+            const lordoReq = target ? (target / 0.8).toFixed(2) : "0.00";
+            document.getElementById('lordo-necessario').innerText = lordoReq + " €";
+            
+            let totaleNetto = 0;
+            db.sessioni.forEach(s => {
+                totaleNetto += (s.lordo * 0.8); // Esempio calcolo netto rapido
             });
-            document.getElementById('storico').innerHTML = h;
+            
+            document.getElementById('netto-totale').innerText = totaleNetto.toFixed(2) + " €";
+            
+            if(target > 0) {
+                let prog = (totaleNetto / target * 100).toFixed(0);
+                document.getElementById('progresso-target').innerText = Math.min(prog, 100) + "%";
+            }
+            
+            localStorage.setItem('rider_db_clean', JSON.stringify(db));
         }
-        calcola();
+
+        function saveRifornimento() {
+            const euro = document.getElementById('ref-euro').value;
+            if(!euro) return;
+            db.rifornimenti.push({ euro: parseFloat(euro), data: new Date() });
+            alert("Benzina salvata!");
+            updateUI();
+        }
+
+        function saveSessione() {
+            const lordo = document.getElementById('sess-lordo').value;
+            if(!lordo) return;
+            db.sessioni.push({
+                lordo: parseFloat(lordo),
+                ore: document.getElementById('sess-ore').value,
+                km: document.getElementById('sess-km').value,
+                scarto: document.getElementById('sess-scarto').value || 0
+            });
+            alert("Giornata salvata!");
+            updateUI();
+        }
+
+        function resettutto() {
+            if(confirm("Vuoi cancellare tutto?")) {
+                localStorage.removeItem('rider_db_clean');
+                location.reload();
+            }
+        }
+
+        // Carica dati al lancio
+        document.getElementById('target-input').value = db.target;
+        updateUI();
     </script>
 </body>
 </html>
