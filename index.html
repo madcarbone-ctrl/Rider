@@ -13,7 +13,11 @@
         input, select { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         
-        /* Ottimizzazione spazio verticale nelle statistiche triple */
+        /* Progress Bar Style */
+        .progress-container { width: 100%; background: #333; border-radius: 20px; height: 18px; margin-top: 5px; position: relative; overflow: hidden; border: 1px solid #444; }
+        .progress-bar { height: 100%; background: #00CCBC; width: 0%; transition: width 0.5s ease-in-out; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
+
         .grid-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px; }
         .grid-triple div { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
         
@@ -30,7 +34,7 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         
-        .target-box { background: #2a2a2a; padding: 8px; border-radius: 8px; margin-top: 10px; border: 1px dashed #555; }
+        .target-box { background: #2a2a2a; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #555; }
         .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #00CCBC; font-size: 12px; position: relative; }
         .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
     </style>
@@ -54,9 +58,15 @@
         <div class="target-box">
             <label class="stat-label">🎯 TARGET NETTO (€)</label>
             <input type="number" id="targetInput" oninput="salvaTarget()" style="margin-top:4px; padding:6px; height: 34px;">
-            <div class="row-single" style="margin-top:4px;">
+            
+            <div class="progress-container">
+                <div id="pBar" class="progress-bar"></div>
+                <div id="progressoPerc" class="progress-text">0%</div>
+            </div>
+
+            <div class="row-single" style="margin-top:8px;">
                 <div style="text-align:left;"><span class="stat-label">Lordo da fare:</span><span class="stat-val" style="color:#ff4444; font-size: 13px;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div style="text-align:right;"><span class="stat-label">Progresso</span><span id="progressoPerc" class="stat-val" style="font-size: 13px;">0%</span></div>
+                <div style="text-align:right;"><span class="stat-label">Stato</span><span class="stat-val" style="font-size: 10px; color:#aaa;">In corso</span></div>
             </div>
         </div>
         
@@ -87,7 +97,7 @@
     <button onclick="resettutto()" style="background:#333; color:#888; padding:8px; font-size:9px; margin-top:15px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v40')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v41')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -105,7 +115,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; showToast("✅ Sessione salvata!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v40', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v41', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
@@ -115,6 +125,12 @@
                 let l = (kmL / 100) * s.l100; litriT += l; return acc + (l * ultimoP);
             }, 0);
             let nettoA = (totLordo * 0.8) - costoB, mancanoN = Math.max(0, db.target - nettoA);
+            
+            // Logica Barra Progresso
+            let perc = db.target > 0 ? Math.min(100, Math.round((nettoA / db.target) * 100)) : 0;
+            document.getElementById('pBar').style.width = perc + "%";
+            document.getElementById('progressoPerc').innerText = perc + "%";
+            
             document.getElementById('lordoTotale').innerText = totLordo.toFixed(2);
             document.getElementById('nettoReale').innerText = nettoA.toFixed(2);
             document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2);
@@ -124,7 +140,6 @@
             document.getElementById('oreTotali').innerText = totOre.toFixed(1);
             document.getElementById('nettoOrario').innerText = totOre > 0 ? (nettoA / totOre).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
-            document.getElementById('progressoPerc').innerText = db.target > 0 ? Math.round((nettoA / db.target) * 100) + "%" : "0%";
             document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2);
             renderStorico(ultimoP);
         }
