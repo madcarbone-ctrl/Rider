@@ -29,7 +29,11 @@
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
         .target-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .target-info { display: flex; justify-content: space-between; margin-top: 2px; }
+        .target-info { display: flex; justify-content: space-between; margin-top: 2px; align-items: center; }
+
+        /* Animazione Lampeggiante */
+        .blink-win { font-weight: 900; font-size: 10px; color: #00CCBC; animation: blinker 0.8s linear infinite; display: none; text-shadow: 0 0 5px #00ccbc; }
+        @keyframes blinker { 50% { opacity: 0; color: #ffa500; } }
 
         #toast { visibility: hidden; min-width: 180px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
@@ -74,7 +78,7 @@
             
             <div class="target-info">
                 <div><span class="stat-label">Manca Lordo:</span> <span class="stat-val" style="color:#ff4444; font-size: 11px;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div style="text-align:right;"><span id="statusLabel" class="stat-val" style="color:#aaa; font-size: 9px;">INSERISCI TARGET</span></div>
+                <div id="winMsg" class="blink-win">OBIETTIVO RAGGIUNTO !</div>
             </div>
         </div>
     </div>
@@ -100,7 +104,7 @@
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v52')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v54')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -129,13 +133,12 @@
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data, km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; showToast("✅ Sessione!"); }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v52', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v54', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAssoluti = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLavoroTot = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
             
-            // Calcolo giorni lavorati unici
             let giorniUnici = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('giorniLavorati').innerText = giorniUnici;
 
@@ -150,10 +153,9 @@
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
             document.getElementById('lordoMancante').innerText = (mancanoN * 1.25).toFixed(2); 
             
-            let statusText = "IN CORSO";
-            if(db.target <= 0) statusText = "INSERISCI TARGET";
-            else if(perc >= 100) statusText = "COMPLETATO";
-            document.getElementById('statusLabel').innerText = statusText;
+            // Gestione Scritta Obiettivo
+            document.getElementById('winMsg').style.display = (db.target > 0 && perc >= 100) ? "block" : "none";
+
             renderStorico(ultimoP);
         }
 
