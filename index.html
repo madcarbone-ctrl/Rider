@@ -73,7 +73,7 @@
     <button onclick="resettutto()" style="background:#333; color:#888; padding:10px; font-size:10px; margin-top:20px; width:100%; border-radius:8px; border:none;">RESET TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v36')) || { sessioni: [], rifornimenti: [], target: 500 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v37')) || { sessioni: [], rifornimenti: [], target: 500 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         function popolaMenuDate() {
             const giorni = [document.getElementById('fDay'), document.getElementById('sDay')], mesi = [document.getElementById('fMonth'), document.getElementById('sMonth')], anni = [document.getElementById('fYear'), document.getElementById('sYear')], d = new Date();
@@ -91,7 +91,7 @@
             let km = parseFloat(document.getElementById('sessKm').value) || 0, scarto = parseFloat(document.getElementById('sessScarto').value) || 0, ore = parseFloat(document.getElementById('sessOre').value) || 0, lordo = parseFloat(document.getElementById('sessLordo').value) || 0, l100 = parseFloat(document.getElementById('sessL100').value) || 0;
             if(lordo > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto, ore, lordo, l100 }); salva(); document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; showToast("✅ Sessione salvata!"); }
         }
-        function salva() { localStorage.setItem('rider_pro_v36', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v37', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totLordo = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totOre = db.sessioni.reduce((acc, s) => acc + s.ore, 0), ultimoP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let litriT = 0, costoB = db.sessioni.reduce((acc, s) => {
@@ -116,7 +116,7 @@
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kmL = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kmL / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span style="color:#888">${dIT}</span><br><b style="color:#00CCBC">Lordo: € ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span><br><b>Ore: ${item.ore}h</b> | Lavoro: ${kmL}km <span style="font-size:10px; color:#666;">(Tot: ${item.km})</span><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button></div>`;
+                    h += `<div class="session-item"><span style="color:#888">${dIT}</span><br><b style="color:#00CCBC">Lordo: € ${item.lordo.toFixed(2)}</b> <span class="tag-netto">Netto: € ${nS.toFixed(2)}</span><br><b>Ore: ${item.ore}h</b> | lavorativi km ${kmL} <span style="font-size:11px; color:#aaa;">(scarto km ${item.scarto})</span><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button></div>`;
                 } else {
                     h += `<div class="session-item" style="border-left-color: #ffa500; background: #2a2212;"><span style="color:#888">${dIT}</span> | ⛽ <b>RIFORNIMENTO € ${item.euro.toFixed(2)}</b><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:12px;">X</button></div>`;
                 }
