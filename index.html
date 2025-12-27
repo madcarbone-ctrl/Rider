@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Rider Tracker Pro</title>
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 6px 10px 6px; overflow-x: hidden; }
-        .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; box-sizing: border-box; }
+        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; }
+        * { box-sizing: border-box; } /* Fondamentale per non andare fuori bordo */
+
+        .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; width: 100%; }
         
-        /* TITOLO RIDIMENSIONATO */
-        .main-title { color: #00CCBC; margin: 4px 0 8px 0; text-align: center; font-size: 15px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 900; }
+        /* TITOLO ORA MOLTO PIÙ PICCOLO */
+        .main-title { color: #00CCBC; margin: 2px 0 10px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; opacity: 0.8; }
         
         .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 34px; display: flex; flex-direction: column; justify-content: center; }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 0px; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; }
         .stat-val { font-size: 12px; font-weight: bold; color: #fff; line-height: 1; }
 
         input, select { 
@@ -25,29 +27,27 @@
             border: 1px solid #444; 
             color: white; 
             border-radius: 6px; 
-            box-sizing: border-box; 
             font-size: 14px; 
             text-align: center;
             -webkit-appearance: none;
-            margin: 0;
-            padding: 0 4px;
+            width: 100%; /* Gli input riempiono il loro spazio assegnato */
         }
 
-        .compact-row { display: flex; gap: 4px; align-items: stretch; margin-bottom: 5px; width: 100%; }
+        .compact-row { display: flex; gap: 4px; margin-bottom: 5px; }
         .date-group { display: flex; gap: 2px; flex-shrink: 0; }
-        .sel-small { width: 38px; }
-        .sel-year { width: 55px; }
+        .sel-small { width: 40px; }
+        .sel-year { width: 58px; }
         
-        .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
-        .input-group-fill input { flex: 1; min-width: 0; }
+        .input-group-fill { display: flex; gap: 4px; flex: 1; }
 
-        .grid-compact { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 5px; }
+        /* GRIGLIA BLOCCATA PER NON ANDARE FUORI BORDO */
+        .grid-compact { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 5px; width: 100%; }
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
 
-        button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
@@ -155,22 +155,11 @@
     <div class="footer-credits">Rider Tracker V. 1.0 - by Marco Carbone</div>
 
     <script>
-        // Database locale
-        let db = JSON.parse(localStorage.getItem('rider_pro_v82')) || { sessioni: [], rifornimenti: [], target: 0 };
-        
+        let db = JSON.parse(localStorage.getItem('rider_pro_v83')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
-        
-        function confermaReset() { 
-            db = { sessioni: [], rifornimenti: [], target: 0 }; 
-            localStorage.setItem('rider_pro_v82', JSON.stringify(db)); 
-            document.getElementById('targetInput').value = ""; 
-            popolaMenuDate(); 
-            calcola(); 
-            chiudiModal(); 
-            showToast("🗑️ Reset!"); 
-        }
+        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v83', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Reset!"); }
         
         function popolaMenuDate() {
             const d = new Date();
@@ -194,13 +183,8 @@
                 showToast("✅ Benzinata!"); 
             }
         }
-        
         function aggiungiSessione() {
-            let km = parseFloat(document.getElementById('sessKm').value) || 0, 
-                s = parseFloat(document.getElementById('sessScarto').value) || 0, 
-                o = parseFloat(document.getElementById('sessOre').value) || 0, 
-                l = parseFloat(document.getElementById('sessLordo').value) || 0, 
-                c = parseFloat(document.getElementById('sessL100').value) || 0;
+            let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
             if(l > 0 || km > 0) { 
                 db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); 
                 salva(); 
@@ -208,45 +192,30 @@
                 showToast("✅ Sessione!"); 
             }
         }
-        
-        function salva() { localStorage.setItem('rider_pro_v82', JSON.stringify(db)); calcola(); }
-        
+        function salva() { localStorage.setItem('rider_pro_v83', JSON.stringify(db)); calcola(); }
         function calcola() {
-            let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), 
-                totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), 
-                uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+            let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmLav = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
             let gUnici = [...new Set(db.sessioni.map(s => s.data))].length;
             let litriT = 0, costoB = db.sessioni.reduce((acc, s) => { 
-                let k = Math.max(0, s.km - s.scarto); 
-                let lt = (k / 100) * s.l100; litriT += lt; 
+                let k = Math.max(0, s.km - s.scarto); let lt = (k / 100) * s.l100; litriT += lt; 
                 return acc + (lt * uP); 
             }, 0);
-            
-            let nA = (totL * 0.8) - costoB, 
-                mancN = Math.max(0, db.target - nA), 
-                perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
-            
+            let nA = (totL * 0.8) - costoB, mancN = Math.max(0, db.target - nA), perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('progressoPerc').innerText = perc >= 100 ? "OBIETTIVO COMPLETATO! 🎉" : perc + "%";
-            
             document.getElementById('giorniLavorati').innerText = gUnici;
             document.getElementById('lordoMancante').innerText = (mancN * 1.25).toFixed(2);
-            document.getElementById('lordoTotale').innerText = totL.toFixed(2); 
-            document.getElementById('nettoReale').innerText = nA.toFixed(2);
-            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); 
-            document.getElementById('litriTot').innerText = litriT.toFixed(1);
+            document.getElementById('lordoTotale').innerText = totL.toFixed(2); document.getElementById('nettoReale').innerText = nA.toFixed(2);
+            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
             document.getElementById('kmAssoluti').innerText = db.sessioni.reduce((acc, s) => acc + s.km, 0); 
             document.getElementById('kmLavoroTot').innerText = kmLav;
-            document.getElementById('oreTotali').innerText = totO.toFixed(1); 
-            document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
+            document.getElementById('oreTotali').innerText = totO.toFixed(1); document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
             document.getElementById('mediaKml').innerText = db.sessioni.length > 0 && db.sessioni[db.sessioni.length-1].l100 > 0 ? (100 / db.sessioni[db.sessioni.length-1].l100).toFixed(1) : "0.0";
             renderStorico(uP);
         }
-        
         function renderStorico(uP) {
-            let h = "<span class='section-title' style='margin-top:10px;'>📜 STORICO COMPLETO</span>", 
-                tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
+            let h = "<span class='section-title' style='margin-top:10px;'>📜 STORICO COMPLETO</span>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
             tutti.sort((a,b) => new Date(a.data) - new Date(b.data)).reverse().forEach(item => {
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
@@ -262,11 +231,8 @@
             });
             document.getElementById('storico').innerHTML = h;
         }
-        
         function elimina(t, id) { if(confirm("Eliminare?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
-        
-        popolaMenuDate(); 
-        calcola();
+        popolaMenuDate(); calcola();
         document.getElementById('targetInput').value = db.target > 0 ? db.target : "";
     </script>
 </body>
