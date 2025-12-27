@@ -29,8 +29,8 @@
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-clear { background: #333; color: #ccc; font-size: 10px; padding: 8px; }
         .btn-del { width: auto; padding: 6px 10px; background: #ff4444; color: white; font-size: 10px; border:none; border-radius:6px; }
+        .btn-reset-all { background: #b22222; color: white; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         
         .target-box { background: #2a2a2a; padding: 8px; border-radius: 10px; margin-top: 8px; border: 1px solid #444; }
         .target-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -48,7 +48,7 @@
         .history-sub { color: #bbb; font-size: 11px; }
         .tag-netto { background: #00CCBC; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
 
-        .footer-credits { text-align: center; padding: 20px 10px 30px 10px; color: #555; font-size: 10px; letter-spacing: 0.5px; font-style: italic; }
+        .footer-credits { text-align: center; padding: 20px 10px 40px 10px; color: #444; font-size: 10px; letter-spacing: 0.5px; font-style: italic; }
 
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 20px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 20px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -94,7 +94,7 @@
         <h3 style="margin-bottom:4px; font-size: 9px;">⛽ Rifornimento</h3>
         <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:4px;"><select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select></div>
         <div class="grid"><input type="number" id="fuelEuro" placeholder="Euro €"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l"></div>
-        <div class="grid"><button class="btn-clear" onclick="clearFuel()">ANNULLA</button><button class="btn-fuel" onclick="aggiungiBenza()">SALVA</button></div>
+        <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
     </div>
 
     <div class="card" style="border-color: #00ccbc44; padding-bottom: 2px;">
@@ -103,15 +103,17 @@
         <div class="grid"><input type="number" id="sessKm" placeholder="Km Tot"><input type="number" id="sessScarto" placeholder="Scarto"></div>
         <div class="grid"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"><input type="number" id="sessOre" step="0.1" placeholder="Ore"></div>
         <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
-        <div class="grid"><button class="btn-clear" onclick="clearSess()">ANNULLA</button><button class="btn-add" onclick="aggiungiSessione()">SALVA</button></div>
+        <button class="btn-add" onclick="aggiungiSessione()">SALVA SESSIONE</button>
     </div>
 
     <div id="storico"></div>
-    <button onclick="resettutto()" style="background:transparent; color:#444; padding:5px; font-size:9px; width:100%; border:none; margin-top: 10px;">ELIMINA TUTTI I DATI SALVATI</button>
+
+    <button class="btn-reset-all" onclick="resettutto()">⚠️ AZZERA TUTTA LA SCHERMATA</button>
+    
     <div class="footer-credits">Rider Tracker V. 1.0 by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v58')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v59')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = x.className.replace("show", ""); }, 2000); }
         
         function popolaMenuDate() {
@@ -122,23 +124,25 @@
             a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2028; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
-        function clearFuel() { document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = ""; }
-        function clearSess() { document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = ""; }
-
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function creaDataISO(p) { return document.getElementById(p+'Year').value + "-" + document.getElementById(p+'Month').value.padStart(2,'0') + "-" + document.getElementById(p+'Day').value.padStart(2,'0'); }
 
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); clearFuel(); showToast("✅ Benzinata!"); }
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = ""; showToast("✅ Benzinata!"); }
         }
 
         function aggiungiSessione() {
             let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); clearSess(); showToast("✅ Sessione Salvata!"); }
+            if(l > 0 || km > 0) { 
+                db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); 
+                salva(); 
+                document.getElementById('sessKm').value = ""; document.getElementById('sessScarto').value = ""; document.getElementById('sessOre').value = ""; document.getElementById('sessLordo').value = ""; document.getElementById('sessL100').value = "";
+                showToast("✅ Sessione Salvata!"); 
+            }
         }
 
-        function salva() { localStorage.setItem('rider_pro_v58', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v59', JSON.stringify(db)); calcola(); }
 
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
@@ -178,15 +182,17 @@
             document.getElementById('storico').innerHTML = h;
         }
 
-        function elimina(t, id) { if(confirm("Confermi l'eliminazione?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
+        function elimina(t, id) { if(confirm("Eliminare questa voce?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
         
         function resettutto() { 
-            if(confirm("Attenzione! Vuoi davvero cancellare TUTTI i dati salvati?")) { 
+            if(confirm("⚠️ SEI SICURO? Questo cancellerà tutto lo storico, il target e i dati inseriti permanentemente!")) { 
                 db = { sessioni: [], rifornimenti: [], target: 0 }; 
-                localStorage.removeItem('rider_pro_v58');
+                localStorage.removeItem('rider_pro_v59');
                 document.getElementById('targetInput').value = "";
-                clearFuel(); clearSess(); popolaMenuDate(); calcola();
-                showToast("🗑️ Dati azzerati!");
+                document.querySelectorAll('input').forEach(i => i.value = "");
+                popolaMenuDate(); 
+                calcola();
+                showToast("🗑️ Tutto azzerato!");
             } 
         }
         
