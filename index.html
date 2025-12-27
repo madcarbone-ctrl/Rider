@@ -6,19 +6,17 @@
     <title>Rider Tracker Pro</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 6px 10px 6px; overflow-x: hidden; }
-        .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; box-sizing: border-box; }
-        h3 { color: #00CCBC; margin: 0 0 6px 0; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
+        .card { background: #1e1e1e; padding: 5px; border-radius: 10px; border: 1px solid #333; margin-bottom: 5px; box-sizing: border-box; }
+        h3 { color: #00CCBC; margin: 0 0 5px 0; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
         
-        /* Riepilogo più basso */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 34px; display: flex; flex-direction: column; justify-content: center; }
+        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 32px; display: flex; flex-direction: column; justify-content: center; }
         
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 0px; }
         .stat-val { font-size: 12px; font-weight: bold; color: #fff; line-height: 1; }
 
-        /* Input e Select più bassi ma testo invariato */
         input, select { 
-            height: 34px; 
+            height: 32px; 
             background: #2a2a2a; 
             border: 1px solid #444; 
             color: white; 
@@ -42,27 +40,25 @@
 
         .grid-compact { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 4px; }
 
-        /* Progress Bar più sottile */
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 8px; height: 14px; margin: 6px 0 2px 0; position: relative; overflow: hidden; border: 1px solid #333; }
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 8px; height: 12px; margin: 5px 0 2px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: 900; color: #fff; text-shadow: 1px 1px 1px #000; }
 
-        button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        button { width: 100%; height: 36px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
-        .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 34px; }
+        .btn-del { width: auto; height: 22px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
+        .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 32px; }
 
-        /* Target box ottimizzata */
-        .target-box { margin-top: 6px; background: #222; padding: 6px; border-radius: 10px; border: 1px solid #333; }
+        .target-box { margin-top: 5px; background: #222; padding: 5px; border-radius: 10px; border: 1px solid #333; }
         .target-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .target-item { background: #2a2a2a; padding: 4px 2px; border-radius: 6px; border: 1px solid #444; text-align: center; min-height: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .target-input-field { background: transparent !important; border: 1px solid #00CCBC !important; color: #fff; width: 85%; height: 22px !important; border-radius: 4px; font-weight: bold; font-size: 13px; }
+        .target-item { background: #2a2a2a; padding: 3px 2px; border-radius: 6px; border: 1px solid #444; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .target-input-field { background: transparent !important; border: 1px solid #00CCBC !important; color: #fff; width: 85%; height: 20px !important; border-radius: 4px; font-weight: bold; font-size: 13px; }
         
-        .session-item { background: #252525; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #00CCBC; position: relative; font-size: 11px; }
+        .session-item { background: #252525; padding: 6px 10px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid #00CCBC; position: relative; font-size: 11px; }
         .history-date { color: #888; font-size: 9px; font-weight: bold; margin-bottom: 2px; display: block; }
         .tag-netto { background: #00CCBC; color: #000; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 4px; }
-        .footer-credits { text-align: center; padding: 15px 10px 30px 10px; color: #444; font-size: 9px; font-style: italic; }
+        .footer-credits { text-align: center; padding: 10px 10px 30px 10px; color: #555; font-size: 9px; font-style: italic; font-weight: bold; }
 
         #toast { visibility: hidden; min-width: 150px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 8px; position: fixed; z-index: 3000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 11px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
@@ -79,8 +75,8 @@
             <div style="color:#ff4444; font-weight:bold; margin-bottom:8px; font-size:14px;">⚠️ ATTENZIONE</div>
             <div style="font-size:12px;">Eliminare tutti i dati?</div>
             <div class="modal-buttons">
-                <button style="background:#444; color:#fff; height:34px;" onclick="chiudiModal()">Annulla</button>
-                <button style="background:#ff4444; color:#fff; height:34px;" onclick="confermaReset()">OK</button>
+                <button style="background:#444; color:#fff; height:32px;" onclick="chiudiModal()">Annulla</button>
+                <button style="background:#ff4444; color:#fff; height:32px;" onclick="confermaReset()">OK</button>
             </div>
         </div>
     </div>
@@ -150,14 +146,14 @@
 
     <div id="storico"></div>
     <button class="btn-reset-all" onclick="apriModal()">⚠️ AZZERA TUTTA LA SCHERMATA</button>
-    <div class="footer-credits">Rider Tracker V. 1.0</div>
+    <div class="footer-credits">Rider Tracker V. 1.0 - by Marco Carbone</div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v74')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v75')) || { sessioni: [], rifornimenti: [], target: 0 };
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
-        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v74', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Reset!"); }
+        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; localStorage.setItem('rider_pro_v75', JSON.stringify(db)); document.getElementById('targetInput').value = ""; popolaMenuDate(); calcola(); chiudiModal(); showToast("🗑️ Reset!"); }
         
         function popolaMenuDate() {
             const d = new Date();
@@ -180,7 +176,7 @@
                 showToast("✅ Sessione!"); 
             }
         }
-        function salva() { localStorage.setItem('rider_pro_v74', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v75', JSON.stringify(db)); calcola(); }
         function calcola() {
             let totL = db.sessioni.reduce((acc, s) => acc + s.lordo, 0), totO = db.sessioni.reduce((acc, s) => acc + s.ore, 0), uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let kmAss = db.sessioni.reduce((acc, s) => acc + s.km, 0), kmLav = db.sessioni.reduce((acc, s) => acc + Math.max(0, s.km - s.scarto), 0);
