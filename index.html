@@ -11,14 +11,13 @@
         .main-title { color: #00CCBC; margin: 2px 0 10px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; opacity: 0.8; }
         .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; position: relative; }
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; }
         
-        /* Icona Info corretta */
-        .info-btn { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-left: 3px; -webkit-tap-highlight-color: transparent; }
-        .info-btn svg { width: 12px; height: 12px; fill: #00CCBC; pointer-events: none; } /* Impedisce all'SVG di bloccare il click */
-        .info-btn-corner { position: absolute; right: 3px; top: 3px; opacity: 0.6; }
+        /* Box cliccabile per intero per facilità */
+        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; pointer-events: none; }
+        .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; pointer-events: none; }
+        
+        .info-btn-icon { position: absolute; right: 3px; top: 3px; width: 10px; height: 10px; fill: #00CCBC; opacity: 0.5; pointer-events: none; }
         
         input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
         .compact-row { display: flex; gap: 4px; margin-bottom: 5px; width: 100%; }
@@ -50,6 +49,8 @@
         .modal-content { background: #252525; padding: 20px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-text { font-size: 13px; line-height: 1.5; margin-bottom: 20px; color: #eee; }
         .modal-btn { background: #00CCBC; color: #000; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; width: 100%; }
+        
+        .info-click { cursor: pointer; position: relative; }
     </style>
 </head>
 <body>
@@ -77,21 +78,21 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="mostraInfo('lordoTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('nettoTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('oreTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('consTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
-            <div class="data-box" onclick="mostraInfo('medKml')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('spesaBenz')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('kmCons')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
-            <div class="data-box" onclick="mostraInfo('kmAss')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
-            <div class="data-box" onclick="mostraInfo('guadH')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('lordoTot')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('nettoTot')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('oreTot')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('consTot')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
+            <div class="data-box" onclick="mostraInfo('medKml')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('spesaBenz')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('kmCons')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
+            <div class="data-box" onclick="mostraInfo('kmAss')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
+            <div class="data-box" onclick="mostraInfo('guadH')"><svg class="info-btn-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
         </div>
         <div class="target-box" style="margin-top:8px;">
             <div class="summary-grid">
-                <div class="data-box" style="background:transparent;"><span class="stat-label">OBIETTIVO €<div class="info-btn" onclick="mostraInfo('target')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:80%; margin:0 auto;" oninput="salvaTarget()"></div>
-                <div class="data-box" style="background:transparent;"><span class="stat-label">€ LORDI MANC.<div class="info-btn" onclick="mostraInfo('mancante')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
-                <div class="data-box" style="background:transparent;"><span class="stat-label">GG ATTIVI<div class="info-btn" onclick="mostraInfo('ggAttivi')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
+                <div class="data-box" style="background:transparent;" onclick="mostraInfo('target')"><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:80%; margin:0 auto;" oninput="salvaTarget()"></div>
+                <div class="data-box" style="background:transparent;" onclick="mostraInfo('mancante')"><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+                <div class="data-box" style="background:transparent;" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
             </div>
             <div class="progress-container">
                 <div id="pBar" class="progress-bar"></div>
@@ -109,8 +110,8 @@
                 <select id="fYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <div style="position:relative; flex:1;"><input type="number" id="fuelEuro" placeholder="€ spesi"><div class="info-btn" onclick="mostraInfo('fEuro')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
-                <div style="position:relative; flex:1;"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro"><div class="info-btn" onclick="mostraInfo('fPrezzo')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
+                <div style="position:relative; flex:1;" onclick="mostraInfo('fEuro')"><input type="number" id="fuelEuro" placeholder="€ spesi"></div>
+                <div style="position:relative; flex:1;" onclick="mostraInfo('fPrezzo')"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro"></div>
             </div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()">SALVA PREZZO</button>
@@ -125,14 +126,14 @@
                 <select id="sYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <div style="position:relative; flex:1;"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"><div class="info-btn" onclick="mostraInfo('sLordo')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
-                <div style="position:relative; flex:1;"><input type="number" id="sessOre" step="0.1" placeholder="Ore"><div class="info-btn" onclick="mostraInfo('sOre')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
+                <div style="position:relative; flex:1;" onclick="mostraInfo('sLordo')"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"></div>
+                <div style="position:relative; flex:1;" onclick="mostraInfo('sOre')"><input type="number" id="sessOre" step="0.1" placeholder="Ore"></div>
             </div>
         </div>
         <div class="grid-compact">
-            <div style="position:relative;"><input type="number" id="sessKm" placeholder="Km percorsi"><div class="info-btn" onclick="mostraInfo('sKm')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
-            <div style="position:relative;"><input type="number" id="sessL100" step="0.1" placeholder="l/100 km"><div class="info-btn" onclick="mostraInfo('sL100')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
-            <div style="position:relative;"><input type="number" id="sessScarto" placeholder="Scarto"><div class="info-btn" onclick="mostraInfo('sScarto')" style="position:absolute; right:4px; top:11px;"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div></div>
+            <div style="position:relative;" onclick="mostraInfo('sKm')"><input type="number" id="sessKm" placeholder="Km percorsi"></div>
+            <div style="position:relative;" onclick="mostraInfo('sL100')"><input type="number" id="sessL100" step="0.1" placeholder="l/100 km"></div>
+            <div style="position:relative;" onclick="mostraInfo('sScarto')"><input type="number" id="sessScarto" placeholder="Scarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
@@ -147,23 +148,23 @@
         const testiInfo = {
             lordoTot: "Somma totale di tutti gli incassi inseriti (senza detrazioni).",
             nettoTot: "Guadagno reale dopo aver sottratto il 20% di tasse e il costo totale della benzina.",
-            oreTot: "Somma delle ore totali lavorate in tutte le sessioni.",
+            oreTot: "Somma delle ore lavorate in tutte le sessioni.",
             consTot: "Litri di carburante totali consumati per le sole consegne.",
             medKml: "Efficienza media del veicolo basata sull'ultimo turno inserito.",
             spesaBenz: "Costo totale stimato del carburante consumato per il lavoro.",
-            kmCons: "Chilometri totali percorsi effettivamente per consegnare (Km totali - Scarto).",
-            kmAss: "Chilometri totali segnati dal contachilometri per tutte le sessioni.",
+            kmCons: "Chilometri totali percorsi effettivamente (Km totali - Scarto).",
+            kmAss: "Chilometri totali segnati dal contachilometri.",
             guadH: "Guadagno netto reale guadagnato per ogni ora di lavoro.",
-            target: "Cifra netta che desideri guadagnare. La barra progredisce con il netto reale.",
-            mancante: "Lordo ancora da incassare per raggiungere l'obiettivo netto scelto.",
-            ggAttivi: "Numero di giorni solari in cui hai effettuato almeno un turno.",
+            target: "Cifra netta che desideri guadagnare. La barra progredisce col netto reale.",
+            mancante: "Lordo ancora da incassare per raggiungere l'obiettivo netto.",
+            ggAttivi: "Numero di giorni in cui hai effettuato almeno un turno.",
             fEuro: "Importo totale in euro dell'ultimo rifornimento.",
             fPrezzo: "Prezzo al litro alla pompa (es. 1.854).",
             sLordo: "Totale incassato nel turno (incluso mance app).",
             sOre: "Durata effettiva della sessione (es. 3.5 per 3h 30m).",
             sKm: "Chilometri segnati dal contachilometri a fine turno.",
             sL100: "Consumo medio l/100km indicato dal computer di bordo.",
-            sScarto: "Chilometri non lavorativi (es. casa-lavoro) da escludere dai costi."
+            sScarto: "Chilometri non lavorativi (casa-lavoro) da escludere."
         };
 
         function mostraInfo(chiave) { 
@@ -188,4 +189,39 @@
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function popolaMenuDate() {
             const d = new Date();
-            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('
+            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
+            g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2028; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+        }
+        
+        function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
+        function creaDataISO(p) { return document.getElementById(p+'Year').value + "-" + document.getElementById(p+'Month').value.padStart(2,'0') + "-" + document.getElementById(p+'Day').value.padStart(2,'0'); }
+        
+        function aggiungiBenza() {
+            let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = ""; showToast("✅ Prezzo aggiornato!"); }
+        }
+        
+        function aggiungiSessione() {
+            let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
+            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); ['sessKm','sessScarto','sessOre','sessLordo','sessL100'].forEach(id => document.getElementById(id).value = ""); showToast("✅ Turno salvato!"); }
+        }
+        
+        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
+        
+        function calcola() {
+            let totL = 0, totO = 0, kmLav = 0, kmAss = 0, litriT = 0, costoB = 0;
+            let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+            db.sessioni.forEach(s => {
+                totL += s.lordo; totO += s.ore;
+                let kE = Math.max(0, s.km - s.scarto); kmLav += kE; kmAss += s.km;
+                let lt = (kE / 100) * s.l100; litriT += lt; costoB += (lt * uP);
+            });
+            let nA = (totL * 0.8) - costoB, mancN = Math.max(0, db.target - nA), perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
+            document.getElementById('pBar').style.width = perc + "%";
+            document.getElementById('progressoPerc').innerText = perc >= 100 ? "OBIETTIVO RAGGIUNTO! 🎉" : perc + "%";
+            document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
+            document.getElementById('lordoMancante').innerText = (mancN * 1.25).toFixed(2);
+            document.getElementById('lordoTotale').innerText = totL.toFixed(2); document.getElementById('nettoReale').innerText = nA.toFixed(2);
+            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById
