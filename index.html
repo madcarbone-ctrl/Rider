@@ -10,93 +10,71 @@
         
         input, select { -webkit-user-select: text; user-select: text; }
 
-        .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; width: 100%; }
-        .main-title { color: #00CCBC; margin: 2px 0 10px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; opacity: 0.8; }
-        .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; width: 100%; }
+        .main-title { color: #00CCBC; margin: 0 0 12px 0; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; cursor: pointer; }
         
-        .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; }
         .data-box:active { background: #333; }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; pointer-events: none; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; pointer-events: none; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; pointer-events: none; }
+        .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
         
-        .info-dot { position: absolute; right: 4px; top: 4px; width: 4px; height: 4px; background: #00CCBC; border-radius: 50%; opacity: 0.6; }
+        .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; }
         
-        input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
-        .compact-row { display: flex; gap: 4px; margin-bottom: 5px; width: 100%; }
-        .date-group { display: flex; gap: 2px; flex-shrink: 0; }
-        .sel-small { width: 38px; font-size: 12px; }
-        .sel-year { width: 55px; font-size: 12px; }
-        .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
-        .grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 5px; width: 100%; }
-        .grid-compact > div { position: relative; }
+        input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
+        
+        .row-flex { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end; }
+        .date-col { display: flex; flex-direction: column; gap: 2px; }
+        .date-inputs { display: flex; gap: 2px; }
+        .sel-small { width: 40px; }
+        .sel-year { width: 58px; }
 
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 10px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
         
-        button { width: 100%; height: 38px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        button { width: 100%; height: 40px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-del { width: auto; height: 24px; padding: 0 8px; background: #ff4444; color: white; font-size: 9px; border:none; border-radius:4px; }
-        .btn-reset-all { background: #8b0000; color: #ffcccc; margin-top: 15px; border: 1px solid #ff4444; height: 34px; }
+        .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
-        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; width: 100%; }
-        .history-date { color: #00CCBC; font-size: 10px; font-weight: 900; margin-bottom: 6px; display: block; border-bottom: 1px solid #333; padding-bottom: 4px; }
+        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; }
         .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 11px; }
-        .footer-credits { text-align: center; padding: 20px 0 40px 0; color: #444; font-size: 8px; text-transform: uppercase; font-weight: bold; }
-        
-        #toast { visibility: hidden; min-width: 150px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 8px; position: fixed; z-index: 5000; left: 50%; bottom: 20px; transform: translateX(-50%); border: 1px solid #00CCBC; font-size: 11px; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
-        
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 4000; padding: 20px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #252525; padding: 20px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
-        .modal-text { font-size: 13px; line-height: 1.5; margin-bottom: 20px; color: #eee; }
-        .modal-btn { background: #00CCBC; color: #000; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; width: 100%; }
+        
+        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
     </style>
 </head>
-<body oncontextmenu="return false;">
-
-    <div id="resetModal" class="modal-overlay">
-        <div class="modal-content" style="border-color: #ff4444;">
-            <div style="color:#ff4444; font-weight:bold; margin-bottom:10px;">⚠️ ATTENZIONE</div>
-            <div class="modal-text">Eliminare tutti i dati e l'obiettivo salvato?</div>
-            <div style="display:flex; gap:10px;">
-                <button style="background:#444; color:#fff;" onclick="chiudiReset()">ANNULLA</button>
-                <button style="background:#ff4444; color:#fff;" onclick="confermaReset()">SÌ, AZZERA</button>
-            </div>
-        </div>
-    </div>
+<body>
 
     <div id="infoModal" class="modal-overlay" onclick="chiudiInfo()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div style="color:#00CCBC; font-weight:bold; margin-bottom:10px;">INFORMAZIONE</div>
-            <div id="infoText" class="modal-text"></div>
-            <button class="modal-btn" onclick="chiudiInfo()">CHIUDI</button>
+            <div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:10px; text-transform:uppercase;">INFO</div>
+            <div id="infoText" style="font-size:14px; line-height:1.4; margin-bottom:20px;"></div>
+            <button onclick="chiudiInfo()" style="background:#00CCBC; color:#000; border-radius:8px; height:36px;">CHIUDI</button>
         </div>
     </div>
-
-    <div id="toast"></div>
 
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="mostraInfo('lordoTot')"><div class="info-dot"></div><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('nettoTot')"><div class="info-dot"></div><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('oreTot')"><div class="info-dot"></div><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('consTot')"><div class="info-dot"></div><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
-            <div class="data-box" onclick="mostraInfo('medKml')"><div class="info-dot"></div><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('spesaBenz')"><div class="info-dot"></div><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('kmCons')"><div class="info-dot"></div><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
-            <div class="data-box" onclick="mostraInfo('kmAss')"><div class="info-dot"></div><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
-            <div class="data-box" onclick="mostraInfo('guadH')"><div class="info-dot"></div><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('lordoTot')"><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('nettoTot')"><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('oreTot')"><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('consTot')"><span class="stat-label">Consumo L</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
+            <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box" style="background:transparent;" onclick="mostraInfo('target')"><div class="info-dot"></div><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:85%; margin:0 auto;" oninput="salvaTarget()"></div>
-            <div class="data-box" style="background:transparent;" onclick="mostraInfo('mancante')"><div class="info-dot"></div><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" style="background:transparent;" onclick="mostraInfo('ggAttivi')"><div class="info-dot"></div><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
+            <div class="data-box" onclick="mostraInfo('target')"><span class="stat-label">Target €</span><input type="number" id="targetInput" style="height:20px; font-size:11px; margin-top:2px;" oninput="salvaTarget()"></div>
+            <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -104,144 +82,139 @@
         </div>
     </div>
 
-    <div class="card" style="border-color: #ffa50044;">
-        <span class="section-title" style="color: #ffa500;">⛽ CARBURANTE</span>
-        <div class="compact-row">
-            <div class="date-group">
-                <select id="fDay" class="sel-small"></select>
-                <select id="fMonth" class="sel-small"></select>
-                <select id="fYear" class="sel-year"></select>
+    <div class="card" style="border-color: #ffa50066;">
+        <div class="section-title" style="color:#ffa500" onclick="mostraInfo('sezBenza')">⛽ PREZZO BENZINA (INFO)</div>
+        <div class="row-flex">
+            <div class="date-col">
+                <span class="label-mini">DATA</span>
+                <div class="date-inputs">
+                    <select id="fDay" class="sel-small"></select>
+                    <select id="fMonth" class="sel-small"></select>
+                    <select id="fYear" class="sel-year"></select>
+                </div>
             </div>
-            <div class="input-group-fill">
-                <div style="flex:1; position:relative;" onclick="mostraInfo('fEuro')"><div class="info-dot"></div><input type="number" id="fuelEuro" placeholder="€ spesi"></div>
-                <div style="flex:1; position:relative;" onclick="mostraInfo('fPrezzo')"><div class="info-dot"></div><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro"></div>
-            </div>
+            <div style="flex:1"><span class="label-mini">EURO</span><input type="number" id="fuelEuro" placeholder="€"></div>
+            <div style="flex:1"><span class="label-mini">€/LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="1.xxx"></div>
         </div>
-        <button class="btn-fuel" onclick="aggiungiBenza()">SALVA PREZZO</button>
+        <button class="btn-fuel" onclick="aggiungiBenza()">AGGIORNA PREZZO</button>
     </div>
 
-    <div class="card" style="border-color: #00ccbc44;">
-        <span class="section-title">➕ TURNO</span>
-        <div class="compact-row">
-            <div class="date-group">
-                <select id="sDay" class="sel-small"></select>
-                <select id="sMonth" class="sel-small"></select>
-                <select id="sYear" class="sel-year"></select>
+    <div class="card" style="border-color: #00ccbc66;">
+        <div class="section-title" onclick="mostraInfo('sezTurno')">➕ AGGIUNGI TURNO (INFO)</div>
+        <div class="row-flex">
+            <div class="date-col">
+                <span class="label-mini">DATA</span>
+                <div class="date-inputs">
+                    <select id="sDay" class="sel-small"></select>
+                    <select id="sMonth" class="sel-small"></select>
+                    <select id="sYear" class="sel-year"></select>
+                </div>
             </div>
-            <div class="input-group-fill">
-                <div style="flex:1; position:relative;" onclick="mostraInfo('sLordo')"><div class="info-dot"></div><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"></div>
-                <div style="flex:1; position:relative;" onclick="mostraInfo('sOre')"><div class="info-dot"></div><input type="number" id="sessOre" step="0.1" placeholder="Ore"></div>
-            </div>
+            <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
+            <div style="flex:1"><span class="label-mini">ORE</span><input type="number" id="sessOre" step="0.1"></div>
         </div>
-        <div class="grid-compact">
-            <div onclick="mostraInfo('sKm')"><div class="info-dot"></div><input type="number" id="sessKm" placeholder="Km percorsi"></div>
-            <div onclick="mostraInfo('sL100')"><div class="info-dot"></div><input type="number" id="sessL100" step="0.1" placeholder="l/100 km"></div>
-            <div onclick="mostraInfo('sScarto')"><div class="info-dot"></div><input type="number" id="sessScarto" placeholder="Scarto"></div>
+        <div class="summary-grid" style="margin-bottom:8px;">
+            <div><span class="label-mini">KM FINALI</span><input type="number" id="sessKm"></div>
+            <div><span class="label-mini">L/100KM</span><input type="number" id="sessL100" step="0.1"></div>
+            <div><span class="label-mini">SCARTO KM</span><input type="number" id="sessScarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
 
     <div id="storico"></div>
-    <button class="btn-reset-all" onclick="apriReset()">⚠️ AZZERA TUTTO</button>
-    <div class="footer-credits">RIDER TRACKER V. 1.0 - BY MARCO CARBONE</div>
+    <button class="btn-reset-all" onclick="azzeraTutto()">⚠️ AZZERA TUTTI I DATI</button>
+    <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         
-        const testiInfo = {
-            lordoTot: "Totale lordo accumulato (mance incluse).",
-            nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spese benzina).",
-            oreTot: "Ore totali di lavoro registrate.",
-            consTot: "Litri consumati esclusivamente per le consegne.",
-            medKml: "Rapporto Km/L dell'ultimo turno salvato.",
-            spesaBenz: "Costo totale stimato del carburante utilizzato.",
-            kmCons: "Chilometri effettivi di lavoro (esclusi gli spostamenti personali).",
-            kmAss: "Chilometri totali segnati dal mezzo.",
-            guadH: "Quanto guadagni all'ora al netto delle spese.",
-            target: "Cifra netta che desideri guadagnare. La barra progredisce col netto reale.",
-            mancante: "Incasso lordo necessario per completare l'obiettivo netto.",
-            ggAttivi: "Giorni in cui hai effettuato almeno una consegna.",
-            fEuro: "Inserisci l'importo totale pagato al benzinaio.",
-            fPrezzo: "Inserisci il prezzo al litro (es. 1.789). Serve per calcolare i litri e i costi futuri.",
-            sLordo: "Totale incassato nel turno (incluso mance).",
-            sOre: "Durata del turno (usa i decimali, es: 3.5 per 3 ore e mezza).",
-            sKm: "Chilometri totali indicati dal contachilometri a fine turno.",
-            sL100: "Consumo medio indicato dal computer di bordo (es. 2.5).",
-            sScarto: "Km fatti per motivi personali o tragitto casa-lavoro da non scalare dal guadagno."
+        const testi = {
+            lordoTot: "Totale lordo incassato in tutte le sessioni.",
+            nettoTot: "Guadagno pulito calcolato togliendo il 20% di tasse e il costo carburante.",
+            oreTot: "Somma delle ore lavorate.",
+            consTot: "Litri di benzina consumati per i km di lavoro.",
+            medKml: "Efficienza del veicolo calcolata sull'ultimo turno.",
+            spesaBenz: "Costo totale stimato della benzina usata per lavorare.",
+            target: "Inserisci qui quanto vorresti guadagnare NETTI.",
+            mancante: "Lordo che devi ancora incassare per arrivare al target netto.",
+            ggAttivi: "Giorni totali in cui hai registrato un turno.",
+            sezBenza: "Inserisci l'ultimo rifornimento fatto per aggiornare il costo al litro usato nei calcoli.",
+            sezTurno: "Registra qui i dati del turno. Lo scarto sono i km fatti per scopi non lavorativi."
         };
 
-        function mostraInfo(chiave) {
-            const t = testiInfo[chiave];
-            if(t) {
-                setTimeout(() => {
-                    document.getElementById('infoText').innerText = t;
-                    document.getElementById('infoModal').style.display = 'flex';
-                }, 50);
-            }
+        function mostraInfo(k) {
+            document.getElementById('infoText').innerText = testi[k];
+            document.getElementById('infoModal').style.display = 'flex';
         }
-
         function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
-        function apriReset() { document.getElementById('resetModal').style.display = 'flex'; }
-        function chiudiReset() { document.getElementById('resetModal').style.display = 'none'; }
-        
-        function confermaReset() { 
-            db = { sessioni: [], rifornimenti: [], target: 0 }; 
-            salva(); 
-            document.getElementById('targetInput').value = "";
-            chiudiReset(); 
-            showToast("🗑️ Reset effettuato!"); 
-        }
-        
-        function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
-        
-        function popolaMenuDate() {
+
+        function popolaDate() {
             const d = new Date();
             const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
-            g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2028; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+            g.forEach(s => { for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            m.forEach(s => { for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            a.forEach(s => { for(let i=2025; i<=2026; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
-        
+
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function creaDataISO(p) { return document.getElementById(p+'Year').value + "-" + document.getElementById(p+'Month').value.padStart(2,'0') + "-" + document.getElementById(p+'Day').value.padStart(2,'0'); }
+        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
         
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: creaDataISO('f'), euro: e, prezzo: p }); salva(); ['fuelEuro','fuelPrezzo'].forEach(id=>document.getElementById(id).value=""); showToast("⛽ Prezzo aggiornato!"); }
+            if(e > 0 && p > 0) { 
+                db.rifornimenti.push({ id: Date.now(), data: document.getElementById('fYear').value+'-'+document.getElementById('fMonth').value+'-'+document.getElementById('fDay').value, euro: e, prezzo: p });
+                salva(); showToast("⛽ Prezzo Aggiornato!");
+            }
         }
-        
+
         function aggiungiSessione() {
-            let km = parseFloat(document.getElementById('sessKm').value) || 0, s = parseFloat(document.getElementById('sessScarto').value) || 0, o = parseFloat(document.getElementById('sessOre').value) || 0, l = parseFloat(document.getElementById('sessLordo').value) || 0, c = parseFloat(document.getElementById('sessL100').value) || 0;
-            if(l > 0 || km > 0) { db.sessioni.push({ id: Date.now(), data: creaDataISO('s'), km, scarto: s, ore: o, lordo: l, l100: c }); salva(); ['sessKm','sessScarto','sessOre','sessLordo','sessL100'].forEach(id => document.getElementById(id).value = ""); showToast("✅ Sessione salvata!"); }
+            let l = parseFloat(document.getElementById('sessLordo').value) || 0;
+            if(l > 0) {
+                db.sessioni.push({
+                    id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value) || 0,
+                    km: parseFloat(document.getElementById('sessKm').value) || 0,
+                    l100: parseFloat(document.getElementById('sessL100').value) || 0,
+                    scarto: parseFloat(document.getElementById('sessScarto').value) || 0,
+                    data: document.getElementById('sYear').value+'-'+document.getElementById('sMonth').value+'-'+document.getElementById('sDay').value
+                });
+                salva(); showToast("✅ Turno Salvato!");
+            }
         }
-        
-        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
-        
+
         function calcola() {
-            let totL = 0, totO = 0, kmLav = 0, kmAss = 0, litriT = 0, costoB = 0;
+            let tL = 0, tO = 0, ltT = 0, cB = 0, kmL = 0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             db.sessioni.forEach(s => {
-                totL += s.lordo; totO += s.ore;
-                let kE = Math.max(0, s.km - s.scarto); kmLav += kE; kmAss += s.km;
-                let lt = (kE / 100) * s.l100; litriT += lt; costoB += (lt * uP);
+                tL += s.lordo; tO += s.ore;
+                let kE = Math.max(0, s.km - s.scarto); kmL += kE;
+                let lt = (kE / 100) * s.l100; ltT += lt; cB += (lt * uP);
             });
-            let nA = (totL * 0.8) - costoB, mancN = Math.max(0, db.target - nA), perc = db.target > 0 ? Math.min(100, Math.round((nA / db.target) * 100)) : 0;
+            let nR = (tL * 0.8) - cB, perc = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
-            document.getElementById('progressoPerc').innerText = perc >= 100 ? "COMPLETATO! 🎉" : perc + "%";
+            document.getElementById('progressoPerc').innerText = perc + "%";
+            document.getElementById('lordoTotale').innerText = tL.toFixed(2);
+            document.getElementById('nettoReale').innerText = nR.toFixed(2);
+            document.getElementById('costoBenzaTot').innerText = cB.toFixed(2);
+            document.getElementById('litriTot').innerText = ltT.toFixed(1);
+            document.getElementById('oreTotali').innerText = tO.toFixed(1);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
-            document.getElementById('lordoMancante').innerText = (mancN * 1.25).toFixed(2);
-            document.getElementById('lordoTotale').innerText = totL.toFixed(2); document.getElementById('nettoReale').innerText = nA.toFixed(2);
-            document.getElementById('costoBenzaTot').innerText = costoB.toFixed(2); document.getElementById('litriTot').innerText = litriT.toFixed(1);
-            document.getElementById('kmAssoluti').innerText = kmAss; document.getElementById('kmLavoroTot').innerText = kmLav;
-            document.getElementById('oreTotali').innerText = totO.toFixed(1); document.getElementById('nettoOrario').innerText = totO > 0 ? (nA / totO).toFixed(2) : "0.00";
-            let lastS = db.sessioni[db.sessioni.length-1]; document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
-            renderStorico(uP);
+            document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - nR) * 1.25).toFixed(2);
+            renderStorico();
         }
-        
-        function renderStorico(uP) {
-            let h = "<span class='section-title' style='margin-top:10px;'>📜 STORICO</span>", tutti = [...db.sessioni.map(s => ({...s, tipo: 'S'})), ...db.rifornimenti.map(r => ({...r, tipo: 'B'}))];
-            tutti.sort((a,b) => b.id - a.id).forEach(item => {
-                let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
-                if(item.tipo === 'S') {
-                    let kE = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span class="history-date">${dIT} - TURNO</span><div style="display:flex; justify-content:space-between; align-items:center;"><span>Lordo: <b>€${item.lordo.toFixed(2)}</b></span><span class="tag-netto">€${nS.toFixed(2)}</span></div><button class="
+
+        function renderStorico() {
+            let h = "";
+            [...db.sessioni].reverse().forEach(s => {
+                h += `<div class="session-item"><b>${s.data}</b> - Lordo: €${s.lordo} <button onclick="elimina(${s.id})" style="float:right; width:50px; height:20px; font-size:9px; background:#f44; color:#fff;">X</button></div>`;
+            });
+            document.getElementById('storico').innerHTML = h ? "<div class='section-title'>CRONOLOGIA</div>" + h : "";
+        }
+
+        function elimina(id) { db.sessioni = db.sessioni.filter(s => s.id !== id); salva(); }
+        function azzeraTutto() { if(confirm("Sei sicuro?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value=""; salva(); } }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
+
+        popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
+    </script>
+</body>
+</html>
