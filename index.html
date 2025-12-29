@@ -15,9 +15,9 @@
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; }
         
-        /* Nuova Icona Info anti-selezione */
+        /* Icona Info corretta */
         .info-btn { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-left: 3px; -webkit-tap-highlight-color: transparent; }
-        .info-btn svg { width: 12px; height: 12px; fill: #00CCBC; pointer-events: none; }
+        .info-btn svg { width: 12px; height: 12px; fill: #00CCBC; pointer-events: none; } /* Impedisce all'SVG di bloccare il click */
         .info-btn-corner { position: absolute; right: 3px; top: 3px; opacity: 0.6; }
         
         input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
@@ -77,15 +77,15 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('lordoTot')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('nettoTot')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('oreTot')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('consTot')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('medKml')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('spesaBenz')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('kmCons')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('kmAss')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
-            <div class="data-box"><div class="info-btn info-btn-corner" onclick="mostraInfo('guadH')"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('lordoTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('nettoTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('oreTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('consTot')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Consumo Totale</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
+            <div class="data-box" onclick="mostraInfo('medKml')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('spesaBenz')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Spesa Benzina</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('kmCons')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Consegne</span><span id="kmLavoroTot" class="stat-val" style="color:#00CCBC">0</span></div>
+            <div class="data-box" onclick="mostraInfo('kmAss')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">KM Totali</span><span id="kmAssoluti" class="stat-val" style="color:#ffa500">0</span></div>
+            <div class="data-box" onclick="mostraInfo('guadH')"><div class="info-btn info-btn-corner"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg></div><span class="stat-label">Guadagno/H</span><span class="stat-val" style="color:#00CCBC">€ <span id="nettoOrario">0.00</span></span></div>
         </div>
         <div class="target-box" style="margin-top:8px;">
             <div class="summary-grid">
@@ -166,7 +166,13 @@
             sScarto: "Chilometri non lavorativi (es. casa-lavoro) da escludere dai costi."
         };
 
-        function mostraInfo(chiave) { document.getElementById('infoText').innerText = testiInfo[chiave]; document.getElementById('infoModal').style.display = 'flex'; }
+        function mostraInfo(chiave) { 
+            const testo = testiInfo[chiave];
+            if(testo) {
+                document.getElementById('infoText').innerText = testo; 
+                document.getElementById('infoModal').style.display = 'flex'; 
+            }
+        }
         function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
         function apriReset() { document.getElementById('resetModal').style.display = 'flex'; }
         function chiudiReset() { document.getElementById('resetModal').style.display = 'none'; }
@@ -182,5 +188,4 @@
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function popolaMenuDate() {
             const d = new Date();
-            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
-            g.forEach(s => { s.innerHTML = ""; for(let i=1; i<
+            const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('
