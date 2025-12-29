@@ -14,6 +14,10 @@
         .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; }
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; }
+        
+        /* Stile per l'icona Info */
+        .info-i { font-size: 8px; color: #00CCBC; margin-left: 3px; cursor: pointer; border: 1px solid #00CCBC; border-radius: 50%; width: 10px; height: 10px; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+        
         input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
         .compact-row { display: flex; gap: 4px; margin-bottom: 5px; width: 100%; }
         .date-group { display: flex; gap: 2px; flex-shrink: 0; }
@@ -72,8 +76,8 @@
         </div>
         <div class="target-box" style="margin-top:8px;">
             <div class="summary-grid">
-                <div class="data-box" style="background:transparent;"><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:80%; margin:0 auto;" oninput="salvaTarget()"></div>
-                <div class="data-box" style="background:transparent;"><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+                <div class="data-box" style="background:transparent;"><span class="stat-label">OBIETTIVO €<span class="info-i" onclick="info('target')">i</span></span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:80%; margin:0 auto;" oninput="salvaTarget()"></div>
+                <div class="data-box" style="background:transparent;"><span class="stat-label">€ LORDI MANC.<span class="info-i" onclick="info('mancante')">i</span></span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
                 <div class="data-box" style="background:transparent;"><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
             </div>
             <div class="progress-container">
@@ -92,8 +96,8 @@
                 <select id="fYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <input type="number" id="fuelEuro" placeholder="€ spesi">
-                <input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro">
+                <div style="position:relative; flex:1;"><input type="number" id="fuelEuro" placeholder="€ spesi"><span class="info-i" onclick="info('fEuro')" style="position:absolute; right:4px; top:12px;">i</span></div>
+                <div style="position:relative; flex:1;"><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro"><span class="info-i" onclick="info('fPrezzo')" style="position:absolute; right:4px; top:12px;">i</span></div>
             </div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()">SALVA PREZZO</button>
@@ -108,14 +112,14 @@
                 <select id="sYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <input type="number" id="sessLordo" step="0.01" placeholder="Lordo €">
-                <input type="number" id="sessOre" step="0.1" placeholder="Ore">
+                <div style="position:relative; flex:1;"><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"><span class="info-i" onclick="info('sLordo')" style="position:absolute; right:4px; top:12px;">i</span></div>
+                <div style="position:relative; flex:1;"><input type="number" id="sessOre" step="0.1" placeholder="Ore"><span class="info-i" onclick="info('sOre')" style="position:absolute; right:4px; top:12px;">i</span></div>
             </div>
         </div>
         <div class="grid-compact">
-            <input type="number" id="sessKm" placeholder="Km percorsi">
-            <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
-            <input type="number" id="sessScarto" placeholder="Scarto">
+            <div style="position:relative;"><input type="number" id="sessKm" placeholder="Km percorsi"><span class="info-i" onclick="info('sKm')" style="position:absolute; right:4px; top:12px;">i</span></div>
+            <div style="position:relative;"><input type="number" id="sessL100" step="0.1" placeholder="l/100 km"><span class="info-i" onclick="info('sL100')" style="position:absolute; right:4px; top:12px;">i</span></div>
+            <div style="position:relative;"><input type="number" id="sessScarto" placeholder="Scarto"><span class="info-i" onclick="info('sScarto')" style="position:absolute; right:4px; top:12px;">i</span></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
@@ -127,6 +131,19 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         
+        const testiInfo = {
+            target: "Inserisci qui la cifra netta che desideri guadagnare. La barra progredirà man mano che accumuli netto reale.",
+            mancante: "Questo valore ti indica quanto devi ancora incassare (al lordo) per raggiungere il tuo obiettivo netto, calcolando già tasse e costi carburante.",
+            fEuro: "Inserisci l'importo totale in euro dell'ultimo rifornimento effettuato.",
+            fPrezzo: "Inserisci il prezzo alla pompa per singolo litro (es. 1.854). Verrà usato per i calcoli dei turni successivi.",
+            sLordo: "Il totale incassato nel turno. Su questo valore viene calcolata una ritenuta forfettaria del 20%.",
+            sOre: "La durata effettiva del turno (es. 3.5 per tre ore e mezza).",
+            sKm: "I chilometri totali segnati dal contachilometri dall'inizio alla fine della sessione.",
+            sL100: "Il consumo medio indicato dal computer di bordo per questa sessione. Serve a calcolare la benzina consumata.",
+            sScarto: "Chilometri percorsi non legati alle consegne (es. tragitto casa-lavoro). Verranno sottratti dal totale per il costo benzina."
+        };
+
+        function info(chiave) { alert(testiInfo[chiave]); }
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => { x.className = ""; }, 2000); }
         function apriModal() { document.getElementById('customModal').style.display = 'flex'; }
         function chiudiModal() { document.getElementById('customModal').style.display = 'none'; }
