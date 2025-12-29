@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94</title>
+    <title>Rider Tracker Pro v94 - Full Details</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -40,9 +39,9 @@
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; position: relative; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
-        .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
-        .hist-date { font-weight: bold; color: #00CCBC; margin-bottom: 2px; }
-        .btn-del { width: 50px; height: 22px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; }
+        .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 10px; flex: 1; color: #ccc; }
+        .hist-date { font-weight: bold; color: #00CCBC; font-size: 11px; margin-bottom: 2px; }
+        .btn-del { width: 60px; height: 26px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; margin-left: 10px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
@@ -122,17 +121,11 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         const testi = {
-            lordoTot: "Lordo totale incassato registrato nei turni.",
-            nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
-            oreTot: "Somma delle ore lavorate complessive.",
-            consTot: "Litri di benzina consumati per le consegne.",
-            medKml: "Rapporto Km/L basato sull'ultimo turno salvato.",
-            spesaBenz: "Costo totale stimato del carburante utilizzato per lavorare.",
-            target: "Cifra netta che vuoi raggiungere. Il tasto Azzera pulisce anche questo campo.",
-            mancante: "Importo Lordo necessario per completare l'obiettivo netto.",
-            ggAttivi: "Giorni unici in cui hai registrato almeno un turno.",
-            sezBenza: "Registra qui ogni rifornimento. L'ultimo prezzo al litro inserito verrà usato per calcolare la spesa dei turni.",
-            sezTurno: "Registra qui i dati del turno di lavoro."
+            lordoTot: "Lordo totale incassato registrato nei turni.", nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
+            oreTot: "Somma delle ore lavorate complessive.", consTot: "Litri di benzina consumati per le consegne.",
+            medKml: "Rapporto Km/L basato sull'ultimo turno salvato.", spesaBenz: "Costo totale stimato del carburante utilizzato per lavorare.",
+            target: "Cifra netta che vuoi raggiungere. Il tasto Azzera pulisce anche questo campo.", mancante: "Importo Lordo necessario per completare l'obiettivo netto.",
+            ggAttivi: "Giorni unici in cui hai registrato almeno un turno.", sezBenza: "Registra qui ogni rifornimento fatto.", sezTurno: "Registra qui i dati del turno di lavoro."
         };
 
         function mostraInfo(k) { document.getElementById('infoText').innerText = testi[k]; document.getElementById('infoModal').style.display = 'flex'; }
@@ -201,18 +194,21 @@
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(i.tipo === 'S') {
+                    let kE = Math.max(0, i.km - i.scarto);
+                    let lS = (kE / 100) * i.l100;
                     h += `<div class="history-item">
                         <div class="hist-details">
                             <span class="hist-date">${dIT} - TURNO</span>
-                            <span>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}</span>
+                            <span>Lordo: <b>€${i.lordo.toFixed(2)}</b> | Ore: <b>${i.ore}h</b></span>
+                            <span>Km Effettivi: <b>${kE}</b> | Consumo: <b>${lS.toFixed(2)}L</b></span>
                         </div>
                         <button class="btn-del" onclick="elimina('sessioni', ${i.id})">ELIMINA</button>
                     </div>`;
                 } else {
                     h += `<div class="history-item" style="border-left-color:#ffa500">
                         <div class="hist-details">
-                            <span class="hist-date">${dIT} - RIFORNIMENTO</span>
-                            <span>Spesa: €${i.euro.toFixed(2)} | Prezzo: €${i.prezzo.toFixed(3)}/l</span>
+                            <span class="hist-date" style="color:#ffa500">${dIT} - RIFORNIMENTO</span>
+                            <span>Spesa: <b>€${i.euro.toFixed(2)}</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}/l</b></span>
                         </div>
                         <button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">ELIMINA</button>
                     </div>`;
