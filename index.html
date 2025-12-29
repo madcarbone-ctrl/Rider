@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 - Smart Target</title>
+    <title>Rider Tracker Pro v94.1 - Future Ready</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,7 +27,7 @@
         .date-col { display: flex; flex-direction: column; gap: 2px; }
         .date-inputs { display: flex; gap: 2px; }
         .sel-small { width: 40px; }
-        .sel-year { width: 58px; }
+        .sel-year { width: 62px; } /* Leggermente più largo per gli anni futuri */
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin: 10px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
@@ -42,6 +42,7 @@
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; position: relative; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
         .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 10px; flex: 1; color: #ccc; }
         .hist-date { font-weight: bold; color: #00CCBC; font-size: 11px; margin-bottom: 2px; }
+        .hist-time { font-size: 9px; color: #777; font-weight: normal; margin-left: 5px; }
         .btn-del { width: 60px; height: 26px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; margin-left: 10px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
@@ -79,7 +80,7 @@
             <div class="data-box" onclick="mostraInfo('nettoTot')"><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
             <div class="data-box" onclick="mostraInfo('oreTot')"><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
             <div class="data-box" onclick="mostraInfo('consTot')"><span class="stat-label">Consumo L</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
-            <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Media km/l Tot</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
             <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
@@ -98,7 +99,7 @@
     </div>
 
     <div class="card" style="border-color: #ffa50066;">
-        <div class="section-title" style="color:#ffa500" onclick="mostraInfo('sezBenza')">⛽ REGISTRA RIFORNIMENTO (INFO)</div>
+        <div class="section-title" style="color:#ffa500" onclick="mostraInfo('sezBenza')">⛽ REGISTRA RIFORNIMENTO</div>
         <div class="row-flex">
             <div class="date-col"><span class="label-mini">DATA</span><div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div></div>
             <div style="flex:1"><span class="label-mini">€ SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
@@ -108,7 +109,7 @@
     </div>
 
     <div class="card" style="border-color: #00ccbc66;">
-        <div class="section-title" onclick="mostraInfo('sezTurno')">➕ AGGIUNGI TURNO (INFO)</div>
+        <div class="section-title" onclick="mostraInfo('sezTurno')">➕ AGGIUNGI TURNO</div>
         <div class="row-flex">
             <div class="date-col"><span class="label-mini">DATA</span><div class="date-inputs"><select id="sDay" class="sel-small"></select><select id="sMonth" class="sel-small"></select><select id="sYear" class="sel-year"></select></div></div>
             <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
@@ -129,12 +130,15 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         const testi = {
-            lordoTot: "Lordo totale incassato registrato nei turni. Su questo valore viene calcolata una ritenuta forfettaria del 20%.", 
+            lordoTot: "Lordo totale incassato registrato nei turni.",
             nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
-            oreTot: "Somma delle ore lavorate complessive.", consTot: "Litri di benzina consumati per le consegne.",
-            medKml: "Rapporto Km/L basato sull'ultimo turno salvato.", spesaBenz: "Costo totale stimato del carburante utilizzato per lavorare.",
-            target: "Cifra netta che vuoi raggiungere. Il tasto Azzera pulisce anche questo campo.", mancante: "Importo Lordo necessario per completare l'obiettivo netto.",
-            ggAttivi: "Giorni unici in cui hai registrato almeno un turno.", sezBenza: "Registra qui ogni rifornimento fatto.", sezTurno: "Registra qui i dati del turno di lavoro."
+            oreTot: "Somma delle ore lavorate complessive.",
+            consTot: "Litri di benzina consumati per le consegne.",
+            medKml: "Media chilometrica reale calcolata su tutte le sessioni del mese.",
+            spesaBenz: "Costo totale stimato del carburante utilizzato.",
+            target: "Cifra netta obiettivo. Il tasto Azzera pulisce tutto.",
+            mancante: "Lordo necessario per completare l'obiettivo netto.",
+            ggAttivi: "Giorni unici di lavoro registrati."
         };
 
         function mostraInfo(k) { document.getElementById('infoText').innerText = testi[k]; document.getElementById('infoModal').style.display = 'flex'; }
@@ -148,7 +152,8 @@
             const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
             g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2026; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+            // Aggiornato per arrivare al 2040
+            a.forEach(s => { s.innerHTML = ""; for(let i=2024; i<=2040; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
@@ -157,7 +162,8 @@
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) { 
-                db.rifornimenti.push({ id: Date.now(), data: document.getElementById('fYear').value+'-'+document.getElementById('fMonth').value+'-'+document.getElementById('fDay').value, euro: e, prezzo: p, tipo: 'B' });
+                let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
+                db.rifornimenti.push({ id: Date.now(), data: document.getElementById('fYear').value+'-'+document.getElementById('fMonth').value+'-'+document.getElementById('fDay').value, ora: ora, euro: e, prezzo: p, tipo: 'B' });
                 salva(); ['fuelEuro','fuelPrezzo'].forEach(id=>document.getElementById(id).value=""); showToast("⛽ Rifornimento salvato!");
             }
         }
@@ -165,10 +171,11 @@
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
+                let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
                 db.sessioni.push({
                     id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value) || 0,
                     km: parseFloat(document.getElementById('sessKm').value) || 0, l100: parseFloat(document.getElementById('sessL100').value) || 0,
-                    scarto: parseFloat(document.getElementById('sessScarto').value) || 0,
+                    scarto: parseFloat(document.getElementById('sessScarto').value) || 0, ora: ora,
                     data: document.getElementById('sYear').value+'-'+document.getElementById('sMonth').value+'-'+document.getElementById('sDay').value, tipo: 'S'
                 });
                 salva(); ['sessLordo','sessOre','sessKm','sessL100','sessScarto'].forEach(id=>document.getElementById(id).value=""); showToast("✅ Turno salvato!");
@@ -176,25 +183,27 @@
         }
 
         function calcola() {
-            let tL = 0, tO = 0, ltT = 0, cB = 0;
+            let tL = 0, tO = 0, ltT = 0, cB = 0, kmT = 0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+            
             db.sessioni.forEach(s => {
                 tL += s.lordo; tO += s.ore;
                 let kE = Math.max(0, s.km - s.scarto);
+                kmT += kE;
                 let lt = (kE / 100) * s.l100; ltT += lt; cB += (lt * uP);
             });
+
             let nR = (tL * 0.8) - cB;
             let perc = db.target > 0 ? Math.round((nR / db.target) * 100) : 0;
             
             document.getElementById('pBar').style.width = Math.min(100, perc) + "%";
             document.getElementById('progressoPerc').innerText = perc + "%";
             
-            const winLabel = document.getElementById('winLabel');
             if(db.target > 0 && nR >= db.target) {
-                winLabel.style.display = "block";
-                document.getElementById('pBar').style.background = "#00FF7F"; // Verde smeraldo se superato
+                document.getElementById('winLabel').style.display = "block";
+                document.getElementById('pBar').style.background = "#00FF7F";
             } else {
-                winLabel.style.display = "none";
+                document.getElementById('winLabel').style.display = "none";
                 document.getElementById('pBar').style.background = "linear-gradient(90deg, #ff4444, #00CCBC)";
             }
 
@@ -205,7 +214,8 @@
             document.getElementById('oreTotali').innerText = tO.toFixed(1);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - nR) * 1.25).toFixed(2);
-            let lastS = db.sessioni[db.sessioni.length-1]; document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
+            document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
+            
             renderStorico();
         }
 
@@ -214,21 +224,23 @@
             let tutti = [...db.sessioni, ...db.rifornimenti].sort((a,b) => b.id - a.id);
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
+                let ora = i.ora || "--:--";
                 if(i.tipo === 'S') {
                     let kE = Math.max(0, i.km - i.scarto);
                     let lS = (kE / 100) * i.l100;
+                    let kmlS = (lS > 0) ? (kE / lS).toFixed(1) : "0.0";
                     h += `<div class="history-item">
                         <div class="hist-details">
-                            <span class="hist-date">${dIT} - TURNO</span>
+                            <span class="hist-date">${dIT} - TURNO <span class="hist-time">Registrato alle ${ora}</span></span>
                             <span>Lordo: <b>€${i.lordo.toFixed(2)}</b> | Ore: <b>${i.ore}h</b></span>
-                            <span>Km Effettivi: <b>${kE}</b> | Consumo: <b>${lS.toFixed(2)}L</b></span>
+                            <span>Km Eff: <b>${kE}</b> | Consumo: <b>${lS.toFixed(2)}L</b> | <b>${kmlS} km/l</b></span>
                         </div>
                         <button class="btn-del" onclick="elimina('sessioni', ${i.id})">ELIMINA</button>
                     </div>`;
                 } else {
                     h += `<div class="history-item" style="border-left-color:#ffa500">
                         <div class="hist-details">
-                            <span class="hist-date" style="color:#ffa500">${dIT} - RIFORNIMENTO</span>
+                            <span class="hist-date" style="color:#ffa500">${dIT} - RIFORNI. <span class="hist-time">Registrato alle ${ora}</span></span>
                             <span>Spesa: <b>€${i.euro.toFixed(2)}</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}/l</b></span>
                         </div>
                         <button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">ELIMINA</button>
