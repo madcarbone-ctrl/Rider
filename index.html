@@ -35,18 +35,22 @@
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
         
-        button { width: 100%; height: 40px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
+        button { width: 100%; height: 40px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
-        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; }
-        .tag-netto { background: #00CCBC; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 11px; }
+        .session-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #00CCBC; position: relative; display: flex; justify-content: space-between; align-items: center; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-        .modal-content { background: #252525; padding: 20px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
+        /* Modal personalizzati */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         
-        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; }
+        .modal-btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-confirm { background: #ff4444; color: white; flex: 1; height: 36px; }
+        .btn-cancel { background: #444; color: white; flex: 1; height: 36px; }
+
+        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
     </style>
 </head>
@@ -54,9 +58,20 @@
 
     <div id="infoModal" class="modal-overlay" onclick="chiudiInfo()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:10px; text-transform:uppercase;">INFO</div>
-            <div id="infoText" style="font-size:14px; line-height:1.4; margin-bottom:20px;"></div>
-            <button onclick="chiudiInfo()" style="background:#00CCBC; color:#000; border-radius:8px; height:36px;">CHIUDI</button>
+            <div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:12px; text-transform:uppercase; font-size: 14px;">INFORMAZIONE</div>
+            <div id="infoText" style="font-size:13px; line-height:1.5; margin-bottom:20px; color: #ccc;"></div>
+            <button onclick="chiudiInfo()" style="background:#00CCBC; color:#000; border-radius:8px; height:36px; font-size: 12px;">HO CAPITO</button>
+        </div>
+    </div>
+
+    <div id="resetModal" class="modal-overlay">
+        <div class="modal-content" style="border-color: #ff444466;">
+            <div style="color:#ff4444; font-weight:bold; margin-bottom:10px; font-size: 15px;">⚠️ ATTENZIONE</div>
+            <div style="font-size:13px; color:#eee; margin-bottom:10px;">Vuoi davvero cancellare tutti i dati e l'obiettivo?</div>
+            <div class="modal-btn-row">
+                <button class="btn-cancel" onclick="chiudiReset()">NO</button>
+                <button class="btn-confirm" onclick="confermaReset()">SÌ, AZZERA</button>
+            </div>
         </div>
     </div>
 
@@ -122,24 +137,24 @@
     </div>
 
     <div id="storico"></div>
-    <button class="btn-reset-all" onclick="azzeraTutto()">⚠️ AZZERA TUTTI I DATI</button>
+    <button class="btn-reset-all" onclick="apriReset()">⚠️ AZZERA TUTTI I DATI</button>
     <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         
         const testi = {
-            lordoTot: "Totale lordo incassato in tutte le sessioni.",
-            nettoTot: "Guadagno pulito calcolato togliendo il 20% di tasse e il costo carburante.",
-            oreTot: "Somma delle ore lavorate.",
-            consTot: "Litri di benzina consumati per i km di lavoro.",
-            medKml: "Efficienza del veicolo calcolata sull'ultimo turno.",
-            spesaBenz: "Costo totale stimato della benzina usata per lavorare.",
-            target: "Inserisci qui quanto vorresti guadagnare NETTI.",
-            mancante: "Lordo che devi ancora incassare per arrivare al target netto.",
-            ggAttivi: "Giorni totali in cui hai registrato un turno.",
-            sezBenza: "Inserisci l'ultimo rifornimento fatto per aggiornare il costo al litro usato nei calcoli.",
-            sezTurno: "Registra qui i dati del turno. Lo scarto sono i km fatti per scopi non lavorativi."
+            lordoTot: "Totale lordo incassato in tutte le sessioni registrate.",
+            nettoTot: "Guadagno reale calcolato togliendo il 20% di tasse e il costo carburante stimato.",
+            oreTot: "Somma delle ore lavorate complessive.",
+            consTot: "Litri di benzina consumati basandosi sui Km di lavoro e il consumo l/100km.",
+            medKml: "Rapporto Km al litro calcolato sui dati dell'ultimo turno inserito.",
+            spesaBenz: "Costo totale della benzina consumata per i turni di lavoro.",
+            target: "Inserisci qui la cifra NETTA che vuoi raggiungere. La barra si riempirà col guadagno reale.",
+            mancante: "Importo LORDO che devi ancora incassare per raggiungere il tuo obiettivo netto.",
+            ggAttivi: "Giorni unici in cui hai effettuato almeno un turno di lavoro.",
+            sezBenza: "Registra l'ultimo rifornimento. Il prezzo al litro verrà usato per i calcoli futuri.",
+            sezTurno: "Inserisci i dati del turno. Lo scarto indica i km fatti per scopi extra-lavoro."
         };
 
         function mostraInfo(k) {
@@ -148,12 +163,22 @@
         }
         function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
+        function apriReset() { document.getElementById('resetModal').style.display = 'flex'; }
+        function chiudiReset() { document.getElementById('resetModal').style.display = 'none'; }
+        function confermaReset() {
+            db = { sessioni: [], rifornimenti: [], target: 0 };
+            document.getElementById('targetInput').value = "";
+            salva();
+            chiudiReset();
+            showToast("🗑️ Dati azzerati correttamente!");
+        }
+
         function popolaDate() {
             const d = new Date();
             const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
-            g.forEach(s => { for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            m.forEach(s => { for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            a.forEach(s => { for(let i=2025; i<=2026; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+            g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            a.forEach(s => { s.innerHTML = ""; for(let i=2025; i<=2026; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
@@ -163,7 +188,7 @@
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) { 
                 db.rifornimenti.push({ id: Date.now(), data: document.getElementById('fYear').value+'-'+document.getElementById('fMonth').value+'-'+document.getElementById('fDay').value, euro: e, prezzo: p });
-                salva(); showToast("⛽ Prezzo Aggiornato!");
+                salva(); ['fuelEuro','fuelPrezzo'].forEach(id=>document.getElementById(id).value=""); showToast("⛽ Prezzo Aggiornato!");
             }
         }
 
@@ -177,7 +202,7 @@
                     scarto: parseFloat(document.getElementById('sessScarto').value) || 0,
                     data: document.getElementById('sYear').value+'-'+document.getElementById('sMonth').value+'-'+document.getElementById('sDay').value
                 });
-                salva(); showToast("✅ Turno Salvato!");
+                salva(); ['sessLordo','sessOre','sessKm','sessL100','sessScarto'].forEach(id=>document.getElementById(id).value=""); showToast("✅ Turno Salvato!");
             }
         }
 
@@ -199,19 +224,20 @@
             document.getElementById('oreTotali').innerText = tO.toFixed(1);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - nR) * 1.25).toFixed(2);
+            let lastS = db.sessioni[db.sessioni.length-1]; document.getElementById('mediaKml').innerText = (lastS && lastS.l100 > 0) ? (100 / lastS.l100).toFixed(1) : "0.0";
             renderStorico();
         }
 
         function renderStorico() {
             let h = "";
             [...db.sessioni].reverse().forEach(s => {
-                h += `<div class="session-item"><b>${s.data}</b> - Lordo: €${s.lordo} <button onclick="elimina(${s.id})" style="float:right; width:50px; height:20px; font-size:9px; background:#f44; color:#fff;">X</button></div>`;
+                let d = s.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
+                h += `<div class="session-item"><span><b>${dIT}</b> - €${s.lordo.toFixed(2)}</span> <button onclick="elimina(${s.id})" style="width:50px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px; border:none;">ELIMINA</button></div>`;
             });
-            document.getElementById('storico').innerHTML = h ? "<div class='section-title'>CRONOLOGIA</div>" + h : "";
+            document.getElementById('storico').innerHTML = h ? "<div class='section-title' style='margin-top:10px;'>📜 CRONOLOGIA TURNI</div>" + h : "";
         }
 
         function elimina(id) { db.sessioni = db.sessioni.filter(s => s.id !== id); salva(); }
-        function azzeraTutto() { if(confirm("Sei sicuro?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value=""; salva(); } }
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
 
         popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
