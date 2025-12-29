@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -15,7 +16,6 @@
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
         .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; }
-        .data-box:active { background: #333; }
         
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; pointer-events: none; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
@@ -40,9 +40,10 @@
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; position: relative; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
+        .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+        .hist-date { font-weight: bold; color: #00CCBC; margin-bottom: 2px; }
         .btn-del { width: 50px; height: 22px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; }
 
-        /* Modal personalizzati (per info e reset) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
 
@@ -81,29 +82,18 @@
             <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Media km/l</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
             <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
-        
         <div class="summary-grid" style="margin-top:8px;">
             <div class="data-box" onclick="mostraInfo('target')"><span class="stat-label">Obiettivo €</span><input type="number" id="targetInput" style="height:20px; font-size:11px; margin-top:2px;" oninput="salvaTarget()"></div>
             <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
             <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
-        <div class="progress-container">
-            <div id="pBar" class="progress-bar"></div>
-            <div id="progressoPerc" class="progress-text">0%</div>
-        </div>
+        <div class="progress-container"><div id="pBar" class="progress-bar"></div><div id="progressoPerc" class="progress-text">0%</div></div>
     </div>
 
     <div class="card" style="border-color: #ffa50066;">
         <div class="section-title" style="color:#ffa500" onclick="mostraInfo('sezBenza')">⛽ REGISTRA RIFORNIMENTO (INFO)</div>
         <div class="row-flex">
-            <div class="date-col">
-                <span class="label-mini">DATA</span>
-                <div class="date-inputs">
-                    <select id="fDay" class="sel-small"></select>
-                    <select id="fMonth" class="sel-small"></select>
-                    <select id="fYear" class="sel-year"></select>
-                </div>
-            </div>
+            <div class="date-col"><span class="label-mini">DATA</span><div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div></div>
             <div style="flex:1"><span class="label-mini">€ SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
             <div style="flex:1"><span class="label-mini">€/LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="1.xxx"></div>
         </div>
@@ -113,14 +103,7 @@
     <div class="card" style="border-color: #00ccbc66;">
         <div class="section-title" onclick="mostraInfo('sezTurno')">➕ AGGIUNGI TURNO (INFO)</div>
         <div class="row-flex">
-            <div class="date-col">
-                <span class="label-mini">DATA</span>
-                <div class="date-inputs">
-                    <select id="sDay" class="sel-small"></select>
-                    <select id="sMonth" class="sel-small"></select>
-                    <select id="sYear" class="sel-year"></select>
-                </div>
-            </div>
+            <div class="date-col"><span class="label-mini">DATA</span><div class="date-inputs"><select id="sDay" class="sel-small"></select><select id="sMonth" class="sel-small"></select><select id="sYear" class="sel-year"></select></div></div>
             <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
             <div style="flex:1"><span class="label-mini">ORE</span><input type="number" id="sessOre" step="0.1"></div>
         </div>
@@ -137,9 +120,7 @@
     <div id="toast"></div>
 
     <script>
-        // Caricamento dati iniziali
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
-        
         const testi = {
             lordoTot: "Lordo totale incassato registrato nei turni.",
             nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
@@ -156,14 +137,9 @@
 
         function mostraInfo(k) { document.getElementById('infoText').innerText = testi[k]; document.getElementById('infoModal').style.display = 'flex'; }
         function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
-        
         function apriReset() { document.getElementById('resetModal').style.display = 'flex'; }
         function chiudiReset() { document.getElementById('resetModal').style.display = 'none'; }
-        function confermaReset() {
-            db = { sessioni: [], rifornimenti: [], target: 0 };
-            document.getElementById('targetInput').value = "";
-            salva(); chiudiReset(); showToast("🗑️ Tutto azzerato!");
-        }
+        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiReset(); showToast("🗑️ Tutto azzerato!"); }
 
         function popolaDate() {
             const d = new Date();
@@ -225,9 +201,21 @@
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(i.tipo === 'S') {
-                    h += `<div class="history-item"><span><b>${dIT}</b> - Turno: €${i.lordo.toFixed(2)}</span> <button class="btn-del" onclick="elimina('sessioni', ${i.id})">ELIMINA</button></div>`;
+                    h += `<div class="history-item">
+                        <div class="hist-details">
+                            <span class="hist-date">${dIT} - TURNO</span>
+                            <span>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}</span>
+                        </div>
+                        <button class="btn-del" onclick="elimina('sessioni', ${i.id})">ELIMINA</button>
+                    </div>`;
                 } else {
-                    h += `<div class="history-item" style="border-left-color:#ffa500"><span><b>${dIT}</b> - Benz: €${i.prezzo.toFixed(3)}/l</span> <button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">ELIMINA</button></div>`;
+                    h += `<div class="history-item" style="border-left-color:#ffa500">
+                        <div class="hist-details">
+                            <span class="hist-date">${dIT} - RIFORNIMENTO</span>
+                            <span>Spesa: €${i.euro.toFixed(2)} | Prezzo: €${i.prezzo.toFixed(3)}/l</span>
+                        </div>
+                        <button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">ELIMINA</button>
+                    </div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h ? "<div class='section-title' style='margin-top:10px;'>📜 CRONOLOGIA ATTIVITÀ</div>" + h : "";
@@ -235,7 +223,6 @@
 
         function elimina(tipo, id) { db[tipo] = db[tipo].filter(x => x.id !== id); salva(); }
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-
         popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
     </script>
 </body>
