@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 - Full Details</title>
+    <title>Rider Tracker Pro v94 - Fix Target</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -82,7 +82,10 @@
             <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box" onclick="mostraInfo('target')"><span class="stat-label">Obiettivo €</span><input type="number" id="targetInput" style="height:20px; font-size:11px; margin-top:2px;" oninput="salvaTarget()"></div>
+            <div class="data-box" onclick="if(event.target.tagName !== 'INPUT') mostraInfo('target')">
+                <span class="stat-label">Obiettivo €</span>
+                <input type="number" id="targetInput" style="height:20px; font-size:11px; margin-top:2px;" oninput="salvaTarget()" onclick="event.stopPropagation()">
+            </div>
             <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
             <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
@@ -121,7 +124,8 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         const testi = {
-            lordoTot: "Lordo totale incassato registrato nei turni.", nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
+            lordoTot: "Lordo totale incassato registrato nei turni. Su questo valore viene calcolata una ritenuta forfettaria del 20%.", 
+            nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
             oreTot: "Somma delle ore lavorate complessive.", consTot: "Litri di benzina consumati per le consegne.",
             medKml: "Rapporto Km/L basato sull'ultimo turno salvato.", spesaBenz: "Costo totale stimato del carburante utilizzato per lavorare.",
             target: "Cifra netta che vuoi raggiungere. Il tasto Azzera pulisce anche questo campo.", mancante: "Importo Lordo necessario per completare l'obiettivo netto.",
