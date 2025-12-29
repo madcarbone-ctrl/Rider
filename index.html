@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94.1 - Future Ready</title>
+    <title>Rider Tracker Pro v94.2</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,7 +27,7 @@
         .date-col { display: flex; flex-direction: column; gap: 2px; }
         .date-inputs { display: flex; gap: 2px; }
         .sel-small { width: 40px; }
-        .sel-year { width: 62px; } /* Leggermente più largo per gli anni futuri */
+        .sel-year { width: 62px; }
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin: 10px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
@@ -133,9 +133,9 @@
             lordoTot: "Lordo totale incassato registrato nei turni.",
             nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
             oreTot: "Somma delle ore lavorate complessive.",
-            consTot: "Litri di benzina consumati per le consegne.",
-            medKml: "Media chilometrica reale calcolata su tutte le sessioni del mese.",
-            spesaBenz: "Costo totale stimato del carburante utilizzato.",
+            consTot: "Litri di benzina consumati calcolati in base ai km percorsi.",
+            medKml: "Media chilometrica reale calcolata su tutte le sessioni salvate.",
+            spesaBenz: "Costo totale stimato del carburante utilizzato per lavorare.",
             target: "Cifra netta obiettivo. Il tasto Azzera pulisce tutto.",
             mancante: "Lordo necessario per completare l'obiettivo netto.",
             ggAttivi: "Giorni unici di lavoro registrati."
@@ -152,7 +152,6 @@
             const g = [document.getElementById('fDay'), document.getElementById('sDay')], m = [document.getElementById('fMonth'), document.getElementById('sMonth')], a = [document.getElementById('fYear'), document.getElementById('sYear')];
             g.forEach(s => { s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             m.forEach(s => { s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            // Aggiornato per arrivare al 2040
             a.forEach(s => { s.innerHTML = ""; for(let i=2024; i<=2040; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
         }
 
@@ -238,10 +237,11 @@
                         <button class="btn-del" onclick="elimina('sessioni', ${i.id})">ELIMINA</button>
                     </div>`;
                 } else {
+                    let litriMessi = (i.euro / i.prezzo).toFixed(1);
                     h += `<div class="history-item" style="border-left-color:#ffa500">
                         <div class="hist-details">
                             <span class="hist-date" style="color:#ffa500">${dIT} - RIFORNI. <span class="hist-time">Registrato alle ${ora}</span></span>
-                            <span>Spesa: <b>€${i.euro.toFixed(2)}</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}/l</b></span>
+                            <span>Spesa: <b>€${i.euro.toFixed(2)}</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}/l</b> | Litri: <b>${litriMessi}L</b></span>
                         </div>
                         <button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">ELIMINA</button>
                     </div>`;
