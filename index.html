@@ -8,7 +8,6 @@
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Protezione contro popup dizionario browser */
         input, select { -webkit-user-select: text; user-select: text; }
 
         .card { background: #1e1e1e; padding: 6px; border-radius: 10px; border: 1px solid #333; margin-bottom: 6px; width: 100%; }
@@ -16,14 +15,12 @@
         .section-title { color: #00CCBC; margin: 2px 0 8px 0; text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; display: block; }
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         
-        /* Box interamente cliccabile con feedback visivo */
         .data-box { background: #252525; padding: 2px; border-radius: 6px; border: 1px solid #333; text-align: center; min-height: 38px; display: flex; flex-direction: column; justify-content: center; position: relative; cursor: pointer; }
         .data-box:active { background: #333; }
         
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; line-height: 1.1; margin-bottom: 2px; pointer-events: none; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; line-height: 1; pointer-events: none; }
         
-        /* Icona Info puramente estetica (non blocca il click) */
         .info-dot { position: absolute; right: 4px; top: 4px; width: 4px; height: 4px; background: #00CCBC; border-radius: 50%; opacity: 0.6; }
         
         input, select { height: 34px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; -webkit-appearance: none; width: 100%; padding: 0 2px; }
@@ -33,8 +30,8 @@
         .sel-year { width: 55px; font-size: 12px; }
         .input-group-fill { display: flex; gap: 4px; flex: 1; min-width: 0; }
         .grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 5px; width: 100%; }
-        .grid-compact input { font-size: 11px; }
-        
+        .grid-compact > div { position: relative; }
+
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin: 8px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; pointer-events: none; }
@@ -97,9 +94,9 @@
         </div>
         
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box" style="background:transparent;"><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:85%; margin:0 auto;" oninput="salvaTarget()"></div>
-            <div class="data-box" style="background:transparent;" onclick="mostraInfo('mancante')"><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" style="background:transparent;" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
+            <div class="data-box" style="background:transparent;" onclick="mostraInfo('target')"><div class="info-dot"></div><span class="stat-label">OBIETTIVO €</span><input type="number" id="targetInput" style="height:22px; border-color:#00CCBC; width:85%; margin:0 auto;" oninput="salvaTarget()"></div>
+            <div class="data-box" style="background:transparent;" onclick="mostraInfo('mancante')"><div class="info-dot"></div><span class="stat-label">€ LORDI MANC.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" style="background:transparent;" onclick="mostraInfo('ggAttivi')"><div class="info-dot"></div><span class="stat-label">GG ATTIVI</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -116,8 +113,8 @@
                 <select id="fYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <input type="number" id="fuelEuro" placeholder="€ spesi">
-                <input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro">
+                <div style="flex:1; position:relative;" onclick="mostraInfo('fEuro')"><div class="info-dot"></div><input type="number" id="fuelEuro" placeholder="€ spesi"></div>
+                <div style="flex:1; position:relative;" onclick="mostraInfo('fPrezzo')"><div class="info-dot"></div><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/litro"></div>
             </div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()">SALVA PREZZO</button>
@@ -132,14 +129,14 @@
                 <select id="sYear" class="sel-year"></select>
             </div>
             <div class="input-group-fill">
-                <input type="number" id="sessLordo" step="0.01" placeholder="Lordo €">
-                <input type="number" id="sessOre" step="0.1" placeholder="Ore">
+                <div style="flex:1; position:relative;" onclick="mostraInfo('sLordo')"><div class="info-dot"></div><input type="number" id="sessLordo" step="0.01" placeholder="Lordo €"></div>
+                <div style="flex:1; position:relative;" onclick="mostraInfo('sOre')"><div class="info-dot"></div><input type="number" id="sessOre" step="0.1" placeholder="Ore"></div>
             </div>
         </div>
         <div class="grid-compact">
-            <input type="number" id="sessKm" placeholder="Km percorsi">
-            <input type="number" id="sessL100" step="0.1" placeholder="l/100 km">
-            <input type="number" id="sessScarto" placeholder="Scarto">
+            <div onclick="mostraInfo('sKm')"><div class="info-dot"></div><input type="number" id="sessKm" placeholder="Km percorsi"></div>
+            <div onclick="mostraInfo('sL100')"><div class="info-dot"></div><input type="number" id="sessL100" step="0.1" placeholder="l/100 km"></div>
+            <div onclick="mostraInfo('sScarto')"><div class="info-dot"></div><input type="number" id="sessScarto" placeholder="Scarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
@@ -161,14 +158,21 @@
             kmCons: "Chilometri effettivi di lavoro (esclusi gli spostamenti personali).",
             kmAss: "Chilometri totali segnati dal mezzo.",
             guadH: "Quanto guadagni all'ora al netto delle spese.",
+            target: "Cifra netta che desideri guadagnare. La barra progredisce col netto reale.",
             mancante: "Incasso lordo necessario per completare l'obiettivo netto.",
-            ggAttivi: "Giorni in cui hai effettuato almeno una consegna."
+            ggAttivi: "Giorni in cui hai effettuato almeno una consegna.",
+            fEuro: "Inserisci l'importo totale pagato al benzinaio.",
+            fPrezzo: "Inserisci il prezzo al litro (es. 1.789). Serve per calcolare i litri e i costi futuri.",
+            sLordo: "Totale incassato nel turno (incluso mance).",
+            sOre: "Durata del turno (usa i decimali, es: 3.5 per 3 ore e mezza).",
+            sKm: "Chilometri totali indicati dal contachilometri a fine turno.",
+            sL100: "Consumo medio indicato dal computer di bordo (es. 2.5).",
+            sScarto: "Km fatti per motivi personali o tragitto casa-lavoro da non scalare dal guadagno."
         };
 
         function mostraInfo(chiave) {
             const t = testiInfo[chiave];
             if(t) {
-                // Piccolo timeout per prevenire conflitti con la selezione del browser
                 setTimeout(() => {
                     document.getElementById('infoText').innerText = t;
                     document.getElementById('infoModal').style.display = 'flex';
@@ -240,16 +244,4 @@
                 let d = item.data.split("-"), dIT = d[2]+"/"+d[1]+"/"+d[0];
                 if(item.tipo === 'S') {
                     let kE = Math.max(0, item.km - item.scarto), nS = (item.lordo * 0.8) - ((kE / 100) * item.l100 * uP);
-                    h += `<div class="session-item"><span class="history-date">${dIT} - TURNO</span><div style="display:flex; justify-content:space-between; align-items:center;"><span>Lordo: <b>€${item.lordo.toFixed(2)}</b></span><span class="tag-netto">€${nS.toFixed(2)}</span></div><button class="btn-del" onclick="elimina('sessioni', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
-                } else {
-                    h += `<div class="session-item" style="border-left-color: #ffa500;"><span class="history-date" style="color:#ffa500;">${dIT} - PREZZO BENZINA</span><span>Prezzo: <b>€${item.prezzo.toFixed(3)}/l</b></span><button class="btn-del" onclick="elimina('rifornimenti', ${item.id})" style="position:absolute; right:10px; top:10px;">ELIMINA</button></div>`;
-                }
-            });
-            document.getElementById('storico').innerHTML = h;
-        }
-        
-        function elimina(t, id) { if(confirm("Eliminare?")) { db[t] = db[t].filter(i => i.id !== id); salva(); } }
-        popolaMenuDate(); calcola(); document.getElementById('targetInput').value = db.target > 0 ? db.target : "";
-    </script>
-</body>
-</html>
+                    h += `<div class="session-item"><span class="history-date">${dIT} - TURNO</span><div style="display:flex; justify-content:space-between; align-items:center;"><span>Lordo: <b>€${item.lordo.toFixed(2)}</b></span><span class="tag-netto">€${nS.toFixed(2)}</span></div><button class="
