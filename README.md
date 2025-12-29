@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300">
+</p>
+
 <div align="center">
   <h1 align="center">🚗 Rider Tracker Pro (v94.2)</h1>
   
