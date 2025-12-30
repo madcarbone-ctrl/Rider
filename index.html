@@ -3,59 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V8</title>
+    <title>Rider Tracker Pro v94 V9</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
-        body { background: var(--bg); color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 5px; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        body { background: var(--bg); color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Layout Compattato */
-        .card { background: var(--card); padding: 6px; border-radius: 12px; border: 1px solid #222; margin-bottom: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .main-title { color: var(--main); margin-bottom: 4px; text-align: center; font-size: 13px; font-weight: 900; letter-spacing: 1px; }
+        .card { background: var(--card); padding: 6px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
+        .main-title { color: var(--main); margin-bottom: 4px; text-align: center; font-size: 13px; font-weight: 900; }
         .section-title { color: var(--main); margin-bottom: 3px; text-align: center; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         
-        /* Dashboard */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 4px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 35px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        /* Progress Bar */
         .progress-container { width: 100%; background: #111; border-radius: 10px; height: 16px; margin-top: 5px; position: relative; overflow: hidden; border: 1px solid #222; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), var(--main)); transition: width 0.8s ease-out; }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 900; color: #fff; }
 
-        /* Input */
         input, select { height: 26px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         .label-mini { font-size: 8px; color: #777; margin-bottom: 1px; display: block; font-weight: bold; }
         .input-row { display: flex; gap: 4px; margin-bottom: 3px; }
         .input-group { flex: 1; }
         .date-row { display: flex; gap: 3px; margin-bottom: 4px; }
 
-        /* Pulsanti */
-        button { width: 100%; height: 32px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 11px; }
-        .btn-add { background: var(--main); color: #000; }
-        .btn-fuel { background: var(--fuel); color: #000; flex: 2; }
-        .btn-scan { background: var(--danger); color: #fff; flex: 1; }
+        button { width: 100%; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 11px; }
+        .btn-add { background: var(--main); color: #000; height: 32px; }
+        .btn-fuel { background: var(--fuel); color: #000; flex: 2; height: 32px; }
+        .btn-scan { background: var(--danger); color: #fff; flex: 1; height: 32px; }
 
-        /* AREA FINALE UNIFORMATA */
-        .bottom-actions { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding-bottom: 5px; }
-        .btn-hist { background: #1f1f1f; color: var(--main); border: 1px solid #333; height: 30px; }
-        .btn-reset { background: #2a0a0a; color: var(--danger); border: 1px solid #400; height: 28px; font-size: 10px; }
+        /* UNIFORMAZIONE PARTE BASSA */
+        .bottom-actions { margin-top: 5px; display: flex; flex-direction: column; gap: 5px; padding-bottom: 10px; }
+        .btn-hist { background: #1f1f1f; color: var(--main); border: 1px solid #333; height: 32px; }
+        .btn-reset { background: #2a0a0a; color: var(--danger); border: 1px solid #400; height: 32px; font-size: 10px; }
 
-        /* Storico */
-        #wrapperStorico { display: none; height: 120px; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #222; }
+        #wrapperStorico { display: none; max-height: 150px; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #222; }
 
-        /* Modal */
+        /* MODAL PREMIUM */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .modal-card { background: linear-gradient(145deg, #1e1e1e, #121212); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.8); opacity: 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-card { background: linear-gradient(145deg, #1e1e1e, #121212); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.8); opacity: 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay.active { display: flex; }
         .modal-overlay.active .modal-card { transform: scale(1); opacity: 1; }
-        .modal-icon-circle { width: 50px; height: 50px; background: rgba(0, 204, 188, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 24px; color: var(--main); border: 1px solid rgba(0, 204, 188, 0.2); }
+        .modal-icon-circle { width: 50px; height: 50px; background: rgba(0, 204, 188, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 24px; color: var(--main); }
         .modal-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; text-transform: uppercase; }
         .modal-desc { font-size: 12px; color: #aaa; line-height: 1.4; margin-bottom: 15px; }
-        
-        #toast { visibility: hidden; background: var(--main); color: #000; padding: 8px 16px; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); border-radius: 25px; font-weight: bold; font-size: 12px; z-index: 10001; }
+        .modal-btn-close { background: var(--main); color: #000; height: 40px; border-radius: 12px; }
+
+        #toast { visibility: hidden; background: var(--main); color: #000; padding: 8px 16px; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); border-radius: 25px; font-weight: bold; font-size: 12px; z-index: 10001; }
         #toast.show { visibility: visible; }
     </style>
 </head>
@@ -164,15 +159,15 @@
 
         function mostraInfo(k) {
             const m = {
-                lordoTot: ["📊", "LORDO TOTALE", "Tutti i tuoi guadagni sommati prima di tasse e spese."],
-                nettoTot: ["💰", "NETTO REALE", "Il tuo guadagno pulito stimato (-20% tasse e costo benzina)."],
-                oreTot: ["⏱️", "ORE LAVORO", "Il tempo totale passato in sella per tutte le sessioni."],
-                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati in base ai KM e al consumo L/100km."],
-                medKml: ["📈", "MEDIA KM/L", "Quanti chilometri percorri mediamente con un litro."],
-                spesaBenz: ["💸", "SPESA BENZINA", "Costo totale stimato del carburante basato sull'ultimo rifornimento."],
-                mancante: ["🎯", "LORDO MANCANTE", "Guadagno lordo necessario per raggiungere l'obiettivo netto."],
-                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali in cui hai effettuato almeno un turno."],
-                pBar: ["🏆", "PROGRESSO", "Percentuale completata verso il tuo obiettivo netto."]
+                lordoTot: ["📊", "LORDO TOTALE", "Somma dei guadagni prima di tasse e spese."],
+                nettoTot: ["💰", "NETTO REALE", "Guadagno pulito stimato (-20% tasse e benzina)."],
+                oreTot: ["⏱️", "ORE LAVORO", "Tempo totale passato in sella."],
+                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati."],
+                medKml: ["📈", "MEDIA KM/L", "Efficienza media del tuo veicolo."],
+                spesaBenz: ["💸", "SPESA BENZINA", "Costo carburante basato sull'ultimo rifornimento."],
+                mancante: ["🎯", "LORDO MANCANTE", "Lordo necessario per il tuo obiettivo netto."],
+                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali di attività registrata."],
+                pBar: ["🏆", "PROGRESSO", "Avanzamento verso il tuo obiettivo."]
             };
             pop(m[k][0], m[k][1], m[k][2]);
         }
@@ -190,7 +185,7 @@
         function chiudiPop() { document.getElementById('modalOverlay').classList.remove('active'); setTimeout(() => document.getElementById('modalOverlay').style.display = 'none', 300); }
 
         function chiediReset() {
-            pop('⚠️', 'AZZERA TUTTO', 'Sei sicuro? Perderai tutti i turni e l\'obiettivo.', {
+            pop('⚠️', 'AZZERA TUTTO', 'Perderai tutti i turni e l\'obiettivo impostato.', {
                 text: 'SI, CANCELLA',
                 fn: () => { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiPop(); showToast("Dati azzerati!"); }
             });
