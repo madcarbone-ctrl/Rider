@@ -3,113 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.974</title>
+    <title>Rider Tracker Pro v1.0.975</title>
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
+        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 5px 10px 5px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
 
-        /* HEADER COMPATTO */
-        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 5px; }
-        .main-title { color: #00CCBC; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
-        .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 1px 5px; border-radius: 4px; border: 1px solid #00CCBC; }
+        /* HEADER ULTRA COMPATTO */
+        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 0 5px; height: 25px; }
+        .main-title { color: #00CCBC; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .version-badge { font-size: 7px; background: #333; color: #00CCBC; padding: 1px 4px; border-radius: 3px; border: 1px solid #00CCBC; }
 
-        /* MODALE INFO */
-        #infoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .info-card { background: #1e1e1e; width: 85%; max-width: 300px; padding: 20px; border-radius: 15px; border: 1px solid #00CCBC; text-align: center; }
-
-        /* TABELLA STATISTICHE OTTIMIZZATA IN ALTEZZA */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 8px; }
+        /* TABELLA STATISTICHE COMPRESSA */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 6px; }
         .stat-box { 
-            background: #1e1e1e; padding: 6px 2px; border-radius: 8px; border: 1px solid #333; 
-            text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 52px; 
+            background: #1e1e1e; padding: 4px 2px; border-radius: 6px; border: 1px solid #333; 
+            text-align: center; display: flex; flex-direction: column; justify-content: center; height: 45px; 
         }
-        .label-text { font-size: 7.5px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
-        .value-text { font-size: 12px; font-weight: 900; color: #fff; }
-        .info-i { color: #00CCBC; font-size: 10px; margin-left: 2px; cursor: pointer; }
+        .label-text { font-size: 7px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 1px; }
+        .value-text { font-size: 11px; font-weight: 900; color: #fff; }
+        .info-i { color: #00CCBC; font-size: 9px; margin-left: 2px; cursor: pointer; }
 
         .target-input { 
             background: #111; border: 1px solid #333; color: #00CCBC; 
-            font-size: 12px; font-weight: 900; width: 85%; text-align: center; 
-            border-radius: 4px; height: 20px; outline: none;
+            font-size: 11px; font-weight: 900; width: 80%; text-align: center; 
+            border-radius: 3px; height: 18px; outline: none; margin: 0 auto;
         }
 
-        /* PROGRESS BAR */
-        .progress-wrap { background: #1e1e1e; border-radius: 8px; height: 22px; margin-bottom: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
+        /* PROGRESS BAR SOTTILE */
+        .progress-wrap { background: #1e1e1e; border-radius: 4px; height: 18px; margin-bottom: 8px; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s; }
-        .progress-label { position: absolute; width: 100%; text-align: center; top: 4px; font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
+        .progress-label { position: absolute; width: 100%; text-align: center; top: 2px; font-size: 10px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
 
-        /* SEZIONI INPUT */
-        .section-card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; }
-        .section-title { font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-        .input-row { display: flex; gap: 5px; margin-bottom: 8px; }
-        .mini-tag { font-size: 8.5px; color: #666; font-weight: bold; margin-bottom: 3px; display: block; }
+        /* SEZIONI INPUT COMPATTE */
+        .section-card { background: #1e1e1e; padding: 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 6px; }
+        .section-title { font-size: 9px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .input-row { display: flex; gap: 4px; margin-bottom: 6px; }
+        .mini-tag { font-size: 8px; color: #666; font-weight: bold; margin-bottom: 2px; display: block; }
         
-        input, select { width: 100%; height: 36px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; text-align: center; }
-        button { width: 100%; height: 40px; border: none; border-radius: 6px; font-weight: 900; text-transform: uppercase; cursor: pointer; }
+        input, select { width: 100%; height: 34px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 13px; text-align: center; }
+        button { width: 100%; height: 38px; border: none; border-radius: 5px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; }
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-work { background: #00CCBC; color: #000; }
         
-        /* CRONOLOGIA CORRETTA (Pulsante elimina piccolo) */
+        /* CRONOLOGIA CORRETTA - TASTO ELIMINA PICCOLO A DESTRA */
         .history-item { 
             background: #1e1e1e; padding: 8px; border-radius: 8px; border: 1px solid #333; 
-            margin-bottom: 6px; border-left: 4px solid #00CCBC; display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 5px; border-left: 4px solid #00CCBC; display: flex; align-items: center; justify-content: space-between;
         }
-        .hist-content { flex: 1; font-size: 10.5px; line-height: 1.3; }
-        .hist-data { font-weight: 900; color: #00CCBC; margin-bottom: 2px; }
-        .del-btn { background: #ff4444; color: #fff; border: none; border-radius: 4px; padding: 8px 10px; font-size: 9px; font-weight: bold; margin-left: 10px; }
+        .hist-content { flex: 1; font-size: 10px; line-height: 1.3; color: #ccc; }
+        .hist-title { font-weight: 900; color: #00CCBC; font-size: 11px; margin-bottom: 2px; }
+        .del-btn { 
+            background: #ff4444; color: #fff; border: none; border-radius: 4px; 
+            padding: 0 10px; height: 30px; font-size: 9px; font-weight: bold; 
+            margin-left: 10px; flex-shrink: 0;
+        }
+
+        #infoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999999; align-items: center; justify-content: center; }
+        .info-card { background: #1e1e1e; width: 80%; max-width: 280px; padding: 15px; border-radius: 12px; border: 1px solid #00CCBC; text-align: center; }
     </style>
 </head>
 <body onload="inizializza()">
 
     <div id="infoOverlay" onclick="this.style.display='none'">
         <div class="info-card" onclick="event.stopPropagation()">
-            <h3 id="infoTitle" style="color:#00CCBC; margin-bottom:8px; font-size:16px;"></h3>
-            <p id="infoText" style="color:#ccc; font-size:13px; line-height:1.4;"></p>
+            <h3 id="infoTitle" style="color:#00CCBC; margin-top:0; font-size:14px;"></h3>
+            <p id="infoText" style="color:#ccc; font-size:12px;"></p>
         </div>
     </div>
 
     <div class="header-main">
-        <div style="font-size:14px;" onclick="showToast('Rider Tracker')">🚲</div>
+        <div style="font-size:12px;">🚲</div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <span class="version-badge">v1.0.974</span>
+        <span class="version-badge">v1.0.975</span>
     </div>
 
     <div class="stats-grid">
         <div class="stat-box">
-            <span class="label-text">LORDO TOT <span class="info-i" onclick="openPop('LORDO','Guadagno totale lordo.')">ⓘ</span></span>
+            <span class="label-text">LORDO TOT <span class="info-i" onclick="openPop('LORDO','Totale lordo.')">ⓘ</span></span>
             <span class="value-text" style="color:#00CCBC;">€ <span id="valLordo">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-text">NETTO REAL <span class="info-i" onclick="openPop('NETTO','Lordo - 20% tasse - Benzina.')">ⓘ</span></span>
+            <span class="label-text">NETTO REAL <span class="info-i" onclick="openPop('NETTO','Lordo - 20% - Benza.')">ⓘ</span></span>
             <span class="value-text">€ <span id="valNetto">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-text">ORE LAVORO <span class="info-i" onclick="openPop('ORE','Somma ore lavorate.')">ⓘ</span></span>
+            <span class="label-text">ORE LAVORO <span class="info-i" onclick="openPop('ORE','Ore totali.')">ⓘ</span></span>
             <span class="value-text" id="valOre">0.0</span>
         </div>
         <div class="stat-box">
-            <span class="label-text">CONSUMO L <span class="info-i" onclick="openPop('LITRI','Carburante consumato stimato.')">ⓘ</span></span>
+            <span class="label-text">CONSUMO L <span class="info-i" onclick="openPop('LITRI','Litri stimati.')">ⓘ</span></span>
             <span class="value-text" id="valLitri">0.0 L</span>
         </div>
         <div class="stat-box">
-            <span class="label-text">MEDIA KM/L <span class="info-i" onclick="openPop('MEDIA','Resa chilometrica media.')">ⓘ</span></span>
+            <span class="label-text">MEDIA KM/L <span class="info-i" onclick="openPop('MEDIA','Efficienza media.')">ⓘ</span></span>
             <span class="value-text" style="color:#ffa500;" id="valMedia">0.0</span>
         </div>
         <div class="stat-box">
-            <span class="label-text">SPESA BENZA <span class="info-i" onclick="openPop('BENZINA','Costo totale benzina.')">ⓘ</span></span>
+            <span class="label-text">SPESA BENZA <span class="info-i" onclick="openPop('BENZINA','Costo carburante.')">ⓘ</span></span>
             <span class="value-text" style="color:#ff4444;">€ <span id="valSpesaB">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-text">OBIETTIVO € <span class="info-i" onclick="openPop('TARGET','Traguardo netto desiderato.')">ⓘ</span></span>
+            <span class="label-text">OBIETTIVO € <span class="info-i" onclick="openPop('TARGET','Traguardo netto.')">ⓘ</span></span>
             <input type="number" id="targetIn" class="target-input" oninput="salvaTarget()" placeholder="0">
         </div>
         <div class="stat-box">
-            <span class="label-text">LORDO MANC. <span class="info-i" onclick="openPop('MANCANTE','Quanto lordo manca al target.')">ⓘ</span></span>
+            <span class="label-text">LORDO MANC. <span class="info-i" onclick="openPop('MANCANTE','Mancante al target.')">ⓘ</span></span>
             <span class="value-text" style="color:#ff4444;">€ <span id="valManc">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-text">GG LAVORO <span class="info-i" onclick="openPop('GIORNI','Giorni di attività.')">ⓘ</span></span>
+            <span class="label-text">GG LAVORO <span class="info-i" onclick="openPop('GIORNI','Giorni attività.')">ⓘ</span></span>
             <span class="value-text" id="valGG">0</span>
         </div>
     </div>
@@ -120,40 +123,40 @@
     </div>
 
     <div class="section-card" style="border-top: 3px solid #ffa500;">
-        <div class="section-title">⛽ REGISTRA RIFORNIMENTO</div>
+        <div class="section-title">⛽ RIFORNIMENTO</div>
         <div class="input-row">
-            <div style="flex:1.2"><span class="mini-tag">DATA</span>
-                <div style="display:flex; gap:2px;"><select id="fd" style="font-size:12px;"></select><select id="fm" style="font-size:12px;"></select></div>
+            <div style="flex:1.2">
+                <div style="display:flex; gap:2px;"><select id="fd"></select><select id="fm"></select></div>
             </div>
-            <div style="flex:1"><span class="mini-tag">€ SPESI</span><input type="number" id="fE" placeholder="0.00"></div>
-            <div style="flex:1"><span class="mini-tag">€/LITRO</span><input type="number" id="fP" step="0.001" placeholder="1.xxx"></div>
+            <div style="flex:1"><input type="number" id="fE" placeholder="€"></div>
+            <div style="flex:1"><input type="number" id="fP" step="0.001" placeholder="€/L"></div>
         </div>
-        <button class="btn-fuel" onclick="addFuel()">SALVA RIFORNIMENTO</button>
+        <button class="btn-fuel" onclick="addFuel()">SALVA</button>
     </div>
 
     <div class="section-card" style="border-top: 3px solid #00CCBC;">
         <div class="section-title">➕ AGGIUNGI TURNO</div>
         <div class="input-row">
-            <div style="flex:1.2"><span class="mini-tag">DATA</span>
-                <div style="display:flex; gap:2px;"><select id="sd" style="font-size:12px;"></select><select id="sm" style="font-size:12px;"></select></div>
+            <div style="flex:1.2">
+                <div style="display:flex; gap:2px;"><select id="sd"></select><select id="sm"></select></div>
             </div>
-            <div style="flex:1"><span class="mini-tag">LORDO €</span><input type="number" id="sL"></div>
-            <div style="flex:1"><span class="mini-tag">ORE</span><input type="number" id="sO" step="0.5"></div>
+            <div style="flex:1"><input type="number" id="sL" placeholder="Lordo"></div>
+            <div style="flex:1"><input type="number" id="sO" step="0.5" placeholder="Ore"></div>
         </div>
         <div class="input-row">
-            <div class="input-group"><span class="mini-tag">KM</span><input type="number" id="sK"></div>
-            <div class="input-group"><span class="mini-tag">L/100 KM</span><input type="number" id="sC" step="0.1"></div>
-            <div class="input-group"><span class="mini-tag">SCARTO</span><input type="number" id="sS"></div>
+            <input type="number" id="sK" placeholder="KM">
+            <input type="number" id="sC" step="0.1" placeholder="L/100km">
+            <input type="number" id="sS" placeholder="Scarto">
         </div>
         <button class="btn-work" onclick="addShift()">SALVA TURNO</button>
     </div>
 
-    <div id="cronologia" style="margin-top:10px;"></div>
-    <button onclick="resetAll()" style="background:transparent; color:#555; border:1px solid #333; margin:15px 0; height:30px; font-size:9px;">AZZERA DATI</button>
-    <div id="toast" style="visibility:hidden; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#00CCBC; color:#000; padding:8px 16px; border-radius:50px; font-size:12px; font-weight:bold; z-index:10000;"></div>
+    <div id="cronologia"></div>
+    <button onclick="resetAll()" style="background:transparent; color:#444; border:1px solid #222; margin:10px 0; height:25px; font-size:8px;">AZZERA TUTTO</button>
+    <div id="toast" style="visibility:hidden; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#00CCBC; color:#000; padding:5px 15px; border-radius:20px; font-size:10px; font-weight:bold; z-index:10000;"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v974')) || { shifts: [], fuels: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v975')) || { shifts: [], fuels: [], target: 0 };
 
         function openPop(t, txt) { 
             document.getElementById('infoTitle').innerText = t; 
@@ -174,13 +177,13 @@
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
-        function save() { localStorage.setItem('rider_pro_v974', JSON.stringify(db)); calc(); }
+        function save() { localStorage.setItem('rider_pro_v975', JSON.stringify(db)); calc(); }
 
         function addFuel() {
             let e = parseFloat(document.getElementById('fE').value), p = parseFloat(document.getElementById('fP').value);
             if(e > 0 && p > 0) {
                 db.fuels.push({ id: Date.now(), d: `${document.getElementById('fd').value}/${document.getElementById('fm').value}`, e: e, p: p, time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) });
-                save(); ['fE','fP'].forEach(id => document.getElementById(id).value=""); showToast("⛽ Salvato!");
+                save(); ['fE','fP'].forEach(id => document.getElementById(id).value=""); showToast("⛽ Salvato");
             }
         }
 
@@ -194,21 +197,19 @@
                     d: `${document.getElementById('sd').value}/${document.getElementById('sm').value}`,
                     time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
                 });
-                save(); ['sL','sO','sK','sC','sS'].forEach(id => document.getElementById(id).value=""); showToast("✅ Turno Salvato!");
+                save(); ['sL','sO','sK','sC','sS'].forEach(id => document.getElementById(id).value=""); showToast("✅ Turno Salvato");
             }
         }
 
         function calc() {
             let tL=0, tO=0, tLit=0, tSp=0;
             let lastP = db.fuels.length > 0 ? db.fuels[db.fuels.length-1].p : 1.85;
-
             db.shifts.forEach(s => {
                 tL += s.l; tO += s.o;
                 let kEff = Math.max(0, s.k - s.s);
                 let lit = (kEff / 100) * s.c;
                 tLit += lit; tSp += (lit * lastP);
             });
-
             let nR = (tL * 0.8) - tSp;
             document.getElementById('valLordo').innerText = tL.toFixed(2);
             document.getElementById('valNetto').innerText = nR.toFixed(2);
@@ -217,10 +218,8 @@
             document.getElementById('valSpesaB').innerText = tSp.toFixed(2);
             document.getElementById('valMedia').innerText = tLit > 0 ? (tL/tLit).toFixed(1) : "0.0";
             document.getElementById('valGG').innerText = [...new Set(db.shifts.map(s => s.d))].length;
-            
             let manc = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25) : 0;
             document.getElementById('valManc').innerText = manc.toFixed(2);
-            
             let perc = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('pPerc').innerText = perc + "%";
@@ -234,23 +233,22 @@
                 if(i.type === 'S') {
                     h += `<div class="history-item">
                         <div class="hist-content">
-                            <div class="hist-data">${i.d}/2025 - TURNO <small style="color:#666; font-weight:normal;">alle ${i.time}</small></div>
-                            Lordo: <b>€${i.l}</b> | Ore: <b>${i.o}h</b><br>
-                            <small style="color:#aaa;">Km Eff: ${i.k - i.s} | Consumo: ${( ( (i.k-i.s)/100)*i.c ).toFixed(2)}L</small>
+                            <div class="hist-title">${i.d}/2025 - TURNO <span style="font-weight:normal; color:#666;">ore ${i.time}</span></div>
+                            Lordo: <b>€${i.l}</b> | Ore: <b>${i.o}</b> | Km Eff: <b>${i.k - i.s}</b>
                         </div>
                         <button class="del-btn" onclick="del('shifts',${i.id})">ELIMINA</button>
                     </div>`;
                 } else {
                     h += `<div class="history-item" style="border-left-color:#ffa500;">
                         <div class="hist-content">
-                            <div class="hist-data" style="color:#ffa500;">${i.d}/2025 - RIFORNI. <small style="color:#666; font-weight:normal;">alle ${i.time}</small></div>
+                            <div class="hist-title" style="color:#ffa500;">${i.d}/2025 - RIFORNI. <span style="font-weight:normal; color:#666;">ore ${i.time}</span></div>
                             Spesa: <b>€${i.e}</b> | Prezzo: <b>${i.p}€/L</b>
                         </div>
                         <button class="del-btn" onclick="del('fuels',${i.id})">ELIMINA</button>
                     </div>`;
                 }
             });
-            document.getElementById('cronologia').innerHTML = h ? "<div style='font-size:10px; font-weight:bold; color:#555; margin-bottom:8px;'>📜 CRONOLOGIA ATTIVITÀ</div>" + h : "";
+            document.getElementById('cronologia').innerHTML = h ? "<div style='font-size:9px; font-weight:bold; color:#555; margin:5px 0;'>📜 CRONOLOGIA</div>" + h : "";
         }
 
         function del(t, id) { db[t] = db[t].filter(x => x.id !== id); save(); }
