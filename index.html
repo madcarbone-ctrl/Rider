@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.955</title>
+    <title>Rider Tracker Pro v1.0.956</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -13,12 +13,9 @@
         
         /* Header Centrato e Bilanciato */
         .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 30px; }
-        
-        .lang-side { display: flex; gap: 3px; flex: 1; }
-        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 3px; padding: 1px 3px; font-size: 10px; cursor: pointer; line-height: 1; }
-        
+        .lang-side { display: flex; gap: 4px; flex: 1; }
+        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 3px; padding: 2px 4px; font-size: 10px; cursor: pointer; }
         .main-title { color: #00CCBC; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; white-space: nowrap; }
-        
         .version-side { flex: 1; text-align: right; }
         .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 2px 5px; border-radius: 4px; border: 1px solid #00CCBC; font-weight: normal; }
         
@@ -32,9 +29,8 @@
         
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; }
         
-        /* Layout Date v942 - Massima Visibilità */
+        /* Layout Date v942 */
         input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 14px; text-align: center; width: 100%; }
-        
         .row-flex { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end; }
         .date-col { flex: 0 0 auto; }
         .date-inputs { display: flex; gap: 3px; }
@@ -50,8 +46,11 @@
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
-        .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; font-size: 10px; }
-        .btn-del { width: 55px; height: 26px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; }
+        /* Storico Completo v942 */
+        .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; font-size: 10px; line-height: 1.4; }
+        .hist-details { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .hist-date { font-weight: bold; color: #00CCBC; font-size: 11px; }
+        .btn-del { width: 55px; height: 26px; font-size: 9px; background: #f44; color: #fff; border: none; border-radius: 4px; margin-left: 10px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; width: 85%; max-width: 300px; text-align: center; border: 1px solid #333; }
@@ -68,27 +67,25 @@
             <div class="btn-flag" onclick="setLang('us')">🇺🇸</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side">
-            <span class="version-badge">v1.0.955</span>
-        </div>
+        <div class="version-side"><span class="version-badge">v1.0.956</span></div>
     </div>
 
     <div class="card">
         <div class="summary-grid">
-            <div class="data-box" onclick="mostraInfo('lordoTot')"><span class="stat-label" data-tr="lordoTot">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('nettoTot')"><span class="stat-label" data-tr="nettoTot">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('oreTot')"><span class="stat-label" data-tr="oreTot">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('consTot')"><span class="stat-label" data-tr="consTot">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span> <span class="u-vol">L</span></span></div>
-            <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label" data-tr="medKml">Media</span><span class="stat-val" style="color:#ffa500"><span id="mediaKml">0.0</span> <span class="u-eff">km/l</span></span></div>
-            <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label" data-tr="spesaBenz">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="lordoTot">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="nettoTot">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="oreTot">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box"><span class="stat-label" data-tr="consTot">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span> <span class="u-vol">L</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="medKml">Media</span><span class="stat-val" style="color:#ffa500"><span id="mediaKml">0.0</span> <span class="u-eff">km/l</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="spesaBenz">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
             <div class="data-box">
                 <span class="stat-label" data-tr="target">Obiettivo €</span>
                 <input type="number" id="targetInput" style="height:22px; font-size:11px; margin-top:2px; background:transparent; border:none; border-bottom:1px solid #444;" oninput="salvaTarget()">
             </div>
-            <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label" data-tr="mancante">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label" data-tr="ggAttivi">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
+            <div class="data-box"><span class="stat-label" data-tr="mancante">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label" data-tr="ggAttivi">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -101,11 +98,7 @@
         <div class="row-flex">
             <div class="date-col">
                 <span class="label-mini" data-tr="data">DATA</span>
-                <div class="date-inputs">
-                    <select id="fDay" class="sel-small"></select>
-                    <select id="fMonth" class="sel-small"></select>
-                    <select id="fYear" class="sel-year"></select>
-                </div>
+                <div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div>
             </div>
             <div style="flex:1"><span class="label-mini">€ <span data-tr="spesi">SPESI</span></span><input type="number" id="fuelEuro" placeholder="0.00"></div>
             <div style="flex:1"><span class="label-mini">€/<span class="u-vol-unit">LITRO</span></span><input type="number" id="fuelPrezzo" step="0.001" placeholder="1.85"></div>
@@ -118,11 +111,7 @@
         <div class="row-flex">
             <div class="date-col">
                 <span class="label-mini" data-tr="data">DATA</span>
-                <div class="date-inputs">
-                    <select id="sDay" class="sel-small"></select>
-                    <select id="sMonth" class="sel-small"></select>
-                    <select id="sYear" class="sel-year"></select>
-                </div>
+                <div class="date-inputs"><select id="sDay" class="sel-small"></select><select id="sMonth" class="sel-small"></select><select id="sYear" class="sel-year"></select></div>
             </div>
             <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo"></div>
             <div style="flex:1"><span class="label-mini" data-tr="ore">ORE</span><input type="number" id="sessOre" step="0.5"></div>
@@ -137,14 +126,11 @@
 
     <div id="storico"></div>
     <button class="btn-reset-all" onclick="apriReset()" data-tr="btnReset">⚠️ AZZERA TUTTI I DATI</button>
-    
-    <div id="infoModal" class="modal-overlay" onclick="chiudiInfo()"><div class="modal-content" onclick="event.stopPropagation()"><div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:12px;">INFO</div><div id="infoText" style="font-size:13px; line-height:1.5; margin-bottom:20px;"></div><button onclick="chiudiInfo()" style="background:#00CCBC; color:#000;">CHIUDI</button></div></div>
-    <div id="resetModal" class="modal-overlay"><div class="modal-content"><div style="color:#ff4444; font-weight:bold; margin-bottom:10px;">⚠️ RESET</div><div id="resetText">Vuoi cancellare tutto?</div><div style="display:flex; gap:10px; margin-top:20px;"><button style="background:#444; color:#fff; flex:1;" onclick="chiudiReset()">NO</button><button style="background:#ff4444; color:#fff; flex:1;" onclick="confermaReset()">SÌ</button></div></div></div>
     <div id="toast"></div>
 
     <script>
         const i18n = {
-            it: { lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", spesi:"SPESI", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", perc:"PERCORSI", scarto:"SCARTO", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", uVolUnit:"LITRO", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNI." },
+            it: { lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", spesi:"SPESI", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", perc:"PERCORSI", scarto:"SCARTO", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", uVolUnit:"LITRO", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO" },
             en: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", spesi:"SPENT", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", uVolUnit:"LITER", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" },
             us: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", spesi:"SPENT", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", uVolUnit:"GALLON", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" }
         };
@@ -219,8 +205,14 @@
             let tutti = [...db.sessioni, ...db.rifornimenti].sort((a,b) => b.id - a.id);
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
-                if(i.tipo === 'S') { h += `<div class="history-item"><div><b>${dIT} - ${lang.histTurn}</b><br>€${i.lordo.toFixed(2)} | ${i.ore}h</div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">DEL</button></div>`; }
-                else { h += `<div class="history-item" style="border-left-color:#ffa500"><div><b>${dIT} - ${lang.histFuel}</b><br>€${i.euro.toFixed(2)}</div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">DEL</button></div>`; }
+                if(i.tipo === 'S') {
+                    let kE = Math.max(0, i.km - i.scarto);
+                    let ltS = (kE / 100) * i.l100;
+                    let kmlS = (ltS > 0) ? (kE / ltS).toFixed(1) : "0.0";
+                    h += `<div class="history-item"><div class="hist-details"><span class="hist-date">${dIT} - ${lang.histTurn}</span><span>€${i.lordo.toFixed(2)} | ${i.ore}h | ${kE}${lang.uDist} | ${kmlS}${lang.uEff}</span></div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">DEL</button></div>`;
+                } else {
+                    h += `<div class="history-item" style="border-left-color:#ffa500"><div class="hist-details"><span class="hist-date" style="color:#ffa500">${dIT} - ${lang.histFuel}</span><span>€${i.euro.toFixed(2)} | €${i.prezzo.toFixed(3)}/${lang.uVol} | ${(i.euro/i.prezzo).toFixed(1)}${lang.uVol}</span></div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">DEL</button></div>`;
+                }
             });
             document.getElementById('storico').innerHTML = h ? `<div class='section-title' style='margin-top:10px;'>${lang.histTitle}</div>` + h : "";
         }
@@ -230,7 +222,6 @@
         function chiudiReset() { document.getElementById('resetModal').style.display = 'none'; }
         function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiReset(); showToast(i18n[currentLang].msgResetOk); }
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-        function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
     </script>
 </body>
 </html>
