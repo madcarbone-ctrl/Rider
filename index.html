@@ -84,7 +84,7 @@
             <div class="data-box" onclick="mostraInfo('oreTot')"><span class="stat-label">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
             <div class="data-box" onclick="mostraInfo('consTot')"><span class="stat-label">Consumo L</span><span class="stat-val"><span id="litriTot">0.0</span> L</span></div>
             <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Media km/l Tot</span><span id="mediaKml" class="stat-val" style="color:#ffa500">0.0</span></div>
-            <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Carburante</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
             <div class="data-box" onclick="if(event.target.tagName !== 'INPUT') mostraInfo('target')">
@@ -116,12 +116,12 @@
         <div class="row-flex">
             <div class="date-col"><span class="label-mini">DATA</span><div class="date-inputs"><select id="sDay" class="sel-small"></select><select id="sMonth" class="sel-small"></select><select id="sYear" class="sel-year"></select></div></div>
             <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
-            <div style="flex:1"><span class="label-mini">ORE</span><input type="number" id="sessOre" step="0.1"></div>
+            <div style="flex:1"><span class="label-mini">ORE LAVORATE</span><input type="number" id="sessOre" step="0.1"></div>
         </div>
         <div class="summary-grid" style="margin-bottom:8px;">
             <div><span class="label-mini">KM PERCORSI</span><input type="number" id="sessKm"></div>
             <div><span class="label-mini">L/100 KM</span><input type="number" id="sessL100" step="0.1"></div>
-            <div><span class="label-mini">SCARTO</span><input type="number" id="sessScarto"></div>
+            <div><span class="label-mini">SCARTO KM</span><input type="number" id="sessScarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
