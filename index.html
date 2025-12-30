@@ -23,8 +23,12 @@
         
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
         
-        input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
+        input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; }
         
+        /* Classi per caselle strette */
+        .input-narrow { width: 75px !important; flex: none !important; }
+        .input-wide { flex: 1; }
+
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
         .date-col { display: flex; flex-direction: column; min-width: 135px; }
         .date-inputs { display: flex; gap: 2px; }
@@ -40,29 +44,26 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* FIX MODAL - VISIBILITÀ GARANTITA */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* MODAL FIX FINALE */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 20000; padding: 20px; }
+        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 100%; max-width: 320px; text-align: center; position: relative; }
 
-        /* CRONOLOGIA v94 DEFINITIVA */
+        /* CRONOLOGIA v94 REALE */
         .history-item { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; }
-        .hist-details { display: flex; flex-direction: column; gap: 4px; color: #ccc; flex: 1; }
-        .hist-date { font-size: 15px; font-weight: 900; color: #fff; display: block; margin-bottom: 2px; }
-        .hist-type { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .hist-val { font-size: 12px; color: #999; margin-top: 4px; line-height: 1.4; }
-        .hist-val b { color: #fff; }
+        .hist-details { display: flex; flex-direction: column; color: #ccc; flex: 1; }
+        .hist-date { font-size: 16px; font-weight: bold; color: #ffffff !important; display: block; margin-bottom: 2px; }
+        .hist-type { font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .hist-val { font-size: 12px; color: #999; line-height: 1.4; }
+        .hist-val b { color: #eee; }
         .btn-del-v94 { width: 50px; height: 50px; background: #ff4444; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: none; flex-shrink: 0; margin-left: 10px; }
 
-        .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
-        .footer span { color: #00CCBC; }
-
-        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 11000; border: 1px solid #00CCBC; font-size: 12px; }
+        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 21000; border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; }
     </style>
 </head>
 <body>
 
-    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:12000;display:none;flex-direction:column;">
+    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:22000;display:none;flex-direction:column;">
         <video id="camVideo" autoplay playsinline style="width:100%;flex-grow:1;object-fit:cover;"></video>
         <div style="height:120px;background:#121212;display:flex;justify-content:space-around;align-items:center;padding-bottom:20px;">
             <button style="color:white; background:none; width:auto;" onclick="chiudiCamera()">ANNULLA</button>
@@ -73,7 +74,7 @@
     </div>
 
     <div id="infoModal" class="modal-overlay">
-        <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-content">
             <div id="infoTitle" style="font-weight:bold; margin-bottom:12px; text-transform:uppercase; font-size: 16px;"></div>
             <div id="infoText" style="font-size:14px; line-height:1.5; margin-bottom:20px; color: #bbb;"></div>
             <div id="modalButtons" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -91,7 +92,7 @@
             <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Carburante</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box" style="cursor: default;">
+            <div class="data-box">
                 <span class="stat-label">Obiettivo €</span>
                 <input type="number" id="targetInput" style="height:24px; font-size:12px; margin-top:2px; background:#2a2a2a; border:1px solid #444; color:white; font-weight:bold;" oninput="salvaTarget()">
             </div>
@@ -115,8 +116,8 @@
                     <select id="fYear" class="sel-year"></select>
                 </div>
             </div>
-            <div style="flex:1"><span class="label-mini">€ SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
-            <div style="flex:1"><span class="label-mini">€/LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="1.xxx"></div>
+            <div class="input-narrow"><span class="label-mini">€ SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
+            <div class="input-wide"><span class="label-mini">€/LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="1.xxx"></div>
         </div>
         <div style="display:flex; gap:6px;">
             <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
@@ -135,8 +136,8 @@
                     <select id="sYear" class="sel-year"></select>
                 </div>
             </div>
-            <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
-            <div style="flex:1"><span class="label-mini">ORE LAVORATE</span><input type="number" id="sessOre" step="0.1"></div>
+            <div class="input-narrow"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo" step="0.01"></div>
+            <div class="input-narrow"><span class="label-mini">ORE LAV.</span><input type="number" id="sessOre" step="0.1"></div>
         </div>
         <div class="summary-grid" style="margin-bottom:8px;">
             <div><span class="label-mini">KM PERCORSI</span><input type="number" id="sessKm"></div>
@@ -150,45 +151,33 @@
     
     <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:12px; height:44px; border-radius:10px; border:1px solid #662222; width:100%; font-weight:bold;" onclick="chiediReset()">⚠️ AZZERA TUTTI I DATI</button>
     
-    <div class="footer">
-        MADE WITH ❤️ BY <span>MARCO CARBONE</span><br>
-        VERSION 1.0.942
-    </div>
+    <div class="footer">MADE WITH ❤️ BY <span>MARCO CARBONE</span><br>VERSION 1.0.942</div>
 
     <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
-        const video = document.getElementById('camVideo');
-        const overlay = document.getElementById('camOverlay');
 
         function mostraInfo(k) { 
-            const spiegazioni = { lordoTot: "Lordo totale incassato registrato in tutti i turni.", nettoTot: "Guadagno pulito: (Lordo - 20% tasse) - Spesa benzina.", oreTot: "Somma delle ore lavorate complessive.", consTot: "Litri di benzina consumati stimati.", medKml: "Media chilometrica reale (km effettivi / litri totali).", spesaBenz: "Costo totale del carburante utilizzato nei turni.", mancante: "Lordo stimato necessario per raggiungere l'obiettivo netto.", ggAttivi: "Giorni unici di lavoro registrati.", sezBenza: "Registra qui i rifornimenti o usa lo scanner.", sezTurno: "Inserisci i dati del tuo turno giornaliero." };
-            const m = document.getElementById('infoModal');
-            document.getElementById('infoTitle').innerText = "INFORMAZIONE";
+            const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore lavorate totali.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati.", sezBenza: "Registra rifornimenti.", sezTurno: "Registra turni." };
+            document.getElementById('infoTitle').innerText = "INFO";
             document.getElementById('infoTitle').style.color = "#00CCBC";
             document.getElementById('infoText').innerText = spiegazioni[k];
-            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>';
-            m.style.display = 'flex'; 
+            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">OK</button>';
+            document.getElementById('infoModal').style.display = 'flex'; 
         }
 
         function chiediReset() {
-            const m = document.getElementById('infoModal');
-            document.getElementById('infoTitle').innerText = "ATTENZIONE";
+            document.getElementById('infoTitle').innerText = "RESET";
             document.getElementById('infoTitle').style.color = "#ff4444";
-            document.getElementById('infoText').innerText = "Sei sicuro di voler eliminare definitivamente tutti i dati e l'obiettivo?";
+            document.getElementById('infoText').innerText = "Eliminare tutti i dati e l'obiettivo?";
             document.getElementById('modalButtons').innerHTML = `
-                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:5px;">SÌ, AZZERA TUTTO</button>
-                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>`;
-            m.style.display = 'flex';
+                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:5px;">SÌ, AZZERA</button>
+                <button onclick="chiudiModal()" style="background:#333; color:#fff;">NO</button>`;
+            document.getElementById('infoModal').style.display = 'flex';
         }
 
-        function eseguiReset() { 
-            db = { sessioni: [], rifornimenti: [], target: 0 }; 
-            document.getElementById('targetInput').value = ""; 
-            salva(); chiudiModal(); showToast("⚠️ Dati azzerati!"); 
-        }
-
+        function eseguiReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiModal(); }
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
@@ -198,22 +187,6 @@
             ['fDay', 'sDay'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             ['fMonth', 'sMonth'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
             ['fYear', 'sYear'].forEach(id => { const s = document.getElementById(id); for(let i=2024; i<=2030; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
-        }
-
-        async function apriCamera() { try { const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); video.srcObject = s; overlay.style.display = 'flex'; } catch (e) { alert("Attiva fotocamera."); } }
-        function chiudiCamera() { if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop()); overlay.style.display = 'none'; }
-        function scattaFoto() {
-            const c = document.getElementById('camCanvas'); c.width = video.videoWidth; c.height = video.videoHeight;
-            c.getContext('2d').drawImage(video, 0, 0); chiudiCamera(); showToast("🔍 Analisi...");
-            Tesseract.recognize(c, 'ita').then(({ data: { text } }) => {
-                const n = text.match(/\d+[.,]\d{2,3}/g);
-                if (n) {
-                    const p = n.map(x => parseFloat(x.replace(',', '.')));
-                    document.getElementById('fuelEuro').value = Math.max(...p);
-                    const pr = p.find(x => x > 1.3 && x < 2.3); if (pr) document.getElementById('fuelPrezzo').value = pr;
-                    showToast("✅ Fatto!");
-                } else showToast("❌ Riprova");
-            });
         }
 
         function aggiungiBenza() {
@@ -253,23 +226,28 @@
         function renderStorico() {
             let h = "";
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
-            
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dataIT = `${d[2]}/${d[1]}/${d[0]}`;
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let icon = i.t=='S' ? '📋' : '⛽';
                 let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
-                
-                let details = "";
-                if(i.t=='S') {
-                    let lt = ((Math.max(0, i.km - i.scarto))/100)*i.l100;
-                    details = `💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ <b>${i.ore}h</b> | 📍 <b>${i.km}km</b> | ⛽ <b>${lt.toFixed(1)}L</b>`;
-                } else {
-                    details = `⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ <b>€${i.prezzo}/L</b>`;
-                }
-
-                h += `
-                <div class="history-item" style="border-left-color: ${color}">
+                let details = i.t=='S' ? `💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ <b>${i.ore}h</b> | 📍 <b>${i.km}km</b>` : `⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ <b>€${i.prezzo}/L</b>`;
+                h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
                         <span class="hist-date">${dataIT}</span>
-            
+                        <span class="hist-type" style="color:${color}">${icon} ${label}</span>
+                        <div class="hist-val">${details}</div>
+                    </div>
+                    <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                </div>`;
+            });
+            document.getElementById('storico').innerHTML = h ? "<div class='section-title' style='margin-top:20px;'>📜 CRONOLOGIA</div>" + h : "";
+        }
+
+        function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
+        
+        popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
+    </script>
+</body>
+</html>
