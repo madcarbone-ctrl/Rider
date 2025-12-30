@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/madcarbone-ctrl/Rider/main/Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
+  <img src="Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
 </p>
 
 <div align="center">
-  <h1 align="center">🛵 Rider Tracker Pro (v1.0.942)</h1>
+  <h1 align="center">🚗 Rider Tracker Pro (v1.0.942)</h1>
   
   <p align="center">
     <b>🌍 Want this app in your language? Leave a comment in the <a href="../../discussions">Discussions</a>!</b>
@@ -21,70 +21,69 @@
 
 <hr>
 
-<div align="center">
-  <h2>📲 Download e Installazione</h2>
-  <p>Scegli la modalità che preferisci:</p>
-  
-  <table align="center" width="100%">
-    <tr>
-      <td align="center" width="50%">
-        <h3>🤖 Android APK</h3>
-        <p>Scarica l'app ufficiale:</p>
-        <a href="https://github.com/madcarbone-ctrl/Rider/raw/main/Rider_Tracker_Pro.apk">
-          <img src="https://img.shields.io/badge/DOWNLOAD-APK-green?style=for-the-badge&logo=android" alt="Scarica APK">
-        </a>
-      </td>
-      <td align="center" width="50%">
-        <h3>🌐 Web App (PWA)</h3>
-        <p>Usa senza installazione:</p>
-        <a href="https://madcarbone-ctrl.github.io/Rider/">
-          <img src="https://img.shields.io/badge/APRI-APP-blue?style=for-the-badge&logo=google-chrome" alt="Apri Web App">
-        </a>
-      </td>
-    </tr>
-  </table>
-</div>
+## 📲 Download APK
+<p align="center">
+  <a href="Rider_Tracker_Pro.apk"><b>➡️ Clicca qui per scaricare Rider Tracker Pro APK ⬅️</b></a>
+</p>
 
 <hr>
 
 ## 🇮🇹 Descrizione (Italiano)
-**Rider Tracker Pro** è una Progressive Web App (PWA) avanzata che calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante.
+**Rider Tracker Pro** è una Progressive Web App (PWA) avanzata, sviluppata per i rider delle consegne che necessitano di una visione chiara sui loro guadagni effettivi. 
 
-### ✨ Novità della Versione 94 (Codice Finale):
-- 🎯 **Reset Intelligente:** Quando clicchi su 'Azzera', il **Target** viene resettato automaticamente.
-- 🧹 **Tutto Vuoto:** All'avvio l'app è pulita e pronta per l'uso (Default empty).
-- 📊 **Media KM/L Totale:** Efficienza chilometrica sempre visibile.
-- 🕒 **Cronologia con Orari:** Ogni turno mostra data e ora esatta.
-- 🔒 **Privacy:** Dati salvati localmente (LocalStorage).
+A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
+
+### ✨ Novità della Versione 1.0.942:
+- 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
+- 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
+- ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi nel serbatoio basato su spesa e prezzo al litro.
+- 🎯 **Target Progressivo:** Monitora il tuo obiettivo netto mensile con barra dinamica.
+- 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
 
 <hr>
 
 ## 🇬🇧 Description (English)
-**Rider Tracker Pro** (v94) provides a crystal-clear view of **Real Net Profit**.
+**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on all major platforms.
 
-### ✨ Key Features:
-- 🎯 **Smart Reset:** Target is cleared automatically when you click reset.
-- 🧹 **Clean Start:** All fields are empty by default.
-- 📊 **Total KM/L Average:** Real-time fuel efficiency calculation.
-- 🕒 **Timestamps:** Every entry logged with exact date and time.
+### ✨ Key Features (v1.0.942):
+- 📊 **Total KM/L Average:** Real-time calculation of your monthly fuel efficiency.
+- 🕒 **Timestamps:** Every entry logged with the **exact date and time**.
+- ⛽ **Fuel Details:** Automatically tracks liters added and per-shift efficiency.
+- 🎯 **Goal Tracking:** Visual progress bar toward your monthly net target.
 
 <hr>
 
 ## 🛠️ Tech Stack
-- **Version:** 1.0.942 (Versione 94)
+- **Version:** 1.0.942
 - **Languages:** HTML5, CSS3, JavaScript (Vanilla JS)
 - **Persistence:** LocalStorage API (Offline-first)
 
 <hr>
 
+## 📦 Installazione / Installation
+1. Scarica il file `index.html`.
+2. Aprilo nel browser del tuo smartphone (Chrome o Safari).
+3. Usa la funzione **"Aggiungi a schermata Home"** per installarla come un'app nativa.
+
+<hr>
+
 ## 💬 Community & Feedback
 <p align="center">
-🇮🇹 <b>Aiutami a migliorare!</b> Partecipa alle <b><a href="../../discussions">Discussions</a></b>!<br>
-🇬🇧 <b>Let's build together!</b> Join the <b><a href="../../discussions">Discussions</a></b> tab!
+🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
+👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulla v1.0.943!<br>
+👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
+</p>
+
+<br>
+
+<p align="center">
+🇬🇧 <b>Let's build together!</b><br>
+👉 Join the <b><a href="../../discussions">Discussions</a></b> tab to share your feedback!<br>
+👉 Use the <b><a href="../../issues">Issues</a></b> tab for technical bugs.
 </p>
 
 <hr>
 
 <div align="center">
-  <i>"La migliore versione del codice è la versione 94."</i>
+<i>"La migliore versione del codice è la versione 1.0.942."</i>
 </div>
