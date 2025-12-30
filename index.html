@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94.2</title>
+    <title>Rider Tracker Pro v94</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 10px 10px 10px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -13,7 +13,6 @@
         .main-title { color: #00CCBC; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
         .version-badge { font-size: 9px; background: #333; color: #00CCBC; padding: 2px 6px; border-radius: 4px; border: 1px solid #00CCBC; }
 
-        /* GRIGLIA STATISTICHE ORIGINALE v94 */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .stat-box { 
             background: #1e1e1e; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; 
@@ -64,7 +63,7 @@
     <div class="header-main">
         <div style="font-size:18px;">🚲</div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <span class="version-badge">v94.2</span>
+        <span class="version-badge">v94</span>
     </div>
 
     <div class="stats-grid">
@@ -132,7 +131,7 @@
     </div>
 
     <div id="storico"></div>
-    <button onclick="resetAll()" style="background:transparent; color:#444; border:1px solid #333; margin:20px 0; height:35px; font-size:10px;">AZZERA TUTTI I DATI</button>
+    <button onclick="resetAll()" style="background:transparent; color:#444; border:1px solid #333; margin:20px 0; height:35px; font-size:10px;">AZZERA TUTTO</button>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_v94')) || { s: [], f: [], t: 0 };
