@@ -61,9 +61,14 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <hr>
 
 ## 📦 Installazione / Installation
-1. Scarica il file `index.html`.
-2. Aprilo nel browser del tuo smartphone (Chrome o Safari).
-3. Usa la funzione **"Aggiungi a schermata Home"** per installarla come un'app nativa.
+### 🤖 Android (Consigliato)
+1. Scarica il file **Rider Tracker Pro_v1.49.apk** dal link sopra.
+2. Apri il file sul tuo smartphone e acconsenti all'installazione di app da origini sconosciute se richiesto.
+
+### 🌐 Web App (PWA)
+1. Apri il sito dell'app sul browser dello smartphone (Chrome o Safari).
+2. Seleziona le opzioni del browser e clicca su **"Aggiungi a schermata Home"**.
+3. L'app apparirà tra le tue applicazioni come un'app nativa.
 
 <hr>
 
