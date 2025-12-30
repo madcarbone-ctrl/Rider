@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V21</title>
+    <title>Rider Tracker Pro v94 V22</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Impedisce al telefono di attivare funzioni di ricerca sui tocchi */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        
+        /* Blocca interferenze di sistema come la ricerca Google al tocco */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+        input, select { user-select: auto; }
+
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         
-        /* Stile per i pop-up modali */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 10000; }
         .modal-card { background: #222; width: 85%; padding: 25px; border-radius: 20px; border: 2px solid var(--main); text-align: center; }
         
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        input, select { height: 30px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; }
+        input, select { height: 30px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 36px; cursor: pointer; text-transform: uppercase; }
         
-        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #333; }
-        .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; }
+        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #333; margin-bottom: 5px; }
+        .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
     </style>
 </head>
 <body onload="init()">
@@ -36,30 +36,30 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="apriPop('📊','LORDO','Totale lordo guadagnato.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('💰','NETTO','Netto dopo tasse (-20%) e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore lavorate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="apriPop('📊','LORDO','Totale lordo accumulato.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('💰','NETTO','Netto stimato (-20% tasse e benzina).')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore di lavoro effettuate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo per arrivare al target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val">0</span></div>
+            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo necessario per il target netto.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni di attività registrati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val">0</span></div>
         </div>
     </div>
 
     <div class="card" style="border-color: var(--fuel)">
-        <div class="input-row" style="display:flex; gap:4px; margin-bottom:4px;">
+        <div style="display:flex; gap:4px; margin-bottom:4px;">
             <select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select>
         </div>
         <div style="display:flex; gap:4px; margin-bottom:4px;">
             <input type="number" id="fuelEuro" placeholder="€ spesi">
             <input type="number" id="fuelPrezzo" placeholder="€/Litro">
         </div>
-        <button style="background:var(--fuel)" onclick="addFuel()">SALVA BENZINA</button>
+        <button style="background:var(--fuel); color:#000;" onclick="addFuel()">SALVA BENZINA</button>
     </div>
 
     <div class="card" style="border-color: var(--main)">
-        <div class="input-row" style="display:flex; gap:4px; margin-bottom:4px;">
+        <div style="display:flex; gap:4px; margin-bottom:4px;">
             <select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:4px;">
@@ -67,22 +67,22 @@
             <input type="number" id="tOre" placeholder="Ore">
             <input type="number" id="tKm" placeholder="KM">
         </div>
-        <button style="background:var(--main)" onclick="addTurno()">SALVA TURNO</button>
+        <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
 
     <div id="wrapperStorico"><div id="listaStorico"></div></div>
 
     <div style="margin-top:auto; padding:5px;">
-        <button style="background:#222; color:var(--main); margin-bottom:4px;" onclick="toggleStorico()">📜 STORICO DETTAGLIATO</button>
-        <button style="background:#300; color:var(--danger); height:30px; font-size:10px;" onclick="reset()">⚠️ AZZERA TUTTO</button>
+        <button style="background:#222; color:var(--main); margin-bottom:4px;" onclick="toggleStorico()">📜 MOSTRA STORICO</button>
+        <button style="background:#300; color:var(--danger); height:28px; font-size:10px;" onclick="reset()">⚠️ AZZERA TUTTO</button>
     </div>
 
     <div id="modal" class="modal-overlay" onclick="chiudiPop()">
         <div class="modal-card" onclick="event.stopPropagation()">
-            <div id="pIcon" style="font-size:40px;"></div>
-            <h2 id="pTitle" style="color:var(--main)"></h2>
-            <p id="pDesc" style="color:#ccc"></p>
-            <button style="background:var(--main); color:#000; margin-top:10px;" onclick="chiudiPop()">CHIUDI</button>
+            <div id="pIcon" style="font-size:40px; margin-bottom:10px;"></div>
+            <h2 id="pTitle" style="color:var(--main); margin:0;"></h2>
+            <p id="pDesc" style="color:#ccc; font-size:14px; margin-top:10px;"></p>
+            <button style="background:var(--main); color:#000; margin-top:20px; height:30px;" onclick="chiudiPop()">OK</button>
         </div>
     </div>
 
@@ -97,8 +97,8 @@
 
         function riempiDate() {
             const d = new Date();
-            const fill = (ids, val) => ids.forEach(id => {
-                const el = document.getElementById(id);
+            const fill = (ids) => ids.forEach(id => {
+                const el = document.getElementById(id); el.innerHTML = "";
                 if(id.includes('Day')) for(let i=1;i<=31;i++) el.innerHTML+=`<option ${i==d.getDate()?'selected':''}>${i}</option>`;
                 if(id.includes('Month')) for(let i=1;i<=12;i++) el.innerHTML+=`<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
                 if(id.includes('Year')) for(let i=2024;i<=2026;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
@@ -122,15 +122,22 @@
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
                 db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, d: document.getElementById('sDay').value });
-                salva(); document.getElementById('tLordo').value="";
+                salva();
+                document.getElementById('tLordo').value="";
+                document.getElementById('tOre').value="";
+                document.getElementById('tKm').value="";
             }
         }
 
         function addFuel() {
             const e = parseFloat(document.getElementById('fuelEuro').value);
+            const p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fuelPrezzo').value) });
-                salva(); document.getElementById('fuelEuro').value="";
+                db.r.push({ id: Date.now(), e: e, p: p || 0 });
+                salva();
+                // AZZERAMENTO CAMPI DOPO SALVATAGGIO
+                document.getElementById('fuelEuro').value = "";
+                document.getElementById('fuelPrezzo').value = "";
             }
         }
 
@@ -157,15 +164,22 @@
             let h = "";
             [...db.s, ...db.r].sort((a,b)=>b.id-a.id).forEach(i => {
                 h += `<div class="hist-item">
-                    <span>${i.l ? 'Turno' : 'Benza'}</span>
-                    <b>€${(i.l || i.e).toFixed(2)}</b>
+                    <span style="font-size:10px;">${i.l ? 'TURNO' : 'BENZINA'}</span>
+                    <b style="color:${i.l ? 'var(--main)' : 'var(--fuel)'}">€${(i.l || i.e).toFixed(2)}</b>
+                    <button onclick="elimina(${i.id})" style="width:25px; height:25px; background:#300; color:red; font-size:10px;">X</button>
                 </div>`;
             });
-            document.getElementById('listaStorico').innerHTML = h;
+            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:10px; font-size:11px; color:#555;'>Vuoto</div>";
+        }
+
+        function elimina(id) {
+            db.s = db.s.filter(x => x.id !== id);
+            db.r = db.r.filter(x => x.id !== id);
+            salva();
         }
 
         function reset() {
-            if(confirm("Cancello tutto?")) {
+            if(confirm("VUOI AZZERARE TUTTO? (Dati + Target)")) {
                 db = { s: [], r: [], target: 0 };
                 document.getElementById('targetInput').value = "";
                 salva();
