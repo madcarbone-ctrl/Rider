@@ -25,9 +25,7 @@
         
         input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
         
-        /* FIX CASELLE RISTRETTE */
         .input-mini { width: 65px !important; }
-        .input-med { width: 90px !important; }
         .flex-fill { flex: 1; min-width: 0; }
 
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
@@ -45,32 +43,23 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* MODALE */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 90%; max-width: 320px; text-align: center; }
 
-        /* CRONOLOGIA COME DA SCREENSHOT */
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 4px; }
         .hist-val { font-size: 13px; color: #bbb; }
         .btn-del-v94 { width: 45px; height: 45px; background: #ff4444; color: #fff; border-radius: 10px; border: none; font-size: 18px; flex-shrink: 0; margin-left: 10px; }
 
+        .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
+        .footer span { color: #00CCBC; }
+
         #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100000; border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; }
     </style>
 </head>
 <body>
-
-    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:20000;display:none;flex-direction:column;">
-        <video id="camVideo" autoplay playsinline style="width:100%;flex-grow:1;object-fit:cover;"></video>
-        <div style="height:100px;background:#121212;display:flex;justify-content:space-around;align-items:center;">
-            <button style="color:white; background:none; width:auto;" onclick="chiudiCamera()">ANNULLA</button>
-            <button style="width:60px;height:60px;background:white;border-radius:50%;" onclick="scattaFoto()"></button>
-            <div style="width:60px;"></div>
-        </div>
-        <canvas id="camCanvas" style="display:none;"></canvas>
-    </div>
 
     <div id="infoModal" class="modal-overlay" onclick="chiudiModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -120,7 +109,7 @@
         </div>
         <div style="display:flex; gap:6px;">
             <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
-            <button class="btn-scan-red" onclick="apriCamera()">📸 SCAN</button>
+            <button class="btn-scan-red" onclick="showToast('Scanner attivo')">📸 SCAN</button>
         </div>
     </div>
 
@@ -150,13 +139,15 @@
     
     <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:12px; height:44px; border-radius:10px; border:1px solid #662222; width:100%; font-weight:bold;" onclick="chiediReset()">⚠️ AZZERA TUTTI I DATI</button>
     
-    <div class="footer">MADE WITH ❤️ BY <span>MARCO CARBONE</span><br>VERSION 1.0.942</div>
+    <div class="footer">
+        MADE WITH ❤️ BY <span>MARCO CARBONE</span><br>
+        VERSION 1.0.942
+    </div>
+
     <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
-        const video = document.getElementById('camVideo');
-        const overlay = document.getElementById('camOverlay');
 
         function mostraInfo(k) { 
             const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore lavorate totali.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati.", sezBenza: "Registra rifornimenti.", sezTurno: "Registra turni." };
@@ -166,16 +157,6 @@
             document.getElementById('infoModal').style.display = 'flex'; 
         }
 
-        function chiediReset() {
-            document.getElementById('infoTitle').innerText = "ATTENZIONE";
-            document.getElementById('infoText').innerText = "Sei sicuro di voler azzerare tutto, incluso l'obiettivo?";
-            document.getElementById('modalButtons').innerHTML = `
-                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px;">SÌ, AZZERA</button>
-                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>`;
-            document.getElementById('infoModal').style.display = 'flex';
-        }
-
-        function eseguiReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiModal(); }
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
@@ -185,22 +166,6 @@
             ['fDay', 'sDay'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
             ['fMonth', 'sMonth'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
             ['fYear', 'sYear'].forEach(id => { const s = document.getElementById(id); for(let i=2024; i<=2030; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
-        }
-
-        async function apriCamera() { try { const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); video.srcObject = s; overlay.style.display = 'flex'; } catch (e) { alert("Attiva fotocamera."); } }
-        function chiudiCamera() { if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop()); overlay.style.display = 'none'; }
-        function scattaFoto() {
-            const c = document.getElementById('camCanvas'); c.width = video.videoWidth; c.height = video.videoHeight;
-            c.getContext('2d').drawImage(video, 0, 0); chiudiCamera(); showToast("🔍 Analisi...");
-            Tesseract.recognize(c, 'ita').then(({ data: { text } }) => {
-                const n = text.match(/\d+[.,]\d{2,3}/g);
-                if (n) {
-                    const p = n.map(x => parseFloat(x.replace(',', '.')));
-                    document.getElementById('fuelEuro').value = Math.max(...p);
-                    const pr = p.find(x => x > 1.3 && x < 2.3); if (pr) document.getElementById('fuelPrezzo').value = pr;
-                    showToast("✅ Fatto!");
-                } else showToast("❌ Riprova");
-            });
         }
 
         function aggiungiBenza() {
