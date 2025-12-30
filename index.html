@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V3</title>
+    <title>Rider Tracker Pro v94 V4</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #121212; --card: #1e1e1e; }
@@ -15,10 +15,10 @@
         .section-title { color: var(--main); margin-bottom: 3px; text-align: center; font-size: 9px; text-transform: uppercase; font-weight: 800; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .data-box { background: #252525; padding: 3px; border-radius: 5px; border: 1px solid #333; text-align: center; min-height: 32px; display: flex; flex-direction: column; justify-content: center; }
+        .data-box { background: #252525; padding: 3px; border-radius: 5px; border: 1px solid #333; text-align: center; min-height: 32px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         
-        .stat-label { font-size: 6px; color: #aaa; text-transform: uppercase; }
-        .stat-val { font-size: 10px; font-weight: bold; color: #fff; }
+        .stat-label { font-size: 6px; color: #aaa; text-transform: uppercase; pointer-events: none; }
+        .stat-val { font-size: 10px; font-weight: bold; color: #fff; pointer-events: none; }
         
         .label-mini { font-size: 7px; color: #888; margin-bottom: 1px; display: block; font-weight: bold; text-transform: uppercase; }
         
@@ -61,17 +61,17 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
-            <div class="data-box"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
-            <div class="data-box"><span class="stat-label">Spesa Carburante</span><span class="stat-val" style="color:#ff4444">€<span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('lordoTot')"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('nettoTot')"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('oreTot')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('consTot')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="mostraInfo('medKml')"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
+            <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Benz</span><span class="stat-val" style="color:#ff4444">€<span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:3px;">
-            <div class="data-box"><span class="stat-label">Obiettivo</span><input type="number" id="targetInput" style="height:16px; font-size:9px;" oninput="salvaTarget()"></div>
-            <div class="data-box"><span class="stat-label">Mancante</span><span class="stat-val" style="color:#ff4444;">€<span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
+            <div class="data-box" style="cursor:default;"><span class="stat-label">Obiettivo</span><input type="number" id="targetInput" style="height:16px; font-size:9px;" oninput="salvaTarget()"></div>
+            <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:#ff4444;">€<span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -112,7 +112,7 @@
     
     <button class="danger-btn" onclick="chiediReset()">⚠️ AZZERA TUTTO</button>
 
-    <div id="infoModal" class="modal-overlay" onclick="chiudiModal()"><div class="modal-content" onclick="event.stopPropagation()"><div id="infoTitle" style="color:var(--main); font-weight:bold; margin-bottom:10px;"></div><div id="infoText" style="font-size:12px; margin-bottom:15px;"></div><div id="modalButtons"></div></div></div>
+    <div id="infoModal" class="modal-overlay" onclick="chiudiModal()"><div class="modal-content" onclick="event.stopPropagation()"><div id="infoTitle" style="color:var(--main); font-weight:bold; margin-bottom:10px; text-transform:uppercase;"></div><div id="infoText" style="font-size:12px; line-height:1.4; margin-bottom:15px;"></div><div id="modalButtons"></div></div></div>
     <div id="toast"></div>
 
     <script>
@@ -166,6 +166,23 @@
             document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
         }
 
+        function mostraInfo(k) {
+            const m = {
+                lordoTot: ["LORDO TOTALE", "Somma totale di tutti i guadagni lordi inseriti."],
+                nettoTot: ["NETTO REALE", "Calcolato sottraendo il 20% di tasse (lordo * 0.8) e il costo stimato del carburante."],
+                oreTot: ["ORE LAVORO", "Totale delle ore lavorate in tutte le sessioni."],
+                consTot: ["CONSUMO STIMATO", "Litri totali consumati calcolati in base ai km effettivi e al consumo L/100km."],
+                medKml: ["MEDIA KM/L", "Efficienza media del veicolo (Km percorsi / Litri consumati)."],
+                spesaBenz: ["SPESA CARBURANTE", "Costo totale stimato in base all'ultimo prezzo della benzina inserito."],
+                mancante: ["MANCANTE LORDO", "Guadagno lordo necessario per raggiungere l'obiettivo netto impostato (considerando tasse e benzina)."],
+                ggAttivi: ["GIORNI DI LAVORO", "Numero di giorni unici in cui hai registrato almeno un turno."]
+            };
+            document.getElementById('infoTitle').innerText = m[k][0];
+            document.getElementById('infoText').innerText = m[k][1];
+            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:var(--main); color:#000;">CHIUDI</button>';
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
         function renderStorico() {
             let h = "";
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
@@ -196,7 +213,7 @@
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
         function chiediReset() {
             document.getElementById('infoTitle').innerText = "AZZERA DATI";
-            document.getElementById('infoText').innerText = "Sei sicuro? Perderai tutto.";
+            document.getElementById('infoText').innerText = "Sei sicuro? Perderai tutto, compreso l'obiettivo.";
             document.getElementById('modalButtons').innerHTML = `<button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:5px;">SI, CANCELLA</button><button onclick="chiudiModal()" style="background:#333; color:#fff;">NO</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
