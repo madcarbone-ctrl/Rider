@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V11</title>
+    <title>Rider Tracker Pro v94 V12</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -33,27 +33,22 @@
         .btn-fuel { background: var(--fuel); color: #000; flex: 2; height: 32px; }
         .btn-scan { background: var(--danger); color: #fff; flex: 1; height: 32px; }
 
-        .bottom-actions { margin-top: 5px; display: flex; flex-direction: column; gap: 5px; padding-bottom: 10px; }
+        .bottom-actions { margin-top: auto; display: flex; flex-direction: column; gap: 5px; padding-bottom: 10px; }
         .btn-hist { background: #1f1f1f; color: var(--main); border: 1px solid #333; height: 32px; }
         .btn-reset { background: #2a0a0a; color: var(--danger); border: 1px solid #400; height: 32px; font-size: 10px; }
 
-        /* STORICO COMPLETO V94 style */
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #222; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { font-size: 10px; line-height: 1.4; flex-grow: 1; }
         .hist-info b { font-size: 11px; color: var(--main); display: block; margin-bottom: 2px; }
-        .hist-info .details { color: #aaa; font-size: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 4px; border-top: 1px solid #333; padding-top: 4px; }
-        .hist-val-main { font-size: 14px; font-weight: bold; color: #fff; }
+        .hist-info .details { color: #aaa; font-size: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px; }
+        .hist-val-main { font-size: 16px; font-weight: bold; color: #fff; }
 
-        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-card { background: linear-gradient(145deg, #1e1e1e, #121212); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.8); opacity: 0; transition: 0.3s; }
         .modal-overlay.active { display: flex; }
         .modal-overlay.active .modal-card { transform: scale(1); opacity: 1; }
-        .modal-icon-circle { width: 50px; height: 50px; background: rgba(0, 204, 188, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 24px; color: var(--main); }
-        .modal-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; text-transform: uppercase; }
-        .modal-desc { font-size: 12px; color: #aaa; line-height: 1.4; margin-bottom: 15px; }
-        .modal-btn-close { background: var(--main); color: #000; height: 40px; border-radius: 12px; }
+        .modal-btn-close { background: var(--main); color: #000; height: 40px; border-radius: 12px; margin-top: 15px; width: 100%; }
 
         #toast { visibility: hidden; background: var(--main); color: #000; padding: 8px 16px; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); border-radius: 25px; font-weight: bold; font-size: 12px; z-index: 10001; }
         #toast.show { visibility: visible; }
@@ -119,9 +114,9 @@
 
     <div id="modalOverlay" class="modal-overlay" onclick="chiudiPop()">
         <div class="modal-card" onclick="event.stopPropagation()">
-            <div id="popIcon" class="modal-icon-circle"></div>
-            <div id="popTitle" class="modal-title"></div>
-            <div id="popDesc" class="modal-desc"></div>
+            <div id="popIcon" style="font-size:30px; margin-bottom:10px;"></div>
+            <div id="popTitle" style="font-size:18px; font-weight:800; color:#fff; text-transform:uppercase;"></div>
+            <div id="popDesc" style="font-size:13px; color:#aaa; margin-top:10px;"></div>
             <button id="popBtn" class="modal-btn-close" onclick="chiudiPop()">HO CAPITO</button>
         </div>
     </div>
@@ -146,8 +141,9 @@
             let tL=0, tO=0, ltT=0, cB=0, kmT=0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             db.sessioni.forEach(s => { 
-                tL += s.lordo; tO += s.ore; let kE = Math.max(0, s.km - s.scarto); kmT += kE; 
-                let lt = (kE/100)*s.l100; ltT += lt; cB += (lt*uP); 
+                tL += (s.lordo || 0); tO += (s.ore || 0); 
+                let kE = Math.max(0, (s.km || 0) - (s.scarto || 0)); kmT += kE; 
+                let lt = (kE/100)*(s.l100 || 0); ltT += lt; cB += (lt*uP); 
             });
             let nR = (tL*0.8) - cB; let perc = db.target > 0 ? Math.round((nR/db.target)*100) : 0;
             document.getElementById('pBar').style.width = Math.min(100, perc) + "%";
@@ -162,44 +158,6 @@
             document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
         }
 
-        function mostraInfo(k) {
-            const m = {
-                lordoTot: ["📊", "LORDO TOTALE", "Tutti i tuoi guadagni sommati prima di tasse e spese."],
-                nettoTot: ["💰", "NETTO REALE", "Il tuo guadagno pulito stimato (-20% tasse e costo benzina)."],
-                oreTot: ["⏱️", "ORE LAVORO", "Il tempo totale passato in sella per tutte le sessioni."],
-                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati in base ai KM e al consumo L/100km."],
-                medKml: ["📈", "MEDIA KM/L", "Quanti chilometri percorri mediamente con un litro."],
-                spesaBenz: ["💸", "SPESA BENZINA", "Costo totale stimato del carburante basato sull'ultimo rifornimento."],
-                mancante: ["🎯", "LORDO MANCANTE", "Guadagno lordo necessario per raggiungere l'obiettivo netto."],
-                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali in cui hai effettuato almeno un turno."],
-                pBar: ["🏆", "PROGRESSO", "Percentuale completata verso il tuo obiettivo netto."]
-            };
-            pop(m[k][0], m[k][1], m[k][2]);
-        }
-
-        function pop(icon, title, desc, customBtn = null) {
-            document.getElementById('popIcon').innerText = icon;
-            document.getElementById('popTitle').innerText = title;
-            document.getElementById('popDesc').innerText = desc;
-            const btn = document.getElementById('popBtn'); btn.innerText = "HO CAPITO"; btn.onclick = chiudiPop;
-            if(customBtn) { btn.innerText = customBtn.text; btn.onclick = customBtn.fn; }
-            document.getElementById('modalOverlay').style.display = 'flex';
-            setTimeout(() => document.getElementById('modalOverlay').classList.add('active'), 10);
-        }
-
-        function chiudiPop() { document.getElementById('modalOverlay').classList.remove('active'); setTimeout(() => document.getElementById('modalOverlay').style.display = 'none', 300); }
-
-        function chiediReset() {
-            pop('⚠️', 'AZZERA TUTTO', 'Perderai tutti i turni e l\'obiettivo impostato.', {
-                text: 'SI, CANCELLA',
-                fn: () => { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiPop(); showToast("Dati azzerati!"); }
-            });
-        }
-
-        function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2000); }
-        
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) {
@@ -218,6 +176,32 @@
             }
         }
 
+        function renderStorico() {
+            let h = "";
+            let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
+            tutti.forEach(i => {
+                let d = (i.data || "2024-01-01").split("-");
+                let color = i.t=='S' ? 'var(--main)' : 'var(--fuel)';
+                let label = i.t=='S' ? 'TURNO RIDER' : 'RIFORNIMENTO';
+                let details = i.t=='S' ? 
+                    `<span>Ore: ${i.ore || 0}</span><span>KM: ${i.km || 0}</span><span>L/100: ${i.l100 || 0}</span><span>Scarto: ${i.scarto || 0}</span>` : 
+                    `<span>Prezzo: €${(i.prezzo || 0).toFixed(3)}/L</span><span>Litri: ${(i.euro/(i.prezzo||1)).toFixed(2)}L</span>`;
+                
+                h += `<div class="hist-item" style="border-left-color: ${color}">
+                    <div class="hist-info">
+                        <b>${d[2]}/${d[1]} - ${i.ora || '--:--'}</b>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                            <span style="color:#888; text-transform:uppercase; font-size:8px;">${label}</span>
+                            <span class="hist-val-main">€${(i.lordo || i.euro || 0).toFixed(2)}</span>
+                        </div>
+                        <div class="details">${details}</div>
+                    </div>
+                    <button style="width:34px; height:34px; background:#300; color:var(--danger); margin-left:10px; border: 1px solid #400;" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                </div>`;
+            });
+            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; color:#555; padding:20px;'>Cronologia vuota</div>";
+        }
+
         function toggleStorico() {
             const w = document.getElementById('wrapperStorico'), b = document.querySelector('.btn-hist');
             const vis = w.style.display === 'block';
@@ -226,33 +210,36 @@
             if(!vis) renderStorico();
         }
 
-        function renderStorico() {
-            let h = "";
-            let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
-            tutti.forEach(i => {
-                let d = i.data.split("-");
-                let color = i.t=='S' ? 'var(--main)' : 'var(--fuel)';
-                let label = i.t=='S' ? 'TURNO RIDER' : 'RIFORNIMENTO';
-                let details = i.t=='S' ? 
-                    `<span>Ore: ${i.ore}</span><span>KM: ${i.km}</span><span>L/100: ${i.l100}</span><span>Scarto: ${i.scarto}</span>` : 
-                    `<span>Prezzo: €${i.prezzo}/L</span><span>Litri: ${(i.euro/i.prezzo).toFixed(2)}L</span>`;
-                
-                h += `<div class="hist-item" style="border-left-color: ${color}">
-                    <div class="hist-info">
-                        <b>${d[2]}/${d[1]} - ${oraAttuale(i.ora)}</b>
-                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                            <span style="color:#888; text-transform:uppercase; font-size:8px;">${label}</span>
-                            <span class="hist-val-main">€${(i.lordo || i.euro).toFixed(2)}</span>
-                        </div>
-                        <div class="details">${details}</div>
-                    </div>
-                    <button style="width:34px; height:34px; background:#300; color:var(--danger); margin-left:10px; border: 1px solid #400;" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
-                </div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; color:#555; padding:20px;'>Nessun dato in cronologia</div>";
+        function mostraInfo(k) {
+            const m = {
+                lordoTot: ["📊", "LORDO TOTALE", "Tutti i tuoi guadagni sommati prima di tasse e spese."],
+                nettoTot: ["💰", "NETTO REALE", "Guadagno pulito stimato (-20% tasse e benzina)."],
+                oreTot: ["⏱️", "ORE LAVORO", "Tempo totale passato in sella."],
+                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati."],
+                medKml: ["📈", "MEDIA KM/L", "Efficienza media del tuo veicolo."],
+                spesaBenz: ["💸", "SPESA BENZINA", "Costo carburante basato sull'ultimo rifornimento."],
+                mancante: ["🎯", "LORDO MANCANTE", "Lordo necessario per il tuo obiettivo netto."],
+                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali di attività registrata."],
+                pBar: ["🏆", "PROGRESSO", "Avanzamento verso il tuo obiettivo."]
+            };
+            pop(m[k][0], m[k][1], m[k][2]);
         }
 
-        function oraAttuale(o) { return o || "--:--"; }
+        function pop(icon, title, desc, customBtn = null) {
+            document.getElementById('popIcon').innerText = icon;
+            document.getElementById('popTitle').innerText = title;
+            document.getElementById('popDesc').innerText = desc;
+            const btn = document.getElementById('popBtn'); btn.innerText = "HO CAPITO"; btn.onclick = chiudiPop;
+            if(customBtn) { btn.innerText = customBtn.text; btn.onclick = customBtn.fn; }
+            document.getElementById('modalOverlay').style.display = 'flex';
+            setTimeout(() => document.getElementById('modalOverlay').classList.add('active'), 10);
+        }
+
+        function chiudiPop() { document.getElementById('modalOverlay').classList.remove('active'); setTimeout(() => document.getElementById('modalOverlay').style.display = 'none', 300); }
+        function chiediReset() { pop('⚠️', 'AZZERA TUTTO', 'Perderai tutti i dati e l\'obiettivo.', { text: 'SI, CANCELLA', fn: () => { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiPop(); showToast("Dati azzerati!"); } }); }
+        function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
+        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico(); }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2000); }
         function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); renderStorico(); }
     </script>
 </body>
