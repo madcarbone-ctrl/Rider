@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V12</title>
+    <title>Rider Tracker Pro v94 V13</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -121,7 +122,7 @@
         </div>
     </div>
 
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processScan(event)">
     <div id="toast"></div>
 
     <script>
@@ -135,6 +136,30 @@
             days.forEach(el => { el.innerHTML = ""; for(let i=1; i<=31; i++) el.innerHTML += `<option value="${i}" ${i==gg?'selected':''}>${i}</option>`; });
             months.forEach(el => { el.innerHTML = ""; for(let i=1; i<=12; i++) el.innerHTML += `<option value="${i}" ${i==mm?'selected':''}>${i}</option>`; });
             years.forEach(el => { el.innerHTML = ""; for(let i=2024; i<=2026; i++) el.innerHTML += `<option value="${i}" ${i==aa?'selected':''}>${i}</option>`; });
+        }
+
+        async function processScan(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showToast("🔍 Analisi scontrino...");
+            
+            try {
+                const { data: { text } } = await Tesseract.recognize(file, 'ita');
+                // Cerco schemi comuni: 0,00 o 0.00
+                const numbers = text.replace(',', '.').match(/\d+\.\d{2,3}/g);
+                if (numbers) {
+                    const sorted = numbers.map(Number).sort((a,b) => b-a);
+                    // Solitamente il numero più alto è il totale euro, quello piccolo è il prezzo/litro
+                    if(sorted[0]) document.getElementById('fuelEuro').value = sorted[0];
+                    if(sorted[sorted.length-1] && sorted[sorted.length-1] < 3) 
+                        document.getElementById('fuelPrezzo').value = sorted[sorted.length-1];
+                    showToast("✅ Dati estratti!");
+                } else {
+                    showToast("❌ Numeri non trovati");
+                }
+            } catch (e) {
+                showToast("⚠️ Errore lettura");
+            }
         }
 
         function calcola() {
@@ -164,6 +189,7 @@
                 let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
                 db.rifornimenti.push({ id: Date.now(), ora: ora, data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
                 salva(); showToast("⛽ Salvato!");
+                document.getElementById('fuelEuro').value = "";
             }
         }
 
@@ -173,6 +199,7 @@
                 let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
                 db.sessioni.push({ id: Date.now(), ora: ora, lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
                 salva(); showToast("✅ Salvato!");
+                document.getElementById('sessLordo').value = "";
             }
         }
 
@@ -180,7 +207,7 @@
             let h = "";
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
-                let d = (i.data || "2024-01-01").split("-");
+                let d = (i.data || "").split("-");
                 let color = i.t=='S' ? 'var(--main)' : 'var(--fuel)';
                 let label = i.t=='S' ? 'TURNO RIDER' : 'RIFORNIMENTO';
                 let details = i.t=='S' ? 
@@ -213,14 +240,14 @@
         function mostraInfo(k) {
             const m = {
                 lordoTot: ["📊", "LORDO TOTALE", "Tutti i tuoi guadagni sommati prima di tasse e spese."],
-                nettoTot: ["💰", "NETTO REALE", "Guadagno pulito stimato (-20% tasse e benzina)."],
-                oreTot: ["⏱️", "ORE LAVORO", "Tempo totale passato in sella."],
-                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati."],
-                medKml: ["📈", "MEDIA KM/L", "Efficienza media del tuo veicolo."],
-                spesaBenz: ["💸", "SPESA BENZINA", "Costo carburante basato sull'ultimo rifornimento."],
-                mancante: ["🎯", "LORDO MANCANTE", "Lordo necessario per il tuo obiettivo netto."],
-                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali di attività registrata."],
-                pBar: ["🏆", "PROGRESSO", "Avanzamento verso il tuo obiettivo."]
+                nettoTot: ["💰", "NETTO REALE", "Il tuo guadagno pulito stimato (-20% tasse e costo benzina)."],
+                oreTot: ["⏱️", "ORE LAVORO", "Il tempo totale passato in sella per tutte le sessioni."],
+                consTot: ["⛽", "CONSUMO", "Litri di benzina bruciati stimati in base ai KM e al consumo L/100km."],
+                medKml: ["📈", "MEDIA KM/L", "Quanti chilometri percorri mediamente con un litro."],
+                spesaBenz: ["💸", "SPESA BENZINA", "Costo totale stimato del carburante basato sull'ultimo rifornimento."],
+                mancante: ["🎯", "LORDO MANCANTE", "Guadagno lordo necessario per raggiungere l'obiettivo netto."],
+                ggAttivi: ["🗓️", "GIORNI LAVORO", "Giorni totali in cui hai effettuato almeno un turno."],
+                pBar: ["🏆", "PROGRESSO", "Percentuale completata verso il tuo obiettivo netto."]
             };
             pop(m[k][0], m[k][1], m[k][2]);
         }
@@ -239,8 +266,4 @@
         function chiediReset() { pop('⚠️', 'AZZERA TUTTO', 'Perderai tutti i dati e l\'obiettivo.', { text: 'SI, CANCELLA', fn: () => { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiPop(); showToast("Dati azzerati!"); } }); }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico(); }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2000); }
-        function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); renderStorico(); }
-    </script>
-</body>
-</html>
+        f
