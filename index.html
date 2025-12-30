@@ -65,7 +65,7 @@
         #toast.show { visibility: visible; }
     </style>
 </head>
-<body>
+<body onload="inizializzaApp()">
 
     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processaScan(event)">
 
@@ -160,9 +160,44 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
 
+        function inizializzaApp() {
+            popolaDate();
+            calcola();
+            document.getElementById('targetInput').value = db.target || "";
+        }
+
         function getOra() {
             const n = new Date();
             return n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
+        }
+
+        function popolaDate() {
+            const d = new Date();
+            const gg = d.getDate();
+            const mm = d.getMonth() + 1;
+            const aa = d.getFullYear();
+
+            const selects = {
+                day: ['fDay', 'sDay'],
+                month: ['fMonth', 'sMonth'],
+                year: ['fYear', 'sYear']
+            };
+
+            selects.day.forEach(id => {
+                let el = document.getElementById(id);
+                el.innerHTML = "";
+                for(let i=1; i<=31; i++) el.innerHTML += `<option value="${i}" ${i==gg?'selected':''}>${i}</option>`;
+            });
+            selects.month.forEach(id => {
+                let el = document.getElementById(id);
+                el.innerHTML = "";
+                for(let i=1; i<=12; i++) el.innerHTML += `<option value="${i}" ${i==mm?'selected':''}>${i}</option>`;
+            });
+            selects.year.forEach(id => {
+                let el = document.getElementById(id);
+                el.innerHTML = "";
+                for(let i=2024; i<=2030; i++) el.innerHTML += `<option value="${i}" ${i==aa?'selected':''}>${i}</option>`;
+            });
         }
 
         function toggleStorico() {
@@ -216,28 +251,12 @@
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
 
-        function popolaDate() {
-            const d = new Date();
-            ['fDay', 'sDay'].forEach(id => {
-                const s = document.getElementById(id);
-                s.innerHTML = ""; 
-                for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`;
-            });
-            ['fMonth', 'sMonth'].forEach(id => {
-                const s = document.getElementById(id);
-                s.innerHTML = "";
-                for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
-            });
-            ['fYear', 'sYear'].forEach(id => {
-                const s = document.getElementById(id);
-                s.innerHTML = "";
-                for(let i=2024; i<=2030; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`;
-            });
-        }
-
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), ora: getOra(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
+            if(e > 0 && p > 0) {
+                db.rifornimenti.push({ id: Date.now(), ora: getOra(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
+                salva(); showToast("⛽ Salvato!");
+            }
         }
 
         function aggiungiSessione() {
@@ -278,17 +297,9 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
-                let oraT = i.ora ? ` <span class="hist-time">(${i.ora})</span>` : "";
+                let oraText = i.ora ? ` <span class="hist-time">(${i.ora})</span>` : "";
                 let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Litri: <b>${(i.euro/i.prezzo).toFixed(2)}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}</b>`;
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
-                        <span class="hist-header">${dataIT}${oraT} - ${label}</span>
-                        <span class="hist-main-val">${val}</span>
-                        <div class="hist-sub-val">${extra}</div>
-                    </div>
-                    <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
-                </div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#666;'>Nessun dato</div>";
-        }
-
+                        <span class="hist-header">${dataIT}${oraText} - ${label}</span>
+ 
