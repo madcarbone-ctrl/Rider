@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.970</title>
+    <title>Rider Tracker Pro v1.0.971</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
+
+        /* HEADER STILE V94 */
+        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 35px; padding: 0 5px; }
+        .lang-side { display: flex; gap: 5px; flex: 1; }
+        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 4px; padding: 3px 6px; font-size: 12px; cursor: pointer; }
+        .main-title { color: #00CCBC; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; white-space: nowrap; }
+        .version-side { flex: 1; text-align: right; }
+        .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 2px 5px; border-radius: 4px; border: 1px solid #00CCBC; }
 
         /* POPUP MODALE */
         #infoOverlay { 
@@ -19,39 +27,37 @@
             background: #1e1e1e; width: 85%; max-width: 320px; padding: 25px; 
             border-radius: 20px; border: 2px solid #00CCBC; text-align: center; 
         }
-        .info-btn { background: #00CCBC; color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; margin-top: 20px; display: inline-block; }
+        .info-btn { background: #00CCBC; color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; margin-top: 20px; display: inline-block; cursor: pointer; }
 
-        /* UI */
+        /* CARDS */
         .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; }
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
         .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; }
         
-        /* Area cliccabile per info nelle statistiche */
-        .clickable-label { cursor: pointer; display: block; width: 100%; height: 100%; }
-        
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 2px; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 2px; cursor: pointer; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         .info-i { color: #00CCBC; font-size: 10px; font-weight: bold; margin-left: 2px; }
 
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
-        
-        /* Area cliccabile per info sopra gli input */
-        .info-trigger { cursor: pointer; color: #00CCBC; }
+        .info-trigger { color: #00CCBC; cursor: pointer; }
 
         input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 14px; text-align: center; width: 100%; }
         .row-flex { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end; }
         
+        /* PROGRESS BAR */
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.5s; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 4px; font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 4px; font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
-        button { width: 100%; height: 42px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
+        button { width: 100%; height: 42px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .btn-add { background: #00CCBC; color: #000; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-reset { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 10px; height: 30px; }
+        .btn-reset { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 10px; height: 32px; border: 1px solid #662222; }
         
         #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #00CCBC; padding: 10px 20px; border-radius: 50px; border: 1px solid #00CCBC; z-index: 10000; }
         #toast.show { visibility: visible; }
+
+        .history-item { background: #252525; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body onload="inizializza()">
@@ -64,34 +70,38 @@
         </div>
     </div>
 
-    <div style="display:flex; justify-content: space-between; align-items: center; padding: 5px 10px;">
-        <span style="font-size:12px; font-weight:900; color:#00CCBC;">RIDER TRACKER PRO</span>
-        <span style="font-size:8px; color:#444;">v1.0.970</span>
+    <div class="header-main">
+        <div class="lang-side">
+            <div class="btn-flag" onclick="setLang('it')">🇮🇹</div>
+            <div class="btn-flag" onclick="setLang('en')">🇬🇧</div>
+        </div>
+        <div class="main-title">RIDER TRACKER PRO</div>
+        <div class="version-side"><span class="version-badge">v1.0.971</span></div>
     </div>
 
     <div class="card">
         <div class="summary-grid">
-            <div class="data-box" onclick="openPopup('LORDO TOTALE', 'Tutti i tuoi guadagni lordi sommati.')">
+            <div class="data-box" onclick="openPopup('LORDO TOTALE', 'Somma di tutti i guadagni lordi registrati.')">
                 <span class="stat-label">LORDO TOT <span class="info-i">ⓘ</span></span>
                 <span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('NETTO REALE', 'Guadagno pulito: (Lordo - 20% tasse) - Benzina.')">
+            <div class="data-box" onclick="openPopup('NETTO REALE', 'Il guadagno pulito calcolato sottraendo tasse (20%) e benzina.')">
                 <span class="stat-label">NETTO REAL <span class="info-i">ⓘ</span></span>
                 <span class="stat-val">€ <span id="nettoReale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('ORE LAVORO', 'Totale delle ore lavorate.')">
+            <div class="data-box" onclick="openPopup('ORE LAVORO', 'Totale complessivo delle ore lavorate.')">
                 <span class="stat-label">ORE LAVORO <span class="info-i">ⓘ</span></span>
                 <span class="stat-val" id="oreTotali">0.0</span>
             </div>
             <div class="data-box">
-                <span class="stat-label" onclick="openPopup('OBIETTIVO', 'Inserisci il guadagno NETTO che vuoi raggiungere.')">TARGET € <span class="info-i">ⓘ</span></span>
+                <span class="stat-label" onclick="openPopup('OBIETTIVO', 'Inserisci qui il guadagno NETTO che vuoi raggiungere.')">TARGET € <span class="info-i">ⓘ</span></span>
                 <input type="number" id="targetInput" style="height:20px; font-size:11px; background:transparent; border:none; border-bottom:1px solid #444; color:#fff;" oninput="salvaTarget()">
             </div>
-            <div class="data-box" onclick="openPopup('MANCANTE', 'Lordo necessario per arrivare al target netto impostato.')">
+            <div class="data-box" onclick="openPopup('MANCANTE', 'Importo LORDO necessario per raggiungere il tuo obiettivo netto.')">
                 <span class="stat-label">MANCANTE <span class="info-i">ⓘ</span></span>
                 <span class="stat-val" style="color:#ff4444">€ <span id="lordoMancante">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('GIORNI', 'Giorni totali in cui hai registrato almeno un turno.')">
+            <div class="data-box" onclick="openPopup('GIORNI', 'Numero di giorni in cui hai effettuato almeno un turno.')">
                 <span class="stat-label">GG LAVORO <span class="info-i">ⓘ</span></span>
                 <span class="stat-val" id="giorniLavorati">0</span>
             </div>
@@ -109,11 +119,11 @@
                 <div style="display:flex; gap:3px;"><select id="fDay" style="width:42px"></select><select id="fMonth" style="width:42px"></select><select id="fYear" style="width:64px"></select></div>
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('EURO SPESI', 'Totale pagato al rifornimento.')">EURO SPESI ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('EURO SPESI', 'Quanto hai pagato per l\'ultimo rifornimento.')">EURO SPESI ⓘ</span></span>
                 <input type="number" id="fuelEuro" placeholder="0.00">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('PREZZO/L', 'Costo della benzina al litro.')">€ AL LITRO ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('PREZZO AL LITRO', 'Il costo della benzina per singolo litro.')">€ / LITRO ⓘ</span></span>
                 <input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000">
             </div>
         </div>
@@ -127,25 +137,25 @@
                 <div style="display:flex; gap:3px;"><select id="sDay" style="width:42px"></select><select id="sMonth" style="width:42px"></select><select id="sYear" style="width:64px"></select></div>
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('LORDO TURNO', 'Guadagno lordo del turno.')">LORDO € ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('LORDO TURNO', 'Quanto hai incassato in questo turno.')">LORDO € ⓘ</span></span>
                 <input type="number" id="sessLordo">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('ORE', 'Ore totali (es: 4.5).')">ORE ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('ORE', 'Durata del turno (es: 3.5 per 3h 30m).')">ORE ⓘ</span></span>
                 <input type="number" id="sessOre" step="0.5">
             </div>
         </div>
         <div class="row-flex">
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('KM', 'Distanza totale percorsa.')">KM ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('KM PERCORSI', 'Chilometri totali segnati dal mezzo.')">KM ⓘ</span></span>
                 <input type="number" id="sessKm">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('CONSUMO', 'Litri/100km da computer di bordo.')">L/100KM ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('CONSUMO MEDIO', 'Litri/100km indicati sul display.')">L/100KM ⓘ</span></span>
                 <input type="number" id="sessL100" step="0.1">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('SCARTO', 'KM da escludere dai consumi.')">SCARTO ⓘ</span></span>
+                <span class="label-mini"><span class="info-trigger" onclick="openPopup('SCARTO KM', 'KM non lavorativi da escludere.')">SCARTO ⓘ</span></span>
                 <input type="number" id="sessScarto">
             </div>
         </div>
@@ -185,7 +195,7 @@
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) {
                 db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, ora: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}), euro: e, prezzo: p });
-                salva(); ['fuelEuro','fuelPrezzo'].forEach(i=>document.getElementById(i).value=""); showToast("⛽ Salvato!");
+                salva(); ['fuelEuro','fuelPrezzo'].forEach(i=>document.getElementById(i).value=""); showToast("⛽ Rifornimento Salvato!");
             }
         }
 
@@ -219,6 +229,7 @@
             document.getElementById('oreTotali').innerText = tO.toFixed(1);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25).toFixed(2) : "0.00";
+            
             let perc = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('progressoPerc').innerText = perc + "%";
@@ -230,15 +241,16 @@
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'R'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
                 let d = i.data.split("-").reverse().join("/");
-                if(i.t === 'S') h += `<div style="background:#252525; padding:8px; border-radius:8px; margin-bottom:5px; font-size:11px; border-left:4px solid #00CCBC; display:flex; justify-content:space-between; align-items:center;"><div><b>${d}</b> <small>${i.ora}</small> - €${i.lordo}</div><button onclick="elimina('sessioni',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
-                else h += `<div style="background:#252525; padding:8px; border-radius:8px; margin-bottom:5px; font-size:11px; border-left:4px solid #ffa500; display:flex; justify-content:space-between; align-items:center;"><div><b>${d}</b> <small>${i.ora}</small> - €${i.euro}</div><button onclick="elimina('rifornimenti',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
+                if(i.t === 'S') h += `<div class="history-item" style="border-left:4px solid #00CCBC;"><div><b>${d}</b> <small>${i.ora}</small> - Turno: €${i.lordo}</div><button onclick="elimina('sessioni',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
+                else h += `<div class="history-item" style="border-left:4px solid #ffa500;"><div><b>${d}</b> <small>${i.ora}</small> - Riforn: €${i.euro}</div><button onclick="elimina('rifornimenti',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
             });
-            document.getElementById('storico').innerHTML = h ? "<div style='font-size:10px; color:#666; margin:10px 0 5px 5px;'>CRONOLOGIA</div>" + h : "";
+            document.getElementById('storico').innerHTML = h ? "<div style='font-size:10px; color:#666; margin:10px 0 5px 5px; font-weight:bold;'>📜 CRONOLOGIA</div>" + h : "";
         }
 
         function elimina(tipo, id) { db[tipo] = db[tipo].filter(x => x.id !== id); salva(); }
-        function apriReset() { if(confirm("Vuoi resettare tutto?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast("Reset!"); } }
+        function apriReset() { if(confirm("Azzera tutto?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast("Dati Azzerati!"); } }
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
+        function setLang(l) { showToast(l === 'it' ? "Lingua: Italiano" : "Language: English"); }
     </script>
 </body>
 </html>
