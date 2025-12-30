@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.964</title>
+    <title>Rider Tracker Pro v1.0.965</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -44,6 +44,14 @@
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
+        /* Popup Info Elegante */
+        #infoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .info-card { background: #222; width: 85%; max-width: 300px; padding: 20px; border-radius: 15px; border: 1px solid #00CCBC; text-align: center; box-shadow: 0 10px 30px rgba(0,204,188,0.2); animation: popScale 0.25s ease-out; }
+        @keyframes popScale { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .info-card h3 { margin: 0 0 12px 0; color: #00CCBC; font-size: 14px; text-transform: uppercase; }
+        .info-card p { font-size: 12px; line-height: 1.5; color: #ccc; margin-bottom: 18px; }
+        .info-btn { background: #00CCBC; color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; font-size: 12px; display: inline-block; cursor: pointer; }
+
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; font-size: 10px; line-height: 1.4; }
         .hist-details { flex: 1; display: flex; flex-direction: column; gap: 1px; }
         .hist-date { font-weight: bold; color: #00CCBC; font-size: 11px; }
@@ -52,12 +60,21 @@
 
         #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
+        @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+        @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
 
-        /* Icona Info e Stile Info Box */
-        .info-i { font-size: 10px; color: #00CCBC; border: 1px solid #00CCBC; border-radius: 50%; width: 12px; height: 12px; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; vertical-align: middle; }
+        .info-i { font-size: 8px; color: #00CCBC; border: 1px solid #00CCBC; border-radius: 50%; width: 11px; height: 11px; display: inline-flex; align-items: center; justify-content: center; margin-left: 3px; vertical-align: middle; opacity: 0.6; }
     </style>
 </head>
 <body onload="inizializza()">
+
+    <div id="infoOverlay" onclick="closeInfo()">
+        <div class="info-card" onclick="event.stopPropagation()">
+            <h3 id="infoTitle">INFO</h3>
+            <p id="infoText"></p>
+            <div class="info-btn" onclick="closeInfo()">OK</div>
+        </div>
+    </div>
 
     <div class="header-main">
         <div class="lang-side">
@@ -66,7 +83,7 @@
             <div class="btn-flag" onclick="setLang('us')">🇺🇸</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.964</span></div>
+        <div class="version-side"><span class="version-badge">v1.0.965</span></div>
     </div>
 
     <div class="card">
@@ -131,60 +148,41 @@
         const i18n = {
             it: { 
                 lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", euroSpesi:"EURO SPESI", euroLitro:"EURO AL LITRO", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", lordoTxt:"LORDO €", perc:"PERCORSI", scartoKm:"SCARTO KM", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO",
-                info_lordoTot: "Somma di tutti i guadagni lordi inseriti.",
-                info_nettoTot: "Il lordo totale meno il 20% (tasse) e meno il costo della benzina stimato.",
-                info_oreTot: "Totale delle ore lavorate in tutti i turni.",
-                info_consTot: "Litri totali consumati calcolati sui KM reali di ogni turno.",
-                info_medKml: "Quanti chilometri percorri in media con un litro.",
-                info_spesaBenz: "Costo totale stimato del carburante usato per i turni.",
-                info_target: "Imposta il tuo obiettivo di guadagno Netto.",
-                info_mancante: "Quanto lordo devi ancora guadagnare per raggiungere il tuo target Netto.",
-                info_ggAttivi: "Numero di giorni solari in cui hai lavorato.",
-                info_euroSpesi: "Inserisci l'importo totale pagato al benzinaio.",
-                info_euroLitro: "Inserisci il prezzo al litro (es: 1.859).",
-                info_lordoTxt: "Guadagno lordo della sessione appena conclusa.",
-                info_ore: "Durata del turno (es: 3.5 per tre ore e mezza).",
-                info_perc: "Chilometri totali indicati dal computer di bordo.",
-                info_l100: "Consumo medio indicato dal mezzo (Litri per 100km).",
-                info_scartoKm: "KM percorsi non per lavoro (es: tragitto casa-lavoro) da escludere dal calcolo consumo."
+                info_lordoTot: "Somma totale di tutti i tuoi guadagni lordi registrati.",
+                info_nettoTot: "Il tuo guadagno pulito, calcolato sottraendo le tasse (20%) e il costo della benzina dal lordo.",
+                info_oreTot: "Totale complessivo delle ore di lavoro effettuate.",
+                info_consTot: "Litri totali di carburante consumati durante le consegne.",
+                info_medKml: "Rendimento medio del tuo mezzo (quanti KM fai con un litro).",
+                info_spesaBenz: "Quanto hai speso realmente in benzina per poter lavorare.",
+                info_target: "Il guadagno NETTO che vorresti raggiungere in questo periodo.",
+                info_mancante: "L'importo LORDO che ti serve ancora per arrivare al tuo obiettivo netto desiderato.",
+                info_ggAttivi: "Giorni in cui hai registrato almeno un turno di lavoro.",
+                info_euroSpesi: "Importo pagato al benzinaio nell'ultimo rifornimento.",
+                info_euroLitro: "Prezzo al litro pagato (serve per calcolare il costo benzina dei turni successivi).",
+                info_lordoTxt: "Quanto hai guadagnato in questo turno specifico.",
+                info_ore: "Ore totali della sessione (es. 4.5 = 4 ore e mezza).",
+                info_perc: "Chilometri totali segnati dal contachilometri.",
+                info_l100: "Consumo medio indicato sul display (Litri per 100km).",
+                info_scartoKm: "KM non lavorativi percorsi (es. tragitto casa-lavoro) che verranno esclusi dal calcolo del consumo netto."
             },
             en: { 
                 lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER LITER", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS €", perc:"TRAVELED", scartoKm:"OFFSET KM", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL",
-                info_lordoTot: "Sum of all gross earnings entered.",
-                info_nettoTot: "Total gross minus 20% (taxes) and estimated fuel cost.",
-                info_oreTot: "Total hours worked across all shifts.",
-                info_consTot: "Total liters consumed based on real KM of each shift.",
-                info_medKml: "Average distance traveled per liter of fuel.",
-                info_spesaBenz: "Total estimated cost of fuel used.",
-                info_target: "Set your target Net earning.",
-                info_mancante: "How much gross you still need to earn to reach your Net target.",
-                info_ggAttivi: "Number of calendar days you worked.",
-                info_euroSpesi: "Total amount paid at the gas station.",
-                info_euroLitro: "Price per liter (e.g., 1.859).",
-                info_lordoTxt: "Gross earnings for this shift.",
-                info_ore: "Duration of the shift (e.g., 3.5 for three and a half hours).",
-                info_perc: "Total kilometers shown by the vehicle computer.",
-                info_l100: "Average consumption shown by the vehicle (Liters per 100km).",
-                info_scartoKm: "Kilometers not related to work to be excluded from fuel calculation."
-            },
-            us: { 
-                lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER GAL", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS $", perc:"TRAVELED", scartoKm:"OFFSET MI", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL",
-                info_lordoTot: "Sum of all gross earnings.",
-                info_nettoTot: "Total gross minus 20% and estimated fuel cost.",
-                info_oreTot: "Total hours worked.",
-                info_consTot: "Total gallons consumed.",
-                info_medKml: "Average miles per gallon.",
-                info_spesaBenz: "Total estimated fuel cost.",
-                info_target: "Set your target Net income.",
-                info_mancante: "Gross income needed to hit Net target.",
-                info_ggAttivi: "Number of days worked.",
-                info_euroSpesi: "Total amount paid at the gas station.",
-                info_euroLitro: "Price per gallon.",
-                info_lordoTxt: "Gross earnings for this shift.",
-                info_ore: "Shift duration.",
-                info_perc: "Total miles shown by vehicle.",
-                info_l100: "Vehicle average MPG/Consumption.",
-                info_scartoKm: "Personal miles to exclude from work fuel costs."
+                info_lordoTot: "Total sum of all your recorded gross earnings.",
+                info_nettoTot: "Your clean earnings, calculated by subtracting taxes (20%) and fuel costs.",
+                info_oreTot: "Total amount of working hours performed.",
+                info_consTot: "Total liters of fuel consumed during deliveries.",
+                info_medKml: "Average efficiency of your vehicle (KM per liter).",
+                info_spesaBenz: "Real total amount spent on fuel for work.",
+                info_target: "The NET amount you want to earn in this period.",
+                info_mancante: "The GROSS amount still needed to reach your net target.",
+                info_ggAttivi: "Days where you recorded at least one work shift.",
+                info_euroSpesi: "Amount paid at the gas station for the last refuel.",
+                info_euroLitro: "Price per liter paid (used for future fuel cost calculations).",
+                info_lordoTxt: "Amount earned in this specific shift.",
+                info_ore: "Total hours for the session (e.g. 4.5 = 4 and a half hours).",
+                info_perc: "Total kilometers shown on the odometer.",
+                info_l100: "Average consumption shown on the display (L/100km).",
+                info_scartoKm: "Non-work kilometers to be excluded from fuel calculations."
             }
         };
 
@@ -195,9 +193,13 @@
         function setLang(l) { currentLang = l; localStorage.setItem('rider_lang', l); updateUI(); }
         
         function showInfo(key) {
-            const msg = i18n[currentLang]['info_' + key];
-            if(msg) alert(msg);
+            const lang = i18n[currentLang];
+            document.getElementById('infoTitle').innerText = lang[key] || "INFO";
+            document.getElementById('infoText').innerText = lang['info_' + key];
+            document.getElementById('infoOverlay').style.display = 'flex';
         }
+
+        function closeInfo() { document.getElementById('infoOverlay').style.display = 'none'; }
 
         function updateUI() {
             const lang = i18n[currentLang];
@@ -224,11 +226,4 @@
             if(e > 0 && p > 0) {
                 let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
                 db.rifornimenti.push({ id: Date.now(), data: document.getElementById('fYear').value+'-'+document.getElementById('fMonth').value+'-'+document.getElementById('fDay').value, ora: ora, euro: e, prezzo: p, tipo: 'B' });
-                salva(); ['fuelEuro','fuelPrezzo'].forEach(id=>document.getElementById(id).value=""); showToast(i18n[currentLang].msgFuelOk);
-            }
-        }
-
-        function aggiungiSessione() {
-            let l = parseFloat(document.getElementById('sessLordo').value) || 0;
-            if(l > 0) {
-                let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit'
+                salva(); ['fuelEuro','fuelPrezzo'].forEach(id=>document.getElementById(id).value=""); showToast(i18n[cu
