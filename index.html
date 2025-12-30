@@ -39,7 +39,14 @@
         
         .fuel-buttons-container { display: flex; gap: 6px; width: 100%; margin-top: 5px; }
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
-        .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; }
+        .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+        /* Camera Overlay */
+        #camOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; display: none; flex-direction: column; }
+        #camVideo { width: 100%; flex-grow: 1; object-fit: cover; }
+        .cam-ui { height: 120px; background: #121212; display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; }
+        .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #555; }
+        .cam-cancel { color: white; font-size: 12px; background: none; width: auto; }
 
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
         .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 10px; flex: 1; color: #ccc; }
@@ -51,6 +58,16 @@
     </style>
 </head>
 <body>
+
+    <div id="camOverlay">
+        <video id="camVideo" autoplay playsinline></video>
+        <div class="cam-ui">
+            <button class="cam-cancel" onclick="chiudiCamera()">ANNULLA</button>
+            <button class="shutter-btn" onclick="scattaFoto()"></button>
+            <div style="width:60px;"></div>
+        </div>
+        <canvas id="camCanvas" style="display:none;"></canvas>
+    </div>
 
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
@@ -92,6 +109,7 @@
         </div>
         <div class="fuel-buttons-container">
             <button class="btn-fuel" onclick="aggiungiBenza()">SALVA</button>
+            <button class="btn-scan-red" onclick="apriCamera()">📸 SCANNER</button>
         </div>
     </div>
 
@@ -118,12 +136,47 @@
     </div>
 
     <div id="storico"></div>
-    <button class="btn-reset-all" style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222;" onclick="apriReset()">⚠️ AZZERA TUTTI I DATI</button>
+    <button class="btn-reset-all" style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222; width:100%;" onclick="apriReset()">⚠️ AZZERA TUTTI I DATI</button>
     
     <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
+        const video = document.getElementById('camVideo');
+        const overlay = document.getElementById('camOverlay');
+
+        async function apriCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                overlay.style.display = 'flex';
+                showToast("Inquadra scontrino...");
+            } catch (err) { alert("Attiva i permessi fotocamera."); }
+        }
+
+        function chiudiCamera() {
+            if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+            overlay.style.display = 'none';
+        }
+
+        function scattaFoto() {
+            const canvas = document.getElementById('camCanvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            chiudiCamera();
+            showToast("🔍 Analisi...");
+            Tesseract.recognize(canvas, 'ita').then(({ data: { text } }) => {
+                const numeri = text.match(/\d+[.,]\d{2,3}/g);
+                if (numeri) {
+                    const parsed = numeri.map(n => parseFloat(n.replace(',', '.')));
+                    const spesaMax = Math.max(...parsed);
+                    const prezzoL = parsed.find(n => n > 1.3 && n < 2.3);
+                    if (spesaMax) document.getElementById('fuelEuro').value = spesaMax;
+                    if (prezzoL) document.getElementById('fuelPrezzo').value = prezzoL;
+                    showToast("✅ Dati inseriti!");
+                } else { showToast("❌ Riprova"); }
+            });
+        }
 
         function popolaDate() {
             const d = new Date();
