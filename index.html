@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.963</title>
+    <title>Rider Tracker Pro v1.0.964</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -21,7 +21,7 @@
         .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative; }
         
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
@@ -52,6 +52,9 @@
 
         #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
+
+        /* Icona Info e Stile Info Box */
+        .info-i { font-size: 10px; color: #00CCBC; border: 1px solid #00CCBC; border-radius: 50%; width: 12px; height: 12px; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; vertical-align: middle; }
     </style>
 </head>
 <body onload="inizializza()">
@@ -63,25 +66,25 @@
             <div class="btn-flag" onclick="setLang('us')">🇺🇸</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.963</span></div>
+        <div class="version-side"><span class="version-badge">v1.0.964</span></div>
     </div>
 
     <div class="card">
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label" data-tr="lordoTot">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label" data-tr="nettoTot">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label" data-tr="oreTot">Ore Lavoro</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box"><span class="stat-label" data-tr="consTot">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span> <span class="u-vol">L</span></span></div>
-            <div class="data-box"><span class="stat-label" data-tr="medKml">Media</span><span class="stat-val" style="color:#ffa500"><span id="mediaKml">0.0</span> <span class="u-eff">km/l</span></span></div>
-            <div class="data-box"><span class="stat-label" data-tr="spesaBenz">Spesa Benza</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="showInfo('lordoTot')"><span class="stat-label"><span data-tr="lordoTot">Lordo Totale</span><span class="info-i">i</span></span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="showInfo('nettoTot')"><span class="stat-label"><span data-tr="nettoTot">Netto Reale</span><span class="info-i">i</span></span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="showInfo('oreTot')"><span class="stat-label"><span data-tr="oreTot">Ore Lavoro</span><span class="info-i">i</span></span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showInfo('consTot')"><span class="stat-label"><span data-tr="consTot">Consumo</span><span class="info-i">i</span></span><span class="stat-val"><span id="litriTot">0.0</span> <span class="u-vol">L</span></span></div>
+            <div class="data-box" onclick="showInfo('medKml')"><span class="stat-label"><span data-tr="medKml">Media</span><span class="info-i">i</span></span><span class="stat-val" style="color:#ffa500"><span id="mediaKml">0.0</span> <span class="u-eff">km/l</span></span></div>
+            <div class="data-box" onclick="showInfo('spesaBenz')"><span class="stat-label"><span data-tr="spesaBenz">Spesa Benza</span><span class="info-i">i</span></span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box">
-                <span class="stat-label" data-tr="target">Obiettivo €</span>
+            <div class="data-box" onclick="showInfo('target')">
+                <span class="stat-label"><span data-tr="target">Obiettivo €</span><span class="info-i">i</span></span>
                 <input type="number" id="targetInput" style="height:22px; font-size:11px; margin-top:2px; background:transparent; border:none; border-bottom:1px solid #444;" oninput="salvaTarget()">
             </div>
-            <div class="data-box"><span class="stat-label" data-tr="mancante">Lordo Manc.</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label" data-tr="ggAttivi">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
+            <div class="data-box" onclick="showInfo('mancante')"><span class="stat-label"><span data-tr="mancante">Lordo Manc.</span><span class="info-i">i</span></span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="showInfo('ggAttivi')"><span class="stat-label"><span data-tr="ggAttivi">GG Lavoro</span><span class="info-i">i</span></span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -96,8 +99,8 @@
                 <span class="label-mini" data-tr="data">DATA</span>
                 <div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div>
             </div>
-            <div style="flex:1"><span class="label-mini" data-tr="euroSpesi">EURO SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
-            <div style="flex:1"><span class="label-mini" data-tr="euroLitro">EURO AL LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000"></div>
+            <div style="flex:1" onclick="showInfo('euroSpesi')"><span class="label-mini"><span data-tr="euroSpesi">EURO SPESI</span><span class="info-i">i</span></span><input type="number" id="fuelEuro" placeholder="0.00"></div>
+            <div style="flex:1" onclick="showInfo('euroLitro')"><span class="label-mini"><span data-tr="euroLitro">EURO AL LITRO</span><span class="info-i">i</span></span><input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000"></div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()" data-tr="btnFuel">SALVA RIFORNIMENTO</button>
     </div>
@@ -109,13 +112,13 @@
                 <span class="label-mini" data-tr="data">DATA</span>
                 <div class="date-inputs"><select id="sDay" class="sel-small"></select><select id="sMonth" class="sel-small"></select><select id="sYear" class="sel-year"></select></div>
             </div>
-            <div style="flex:1"><span class="label-mini" data-tr="lordoTxt">LORDO €</span><input type="number" id="sessLordo"></div>
-            <div style="flex:1"><span class="label-mini" data-tr="ore">ORE</span><input type="number" id="sessOre" step="0.5"></div>
+            <div style="flex:1" onclick="showInfo('lordoTxt')"><span class="label-mini"><span data-tr="lordoTxt">LORDO €</span><span class="info-i">i</span></span><input type="number" id="sessLordo"></div>
+            <div style="flex:1" onclick="showInfo('ore')"><span class="label-mini"><span data-tr="ore">ORE</span><span class="info-i">i</span></span><input type="number" id="sessOre" step="0.5"></div>
         </div>
         <div class="summary-grid" style="margin-bottom:8px;">
-            <div><span class="label-mini"><span class="u-dist">KM</span> <span data-tr="perc">PERCORSI</span></span><input type="number" id="sessKm"></div>
-            <div><span class="label-mini"><span class="u-vol">L</span>/100 <span class="u-dist">KM</span></span><input type="number" id="sessL100" step="0.1"></div>
-            <div><span class="label-mini" data-tr="scartoKm">SCARTO KM</span><input type="number" id="sessScarto"></div>
+            <div onclick="showInfo('perc')"><span class="label-mini"><span class="u-dist">KM</span> <span data-tr="perc">PERCORSI</span><span class="info-i">i</span></span><input type="number" id="sessKm"></div>
+            <div onclick="showInfo('l100')"><span class="label-mini"><span class="u-vol">L</span>/100 <span class="u-dist">KM</span><span class="info-i">i</span></span><input type="number" id="sessL100" step="0.1"></div>
+            <div onclick="showInfo('scartoKm')"><span class="label-mini"><span data-tr="scartoKm">SCARTO KM</span><span class="info-i">i</span></span><input type="number" id="sessScarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()" data-tr="btnAdd">SALVA TURNO</button>
     </div>
@@ -126,9 +129,63 @@
 
     <script>
         const i18n = {
-            it: { lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", euroSpesi:"EURO SPESI", euroLitro:"EURO AL LITRO", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", lordoTxt:"LORDO €", perc:"PERCORSI", scartoKm:"SCARTO KM", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO" },
-            en: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER LITER", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS €", perc:"TRAVELED", scartoKm:"OFFSET KM", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" },
-            us: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER GAL", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS $", perc:"TRAVELED", scartoKm:"OFFSET MI", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" }
+            it: { 
+                lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", euroSpesi:"EURO SPESI", euroLitro:"EURO AL LITRO", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", lordoTxt:"LORDO €", perc:"PERCORSI", scartoKm:"SCARTO KM", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO",
+                info_lordoTot: "Somma di tutti i guadagni lordi inseriti.",
+                info_nettoTot: "Il lordo totale meno il 20% (tasse) e meno il costo della benzina stimato.",
+                info_oreTot: "Totale delle ore lavorate in tutti i turni.",
+                info_consTot: "Litri totali consumati calcolati sui KM reali di ogni turno.",
+                info_medKml: "Quanti chilometri percorri in media con un litro.",
+                info_spesaBenz: "Costo totale stimato del carburante usato per i turni.",
+                info_target: "Imposta il tuo obiettivo di guadagno Netto.",
+                info_mancante: "Quanto lordo devi ancora guadagnare per raggiungere il tuo target Netto.",
+                info_ggAttivi: "Numero di giorni solari in cui hai lavorato.",
+                info_euroSpesi: "Inserisci l'importo totale pagato al benzinaio.",
+                info_euroLitro: "Inserisci il prezzo al litro (es: 1.859).",
+                info_lordoTxt: "Guadagno lordo della sessione appena conclusa.",
+                info_ore: "Durata del turno (es: 3.5 per tre ore e mezza).",
+                info_perc: "Chilometri totali indicati dal computer di bordo.",
+                info_l100: "Consumo medio indicato dal mezzo (Litri per 100km).",
+                info_scartoKm: "KM percorsi non per lavoro (es: tragitto casa-lavoro) da escludere dal calcolo consumo."
+            },
+            en: { 
+                lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER LITER", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS €", perc:"TRAVELED", scartoKm:"OFFSET KM", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL",
+                info_lordoTot: "Sum of all gross earnings entered.",
+                info_nettoTot: "Total gross minus 20% (taxes) and estimated fuel cost.",
+                info_oreTot: "Total hours worked across all shifts.",
+                info_consTot: "Total liters consumed based on real KM of each shift.",
+                info_medKml: "Average distance traveled per liter of fuel.",
+                info_spesaBenz: "Total estimated cost of fuel used.",
+                info_target: "Set your target Net earning.",
+                info_mancante: "How much gross you still need to earn to reach your Net target.",
+                info_ggAttivi: "Number of calendar days you worked.",
+                info_euroSpesi: "Total amount paid at the gas station.",
+                info_euroLitro: "Price per liter (e.g., 1.859).",
+                info_lordoTxt: "Gross earnings for this shift.",
+                info_ore: "Duration of the shift (e.g., 3.5 for three and a half hours).",
+                info_perc: "Total kilometers shown by the vehicle computer.",
+                info_l100: "Average consumption shown by the vehicle (Liters per 100km).",
+                info_scartoKm: "Kilometers not related to work to be excluded from fuel calculation."
+            },
+            us: { 
+                lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER GAL", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", lordoTxt:"GROSS $", perc:"TRAVELED", scartoKm:"OFFSET MI", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL",
+                info_lordoTot: "Sum of all gross earnings.",
+                info_nettoTot: "Total gross minus 20% and estimated fuel cost.",
+                info_oreTot: "Total hours worked.",
+                info_consTot: "Total gallons consumed.",
+                info_medKml: "Average miles per gallon.",
+                info_spesaBenz: "Total estimated fuel cost.",
+                info_target: "Set your target Net income.",
+                info_mancante: "Gross income needed to hit Net target.",
+                info_ggAttivi: "Number of days worked.",
+                info_euroSpesi: "Total amount paid at the gas station.",
+                info_euroLitro: "Price per gallon.",
+                info_lordoTxt: "Gross earnings for this shift.",
+                info_ore: "Shift duration.",
+                info_perc: "Total miles shown by vehicle.",
+                info_l100: "Vehicle average MPG/Consumption.",
+                info_scartoKm: "Personal miles to exclude from work fuel costs."
+            }
         };
 
         let db = JSON.parse(localStorage.getItem('rider_pro_v1.0.950')) || { sessioni: [], rifornimenti: [], target: 0 };
@@ -136,6 +193,12 @@
 
         function inizializza() { popolaDate(); updateUI(); document.getElementById('targetInput').value = db.target || ""; }
         function setLang(l) { currentLang = l; localStorage.setItem('rider_lang', l); updateUI(); }
+        
+        function showInfo(key) {
+            const msg = i18n[currentLang]['info_' + key];
+            if(msg) alert(msg);
+        }
+
         function updateUI() {
             const lang = i18n[currentLang];
             document.querySelectorAll('[data-tr]').forEach(el => el.innerText = lang[el.dataset.tr]);
@@ -168,57 +231,4 @@
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
-                db.sessioni.push({ id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: document.getElementById('sYear').value+'-'+document.getElementById('sMonth').value+'-'+document.getElementById('sDay').value, ora: ora, tipo: 'S' });
-                salva(); ['sessLordo','sessOre','sessKm','sessL100','sessScarto'].forEach(id=>document.getElementById(id).value=""); showToast(i18n[currentLang].msgTurnOk);
-            }
-        }
-
-        function calcola() {
-            let tL = 0, tO = 0, ltT = 0, cB = 0, kmT = 0;
-            let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            db.sessioni.forEach(s => {
-                tL += s.lordo; tO += s.ore;
-                let kE = Math.max(0, s.km - s.scarto); kmT += kE;
-                let lt = (kE / 100) * s.l100; ltT += lt; cB += (lt * uP);
-            });
-            let nR = (tL * 0.8) - cB;
-            let perc = db.target > 0 ? Math.round((nR / db.target) * 100) : 0;
-            document.getElementById('pBar').style.width = Math.min(100, perc) + "%";
-            document.getElementById('progressoPerc').innerText = perc + "%";
-            document.getElementById('lordoTotale').innerText = tL.toFixed(2);
-            document.getElementById('nettoReale').innerText = nR.toFixed(2);
-            document.getElementById('costoBenzaTot').innerText = cB.toFixed(2);
-            document.getElementById('litriTot').innerText = ltT.toFixed(1);
-            document.getElementById('oreTotali').innerText = tO.toFixed(1);
-            document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
-            document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - nR) * 1.25).toFixed(2);
-            document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
-            renderStorico();
-        }
-
-        function renderStorico() {
-            let h = ""; const lang = i18n[currentLang];
-            let tutti = [...db.sessioni, ...db.rifornimenti].sort((a,b) => b.id - a.id);
-            tutti.forEach(i => {
-                let d = i.data.split("-"); let dIT = d[2]+"/"+d[1]+"/"+d[0];
-                let ora = i.ora || "--:--";
-                if(i.tipo === 'S') {
-                    let kE = Math.max(0, i.km - i.scarto);
-                    let ltS = (kE / 100) * i.l100;
-                    let kmlS = (ltS > 0) ? (kE / ltS).toFixed(1) : "0.0";
-                    h += `<div class="history-item"><div class="hist-details"><span class="hist-date">${dIT} - ${lang.histTurn} <span class="hist-time">${ora}</span></span><span>€${i.lordo.toFixed(2)} | ${i.ore}h | ${kE}${lang.uDist} | ${kmlS}${lang.uEff}</span></div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">DEL</button></div>`;
-                } else {
-                    h += `<div class="history-item" style="border-left-color:#ffa500"><div class="hist-details"><span class="hist-date" style="color:#ffa500">${dIT} - ${lang.histFuel} <span class="hist-time">${ora}</span></span><span>€${i.euro.toFixed(2)} | €${i.prezzo.toFixed(3)}/L | ${(i.euro/i.prezzo).toFixed(1)}L</span></div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">DEL</button></div>`;
-                }
-            });
-            document.getElementById('storico').innerHTML = h ? `<div class='section-title' style='margin-top:10px;'>${lang.histTitle}</div>` + h : "";
-        }
-
-        function elimina(tipo, id) { db[tipo] = db[tipo].filter(x => x.id !== id); salva(); }
-        function apriReset() { if(confirm("Azzera tutto?")) confermaReset(); }
-        function confermaReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast(i18n[currentLang].msgResetOk); }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-    </script>
-</body>
-</html>
+                let ora = new Date().toLocaleTimeString('it-IT', {hour: '2-digit'
