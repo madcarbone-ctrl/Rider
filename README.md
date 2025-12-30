@@ -23,7 +23,7 @@
 
 ## 📲 Download APK
 <p align="center">
-  <a href="Rider_Tracker_Pro.apk"><b>➡️ Clicca qui per scaricare Rider Tracker Pro APK ⬅️</b></a>
+  <a href="Rider Tracker Pro_v1.49.apk"><b>➡️ Scarica Rider Tracker Pro_v1.49.apk ⬅️</b></a>
 </p>
 
 <hr>
