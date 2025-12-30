@@ -25,6 +25,7 @@
         
         input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; display: block; }
         
+        /* Layout Data Ripristinato */
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
         .date-col { display: flex; flex-direction: column; min-width: 135px; }
         .date-inputs { display: flex; gap: 2px; width: 100%; }
@@ -40,31 +41,23 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        #camOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; display: none; flex-direction: column; }
-        #camVideo { width: 100%; flex-grow: 1; object-fit: cover; }
-        .cam-ui { height: 120px; background: #121212; display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; }
-        .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #555; }
-
-        /* Modal Stile v94 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
 
-        .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
-        .hist-details { display: flex; flex-direction: column; gap: 2px; font-size: 10px; flex: 1; color: #ccc; }
-        .hist-main { display: flex; align-items: center; gap: 5px; font-weight: bold; color: #fff; font-size: 11px; }
-        .btn-del { width: 40px; height: 30px; background: #f44; color: #fff; border-radius: 5px; font-size: 12px; }
-
         #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; font-size: 12px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 1.5s; }
+        
+        .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
+        .btn-del { width: 40px; height: 30px; background: #f44; color: #fff; border-radius: 5px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <div id="camOverlay">
-        <video id="camVideo" autoplay playsinline></video>
-        <div class="cam-ui">
+    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:10001;display:none;flex-direction:column;">
+        <video id="camVideo" autoplay playsinline style="width:100%;flex-grow:1;object-fit:cover;"></video>
+        <div style="height:120px;background:#121212;display:flex;justify-content:space-around;align-items:center;padding-bottom:20px;">
             <button style="color:white; background:none; width:auto;" onclick="chiudiCamera()">ANNULLA</button>
-            <button class="shutter-btn" onclick="scattaFoto()"></button>
+            <button style="width:70px;height:70px;background:white;border-radius:50%;border:5px solid #555;" onclick="scattaFoto()"></button>
             <div style="width:60px;"></div>
         </div>
         <canvas id="camCanvas" style="display:none;"></canvas>
@@ -72,11 +65,9 @@
 
     <div id="infoModal" class="modal-overlay" onclick="chiudiModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:12px; text-transform:uppercase;">INFORMAZIONE</div>
+            <div id="infoTitle" style="font-weight:bold; margin-bottom:12px; text-transform:uppercase;"></div>
             <div id="infoText" style="font-size:13px; line-height:1.5; margin-bottom:20px;"></div>
-            <div id="modalButtons" style="display:flex; flex-direction:column; gap:8px;">
-                <button id="modalCloseBtn" onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>
-            </div>
+            <div id="modalButtons" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     </div>
 
@@ -148,7 +139,6 @@
 
     <div id="storico"></div>
     <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222; width:100%;" onclick="chiediReset()">⚠️ AZZERA TUTTO</button>
-    
     <div id="toast"></div>
 
     <script>
@@ -170,104 +160,79 @@
         };
 
         function mostraInfo(k) { 
-            document.getElementById('infoTitle').innerText = "INFORMAZIONE";
-            document.getElementById('infoTitle').style.color = "#00CCBC";
+            const t = document.getElementById('infoTitle');
+            t.innerText = "INFORMAZIONE"; t.style.color = "#00CCBC";
             document.getElementById('infoText').innerText = spiegazioni[k];
             document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>';
             document.getElementById('infoModal').style.display = 'flex'; 
         }
 
         function chiediReset() {
-            document.getElementById('infoTitle').innerText = "ATTENZIONE";
-            document.getElementById('infoTitle').style.color = "#ff4444";
-            document.getElementById('infoText').innerText = "Sei sicuro di voler eliminare definitivamente tutti i dati, inclusi i turni, i rifornimenti e l'obiettivo?";
+            const t = document.getElementById('infoTitle');
+            t.innerText = "ATTENZIONE"; t.style.color = "#ff4444";
+            document.getElementById('infoText').innerText = "Sei sicuro di voler eliminare definitivamente tutti i dati e l'obiettivo?";
             document.getElementById('modalButtons').innerHTML = `
                 <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px;">SÌ, AZZERA TUTTO</button>
-                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>
-            `;
+                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
 
         function eseguiReset() {
             db = { sessioni: [], rifornimenti: [], target: 0 };
             document.getElementById('targetInput').value = "";
-            salva();
-            chiudiModal();
-            showToast("⚠️ Dati azzerati!");
+            salva(); chiudiModal(); showToast("⚠️ Dati azzerati!");
         }
 
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
-
-        async function apriCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream; overlay.style.display = 'flex';
-                showToast("Inquadra scontrino...");
-            } catch (err) { alert("Attiva i permessi fotocamera."); }
-        }
-
-        function chiudiCamera() { if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop()); overlay.style.display = 'none'; }
-
-        function scattaFoto() {
-            const canvas = document.getElementById('camCanvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0); chiudiCamera();
-            showToast("🔍 Analisi...");
-            Tesseract.recognize(canvas, 'ita').then(({ data: { text } }) => {
-                const numeri = text.match(/\d+[.,]\d{2,3}/g);
-                if (numeri) {
-                    const parsed = numeri.map(n => parseFloat(n.replace(',', '.')));
-                    const spesaMax = Math.max(...parsed);
-                    const prezzoL = parsed.find(n => n > 1.3 && n < 2.3);
-                    if (spesaMax) document.getElementById('fuelEuro').value = spesaMax;
-                    if (prezzoL) document.getElementById('fuelPrezzo').value = prezzoL;
-                    showToast("✅ Dati letti!");
-                } else { showToast("❌ Riprova"); }
-            });
-        }
-
-        function popolaDate() {
-            const d = new Date();
-            const gIds = ['fDay', 'sDay'], mIds = ['fMonth', 'sMonth'], aIds = ['fYear', 'sYear'];
-            gIds.forEach(id => { const s = document.getElementById(id); s.innerHTML = ""; for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            mIds.forEach(id => { const s = document.getElementById(id); s.innerHTML = ""; for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            aIds.forEach(id => { const s = document.getElementById(id); s.innerHTML = ""; for(let i=2024; i<=2030; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
-        }
-
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
 
+        function popolaDate() {
+            const d = new Date();
+            ['fDay', 'sDay'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            ['fMonth', 'sMonth'].forEach(id => { const s = document.getElementById(id); for(let i=1; i<=12; i++) s.innerHTML += `<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
+            ['fYear', 'sYear'].forEach(id => { const s = document.getElementById(id); for(let i=2024; i<=2030; i++) s.innerHTML += `<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+        }
+
+        async function apriCamera() {
+            try { const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); video.srcObject = s; overlay.style.display = 'flex'; } catch (e) { alert("Attiva fotocamera."); }
+        }
+        function chiudiCamera() { if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop()); overlay.style.display = 'none'; }
+        function scattaFoto() {
+            const c = document.getElementById('camCanvas'); c.width = video.videoWidth; c.height = video.videoHeight;
+            c.getContext('2d').drawImage(video, 0, 0); chiudiCamera(); showToast("🔍 Analisi...");
+            Tesseract.recognize(c, 'ita').then(({ data: { text } }) => {
+                const n = text.match(/\d+[.,]\d{2,3}/g);
+                if (n) {
+                    const p = n.map(x => parseFloat(x.replace(',', '.')));
+                    document.getElementById('fuelEuro').value = Math.max(...p);
+                    const pr = p.find(x => x > 1.3 && x < 2.3); if (pr) document.getElementById('fuelPrezzo').value = pr;
+                    showToast("✅ Fatto!");
+                } else showToast("❌ Riprova");
+            });
+        }
+
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) {
-                db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p, tipo: 'B' });
-                salva(); showToast("⛽ Salvato!");
-            }
+            if(e > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
         }
 
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                db.sessioni.push({
-                    id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value) || 0,
-                    km: parseFloat(document.getElementById('sessKm').value) || 0, l100: parseFloat(document.getElementById('sessL100').value) || 0,
-                    scarto: parseFloat(document.getElementById('sessScarto').value) || 0,
-                    data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}`, tipo: 'S'
-                });
-                salva(); showToast("✅ Turno salvato!");
+                db.sessioni.push({ id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
+                salva(); showToast("✅ Salvato!");
             }
         }
 
         function calcola() {
-            let tL = 0, tO = 0, ltT = 0, cB = 0, kmT = 0;
+            let tL=0, tO=0, ltT=0, cB=0, kmT=0;
             let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             db.sessioni.forEach(s => { 
-                tL += s.lordo; tO += s.ore; 
-                let kE = Math.max(0, s.km - s.scarto); kmT += kE; 
+                tL += s.lordo; tO += s.ore; let kE = Math.max(0, s.km - s.scarto); kmT += kE; 
                 let lt = (kE/100)*s.l100; ltT += lt; cB += (lt*uP); 
             });
-            let nR = (tL*0.8) - cB;
-            let perc = db.target > 0 ? Math.round((nR/db.target)*100) : 0;
+            let nR = (tL*0.8) - cB; let perc = db.target > 0 ? Math.round((nR/db.target)*100) : 0;
             document.getElementById('pBar').style.width = Math.min(100, perc) + "%";
             document.getElementById('progressoPerc').innerText = perc + "%";
             document.getElementById('lordoTotale').innerText = tL.toFixed(2);
@@ -283,10 +248,21 @@
 
         function renderStorico() {
             let h = "";
-            let tutti = [...db.sessioni.map(s=>({...s, tipo:'S'})), ...db.rifornimenti.map(r=>({...r, tipo:'B'}))];
-            tutti.sort((a,b)=>b.id-a.id).forEach(i => {
+            let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
+            tutti.forEach(i => {
                 let d = i.data.split("-"); let dataIT = `${d[2]}/${d[1]}/${d[0]}`;
-                if(i.tipo == 'S') {
-                    h += `<div class="history-item"><div class="hist-details"><div class="hist-main">📅 ${dataIT} - TURNO</div><span>💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ ${i.ore}h | 📍 ${i.km}km</span></div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">🗑️</button></div>`;
-                } else {
-                    h += `<div class="history-item" style="border-left-colo
+                h += `<div class="history-item" style="border-left-color:${i.t=='S'?'#00CCBC':'#ffa500'}">
+                    <div style="font-size:10px; flex:1"><b>${dataIT} - ${i.t=='S'?'TURNO':'RIF.'}</b><br>€${(i.lordo||i.euro).toFixed(2)}</div>
+                    <button class="btn-del" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                </div>`;
+            });
+            document.getElementById('storico').innerHTML = h ? "<div class='section-title'>📜 CRONOLOGIA</div>" + h : "";
+        }
+
+        function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
+        
+        popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
+    </script>
+</body>
+</html>
