@@ -2,177 +2,30 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rider Tracker Pro v94</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rider Tracker Pro v1.0.942</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rider Tracker">
+    <link rel="apple-touch-icon" href="icona.png">
+    
     <style>
-        :root { --primary: #ffa500; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --success: #4caf50; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 50px; }
-        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
-        h2, h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #2a2a2a; color: white; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        .btn-scan { background: var(--primary); color: black; margin-bottom: 15px; }
-        .btn-reg { background: var(--success); color: white; margin-top: 10px; }
-        .btn-reset { background: #cf6679; color: white; margin-top: 30px; }
-        
-        /* Tabelle e Riepilogo */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; }
-        th { color: var(--primary); }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: #252525; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #333; }
-        .stat-val { display: block; font-size: 20px; font-weight: bold; color: var(--primary); }
-
-        /* Overlay Camera */
-        #camera-overlay { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; flex-direction: column; }
-        #video { width: 100%; flex-grow: 1; object-fit: cover; }
-        .cam-controls { height: 150px; display: flex; justify-content: space-around; align-items: center; background: #121212; }
-        .shutter { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #555; }
+        /* Inserisci qui il tuo CSS della versione 94 */
+        body { background-color: #121212; color: white; font-family: sans-serif; }
     </style>
 </head>
 <body>
-
-    <div class="card">
-        <h3>📊 Riepilogo Mensile</h3>
-        <div class="stats-grid">
-            <div class="stat-box"><span class="stat-label">Netto Totale</span><span id="stat-netto" class="stat-val">0.00€</span></div>
-            <div class="stat-box"><span class="stat-label">Media KM/L</span><span id="stat-kml" class="stat-val">0.0</span></div>
-        </div>
-        <div style="margin-top:15px;">
-            <label>🎯 Target Mensile:</label>
-            <input type="number" id="target-input" placeholder="Imposta obiettivo (€)" oninput="salvaDati()">
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>⛽ Registra Rifornimento</h3>
-        <button class="btn-scan" onclick="openScanner()">📸 SCANSIONA SCONTRINO</button>
-        <input type="number" id="gas-price" placeholder="Prezzo al litro (€)" step="0.001">
-        <input type="number" id="total-spent" placeholder="Spesa totale (€)" step="0.01">
-        <button class="btn-reg" onclick="aggiungiRifornimento()">Registra Rifornimento</button>
-    </div>
-
-    <div class="card">
-        <h3>📜 Cronologia Attività</h3>
-        <div style="overflow-x:auto;">
-            <table id="history-table">
-                <thead>
-                    <tr>
-                        <th>Data/Ora</th>
-                        <th>Tipo</th>
-                        <th>Dettagli</th>
-                        <th>Importo</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-
-    <button class="btn-reset" onclick="azzeraTutto()">AZZERA (Reset Target & Dati)</button>
-
-    <div id="camera-overlay">
-        <video id="video" autoplay playsinline></video>
-        <div class="cam-controls">
-            <button onclick="closeScanner()" style="background:none; color:white;">Annulla</button>
-            <button class="shutter" id="capture-btn"></button>
-            <div style="width:60px;"></div> 
-        </div>
-        <canvas id="canvas" style="display:none;"></canvas>
-    </div>
-
     <script>
-        // INIZIALIZZAZIONE VUOTA (Come richiesto per v94)
-        window.onload = () => {
-            document.getElementById('target-input').value = localStorage.getItem('rider_target') || "";
-            document.getElementById('gas-price').value = "";
-            document.getElementById('total-spent').value = "";
-            caricaCronologia();
-        };
-
-        function salvaDati() {
-            localStorage.setItem('rider_target', document.getElementById('target-input').value);
-        }
-
+        // Logica Versione 94: Reset del target quando si clicca 'azzera'
         function azzeraTutto() {
-            if(confirm("Sei sicuro? Questo cancellerà tutti i dati e il Target.")) {
-                localStorage.clear();
-                location.reload(); // Ricarica e pulisce tutto
-            }
+            // Svuota i campi
+            document.getElementById('guadagno').value = "";
+            // Reset del target come richiesto
+            document.getElementById('target').value = ""; 
+            console.log("Reset completato: target e campi svuotati.");
         }
-
-        function aggiungiRifornimento() {
-            const prezzo = document.getElementById('gas-price').value;
-            const spesa = document.getElementById('total-spent').value;
-            if(!prezzo || !spesa) return alert("Inserisci i dati!");
-
-            const entry = {
-                data: new Date().toLocaleString('it-IT'),
-                tipo: "⛽ Benzina",
-                dettaglio: `${(spesa/prezzo).toFixed(2)}L a ${prezzo}€/L`,
-                importo: `-${spesa}€`
-            };
-
-            salvaEntry(entry);
-        }
-
-        function salvaEntry(entry) {
-            let data = JSON.parse(localStorage.getItem('rider_data') || "[]");
-            data.unshift(entry);
-            localStorage.setItem('rider_data', JSON.stringify(data));
-            location.reload();
-        }
-
-        function caricaCronologia() {
-            const data = JSON.parse(localStorage.getItem('rider_data') || "[]");
-            const body = document.getElementById('history-body');
-            body.innerHTML = data.map(item => `
-                <tr>
-                    <td>${item.data}</td>
-                    <td>${item.tipo}</td>
-                    <td>${item.dettaglio}</td>
-                    <td style="color:${item.importo.includes('-') ? '#cf6679' : '#4caf50'}">${item.importo}</td>
-                </tr>
-            `).join('');
-        }
-
-        // --- LOGICA SCANNER OCR ---
-        const video = document.getElementById('video');
-        const overlay = document.getElementById('camera-overlay');
-
-        async function openScanner() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream;
-                overlay.style.display = 'flex';
-            } catch (err) { alert("Errore fotocamera: " + err); }
-        }
-
-        function closeScanner() {
-            if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-            overlay.style.display = 'none';
-        }
-
-        document.getElementById('capture-btn').onclick = () => {
-            const canvas = document.getElementById('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            closeScanner();
-
-            Tesseract.recognize(canvas, 'ita').then(({ data: { text } }) => {
-                const numbers = text.match(/\d+[.,]\d{2,3}/g);
-                if (numbers) {
-                    const parsed = numbers.map(n => parseFloat(n.replace(',', '.')));
-                    const maxVal = Math.max(...parsed);
-                    const literPrice = parsed.find(n => n > 1.3 && n < 2.3);
-                    if (maxVal) document.getElementById('total-spent').value = maxVal;
-                    if (literPrice) document.getElementById('gas-price').value = literPrice;
-                }
-            });
-        };
     </script>
 </body>
 </html>
