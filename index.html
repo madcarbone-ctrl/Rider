@@ -46,7 +46,6 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 90%; max-width: 320px; text-align: center; }
 
-        /* CRONOLOGIA MIGLIORATA CON DATI MANCANTI */
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 2px; }
@@ -63,6 +62,8 @@
     </style>
 </head>
 <body>
+
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processaScan(event)">
 
     <div id="infoModal" class="modal-overlay" onclick="chiudiModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -112,7 +113,7 @@
         </div>
         <div style="display:flex; gap:6px;">
             <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
-            <button class="btn-scan-red" onclick="showToast('Scanner...')">📸 SCAN</button>
+            <button class="btn-scan-red" onclick="avviaScan()">📸 SCAN</button>
         </div>
     </div>
 
@@ -151,6 +152,24 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
+
+        function avviaScan() { document.getElementById('cameraInput').click(); }
+
+        function processaScan(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showToast("Analisi immagine...");
+            Tesseract.recognize(file, 'ita').then(({ data: { text } }) => {
+                const numbers = text.match(/\d+[.,]\d{2,3}/g);
+                if (numbers) {
+                    const sorted = numbers.map(n => parseFloat(n.replace(',', '.'))).sort((a,b) => b-a);
+                    if (sorted[0]) document.getElementById('fuelEuro').value = sorted[0];
+                    const p = sorted.find(n => n < 3 && n > 1);
+                    if (p) document.getElementById('fuelPrezzo').value = p;
+                    showToast("Dati estratti!");
+                } else { showToast("Dati non trovati"); }
+            }).catch(() => showToast("Errore Scan"));
+        }
 
         function mostraInfo(k) { 
             const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore lavorate totali.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati.", sezBenza: "Registra rifornimenti.", sezTurno: "Registra turni." };
@@ -221,15 +240,7 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIF.';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
-                
-                // DETTAGLI MANCANTI RECUPERATI
-                let extra = "";
-                if(i.t == 'S') {
-                    extra = `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>`;
-                } else {
-                    extra = `Prezzo: <b>€${i.prezzo.toFixed(3)}/L</b>`;
-                }
-
+                let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Prezzo: <b>€${i.prezzo.toFixed(3)}/L</b>`;
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
                         <div class="hist-header">${dataIT} - ${label}</div>
