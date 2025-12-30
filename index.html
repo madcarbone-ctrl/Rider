@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.942</title>
+    <title>Rider Tracker Pro v1.0.94</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
@@ -43,8 +43,10 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* NUOVA CRONOLOGIA SCORREVOLE */
-        #storicoContainer { max-height: 300px; overflow-y: auto; padding-right: 2px; }
+        /* CRONOLOGIA A SCOMPARSA E SCROLL */
+        #btnToggleStorico { background: #252525; color: #00CCBC; border: 1px solid #333; margin-top: 10px; margin-bottom: 5px; }
+        #wrapperStorico { display: none; max-height: 350px; overflow-y: auto; background: #161616; padding: 5px; border-radius: 10px; border: 1px solid #333; }
+        
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 2px; }
@@ -141,19 +143,35 @@
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
 
-    <div id="storico"></div>
+    <button id="btnToggleStorico" onclick="toggleStorico()">📜 MOSTRA CRONOLOGIA</button>
+    <div id="wrapperStorico">
+        <div id="listaStorico"></div>
+    </div>
     
     <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:12px; height:44px; border-radius:10px; border:1px solid #662222; width:100%; font-weight:bold;" onclick="chiediReset()">⚠️ AZZERA TUTTI I DATI</button>
     
     <div class="footer">
         MADE WITH ❤️ BY <span>MARCO CARBONE</span><br>
-        VERSION 1.0.942
+        VERSION 1.0.94
     </div>
 
     <div id="toast"></div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
+
+        function toggleStorico() {
+            const w = document.getElementById('wrapperStorico');
+            const b = document.getElementById('btnToggleStorico');
+            if (w.style.display === 'block') {
+                w.style.display = 'none';
+                b.innerText = '📜 MOSTRA CRONOLOGIA';
+            } else {
+                w.style.display = 'block';
+                b.innerText = '📜 NASCONDI CRONOLOGIA';
+                renderStorico();
+            }
+        }
 
         function avviaScan() { document.getElementById('cameraInput').click(); }
 
@@ -202,14 +220,14 @@
 
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Rifornimento salvato!"); }
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
         }
 
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
                 db.sessioni.push({ id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
-                salva(); showToast("✅ Turno salvato!");
+                salva(); showToast("✅ Salvato!");
             }
         }
 
@@ -231,7 +249,7 @@
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - nR) * 1.25).toFixed(2);
             document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
-            renderStorico();
+            if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico();
         }
 
         function renderStorico() {
@@ -252,7 +270,7 @@
                     <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
                 </div>`;
             });
-            document.getElementById('storico').innerHTML = h ? "<div class='section-title' style='margin-top:20px;'>📜 CRONOLOGIA</div><div id='storicoContainer'>" + h + "</div>" : "";
+            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#666;'>Nessun dato presente</div>";
         }
 
         function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
