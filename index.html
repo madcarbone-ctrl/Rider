@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V22</title>
+    <title>Rider Tracker Pro v94 V23</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Blocca interferenze di sistema come la ricerca Google al tocco */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
         input, select { user-select: auto; }
 
@@ -18,17 +17,19 @@
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-card { background: #222; width: 85%; padding: 25px; border-radius: 20px; border: 2px solid var(--main); text-align: center; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-card { background: #1a1a1a; width: 85%; padding: 25px; border-radius: 20px; border: 1px solid var(--main); text-align: center; box-shadow: 0 0 20px rgba(0,204,188,0.2); }
         
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        input, select { height: 30px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
-        button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 36px; cursor: pointer; text-transform: uppercase; }
+        input, select { height: 32px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
+        input:focus { border-color: var(--main); }
+        button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
+        button:active { transform: scale(0.98); opacity: 0.8; }
         
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #333; margin-bottom: 5px; }
-        .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
+        .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; font-size: 12px; }
     </style>
 </head>
 <body onload="init()">
@@ -36,14 +37,14 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="apriPop('📊','LORDO','Totale lordo accumulato.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('💰','NETTO','Netto stimato (-20% tasse e benzina).')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore di lavoro effettuate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="apriPop('📊','LORDO','Totale lordo guadagnato.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('💰','NETTO','Netto dopo tasse (-20%) e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore lavorate registrate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
             <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo necessario per il target netto.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni di attività registrati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val">0</span></div>
+            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni di lavoro totali.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val">0</span></div>
         </div>
     </div>
 
@@ -52,8 +53,8 @@
             <select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select>
         </div>
         <div style="display:flex; gap:4px; margin-bottom:4px;">
-            <input type="number" id="fuelEuro" placeholder="€ spesi">
-            <input type="number" id="fuelPrezzo" placeholder="€/Litro">
+            <input type="number" id="fuelEuro" placeholder="€ spesi" inputmode="decimal">
+            <input type="number" id="fuelPrezzo" placeholder="€/Litro" inputmode="decimal">
         </div>
         <button style="background:var(--fuel); color:#000;" onclick="addFuel()">SALVA BENZINA</button>
     </div>
@@ -63,9 +64,9 @@
             <select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:4px;">
-            <input type="number" id="tLordo" placeholder="Lordo €">
-            <input type="number" id="tOre" placeholder="Ore">
-            <input type="number" id="tKm" placeholder="KM">
+            <input type="number" id="tLordo" placeholder="Lordo €" inputmode="decimal">
+            <input type="number" id="tOre" placeholder="Ore" inputmode="decimal">
+            <input type="number" id="tKm" placeholder="KM" inputmode="decimal">
         </div>
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
@@ -74,15 +75,15 @@
 
     <div style="margin-top:auto; padding:5px;">
         <button style="background:#222; color:var(--main); margin-bottom:4px;" onclick="toggleStorico()">📜 MOSTRA STORICO</button>
-        <button style="background:#300; color:var(--danger); height:28px; font-size:10px;" onclick="reset()">⚠️ AZZERA TUTTO</button>
+        <button style="background:#300; color:var(--danger); height:30px; font-size:10px;" onclick="reset()">⚠️ AZZERA TUTTO</button>
     </div>
 
     <div id="modal" class="modal-overlay" onclick="chiudiPop()">
         <div class="modal-card" onclick="event.stopPropagation()">
-            <div id="pIcon" style="font-size:40px; margin-bottom:10px;"></div>
-            <h2 id="pTitle" style="color:var(--main); margin:0;"></h2>
-            <p id="pDesc" style="color:#ccc; font-size:14px; margin-top:10px;"></p>
-            <button style="background:var(--main); color:#000; margin-top:20px; height:30px;" onclick="chiudiPop()">OK</button>
+            <div id="pIcon" style="font-size:45px; margin-bottom:10px;"></div>
+            <h2 id="pTitle" style="color:var(--main); margin:0; font-size:18px;"></h2>
+            <p id="pDesc" style="color:#aaa; font-size:14px; margin-top:12px; line-height:1.4;"></p>
+            <button style="background:var(--main); color:#000; margin-top:20px; height:34px;" onclick="chiudiPop()">CHIUDI</button>
         </div>
     </div>
 
@@ -115,13 +116,14 @@
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTotali').innerText = ore.toFixed(1);
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - netto) * 1.25).toFixed(2);
-            document.getElementById('giorniLavorati').innerText = [...new Set(db.s.map(x => x.d))].length;
+            document.getElementById('giorniLavorati').innerText = [...new Set(db.s.map(x => x.dt))].length;
         }
 
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, d: document.getElementById('sDay').value });
+                const dataStr = `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}`;
+                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, dt: dataStr });
                 salva();
                 document.getElementById('tLordo').value="";
                 document.getElementById('tOre').value="";
@@ -133,9 +135,10 @@
             const e = parseFloat(document.getElementById('fuelEuro').value);
             const p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: p || 0 });
+                const dataStr = `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}`;
+                db.r.push({ id: Date.now(), e: e, p: p || 0, dt: dataStr });
                 salva();
-                // AZZERAMENTO CAMPI DOPO SALVATAGGIO
+                // AZZERAMENTO TOTALE CAMPI BENZINA
                 document.getElementById('fuelEuro').value = "";
                 document.getElementById('fuelPrezzo').value = "";
             }
@@ -152,37 +155,39 @@
         
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         
-        function salva() { localStorage.setItem('rider_db_v94', JSON.stringify(db)); calcola(); renderStorico(); }
+        function salva() { localStorage.setItem('rider_db_v94', JSON.stringify(db)); calcola(); if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico(); }
 
         function toggleStorico() {
             const w = document.getElementById('wrapperStorico');
             w.style.display = w.style.display === 'block' ? 'none' : 'block';
-            renderStorico();
+            if(w.style.display === 'block') renderStorico();
         }
 
         function renderStorico() {
             let h = "";
-            [...db.s, ...db.r].sort((a,b)=>b.id-a.id).forEach(i => {
-                h += `<div class="hist-item">
-                    <span style="font-size:10px;">${i.l ? 'TURNO' : 'BENZINA'}</span>
-                    <b style="color:${i.l ? 'var(--main)' : 'var(--fuel)'}">€${(i.l || i.e).toFixed(2)}</b>
-                    <button onclick="elimina(${i.id})" style="width:25px; height:25px; background:#300; color:red; font-size:10px;">X</button>
+            const tutti = [...db.s.map(x=>({...x, tp:'T'})), ...db.r.map(x=>({...x, tp:'B'}))].sort((a,b)=>b.id-a.id);
+            tutti.forEach(i => {
+                h += `<div class="hist-item" style="border-left-color: ${i.tp=='T'?'var(--main)':'var(--fuel)'}">
+                    <span>${i.dt} - <b>${i.tp=='T'?'TURNO':'BENZINA'}</b></span>
+                    <b style="color:${i.tp=='T'?'var(--main)':'var(--fuel)'}">€${(i.l || i.e).toFixed(2)}</b>
+                    <button onclick="elimina('${i.tp}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; font-size:12px;">🗑️</button>
                 </div>`;
             });
-            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:10px; font-size:11px; color:#555;'>Vuoto</div>";
+            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:15px; color:#555;'>Nessun dato</div>";
         }
 
-        function elimina(id) {
-            db.s = db.s.filter(x => x.id !== id);
-            db.r = db.r.filter(x => x.id !== id);
+        function elimina(tipo, id) {
+            if(tipo === 'T') db.s = db.s.filter(x => x.id !== id);
+            else db.r = db.r.filter(x => x.id !== id);
             salva();
         }
 
         function reset() {
-            if(confirm("VUOI AZZERARE TUTTO? (Dati + Target)")) {
+            if(confirm("AZZERARE TUTTO? (Dati + Obiettivo)")) {
                 db = { s: [], r: [], target: 0 };
                 document.getElementById('targetInput').value = "";
                 salva();
+                location.reload(); // Rinfresca per pulire tutto
             }
         }
     </script>
