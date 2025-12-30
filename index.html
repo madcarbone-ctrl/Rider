@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.959</title>
+    <title>Rider Tracker Pro v1.0.960</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -65,7 +65,7 @@
             <div class="btn-flag" onclick="setLang('us')">🇺🇸</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.959</span></div>
+        <div class="version-side"><span class="version-badge">v1.0.960</span></div>
     </div>
 
     <div class="card">
@@ -99,7 +99,7 @@
                 <div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div>
             </div>
             <div style="flex:1"><span class="label-mini" data-tr="euroSpesi">EURO SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
-            <div style="flex:1"><span class="label-mini" data-tr="euroLitro">EURO AL LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l"></div>
+            <div style="flex:1"><span class="label-mini" data-tr="euroLitro">EURO AL LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000"></div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()" data-tr="btnFuel">SALVA RIFORNIMENTO</button>
     </div>
@@ -211,7 +211,7 @@
                     let kmlS = (ltS > 0) ? (kE / ltS).toFixed(1) : "0.0";
                     h += `<div class="history-item"><div class="hist-details"><span class="hist-date">${dIT} - ${lang.histTurn} <span class="hist-time">${ora}</span></span><span>€${i.lordo.toFixed(2)} | ${i.ore}h | ${kE}${lang.uDist} | ${kmlS}${lang.uEff}</span></div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">DEL</button></div>`;
                 } else {
-                    h += `<div class="history-item" style="border-left-color:#ffa500"><div class="hist-details"><span class="hist-date" style="color:#ffa500">${dIT} - ${lang.histFuel} <span class="hist-time">${ora}</span></span><span>€${i.euro.toFixed(2)} | €${i.prezzo.toFixed(3)}/${lang.uVol} | ${(i.euro/i.prezzo).toFixed(1)}${lang.uVol}</span></div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">DEL</button></div>`;
+                    h += `<div class="history-item" style="border-left-color:#ffa500"><div class="hist-details"><span class="hist-date" style="color:#ffa500">${dIT} - ${lang.histFuel} <span class="hist-time">${ora}</span></span><span>€${i.euro.toFixed(2)} | €${i.prezzo.toFixed(3)}/L | ${(i.euro/i.prezzo).toFixed(1)}L</span></div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">DEL</button></div>`;
                 }
             });
             document.getElementById('storico').innerHTML = h ? `<div class='section-title' style='margin-top:10px;'>${lang.histTitle}</div>` + h : "";
