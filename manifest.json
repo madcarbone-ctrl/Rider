@@ -1,15 +1,16 @@
 {
   "name": "Rider Tracker Pro",
   "short_name": "Rider",
-  "start_url": ".",
+  "start_url": "/Rider/",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "icona.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
