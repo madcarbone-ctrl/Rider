@@ -34,22 +34,23 @@
 A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
 
 ### ✨ Novità della Versione 1.0.942:
+- 🎯 **Reset Intelligente:** Quando clicchi su **'Azzera'**, anche il **Target** viene resettato automaticamente.
+- 🧹 **Tutto Vuoto:** All'avvio l'app è vuota di default per una nuova sessione pulita.
 - 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
 - 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
 - ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi nel serbatoio basato su spesa e prezzo al litro.
-- 🎯 **Target Progressivo:** Monitora il tuo obiettivo netto mensile con barra dinamica.
 - 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
 
 <hr>
 
 ## 🇬🇧 Description (English)
-**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on all major platforms.
+**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs.
 
 ### ✨ Key Features (v1.0.942):
+- 🎯 **Smart Reset:** Target is cleared automatically when clicking the reset button.
+- 🧹 **Clean Start:** All fields are empty by default.
 - 📊 **Total KM/L Average:** Real-time calculation of your monthly fuel efficiency.
 - 🕒 **Timestamps:** Every entry logged with the **exact date and time**.
-- ⛽ **Fuel Details:** Automatically tracks liters added and per-shift efficiency.
-- 🎯 **Goal Tracking:** Visual progress bar toward your monthly net target.
 
 <hr>
 
@@ -61,14 +62,15 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <hr>
 
 ## 📦 Installazione / Installation
-### 🤖 Android (Consigliato)
-1. Scarica il file **Rider Tracker Pro_v1.49.apk** dal link sopra.
-2. Apri il file sul tuo smartphone e acconsenti all'installazione di app da origini sconosciute se richiesto.
+### 🤖 Android (APK)
+1. Clicca sul link **"Scarica Rider Tracker Pro_v1.49.apk"** presente in alto.
+2. Una volta completato il download, apri il file sul tuo smartphone.
+3. Se richiesto, autorizza l'installazione da "origini sconosciute".
 
 ### 🌐 Web App (PWA)
-1. Apri il sito dell'app sul browser dello smartphone (Chrome o Safari).
-2. Seleziona le opzioni del browser e clicca su **"Aggiungi a schermata Home"**.
-3. L'app apparirà tra le tue applicazioni come un'app nativa.
+1. Apri l'app tramite il browser dello smartphone.
+2. Clicca sui tre puntini (Chrome) o l'icona di condivisione (Safari).
+3. Seleziona **"Aggiungi a schermata Home"** per creare l'icona sul tuo telefono.
 
 <hr>
 
@@ -79,16 +81,11 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
 </p>
 
-<br>
-
-<p align="center">
-🇬🇧 <b>Let's build together!</b><br>
-👉 Join the <b><a href="../../discussions">Discussions</a></b> tab to share your feedback!<br>
-👉 Use the <b><a href="../../issues">Issues</a></b> tab for technical bugs.
-</p>
-
 <hr>
 
 <div align="center">
-<i>"La migliore versione del codice è la versione 1.0.942."</i>
+  <p><i>"La migliore versione del codice è la versione 94."</i></p>
+  <br>
+  <p>Visite totali al progetto:</p>
+  <img src="https://profile-counter.glitch.me/madcarbone-ctrl/count.svg" alt="Visitor Count">
 </div>
