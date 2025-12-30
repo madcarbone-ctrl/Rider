@@ -43,11 +43,12 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* CRONOLOGIA COLLASSABILE E SCORREVOLE */
-        #storicoWrapper { display: none; max-height: 350px; overflow-y: auto; padding: 5px; border: 1px solid #333; border-radius: 10px; background: #161616; margin-top: 5px; }
+        /* STORICO SCORREVOLE */
+        #storicoWrapper { display: none; max-height: 380px; overflow-y: auto; padding: 5px; border: 1px solid #333; border-radius: 10px; background: #161616; margin-top: 5px; }
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
-        .hist-header { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .hist-header { font-size: 12px; font-weight: bold; color: #bbb; margin-bottom: 2px; display: flex; justify-content: flex-start; gap: 8px; }
+        .hist-time { color: #00CCBC; font-weight: 900; }
         .hist-main-val { font-size: 15px; font-weight: 900; color: #eee; margin-bottom: 4px; display: block; }
         .hist-sub-val { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
         .hist-sub-val b { color: #bbb; }
@@ -142,7 +143,7 @@
     </div>
 
     <div class="card" style="border:none; background:transparent;">
-        <div class="section-title" onclick="toggleStorico()" style="background:#252525; border-radius:8px; border:1px solid #444; margin-bottom:0;">
+        <div class="section-title" onclick="toggleStorico()" style="background:#252525; border-radius:8px; border:1px solid #444; margin-bottom:0; padding: 10px;">
             📜 VEDI CRONOLOGIA <span id="storicoIcon">▼</span>
         </div>
         <div id="storicoWrapper">
@@ -162,16 +163,18 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
 
+        function getOrario() {
+            const ora = new Date();
+            return ora.getHours().toString().padStart(2, '0') + ":" + ora.getMinutes().toString().padStart(2, '0');
+        }
+
         function toggleStorico() {
             const w = document.getElementById('storicoWrapper');
             const i = document.getElementById('storicoIcon');
             if (w.style.display === 'block') {
-                w.style.display = 'none';
-                i.innerText = '▼';
+                w.style.display = 'none'; i.innerText = '▼';
             } else {
-                w.style.display = 'block';
-                i.innerText = '▲';
-                renderStorico();
+                w.style.display = 'block'; i.innerText = '▲'; renderStorico();
             }
         }
 
@@ -222,13 +225,15 @@
 
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
+            if(e > 0 && p > 0) { 
+                db.rifornimenti.push({ id: Date.now(), oraS: getOrario(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); 
+            }
         }
 
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                db.sessioni.push({ id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
+                db.sessioni.push({ id: Date.now(), oraS: getOrario(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
                 salva(); showToast("✅ Salvato!");
             }
         }
@@ -262,11 +267,12 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIF.';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
+                let oraDisp = i.oraS || "--:--";
                 let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Litri: <b>${(i.euro/i.prezzo).toFixed(2)}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}</b>`;
                 
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
-                        <div class="hist-header">${dataIT} - ${label}</div>
+                        <div class="hist-header"><span>${dataIT}</span> <span class="hist-time">${oraDisp}</span> <span>${label}</span></div>
                         <span class="hist-main-val">${val}</span>
                         <div class="hist-sub-val">${extra}</div>
                     </div>
@@ -277,8 +283,4 @@
         }
 
         function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-        popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
-    </script>
-</body>
-</html>
+        function showToast(m) { let t = document.getEl
