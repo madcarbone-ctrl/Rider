@@ -9,7 +9,6 @@
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Permette interazione con input e caselle cliccabili */
         input, select, .data-box, .section-title, button { -webkit-user-select: text; user-select: text; pointer-events: auto !important; }
 
         .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; width: 100%; }
@@ -26,7 +25,6 @@
         
         input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; display: block; }
         
-        /* FIX DATA - Layout flessibile e visibile */
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
         .date-col { display: flex; flex-direction: column; min-width: 135px; }
         .date-inputs { display: flex; gap: 2px; width: 100%; }
@@ -42,13 +40,11 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* Camera Overlay */
         #camOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; display: none; flex-direction: column; }
         #camVideo { width: 100%; flex-grow: 1; object-fit: cover; }
         .cam-ui { height: 120px; background: #121212; display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; }
         .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #555; }
 
-        /* Modal Pop-ups */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
 
@@ -92,9 +88,9 @@
             <div class="data-box" onclick="mostraInfo('spesaBenz')"><span class="stat-label">Spesa Carburante</span><span class="stat-val" style="color:#ff4444">€ <span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:8px;">
-            <div class="data-box" onclick="if(event.target.tagName !== 'INPUT') mostraInfo('target')">
+            <div class="data-box" style="cursor: default;">
                 <span class="stat-label">Obiettivo €</span>
-                <input type="number" id="targetInput" style="height:20px; font-size:11px; margin-top:2px; background:transparent; border:none; color:white; font-weight:bold;" oninput="salvaTarget()" onclick="event.stopPropagation()">
+                <input type="number" id="targetInput" style="height:24px; font-size:12px; margin-top:2px; background:#2a2a2a; border:1px solid #444; color:white; font-weight:bold;" oninput="salvaTarget()">
             </div>
             <div class="data-box" onclick="mostraInfo('mancante')"><span class="stat-label">Lordo Mancante</span><span class="stat-val" style="color:#ff4444;">€ <span id="lordoMancante">0.00</span></span></div>
             <div class="data-box" onclick="mostraInfo('ggAttivi')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:#00CCBC;">0</span></div>
@@ -148,7 +144,7 @@
     </div>
 
     <div id="storico"></div>
-    <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222;" onclick="apriReset()">⚠️ AZZERA TUTTO</button>
+    <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222; width:100%;" onclick="apriReset()">⚠️ AZZERA TUTTO</button>
     
     <div id="toast"></div>
 
@@ -164,7 +160,6 @@
             consTot: "Litri di benzina consumati calcolati sui km e consumo L/100km.",
             medKml: "Media chilometrica reale (km effettivi / litri totali).",
             spesaBenz: "Costo totale del carburante utilizzato nei turni.",
-            target: "Cifra netta obiettivo. Clicca il campo per modificarla.",
             mancante: "Lordo stimato necessario per raggiungere l'obiettivo netto.",
             ggAttivi: "Giorni unici di lavoro registrati.",
             sezBenza: "Registra qui i rifornimenti o usa lo scanner.",
