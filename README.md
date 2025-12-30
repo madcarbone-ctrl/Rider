@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300">
+  <img src="Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
 </p>
 
 <div align="center">
-  <h1 align="center">🚗 Rider Tracker Pro (v94.2)</h1>
+  <h1 align="center">🚗 Rider Tracker Pro (v1.0.942)</h1>
   
   <p align="center">
-    <b>Do you want this app in your language? Leave a comment in the <a href="../../discussions">Discussions</a>!</b>
+    <b>🌍 Want this app in your language? Leave a comment in the <a href="../../discussions">Discussions</a>!</b>
   </p>
 
   <p align="center">
@@ -24,21 +24,21 @@
 ## 🇮🇹 Descrizione (Italiano)
 **Rider Tracker Pro** è una Progressive Web App (PWA) avanzata, sviluppata per i rider delle consegne che necessitano di una visione chiara sui loro guadagni effettivi. 
 
-A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con **Deliveroo, Glovo, Uber Eats, Just Eat, Foodracers** e altre piattaforme di logistica.
+A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
 
-### ✨ Novità della Versione 94.2:
+### ✨ Novità della Versione 1.0.942:
 - 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
-- 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta**.
-- ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi e della resa km/l per ogni turno.
+- 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
+- ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi nel serbatoio basato su spesa e prezzo al litro.
 - 🎯 **Target Progressivo:** Monitora il tuo obiettivo netto mensile con barra dinamica.
 - 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
 
 <hr>
 
 ## 🇬🇧 Description (English)
-**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on **Deliveroo, Glovo, Uber Eats, Just Eat** and more.
+**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on all major platforms.
 
-### ✨ Key Features (v94.2):
+### ✨ Key Features (v1.0.942):
 - 📊 **Total KM/L Average:** Real-time calculation of your monthly fuel efficiency.
 - 🕒 **Timestamps:** Every entry logged with the **exact date and time**.
 - ⛽ **Fuel Details:** Automatically tracks liters added and per-shift efficiency.
@@ -47,6 +47,7 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <hr>
 
 ## 🛠️ Tech Stack
+- **Version:** 1.0.942
 - **Languages:** HTML5, CSS3, JavaScript (Vanilla JS)
 - **Persistence:** LocalStorage API (Offline-first)
 
@@ -62,7 +63,7 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 ## 💬 Community & Feedback
 <p align="center">
 🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
-👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulla v95!<br>
+👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulla v1.0.943!<br>
 👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
 </p>
 
@@ -77,5 +78,5 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <hr>
 
 <div align="center">
-  <i>"La migliore versione del codice è la versione 94."</i>
+  <i>"La migliore versione del codice è la versione 1.0.942."</i>
 </div>
