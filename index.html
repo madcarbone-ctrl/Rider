@@ -40,14 +40,14 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* Modal Stile v94 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
 
-        /* CRONOLOGIA v94 DEFINITIVA CON DETTAGLI */
+        /* CRONOLOGIA v94 STYLE */
         .history-item { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; }
         .hist-details { display: flex; flex-direction: column; gap: 2px; color: #ccc; flex: 1; }
-        .hist-title { font-size: 13px; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .hist-title { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .hist-subtitle { font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
         .hist-val { font-size: 11px; color: #888; font-weight: bold; }
         .hist-val b { color: #eee; }
         .btn-del-v94 { width: 50px; height: 50px; background: #ff4444; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: none; margin-left: 10px; }
@@ -180,7 +180,12 @@
             document.getElementById('infoModal').style.display = 'flex';
         }
 
-        function eseguiReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiModal(); showToast("⚠️ Dati azzerati!"); }
+        function eseguiReset() { 
+            db = { sessioni: [], rifornimenti: [], target: 0 }; 
+            document.getElementById('targetInput').value = ""; 
+            salva(); chiudiModal(); showToast("⚠️ Dati azzerati!"); 
+        }
+
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
@@ -245,23 +250,28 @@
         function renderStorico() {
             let h = "";
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
-            let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             
             tutti.forEach(i => {
                 let d = i.data.split("-"); let dataIT = `${d[2]}/${d[1]}/${d[0]}`;
+                let color = i.t=='S' ? '#00CCBC' : '#ffa500';
+                let icon = i.t=='S' ? '📋' : '⛽';
+                let label = i.t=='S' ? 'TURNO' : 'RIF.';
+                
+                let details = "";
                 if(i.t=='S') {
                     let lt = ((Math.max(0, i.km - i.scarto))/100)*i.l100;
-                    h += `<div class="history-item" style="border-left-color: #00CCBC">
-                        <div class="hist-details">
-                            <div class="hist-title">${dataIT} - 📋 TURNO</div>
-                            <div class="hist-val">💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ <b>${i.ore}h</b> | 📍 <b>${i.km}km</b> | ⛽ <b>${lt.toFixed(1)}L</b></div>
-                        </div>
-                        <button class="btn-del-v94" onclick="elimina('sessioni', ${i.id})">🗑️</button>
-                    </div>`;
+                    details = `💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ <b>${i.ore}h</b> | 📍 <b>${i.km}km</b> | ⛽ <b>${lt.toFixed(1)}L</b>`;
                 } else {
-                    h += `<div class="history-item" style="border-left-color: #ffa500">
-                        <div class="hist-details">
-                            <div class="hist-title">${dataIT} - ⛽ RIF.</div>
-                            <div class="hist-val">⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ <b>€${i.prezzo}/L</b></div>
-                        </div>
-                        <button class="btn-del-v94" on
+                    details = `⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ <b>€${i.prezzo}/L</b>`;
+                }
+
+                h += `
+                <div class="history-item" style="border-left-color: ${color}">
+                    <div class="hist-details">
+                        <div class="hist-title">${dataIT}</div>
+                        <div class="hist-subtitle">- ${icon} ${label}</div>
+                        <div class="hist-val">${details}</div>
+                    </div>
+                    <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                </div>`;
+            }
