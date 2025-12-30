@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.958</title>
+    <title>Rider Tracker Pro v1.0.959</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -46,7 +46,6 @@
         .btn-fuel { background: #ffa500; color: #000; }
         .btn-reset-all { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 11px; height: 34px; border: 1px solid #662222; }
         
-        /* Storico con Orario */
         .history-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; font-size: 10px; line-height: 1.4; }
         .hist-details { flex: 1; display: flex; flex-direction: column; gap: 1px; }
         .hist-date { font-weight: bold; color: #00CCBC; font-size: 11px; }
@@ -66,7 +65,7 @@
             <div class="btn-flag" onclick="setLang('us')">🇺🇸</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.958</span></div>
+        <div class="version-side"><span class="version-badge">v1.0.959</span></div>
     </div>
 
     <div class="card">
@@ -99,7 +98,7 @@
                 <span class="label-mini" data-tr="data">DATA</span>
                 <div class="date-inputs"><select id="fDay" class="sel-small"></select><select id="fMonth" class="sel-small"></select><select id="fYear" class="sel-year"></select></div>
             </div>
-            <div style="flex:1"><span class="label-mini">€ <span data-tr="spesi">SPESI</span></span><input type="number" id="fuelEuro" placeholder="0.00"></div>
+            <div style="flex:1"><span class="label-mini" data-tr="euroSpesi">EURO SPESI</span><input type="number" id="fuelEuro" placeholder="0.00"></div>
             <div style="flex:1"><span class="label-mini" data-tr="euroLitro">EURO AL LITRO</span><input type="number" id="fuelPrezzo" step="0.001" placeholder="€/l"></div>
         </div>
         <button class="btn-fuel" onclick="aggiungiBenza()" data-tr="btnFuel">SALVA RIFORNIMENTO</button>
@@ -129,9 +128,9 @@
 
     <script>
         const i18n = {
-            it: { lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", spesi:"SPESI", euroLitro:"EURO AL LITRO", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", perc:"PERCORSI", scarto:"SCARTO", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO" },
-            en: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", spesi:"SPENT", euroLitro:"PRICE PER LITER", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" },
-            us: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", spesi:"SPENT", euroLitro:"PRICE PER GAL", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" }
+            it: { lordoTot:"Lordo Totale", nettoTot:"Netto Reale", oreTot:"Ore Lavoro", consTot:"Consumo", medKml:"Media", spesaBenz:"Spesa Benza", target:"Obiettivo €", mancante:"Lordo Manc.", ggAttivi:"GG Lavoro", regFuel:"⛽ REGISTRA RIFORNIMENTO", data:"DATA", euroSpesi:"EURO SPESI", euroLitro:"EURO AL LITRO", btnFuel:"SALVA RIFORNIMENTO", addTurn:"➕ AGGIUNGI TURNO", ore:"ORE", perc:"PERCORSI", scarto:"SCARTO", btnAdd:"SALVA TURNO", btnReset:"⚠️ AZZERA TUTTI I DATI", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Tutto azzerato!", msgFuelOk:"⛽ Rifornimento salvato!", msgTurnOk:"✅ Turno salvato!", histTitle:"📜 CRONOLOGIA", histTurn:"TURNO", histFuel:"RIFORNIMENTO" },
+            en: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target €", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER LITER", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"KM", uVol:"L", uEff:"km/l", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" },
+            us: { lordoTot:"Total Gross", nettoTot:"Real Net", oreTot:"Work Hours", consTot:"Consumption", medKml:"Average", spesaBenz:"Fuel Cost", target:"Target $", mancante:"Gross Needed", ggAttivi:"Work Days", regFuel:"⛽ RECORD REFUEL", data:"DATE", euroSpesi:"EURO SPENT", euroLitro:"PRICE PER GAL", btnFuel:"SAVE REFUEL", addTurn:"➕ ADD SHIFT", ore:"HOURS", perc:"TRAVELED", scarto:"OFFSET", btnAdd:"SAVE SHIFT", btnReset:"⚠️ RESET ALL DATA", uDist:"MI", uVol:"GAL", uEff:"mpg", msgResetOk:"🗑️ Everything cleared!", msgFuelOk:"⛽ Refuel saved!", msgTurnOk:"✅ Shift saved!", histTitle:"📜 HISTORY", histTurn:"SHIFT", histFuel:"REFUEL" }
         };
 
         let db = JSON.parse(localStorage.getItem('rider_pro_v1.0.950')) || { sessioni: [], rifornimenti: [], target: 0 };
