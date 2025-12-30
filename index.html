@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.971</title>
+    <title>Rider Tracker Pro v1.0.972</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
 
-        /* HEADER STILE V94 */
-        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 35px; padding: 0 5px; }
-        .lang-side { display: flex; gap: 5px; flex: 1; }
-        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 4px; padding: 3px 6px; font-size: 12px; cursor: pointer; }
-        .main-title { color: #00CCBC; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; white-space: nowrap; }
+        /* HEADER V94 PERFETTO */
+        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 30px; }
+        .lang-side { display: flex; gap: 4px; flex: 1; }
+        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 3px; padding: 2px 4px; font-size: 10px; cursor: pointer; }
+        .main-title { color: #00CCBC; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; white-space: nowrap; }
         .version-side { flex: 1; text-align: right; }
         .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 2px 5px; border-radius: 4px; border: 1px solid #00CCBC; }
 
@@ -21,33 +21,50 @@
         #infoOverlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); z-index: 999999; align-items: center; justify-content: center; 
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
         .info-card { 
             background: #1e1e1e; width: 85%; max-width: 320px; padding: 25px; 
-            border-radius: 20px; border: 2px solid #00CCBC; text-align: center; 
+            border-radius: 20px; border: 1px solid #00CCBC; text-align: center; 
+            box-shadow: 0 0 30px rgba(0,204,188,0.4);
         }
         .info-btn { background: #00CCBC; color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; margin-top: 20px; display: inline-block; cursor: pointer; }
 
-        /* CARDS */
+        /* GRIGLIA UNIFORME V94 */
         .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; }
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 2px; cursor: pointer; }
+        .data-box { 
+            background: #252525; 
+            height: 55px; /* Altezza fissa per uniformità totale */
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative;
+        }
+        
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
-        .info-i { color: #00CCBC; font-size: 10px; font-weight: bold; margin-left: 2px; }
+        .info-i { color: #00CCBC; font-size: 10px; margin-left: 3px; cursor: pointer; padding: 2px; }
 
+        /* INPUT TARGET INTEGRATO NELLA CASELLA */
+        .target-input {
+            background: transparent; border: none; border-bottom: 1px solid #444;
+            color: #fff; font-size: 11px; font-weight: bold; width: 80%; text-align: center;
+            outline: none; height: 18px;
+        }
+
+        /* RESTO UI */
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
-        .info-trigger { color: #00CCBC; cursor: pointer; }
-
         input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 14px; text-align: center; width: 100%; }
         .row-flex { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end; }
         
-        /* PROGRESS BAR */
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
+        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 4px; font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
         button { width: 100%; height: 42px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .btn-add { background: #00CCBC; color: #000; }
@@ -56,8 +73,7 @@
         
         #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #00CCBC; padding: 10px 20px; border-radius: 50px; border: 1px solid #00CCBC; z-index: 10000; }
         #toast.show { visibility: visible; }
-
-        .history-item { background: #252525; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+        .history-item { background: #252525; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
     </style>
 </head>
 <body onload="inizializza()">
@@ -66,7 +82,7 @@
         <div class="info-card" onclick="event.stopPropagation()">
             <h3 id="infoTitle">INFO</h3>
             <p id="infoText"></p>
-            <div class="info-btn" onclick="document.getElementById('infoOverlay').style.display='none'">OK</div>
+            <div class="info-btn" onclick="document.getElementById('infoOverlay').style.display='none'">CHIUDI</div>
         </div>
     </div>
 
@@ -76,33 +92,33 @@
             <div class="btn-flag" onclick="setLang('en')">🇬🇧</div>
         </div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.971</span></div>
+        <div class="version-side"><span class="version-badge">v1.0.972</span></div>
     </div>
 
     <div class="card">
         <div class="summary-grid">
-            <div class="data-box" onclick="openPopup('LORDO TOTALE', 'Somma di tutti i guadagni lordi registrati.')">
-                <span class="stat-label">LORDO TOT <span class="info-i">ⓘ</span></span>
+            <div class="data-box">
+                <span class="stat-label">LORDO TOT <span class="info-i" onclick="openPopup('LORDO TOTALE', 'Totale lordo guadagnato.')">ⓘ</span></span>
                 <span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('NETTO REALE', 'Il guadagno pulito calcolato sottraendo tasse (20%) e benzina.')">
-                <span class="stat-label">NETTO REAL <span class="info-i">ⓘ</span></span>
+            <div class="data-box">
+                <span class="stat-label">NETTO REAL <span class="info-i" onclick="openPopup('NETTO REALE', 'Guadagno al netto di tasse (20%) e benzina.')">ⓘ</span></span>
                 <span class="stat-val">€ <span id="nettoReale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('ORE LAVORO', 'Totale complessivo delle ore lavorate.')">
-                <span class="stat-label">ORE LAVORO <span class="info-i">ⓘ</span></span>
+            <div class="data-box">
+                <span class="stat-label">ORE LAVORO <span class="info-i" onclick="openPopup('ORE LAVORO', 'Somma delle ore lavorate.')">ⓘ</span></span>
                 <span class="stat-val" id="oreTotali">0.0</span>
             </div>
             <div class="data-box">
-                <span class="stat-label" onclick="openPopup('OBIETTIVO', 'Inserisci qui il guadagno NETTO che vuoi raggiungere.')">TARGET € <span class="info-i">ⓘ</span></span>
-                <input type="number" id="targetInput" style="height:20px; font-size:11px; background:transparent; border:none; border-bottom:1px solid #444; color:#fff;" oninput="salvaTarget()">
+                <span class="stat-label">TARGET € <span class="info-i" onclick="openPopup('OBIETTIVO', 'Il tuo traguardo netto.')">ⓘ</span></span>
+                <input type="number" id="targetInput" class="target-input" oninput="salvaTarget()" placeholder="0">
             </div>
-            <div class="data-box" onclick="openPopup('MANCANTE', 'Importo LORDO necessario per raggiungere il tuo obiettivo netto.')">
-                <span class="stat-label">MANCANTE <span class="info-i">ⓘ</span></span>
+            <div class="data-box">
+                <span class="stat-label">MANCANTE <span class="info-i" onclick="openPopup('LORDO MANCANTE', 'Lordo necessario per il target netto.')">ⓘ</span></span>
                 <span class="stat-val" style="color:#ff4444">€ <span id="lordoMancante">0.00</span></span>
             </div>
-            <div class="data-box" onclick="openPopup('GIORNI', 'Numero di giorni in cui hai effettuato almeno un turno.')">
-                <span class="stat-label">GG LAVORO <span class="info-i">ⓘ</span></span>
+            <div class="data-box">
+                <span class="stat-label">GG LAVORO <span class="info-i" onclick="openPopup('GIORNI', 'Giorni totali di attività.')">ⓘ</span></span>
                 <span class="stat-val" id="giorniLavorati">0</span>
             </div>
         </div>
@@ -119,11 +135,11 @@
                 <div style="display:flex; gap:3px;"><select id="fDay" style="width:42px"></select><select id="fMonth" style="width:42px"></select><select id="fYear" style="width:64px"></select></div>
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('EURO SPESI', 'Quanto hai pagato per l\'ultimo rifornimento.')">EURO SPESI ⓘ</span></span>
+                <span class="label-mini">EURO SPESI <span class="info-i" onclick="openPopup('EURO SPESI', 'Importo totale rifornimento.')">ⓘ</span></span>
                 <input type="number" id="fuelEuro" placeholder="0.00">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('PREZZO AL LITRO', 'Il costo della benzina per singolo litro.')">€ / LITRO ⓘ</span></span>
+                <span class="label-mini">€ / LITRO <span class="info-i" onclick="openPopup('PREZZO/L', 'Costo benzina al litro.')">ⓘ</span></span>
                 <input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000">
             </div>
         </div>
@@ -137,27 +153,18 @@
                 <div style="display:flex; gap:3px;"><select id="sDay" style="width:42px"></select><select id="sMonth" style="width:42px"></select><select id="sYear" style="width:64px"></select></div>
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('LORDO TURNO', 'Quanto hai incassato in questo turno.')">LORDO € ⓘ</span></span>
+                <span class="label-mini">LORDO € <span class="info-i" onclick="openPopup('LORDO', 'Guadagno lordo del turno.')">ⓘ</span></span>
                 <input type="number" id="sessLordo">
             </div>
             <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('ORE', 'Durata del turno (es: 3.5 per 3h 30m).')">ORE ⓘ</span></span>
+                <span class="label-mini">ORE <span class="info-i" onclick="openPopup('ORE', 'Durata turno (es: 4.5).')">ⓘ</span></span>
                 <input type="number" id="sessOre" step="0.5">
             </div>
         </div>
         <div class="row-flex">
-            <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('KM PERCORSI', 'Chilometri totali segnati dal mezzo.')">KM ⓘ</span></span>
-                <input type="number" id="sessKm">
-            </div>
-            <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('CONSUMO MEDIO', 'Litri/100km indicati sul display.')">L/100KM ⓘ</span></span>
-                <input type="number" id="sessL100" step="0.1">
-            </div>
-            <div style="flex:1">
-                <span class="label-mini"><span class="info-trigger" onclick="openPopup('SCARTO KM', 'KM non lavorativi da escludere.')">SCARTO ⓘ</span></span>
-                <input type="number" id="sessScarto">
-            </div>
+            <div style="flex:1"><span class="label-mini">KM <span class="info-i" onclick="openPopup('KM', 'KM totali turno.')">ⓘ</span></span><input type="number" id="sessKm"></div>
+            <div style="flex:1"><span class="label-mini">L/100KM <span class="info-i" onclick="openPopup('CONSUMO', 'Consumo da computer di bordo.')">ⓘ</span></span><input type="number" id="sessL100" step="0.1"></div>
+            <div style="flex:1"><span class="label-mini">SCARTO <span class="info-i" onclick="openPopup('SCARTO', 'KM da escludere.')">ⓘ</span></span><input type="number" id="sessScarto"></div>
         </div>
         <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
     </div>
@@ -229,7 +236,6 @@
             document.getElementById('oreTotali').innerText = tO.toFixed(1);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
             document.getElementById('lordoMancante').innerText = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25).toFixed(2) : "0.00";
-            
             let perc = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
             document.getElementById('progressoPerc').innerText = perc + "%";
@@ -241,16 +247,16 @@
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'R'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
                 let d = i.data.split("-").reverse().join("/");
-                if(i.t === 'S') h += `<div class="history-item" style="border-left:4px solid #00CCBC;"><div><b>${d}</b> <small>${i.ora}</small> - Turno: €${i.lordo}</div><button onclick="elimina('sessioni',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
-                else h += `<div class="history-item" style="border-left:4px solid #ffa500;"><div><b>${d}</b> <small>${i.ora}</small> - Riforn: €${i.euro}</div><button onclick="elimina('rifornimenti',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
+                if(i.t === 'S') h += `<div class="history-item"><div><b>${d}</b> <small>${i.ora}</small> - Turno: €${i.lordo}</div><button onclick="elimina('sessioni',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
+                else h += `<div class="history-item" style="border-left-color:#ffa500;"><div><b>${d}</b> <small>${i.ora}</small> - Riforn: €${i.euro}</div><button onclick="elimina('rifornimenti',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
             });
             document.getElementById('storico').innerHTML = h ? "<div style='font-size:10px; color:#666; margin:10px 0 5px 5px; font-weight:bold;'>📜 CRONOLOGIA</div>" + h : "";
         }
 
         function elimina(tipo, id) { db[tipo] = db[tipo].filter(x => x.id !== id); salva(); }
-        function apriReset() { if(confirm("Azzera tutto?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast("Dati Azzerati!"); } }
+        function apriReset() { if(confirm("Vuoi resettare tutto?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast("Reset!"); } }
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-        function setLang(l) { showToast(l === 'it' ? "Lingua: Italiano" : "Language: English"); }
+        function setLang(l) { showToast(l === 'it' ? "Italiano" : "English"); }
     </script>
 </body>
 </html>
