@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V6</title>
+    <title>Rider Tracker Pro v94 V7</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 5px; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
@@ -43,8 +43,8 @@
         .btn-hist { background: #1f1f1f; color: var(--main); border: 1px solid #333; height: 28px; margin: 4px 0; }
         .btn-reset { background: #2a0a0a; color: var(--danger); font-size: 10px; height: 26px; margin-top: auto; border: 1px solid #400; }
 
-        /* --- DESIGN POPUP MODAL --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; transition: 0.3s; }
+        /* --- POPUP MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-card { 
             background: linear-gradient(145deg, #1e1e1e, #121212); 
             width: 85%; 
@@ -62,13 +62,12 @@
         .modal-overlay.active .modal-card { transform: scale(1); opacity: 1; }
         
         .modal-icon-circle { width: 60px; height: 60px; background: rgba(0, 204, 188, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 30px; color: var(--main); border: 1px solid rgba(0, 204, 188, 0.2); }
-        .modal-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 10px; text-transform: uppercase; }
         .modal-desc { font-size: 13px; color: #aaa; line-height: 1.5; margin-bottom: 20px; }
         .modal-btn-close { background: var(--main); color: #000; height: 40px; border-radius: 12px; font-size: 13px; }
-        /* --------------------------- */
 
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; }
-        #toast { visibility: hidden; background: var(--main); color: #000; padding: 8px 16px; position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); border-radius: 25px; font-weight: bold; font-size: 12px; }
+        #toast { visibility: hidden; background: var(--main); color: #000; padding: 8px 16px; position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); border-radius: 25px; font-weight: bold; font-size: 12px; z-index: 10001; }
         #toast.show { visibility: visible; }
     </style>
 </head>
@@ -77,35 +76,35 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="pop('📊', 'Lordo Totale', 'Tutti i guadagni sommati prima delle spese.')">
+            <div class="data-box" onclick="mostraInfo('lordoTot')">
                 <span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="pop('💰', 'Netto Reale', 'Il guadagno pulito stimato dopo tasse (-20%) e benzina.')">
+            <div class="data-box" onclick="mostraInfo('nettoTot')">
                 <span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span>
             </div>
-            <div class="data-box" onclick="pop('⏱️', 'Ore Totali', 'Somma delle ore lavorate in tutti i turni.')">
+            <div class="data-box" onclick="mostraInfo('oreTot')">
                 <span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span>
             </div>
-            <div class="data-box" onclick="pop('⛽', 'Litri Consumati', 'Carburante usato stimato basato sui KM e consumo medio.')">
+            <div class="data-box" onclick="mostraInfo('consTot')">
                 <span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span>
             </div>
-            <div class="data-box" onclick="pop('📈', 'Media KM/L', 'Quanti chilometri percorri con un litro di benzina.')">
+            <div class="data-box" onclick="mostraInfo('medKml')">
                 <span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span>
             </div>
-            <div class="data-box" onclick="pop('💸', 'Spesa Benzina', 'Costo totale stimato del carburante utilizzato.')">
+            <div class="data-box" onclick="mostraInfo('spesaBenz')">
                 <span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaTot">0.00</span></span>
             </div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box" style="cursor:default;"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" style="height:18px; font-size:10px;" oninput="salvaTarget()"></div>
-            <div class="data-box" onclick="pop('🎯', 'Mancante', 'Guadagno lordo necessario per raggiungere il tuo obiettivo netto.')">
+            <div class="data-box" onclick="mostraInfo('mancante')">
                 <span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span>
             </div>
-            <div class="data-box" onclick="pop('🗓️', 'Giorni Lavoro', 'Numero totale di giornate in cui hai lavorato.')">
+            <div class="data-box" onclick="mostraInfo('ggAttivi')">
                 <span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span>
             </div>
         </div>
-        <div class="progress-container" onclick="pop('🏆', 'Progresso', 'Percentuale di completamento verso il tuo obiettivo netto.')">
+        <div class="progress-container" onclick="mostraInfo('pBar')">
             <div id="pBar" class="progress-bar"></div>
             <div id="progressoPerc" class="progress-text">0%</div>
         </div>
@@ -189,7 +188,21 @@
             document.getElementById('mediaKml').innerText = (ltT > 0) ? (kmT / ltT).toFixed(1) : "0.0";
         }
 
-        /* LOGICA POPUP */
+        function mostraInfo(k) {
+            const m = {
+                lordoTot: ["📊", "LORDO TOTALE", "La somma di tutti i tuoi guadagni prima di tasse e spese."],
+                nettoTot: ["💰", "NETTO REALE", "Il tuo guadagno pulito stimato, togliendo il 20% di tasse e il costo della benzina."],
+                oreTot: ["⏱️", "ORE LAVORO", "Il tempo totale passato in sella per tutte le sessioni registrate."],
+                consTot: ["⛽", "CONSUMO", "I litri di benzina che hai bruciato stimati in base ai KM percorsi e allo scarto impostato."],
+                medKml: ["📈", "MEDIA KM/L", "Efficienza del veicolo: quanti chilometri percorri con un singolo litro."],
+                spesaBenz: ["💸", "SPESA BENZINA", "Costo totale stimato del carburante, basato sull'ultimo prezzo alla pompa inserito."],
+                mancante: ["🎯", "LORDO MANCANTE", "Quanto lordo devi ancora incassare per raggiungere il tuo obiettivo netto impostato."],
+                ggAttivi: ["🗓️", "GIORNI LAVORO", "Numero di giorni unici in cui hai registrato attività."],
+                pBar: ["🏆", "PROGRESSO", "Percentuale di completamento del tuo obiettivo netto mensile."]
+            };
+            pop(m[k][0], m[k][1], m[k][2]);
+        }
+
         function pop(icon, title, desc, customBtn = null) {
             document.getElementById('popIcon').innerText = icon;
             document.getElementById('popTitle').innerText = title;
@@ -211,7 +224,7 @@
         }
 
         function chiediReset() {
-            pop('⚠️', 'AZZERA TUTTO', 'Sei sicuro? Perderai tutti i turni e l\'obiettivo.', {
+            pop('⚠️', 'AZZERA TUTTO', 'Sei sicuro? Perderai tutti i turni e l\'obiettivo impostato.', {
                 text: 'SI, CANCELLA',
                 fn: () => {
                     db = { sessioni: [], rifornimenti: [], target: 0 };
