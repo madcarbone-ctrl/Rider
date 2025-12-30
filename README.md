@@ -31,13 +31,13 @@
 ## 🇮🇹 Descrizione (Italiano)
 **Rider Tracker Pro** è una Progressive Web App (PWA) avanzata, sviluppata per i rider delle consegne che necessitano di una visione chiara sui loro guadagni effettivi. 
 
-A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo.
+A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
 
 ### ✨ Novità della Versione 1.0.942:
 - 🎯 **Reset Intelligente:** Quando clicchi su **'Azzera'**, anche il **Target** viene resettato automaticamente.
 - 🧹 **Tutto Vuoto:** All'avvio l'app è vuota di default per una nuova sessione pulita.
-- 📊 **Media KM/L Totale:** La media chilometrica sempre visibile nel riepilogo.
-- 🕒 **Cronologia con Orari:** Ogni turno mostra la data e l'**ora esatta** di registrazione.
+- 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
+- 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
 - 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
 
 <hr>
@@ -50,26 +50,26 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 ## 🛠️ Tech Stack
 - **Version:** 1.0.942
 - **Languages:** HTML5, CSS3, JavaScript (Vanilla JS)
-- **Persistence:** LocalStorage API
+- **Persistence:** LocalStorage API (Offline-first)
 
 <hr>
 
 ## 📦 Installazione / Installation
 ### 🤖 Android (APK)
 1. Clicca sul link **"Scarica Rider Tracker Pro_v1.49.apk"** in alto.
-2. Apri il file sul tuo smartphone e autorizza l'installazione da "origini sconosciute".
+2. Apri il file sul tuo smartphone e autorizza l'installazione.
 
 ### 🌐 Web App (PWA)
 1. Apri l'app nel browser.
-2. Seleziona **"Aggiungi a schermata Home"** per creare l'icona sul tuo telefono.
+2. Seleziona **"Aggiungi a schermata Home"** dal menu del browser.
 
 <hr>
 
 ## 💬 Community & Feedback
 <p align="center">
 🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
-👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee!<br>
-👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
+👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b>!<br>
+👉 Apri una <b><a href="../../issues">Issue</a></b> per i bug.
 </p>
 
 <hr>
@@ -77,6 +77,6 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <div align="center">
   <p><i>"La migliore versione del codice è la versione 94."</i></p>
   <br>
-  <p>Visite totali al progetto:</p>
-  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fmadcarbone-ctrl%2FRider&count_bg=%23FFA500&title_bg=%23555555&icon=github.svg&icon_color=%23E7E7E7&title=Visite&edge_flat=false" alt="Visitor Count">
+  <p>Progetto monitorato:</p>
+  <img src="https://img.shields.io/badge/dynamic/json?label=Visite%20Profilo&query=value&url=https%3A%2F%2Fapi.countapi.xyz%2Fhit%2Fmadcarbone-ctrl-rider%2Fvisits&color=orange&style=flat-square" alt="Visitor Count">
 </div>
