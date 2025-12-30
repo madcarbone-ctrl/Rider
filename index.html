@@ -3,53 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v942</title>
+    <title>Rider Tracker Pro v94.2</title>
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
+        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 10px 10px 10px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
 
-        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 30px; }
-        .main-title { color: #00CCBC; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; }
-        .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 2px 5px; border-radius: 4px; border: 1px solid #00CCBC; }
+        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .main-title { color: #00CCBC; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .version-badge { font-size: 9px; background: #333; color: #00CCBC; padding: 2px 6px; border-radius: 4px; border: 1px solid #00CCBC; }
 
-        /* GRIGLIA UNIFORME V94 */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+        /* GRIGLIA STATISTICHE ORIGINALE v94 */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .stat-box { 
-            background: #1e1e1e; padding: 8px 2px; border-radius: 8px; border: 1px solid #333; 
-            text-align: center; display: flex; flex-direction: column; justify-content: center; height: 55px; 
+            background: #1e1e1e; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; 
+            text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 65px;
         }
-        .label-mini { font-size: 7.5px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px; }
-        .value-main { font-size: 12px; font-weight: 900; color: #fff; }
-        .info-i { color: #00CCBC; font-size: 10px; margin-left: 3px; cursor: pointer; }
+        .label-text { font-size: 8px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .value-text { font-size: 13px; font-weight: 900; color: #fff; }
+        .info-i { color: #00CCBC; font-size: 11px; margin-left: 4px; cursor: pointer; }
 
         .target-input { 
             background: #111; border: 1px solid #444; color: #00CCBC; 
-            font-size: 12px; font-weight: 900; width: 85%; text-align: center; 
-            border-radius: 4px; height: 22px; outline: none; margin: 0 auto;
+            font-size: 13px; font-weight: 900; width: 90%; text-align: center; 
+            border-radius: 4px; height: 24px; margin: 0 auto; outline: none;
         }
 
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 24px; margin-bottom: 12px; position: relative; overflow: hidden; border: 1px solid #333; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
+        .progress-wrap { background: #1e1e1e; border-radius: 10px; height: 28px; margin-bottom: 15px; position: relative; overflow: hidden; border: 1px solid #333; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
+        .progress-label { position: absolute; width: 100%; text-align: center; top: 6px; font-size: 12px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
-        .card { background: #1e1e1e; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; }
-        .input-row { display: flex; gap: 6px; margin-bottom: 10px; }
-        input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 14px; text-align: center; width: 100%; }
+        .card { background: #1e1e1e; padding: 15px; border-radius: 15px; border: 1px solid #333; margin-bottom: 10px; }
+        .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        input, select { width: 100%; height: 40px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 8px; font-size: 14px; text-align: center; }
         
-        button { width: 100%; height: 42px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .btn-add { background: #00CCBC; color: #000; }
+        button { width: 100%; height: 45px; border: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 13px; }
         .btn-fuel { background: #ffa500; color: #000; }
+        .btn-work { background: #00CCBC; color: #000; }
         
-        /* CRONOLOGIA CORRETTA */
         .history-item { 
-            background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; 
+            background: #1e1e1e; padding: 12px; border-radius: 12px; border: 1px solid #333; 
             margin-bottom: 8px; border-left: 4px solid #00CCBC; display: flex; align-items: center; justify-content: space-between;
         }
-        .hist-info { flex: 1; font-size: 11px; }
-        .del-btn { background: #ff4444; color: #fff; border: none; border-radius: 4px; padding: 8px 12px; font-size: 10px; font-weight: bold; margin-left: 10px; }
+        .hist-text { flex: 1; font-size: 11px; line-height: 1.4; }
+        .del-btn { background: #ff4444; color: #fff; border: none; border-radius: 6px; padding: 8px 12px; font-size: 10px; font-weight: bold; margin-left: 10px; }
 
-        #infoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        #infoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .info-card { background: #1e1e1e; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; border: 1px solid #00CCBC; text-align: center; }
     </style>
 </head>
@@ -57,145 +56,153 @@
 
     <div id="infoOverlay" onclick="this.style.display='none'">
         <div class="info-card" onclick="event.stopPropagation()">
-            <h3 id="infoTitle" style="color:#00CCBC">INFO</h3>
-            <p id="infoText" style="font-size:14px; color:#ccc"></p>
-            <button onclick="document.getElementById('infoOverlay').style.display='none'" style="background:#00CCBC; color:#000; width:auto; padding:10px 30px; border-radius:20px; margin-top:15px;">CHIUDI</button>
+            <h3 id="infoTitle" style="color:#00CCBC; margin-bottom:10px;">INFO</h3>
+            <p id="infoText" style="color:#ccc; font-size:14px; line-height:1.4;"></p>
         </div>
     </div>
 
     <div class="header-main">
-        <div style="width:50px"></div>
+        <div style="font-size:18px;">🚲</div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-badge">v942</div>
+        <span class="version-badge">v94.2</span>
     </div>
 
     <div class="stats-grid">
         <div class="stat-box">
-            <span class="label-mini">LORDO TOT <span class="info-i" onclick="openPop('LORDO','Guadagno totale lordo.')">ⓘ</span></span>
-            <span class="value-main" style="color:#00CCBC">€ <span id="valLordo">0.00</span></span>
+            <span class="label-text">LORDO TOT <span class="info-i" onclick="openPop('LORDO','Guadagno totale lordo.')">ⓘ</span></span>
+            <span class="value-text" style="color:#00CCBC;">€ <span id="vL">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">NETTO REAL <span class="info-i" onclick="openPop('NETTO','Lordo - 20% - Benzina.')">ⓘ</span></span>
-            <span class="value-main">€ <span id="valNetto">0.00</span></span>
+            <span class="label-text">NETTO REAL <span class="info-i" onclick="openPop('NETTO','Lordo - 20% - Benzina.')">ⓘ</span></span>
+            <span class="value-text">€ <span id="vN">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">ORE LAVORO <span class="info-i" onclick="openPop('ORE','Totale ore effettive.')">ⓘ</span></span>
-            <span class="value-main" id="valOre">0.0</span>
+            <span class="label-text">ORE LAVORO <span class="info-i" onclick="openPop('ORE','Somma ore lavorate.')">ⓘ</span></span>
+            <span class="value-text" id="vO">0.0</span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">CONSUMO L <span class="info-i" onclick="openPop('LITRI','Litri consumati stimati.')">ⓘ</span></span>
-            <span class="value-main" id="valLitri">0.0 L</span>
+            <span class="label-text">CONSUMO L <span class="info-i" onclick="openPop('LITRI','Litri totali consumati.')">ⓘ</span></span>
+            <span class="value-text" id="vLit">0.0 L</span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">MEDIA KM/L <span class="info-i" onclick="openPop('MEDIA','Efficienza media.')">ⓘ</span></span>
-            <span class="value-main" style="color:#ffa500" id="valMedia">0.0</span>
+            <span class="label-text">MEDIA KM/L <span class="info-i" onclick="openPop('MEDIA','Media chilometrica.')">ⓘ</span></span>
+            <span class="value-text" style="color:#ffa500;" id="vMed">0.0</span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">SPESA BENZA <span class="info-i" onclick="openPop('BENZINA','Costo totale carburante.')">ⓘ</span></span>
-            <span class="value-main" style="color:#ff4444">€ <span id="valBenza">0.00</span></span>
+            <span class="label-text">SPESA BENZA <span class="info-i" onclick="openPop('BENZINA','Costo totale benzina.')">ⓘ</span></span>
+            <span class="value-text" style="color:#ff4444;">€ <span id="vB">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">OBIETTIVO € <span class="info-i" onclick="openPop('TARGET','Traguardo netto desiderato.')">ⓘ</span></span>
-            <input type="number" id="targetInput" class="target-input" oninput="salvaTarget()" placeholder="0">
+            <span class="label-text">OBIETTIVO € <span class="info-i" onclick="openPop('TARGET','Traguardo netto.')">ⓘ</span></span>
+            <input type="number" id="tIn" class="target-input" oninput="salvaT()" placeholder="0">
         </div>
         <div class="stat-box">
-            <span class="label-mini">LORDO MANC. <span class="info-i" onclick="openPop('MANCANTE','Lordo necessario per il target.')">ⓘ</span></span>
-            <span class="value-main" style="color:#ff4444">€ <span id="valMancante">0.00</span></span>
+            <span class="label-text">LORDO MANC. <span class="info-i" onclick="openPop('MANCANTE','Mancante al target.')">ⓘ</span></span>
+            <span class="value-text" style="color:#ff4444;">€ <span id="vM">0.00</span></span>
         </div>
         <div class="stat-box">
-            <span class="label-mini">GG LAVORO <span class="info-i" onclick="openPop('GIORNI','Giorni di attività.')">ⓘ</span></span>
-            <span class="value-main" id="valGiorni">0</span>
+            <span class="label-text">GG LAVORO <span class="info-i" onclick="openPop('GIORNI','Giorni attività.')">ⓘ</span></span>
+            <span class="value-text" id="vG">0</span>
         </div>
     </div>
-
-    <div class="progress-container">
-        <div id="pBar" class="progress-bar"></div>
-        <div id="pPerc" class="progress-text">0%</div>
+    
+    <div class="progress-wrap">
+        <div id="pB" class="progress-fill"></div>
+        <div id="pP" class="progress-label">0%</div>
     </div>
 
-    <div class="card" style="border-left: 4px solid #ffa500;">
+    <div class="card" style="border-top: 4px solid #ffa500;">
         <div class="input-row">
-            <div style="flex:1"><span class="label-mini">€ SPESI</span><input type="number" id="fEuro" placeholder="0.00"></div>
-            <div style="flex:1"><span class="label-mini">€/LITRO</span><input type="number" id="fPrezzo" step="0.001" placeholder="1.xxx"></div>
+            <div style="flex:1"><span class="label-text">€ SPESI</span><input type="number" id="fE" placeholder="0.00"></div>
+            <div style="flex:1"><span class="label-text">€/LITRO</span><input type="number" id="fP" step="0.001" placeholder="1.xxx"></div>
         </div>
-        <button class="btn-fuel" onclick="addFuel()">SALVA RIFORNIMENTO</button>
+        <button class="btn-fuel" onclick="addF()">SALVA RIFORNIMENTO</button>
     </div>
 
-    <div class="card" style="border-left: 4px solid #00CCBC;">
+    <div class="card" style="border-top: 4px solid #00CCBC;">
         <div class="input-row">
-            <div style="flex:1"><span class="label-mini">LORDO €</span><input type="number" id="sLordo"></div>
-            <div style="flex:1"><span class="label-mini">ORE</span><input type="number" id="sOre" step="0.5"></div>
+            <div style="flex:1"><span class="label-text">LORDO €</span><input type="number" id="sL"></div>
+            <div style="flex:1"><span class="label-text">ORE</span><input type="number" id="sO" step="0.5"></div>
         </div>
         <div class="input-row">
-            <div style="flex:1"><span class="label-mini">KM</span><input type="number" id="sKm"></div>
-            <div style="flex:1"><span class="label-mini">L/100KM</span><input type="number" id="sCons"></div>
+            <div style="flex:1"><span class="label-text">KM</span><input type="number" id="sK"></div>
+            <div style="flex:1"><span class="label-text">L/100 KM</span><input type="number" id="sC"></div>
         </div>
-        <button class="btn-add" onclick="addShift()">SALVA TURNO</button>
+        <button class="btn-work" onclick="addS()">SALVA TURNO</button>
     </div>
 
     <div id="storico"></div>
-    <button onclick="resetAll()" style="background:transparent; color:#555; border:1px solid #333; margin:20px 0; height:32px; font-size:10px;">AZZERA TUTTO</button>
+    <button onclick="resetAll()" style="background:transparent; color:#444; border:1px solid #333; margin:20px 0; height:35px; font-size:10px;">AZZERA TUTTI I DATI</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_v942')) || { shifts: [], fuels: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_v94')) || { s: [], f: [], t: 0 };
 
-        function openPop(t, m) { document.getElementById('infoTitle').innerText = t; document.getElementById('infoText').innerText = m; document.getElementById('infoOverlay').style.display = 'flex'; }
-        function inizializza() { document.getElementById('targetInput').value = db.target || ""; calc(); }
-        function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; save(); }
-        function save() { localStorage.setItem('rider_v942', JSON.stringify(db)); calc(); }
+        function openPop(t, m) { 
+            document.getElementById('infoTitle').innerText = t; 
+            document.getElementById('infoText').innerText = m; 
+            document.getElementById('infoOverlay').style.display = 'flex'; 
+        }
 
-        function addFuel() {
-            let e = parseFloat(document.getElementById('fEuro').value), p = parseFloat(document.getElementById('fPrezzo').value);
+        function inizializza() {
+            document.getElementById('tIn').value = db.t || "";
+            calc();
+        }
+
+        function salvaT() { db.t = parseFloat(document.getElementById('tIn').value) || 0; save(); }
+        function save() { localStorage.setItem('rider_v94', JSON.stringify(db)); calc(); }
+
+        function addF() {
+            let e = parseFloat(document.getElementById('fE').value), p = parseFloat(document.getElementById('fP').value);
             if(e > 0 && p > 0) {
-                db.fuels.push({ id: Date.now(), e: e, p: p, d: new Date().toLocaleDateString('it-IT') });
-                save(); document.getElementById('fEuro').value = ""; document.getElementById('fPrezzo').value = "";
+                db.f.push({ id: Date.now(), e: e, p: p, d: new Date().toLocaleDateString('it-IT') });
+                save(); document.getElementById('fE').value = ""; document.getElementById('fP').value = "";
             }
         }
 
-        function addShift() {
-            let l = parseFloat(document.getElementById('sLordo').value);
+        function addS() {
+            let l = parseFloat(document.getElementById('sL').value);
             if(l > 0) {
-                db.shifts.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('sOre').value)||0, k: parseFloat(document.getElementById('sKm').value)||0, c: parseFloat(document.getElementById('sCons').value)||0, d: new Date().toLocaleDateString('it-IT') });
-                save(); ['sLordo','sOre','sKm','sCons'].forEach(i => document.getElementById(i).value="");
+                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('sO').value)||0, k: parseFloat(document.getElementById('sK').value)||0, c: parseFloat(document.getElementById('sC').value)||0, d: new Date().toLocaleDateString('it-IT') });
+                save(); ['sL','sO','sK','sC'].forEach(id => document.getElementById(id).value="");
             }
         }
 
         function calc() {
             let tL=0, tO=0, tLit=0, tSp=0;
-            let lastP = db.fuels.length > 0 ? db.fuels[db.fuels.length-1].p : 1.85;
-            db.shifts.forEach(s => {
+            let lastP = db.f.length > 0 ? db.f[db.f.length-1].p : 1.85;
+            db.s.forEach(s => {
                 tL += s.l; tO += s.o;
                 let lit = (s.k / 100) * s.c;
                 tLit += lit; tSp += (lit * lastP);
             });
             let nR = (tL * 0.8) - tSp;
-            document.getElementById('valLordo').innerText = tL.toFixed(2);
-            document.getElementById('valNetto').innerText = nR.toFixed(2);
-            document.getElementById('valOre').innerText = tO.toFixed(1);
-            document.getElementById('valLitri').innerText = tLit.toFixed(1);
-            document.getElementById('valBenza').innerText = tSp.toFixed(2);
-            document.getElementById('valMedia').innerText = tLit > 0 ? (tL/tLit).toFixed(1) : "0.0";
-            document.getElementById('valGiorni').innerText = [...new Set(db.shifts.map(s => s.d))].length;
-            let manc = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25) : 0;
-            document.getElementById('valMancante').innerText = manc.toFixed(2);
-            let p = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
-            document.getElementById('pBar').style.width = p + "%";
-            document.getElementById('pPerc').innerText = p + "%";
+            document.getElementById('vL').innerText = tL.toFixed(2);
+            document.getElementById('vN').innerText = nR.toFixed(2);
+            document.getElementById('vO').innerText = tO.toFixed(1);
+            document.getElementById('vLit').innerText = tLit.toFixed(1) + " L";
+            document.getElementById('vB').innerText = tSp.toFixed(2);
+            document.getElementById('vMed').innerText = tLit > 0 ? (tL/tLit).toFixed(1) : "0.0";
+            document.getElementById('vG').innerText = [...new Set(db.s.map(x => x.d))].length;
+            let manc = db.t > 0 ? Math.max(0, (db.t - nR) * 1.25) : 0;
+            document.getElementById('vM').innerText = manc.toFixed(2);
+            let p = db.t > 0 ? Math.min(100, Math.round((nR / db.t) * 100)) : 0;
+            document.getElementById('pB').style.width = p + "%";
+            document.getElementById('pP').innerText = p + "%";
             render();
         }
 
         function render() {
             let h = "";
-            let all = [...db.shifts.map(s=>({...s, t:'S'})), ...db.fuels.map(f=>({...f, t:'F'}))].sort((a,b)=>b.id-a.id);
+            let all = [...db.s.map(x=>({...x, type:'S'})), ...db.f.map(x=>({...x, type:'F'}))].sort((a,b)=>b.id-a.id);
             all.forEach(i => {
-                if(i.t === 'S') h += `<div class="history-item"><div class="hist-info"><b>${i.d} - Turno</b><br>Lordo: €${i.l} | Ore: ${i.o}</div><button class="del-btn" onclick="del('shifts',${i.id})">ELIMINA</button></div>`;
-                else h += `<div class="history-item" style="border-left-color:#ffa500"><div class="hist-info"><b>${i.d} - Riforn.</b><br>Spesa: €${i.e} | Prezzo: ${i.p}€/L</div><button class="del-btn" onclick="del('fuels',${i.id})">ELIMINA</button></div>`;
+                if(i.type === 'S') h += `<div class="history-item"><div class="hist-text"><b>${i.d} - TURNO</b><br>Lordo: €${i.l} | Ore: ${i.o}</div><button class="del-btn" onclick="del('s',${i.id})">ELIMINA</button></div>`;
+                else h += `<div class="history-item" style="border-left-color:#ffa500;"><div class="hist-text"><b>${i.d} - RIFORN.</b><br>Spesa: €${i.e} | Prezzo: ${i.p}€/L</div><button class="del-btn" onclick="del('f',${i.id})">ELIMINA</button></div>`;
             });
             document.getElementById('storico').innerHTML = h;
         }
 
-        function del(t, id) { db[t] = db[t].filter(x => x.id !== id); save(); }
-        function resetAll() { if(confirm("Resettare tutto?")) { db = { shifts: [], fuels: [], target: 0 }; document.getElementById('targetInput').value = ""; save(); } }
+        function del(type, id) { db[type] = db[type].filter(x => x.id !== id); save(); }
+        function resetAll() { if(confirm("Azzera tutto?")) { db = { s: [], f: [], t: 0 }; document.getElementById('tIn').value = ""; save(); } }
     </script>
 </body>
 </html>
