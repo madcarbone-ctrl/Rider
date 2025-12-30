@@ -200,7 +200,7 @@
 
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
-            if(e > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
+            if(e > 0 && p > 0) { db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p }); salva(); showToast("⛽ Salvato!"); }
         }
 
         function aggiungiSessione() {
@@ -240,7 +240,15 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIF.';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
-                let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Prezzo: <b>€${i.prezzo.toFixed(3)}/L</b>`;
+                
+                let extra = "";
+                if(i.t == 'S') {
+                    extra = `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>`;
+                } else {
+                    let litri = i.prezzo > 0 ? (i.euro / i.prezzo).toFixed(2) : "0.00";
+                    extra = `Litri: <b>${litri}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}/L</b>`;
+                }
+
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
                         <div class="hist-header">${dataIT} - ${label}</div>
