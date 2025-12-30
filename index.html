@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94.2</title>
+    <title>Rider Tracker Pro v1.0.942</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
 
         .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; width: 100%; }
-        .main-title { color: #00CCBC; margin: 0 0 12px 0; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .main-title { color: #00CCBC; margin: 0 0 12px 0; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .version-badge { font-size: 9px; background: #333; color: #00CCBC; padding: 2px 6px; border-radius: 4px; border: 1px solid #00CCBC; font-weight: normal; }
+        
         .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; cursor: pointer; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -74,7 +76,10 @@
     </div>
 
     <div class="card">
-        <div class="main-title">🚗 RIDER TRACKER PRO</div>
+        <div class="main-title">
+            🚗 RIDER TRACKER PRO 
+            <span class="version-badge">v1.0.942</span>
+        </div>
         <div class="summary-grid">
             <div class="data-box" onclick="mostraInfo('lordoTot')"><span class="stat-label">Lordo Totale</span><span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span></div>
             <div class="data-box" onclick="mostraInfo('nettoTot')"><span class="stat-label">Netto Reale</span><span class="stat-val">€ <span id="nettoReale">0.00</span></span></div>
@@ -128,7 +133,7 @@
     <div id="toast"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v1.0.942')) || JSON.parse(localStorage.getItem('rider_pro_v94')) || { sessioni: [], rifornimenti: [], target: 0 };
         const testi = {
             lordoTot: "Lordo totale incassato registrato nei turni.",
             nettoTot: "Guadagno pulito (Lordo - 20% tasse - Spesa benzina).",
@@ -156,7 +161,7 @@
         }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
+        function salva() { localStorage.setItem('rider_pro_v1.0.942', JSON.stringify(db)); calcola(); }
         
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
