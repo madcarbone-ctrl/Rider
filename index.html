@@ -46,11 +46,14 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 90%; max-width: 320px; text-align: center; }
 
+        /* CRONOLOGIA MIGLIORATA CON DATI MANCANTI */
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
-        .hist-header { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 4px; }
-        .hist-val { font-size: 13px; color: #bbb; }
-        .btn-del-v94 { width: 45px; height: 45px; background: #ff4444; color: #fff; border-radius: 10px; border: none; font-size: 18px; flex-shrink: 0; margin-left: 10px; }
+        .hist-header { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .hist-main-val { font-size: 15px; font-weight: 900; color: #eee; margin-bottom: 4px; display: block; }
+        .hist-sub-val { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hist-sub-val b { color: #bbb; }
+        .btn-del-v94 { width: 44px; height: 44px; background: #ff4444; color: #fff; border-radius: 10px; border: none; font-size: 18px; flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
 
         .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
         .footer span { color: #00CCBC; }
@@ -109,7 +112,7 @@
         </div>
         <div style="display:flex; gap:6px;">
             <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
-            <button class="btn-scan-red" onclick="showToast('Scanner attivo')">📸 SCAN</button>
+            <button class="btn-scan-red" onclick="showToast('Scanner...')">📸 SCAN</button>
         </div>
     </div>
 
@@ -157,6 +160,14 @@
             document.getElementById('infoModal').style.display = 'flex'; 
         }
 
+        function chiediReset() {
+            document.getElementById('infoTitle').innerText = "ATTENZIONE";
+            document.getElementById('infoText').innerText = "Vuoi azzerare tutto, incluso l'obiettivo?";
+            document.getElementById('modalButtons').innerHTML = `<button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px;">SÌ, AZZERA</button><button onclick="chiudiModal()" style="background:#333; color:#fff;">NO</button>`;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function eseguiReset() { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); chiudiModal(); }
         function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
         function salva() { localStorage.setItem('rider_pro_v94', JSON.stringify(db)); calcola(); }
@@ -210,10 +221,20 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIF.';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
+                
+                // DETTAGLI MANCANTI RECUPERATI
+                let extra = "";
+                if(i.t == 'S') {
+                    extra = `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>`;
+                } else {
+                    extra = `Prezzo: <b>€${i.prezzo.toFixed(3)}/L</b>`;
+                }
+
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
                         <div class="hist-header">${dataIT} - ${label}</div>
-                        <div class="hist-val">${val}</div>
+                        <span class="hist-main-val">${val}</span>
+                        <div class="hist-sub-val">${extra}</div>
                     </div>
                     <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
                 </div>`;
