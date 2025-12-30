@@ -34,10 +34,10 @@
 A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
 
 ### ✨ Novità della Versione 1.0.942:
-- 🎯 **Reset Intelligente:** Quando clicchi su **'Azzera'**, anche il **Target** viene resettato automaticamente.
-- 🧹 **Tutto Vuoto:** All'avvio l'app è vuota di default per una nuova sessione pulita.
 - 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
 - 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
+- ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi nel serbatoio basato su spesa e prezzo al litro.
+- 🎯 **Target Progressivo:** Monitora il tuo obiettivo netto mensile con barra dinamica.
 - 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
 
 <hr>
@@ -50,26 +50,26 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 ## 🛠️ Tech Stack
 - **Version:** 1.0.942
 - **Languages:** HTML5, CSS3, JavaScript (Vanilla JS)
-- **Persistence:** LocalStorage API (Offline-first)
+- **Persistence:** LocalStorage API
 
 <hr>
 
 ## 📦 Installazione / Installation
 ### 🤖 Android (APK)
 1. Clicca sul link **"Scarica Rider Tracker Pro_v1.49.apk"** in alto.
-2. Apri il file sul tuo smartphone e autorizza l'installazione.
+2. Apri il file sul tuo smartphone e autorizza l'installazione da "origini sconosciute".
 
 ### 🌐 Web App (PWA)
 1. Apri l'app nel browser.
-2. Seleziona **"Aggiungi a schermata Home"** dal menu del browser.
+2. Seleziona **"Aggiungi a schermata Home"** per creare l'icona sul tuo telefono.
 
 <hr>
 
 ## 💬 Community & Feedback
 <p align="center">
 🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
-👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b>!<br>
-👉 Apri una <b><a href="../../issues">Issue</a></b> per i bug.
+👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee!<br>
+👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
 </p>
 
 <hr>
@@ -78,5 +78,5 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
   <p><i>"La migliore versione del codice è la versione 94."</i></p>
   <br>
   <p>Progetto monitorato:</p>
-  <img src="https://img.shields.io/badge/dynamic/json?label=Visite%20Profilo&query=value&url=https%3A%2F%2Fapi.countapi.xyz%2Fhit%2Fmadcarbone-ctrl-rider%2Fvisits&color=orange&style=flat-square" alt="Visitor Count">
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fmadcarbone-ctrl%2FRider&count_bg=%23FFA500&title_bg=%23555555&icon=github.svg&icon_color=%23E7E7E7&title=Visite&edge_flat=false" alt="Visitor Count">
 </div>
