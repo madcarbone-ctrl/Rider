@@ -16,20 +16,20 @@
         .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 45px; cursor: pointer; position: relative; }
+        .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 45px; cursor: pointer; }
         
         .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; pointer-events: none; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
         
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
         
-        input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; display: block; }
+        input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
         
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
         .date-col { display: flex; flex-direction: column; min-width: 135px; }
-        .date-inputs { display: flex; gap: 2px; width: 100%; }
-        .sel-small { width: 42px !important; min-width: 42px; padding: 0; }
-        .sel-year { width: 58px !important; min-width: 58px; padding: 0; }
+        .date-inputs { display: flex; gap: 2px; }
+        .sel-small { width: 42px !important; }
+        .sel-year { width: 58px !important; }
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin: 10px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
@@ -40,32 +40,29 @@
         .btn-fuel { background: #ffa500; color: #000; flex: 1.2; }
         .btn-scan-red { background: #ff4444; color: #fff; flex: 1; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* STILI POP-UP (MODAL) RIPRISTINATI */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; animation: popIn 0.3s ease; }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* FIX MODAL - VISIBILITÀ GARANTITA */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         /* CRONOLOGIA v94 DEFINITIVA */
         .history-item { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; }
         .hist-details { display: flex; flex-direction: column; gap: 4px; color: #ccc; flex: 1; }
-        .hist-title { font-size: 14px; font-weight: bold; color: #fff; display: block; }
-        .hist-subtitle { font-size: 11px; color: #00CCBC; font-weight: bold; text-transform: uppercase; }
-        .hist-val { font-size: 12px; color: #888; margin-top: 2px; }
-        .hist-val b { color: #eee; }
-        .btn-del-v94 { width: 50px; height: 50px; background: #ff4444; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: none; }
+        .hist-date { font-size: 15px; font-weight: 900; color: #fff; display: block; margin-bottom: 2px; }
+        .hist-type { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hist-val { font-size: 12px; color: #999; margin-top: 4px; line-height: 1.4; }
+        .hist-val b { color: #fff; }
+        .btn-del-v94 { width: 50px; height: 50px; background: #ff4444; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: none; flex-shrink: 0; margin-left: 10px; }
 
-        .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
         .footer span { color: #00CCBC; }
 
-        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid #00CCBC; font-size: 12px; }
-        #toast.show { visibility: visible; animation: fadeIn 0.3s, fadeOut 0.3s 1.7s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        #toast { visibility: hidden; background: #333; color: #00CCBC; text-align: center; border-radius: 50px; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 11000; border: 1px solid #00CCBC; font-size: 12px; }
+        #toast.show { visibility: visible; }
     </style>
 </head>
 <body>
 
-    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:10001;display:none;flex-direction:column;">
+    <div id="camOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:12000;display:none;flex-direction:column;">
         <video id="camVideo" autoplay playsinline style="width:100%;flex-grow:1;object-fit:cover;"></video>
         <div style="height:120px;background:#121212;display:flex;justify-content:space-around;align-items:center;padding-bottom:20px;">
             <button style="color:white; background:none; width:auto;" onclick="chiudiCamera()">ANNULLA</button>
@@ -75,11 +72,11 @@
         <canvas id="camCanvas" style="display:none;"></canvas>
     </div>
 
-    <div id="infoModal" class="modal-overlay" onclick="chiudiModal()">
+    <div id="infoModal" class="modal-overlay">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="infoTitle" style="font-weight:bold; margin-bottom:12px; text-transform:uppercase;"></div>
-            <div id="infoText" style="font-size:13px; line-height:1.5; margin-bottom:20px;"></div>
-            <div id="modalButtons" style="display:flex; flex-direction:column; gap:8px;"></div>
+            <div id="infoTitle" style="font-weight:bold; margin-bottom:12px; text-transform:uppercase; font-size: 16px;"></div>
+            <div id="infoText" style="font-size:14px; line-height:1.5; margin-bottom:20px; color: #bbb;"></div>
+            <div id="modalButtons" style="display:flex; flex-direction:column; gap:10px;"></div>
         </div>
     </div>
 
@@ -166,22 +163,24 @@
         const overlay = document.getElementById('camOverlay');
 
         function mostraInfo(k) { 
-            const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore totali lavorate.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati.", sezBenza: "Inserisci rifornimento.", sezTurno: "Inserisci turno." };
-            const t = document.getElementById('infoTitle');
-            t.innerText = "INFORMAZIONE"; t.style.color = "#00CCBC";
+            const spiegazioni = { lordoTot: "Lordo totale incassato registrato in tutti i turni.", nettoTot: "Guadagno pulito: (Lordo - 20% tasse) - Spesa benzina.", oreTot: "Somma delle ore lavorate complessive.", consTot: "Litri di benzina consumati stimati.", medKml: "Media chilometrica reale (km effettivi / litri totali).", spesaBenz: "Costo totale del carburante utilizzato nei turni.", mancante: "Lordo stimato necessario per raggiungere l'obiettivo netto.", ggAttivi: "Giorni unici di lavoro registrati.", sezBenza: "Registra qui i rifornimenti o usa lo scanner.", sezTurno: "Inserisci i dati del tuo turno giornaliero." };
+            const m = document.getElementById('infoModal');
+            document.getElementById('infoTitle').innerText = "INFORMAZIONE";
+            document.getElementById('infoTitle').style.color = "#00CCBC";
             document.getElementById('infoText').innerText = spiegazioni[k];
-            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000; width:100%; height:40px; border-radius:8px; font-weight:bold; border:none;">CHIUDI</button>';
-            document.getElementById('infoModal').style.display = 'flex'; 
+            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>';
+            m.style.display = 'flex'; 
         }
 
         function chiediReset() {
-            const t = document.getElementById('infoTitle');
-            t.innerText = "ATTENZIONE"; t.style.color = "#ff4444";
+            const m = document.getElementById('infoModal');
+            document.getElementById('infoTitle').innerText = "ATTENZIONE";
+            document.getElementById('infoTitle').style.color = "#ff4444";
             document.getElementById('infoText').innerText = "Sei sicuro di voler eliminare definitivamente tutti i dati e l'obiettivo?";
             document.getElementById('modalButtons').innerHTML = `
-                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px; width:100%; height:40px; border-radius:8px; font-weight:bold; border:none;">SÌ, AZZERA TUTTO</button>
-                <button onclick="chiudiModal()" style="background:#333; color:#fff; width:100%; height:40px; border-radius:8px; font-weight:bold; border:none;">ANNULLA</button>`;
-            document.getElementById('infoModal').style.display = 'flex';
+                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:5px;">SÌ, AZZERA TUTTO</button>
+                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>`;
+            m.style.display = 'flex';
         }
 
         function eseguiReset() { 
@@ -259,7 +258,7 @@
                 let d = i.data.split("-"); let dataIT = `${d[2]}/${d[1]}/${d[0]}`;
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let icon = i.t=='S' ? '📋' : '⛽';
-                let label = i.t=='S' ? 'TURNO' : 'RIF.';
+                let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
                 
                 let details = "";
                 if(i.t=='S') {
@@ -269,4 +268,8 @@
                     details = `⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ <b>€${i.prezzo}/L</b>`;
                 }
 
- 
+                h += `
+                <div class="history-item" style="border-left-color: ${color}">
+                    <div class="hist-details">
+                        <span class="hist-date">${dataIT}</span>
+            
