@@ -6,28 +6,27 @@
     <title>Rider Tracker Pro v1.0.94 V2</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
+        body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        input, select, .data-box, .section-title, button { -webkit-user-select: text; user-select: text; pointer-events: auto !important; }
+        /* Ripristino interazioni */
+        input, select, button, .data-box, .modal-content { pointer-events: auto !important; }
 
         .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; width: 100%; }
         .main-title { color: #00CCBC; margin: 0 0 12px 0; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
-        .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px; }
+        .section-title { color: #00CCBC; margin-bottom: 8px; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: 800; padding: 5px; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
         .data-box { background: #252525; padding: 6px 2px; border-radius: 6px; border: 1px solid #333; text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 45px; cursor: pointer; }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; pointer-events: none; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
+        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+        .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
         
         input, select { height: 36px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
         
-        .flex-fill { flex: 1; min-width: 0; }
         .row-flex { display: flex; gap: 6px; margin-bottom: 10px; align-items: flex-end; width: 100%; }
-        
         .date-col { display: flex; flex-direction: column; width: 135px; flex-shrink: 0; }
         .date-inputs { display: flex; gap: 2px; }
         .sel-small { width: 42px !important; }
@@ -37,7 +36,7 @@
 
         .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin: 10px 0 4px 0; position: relative; overflow: hidden; border: 1px solid #333; }
         .progress-bar { height: 100%; width: 0%; transition: width 0.8s; background: linear-gradient(90deg, #ff4444, #00CCBC); }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; pointer-events: none; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; }
 
         button { width: 100%; height: 40px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .btn-add { background: #00CCBC; color: #000; }
@@ -50,14 +49,14 @@
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 11px; font-weight: bold; color: #00CCBC; margin-bottom: 2px; display: block; }
-        .hist-time { color: #888; font-weight: normal; margin-left: 5px; font-size: 10px; }
+        .hist-time-tag { color: #888; font-weight: normal; margin-left: 4px; font-size: 10px; }
 
         .hist-main-val { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 2px; display: block; }
         .hist-sub-val { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
         .hist-sub-val b { color: #fff; }
         .btn-del-v94 { width: 44px; height: 44px; background: #ff4444; color: #fff; border-radius: 10px; border: none; font-size: 18px; flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; pointer-events: auto; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 90%; max-width: 320px; text-align: center; }
 
         .footer { text-align: center; margin-top: 30px; padding-bottom: 20px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
@@ -168,7 +167,7 @@
             document.getElementById('targetInput').value = db.target || "";
         }
 
-        function getOra() {
+        function getOraCorrente() {
             const n = new Date();
             return n.getHours().toString().padStart(2, '0') + ":" + n.getMinutes().toString().padStart(2, '0');
         }
@@ -209,14 +208,16 @@
             const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore lavorate totali.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati." };
             document.getElementById('infoTitle').innerText = "INFO";
             document.getElementById('infoText').innerText = spiegazioni[k];
-            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">OK</button>';
+            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000; width:100%; height:40px; border-radius:8px; border:none; font-weight:bold;">OK</button>';
             document.getElementById('infoModal').style.display = 'flex'; 
         }
 
         function chiediReset() {
             document.getElementById('infoTitle').innerText = "ATTENZIONE";
             document.getElementById('infoText').innerText = "Vuoi azzerare tutto, incluso l'obiettivo?";
-            document.getElementById('modalButtons').innerHTML = `<button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px;">SÌ, AZZERA</button><button onclick="chiudiModal()" style="background:#333; color:#fff;">NO</button>`;
+            document.getElementById('modalButtons').innerHTML = `
+                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px; width:100%; height:40px; border-radius:8px; border:none; font-weight:bold;">SÌ, AZZERA</button>
+                <button onclick="chiudiModal()" style="background:#333; color:#fff; width:100%; height:40px; border-radius:8px; border:none; font-weight:bold;">NO</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
 
@@ -228,7 +229,7 @@
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) {
-                db.rifornimenti.push({ id: Date.now(), t_ins: getOra(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
+                db.rifornimenti.push({ id: Date.now(), ora_i: getOraCorrente(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
                 salva(); showToast("⛽ Salvato!");
             }
         }
@@ -236,7 +237,7 @@
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                db.sessioni.push({ id: Date.now(), t_ins: getOra(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
+                db.sessioni.push({ id: Date.now(), ora_i: getOraCorrente(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
                 salva(); showToast("✅ Salvato!");
             }
         }
@@ -270,7 +271,7 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
-                let ora = i.t_ins ? `<span class="hist-time">(${i.t_ins})</span>` : "";
+                let ora = i.ora_i ? `<span class="hist-time-tag">(${i.ora_i})</span>` : "";
                 let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Litri: <b>${(i.euro/i.prezzo).toFixed(2)}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}</b>`;
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
@@ -279,6 +280,4 @@
                         <div class="hist-sub-val">${extra}</div>
                     </div>
                     <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
-                </div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "<div style
+ 
