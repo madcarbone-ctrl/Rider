@@ -50,7 +50,6 @@
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; width: 100%; }
         .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 11px; font-weight: bold; color: #00CCBC; margin-bottom: 2px; display: block; }
-        .hist-time { color: #888; font-size: 10px; font-weight: normal; margin-left: 4px; }
         .hist-main-val { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 2px; display: block; }
         .hist-sub-val { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
         .hist-sub-val b { color: #fff; }
@@ -167,11 +166,6 @@
             document.getElementById('targetInput').value = db.target || "";
         }
 
-        function getOraAttuale() {
-            const ora = new Date();
-            return ora.getHours().toString().padStart(2, '0') + ":" + ora.getMinutes().toString().padStart(2, '0');
-        }
-
         function popolaDate() {
             const d = new Date();
             const gg = d.getDate(), mm = d.getMonth() + 1, aa = d.getFullYear();
@@ -227,13 +221,7 @@
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) {
-                db.rifornimenti.push({ 
-                    id: Date.now(), 
-                    oraIns: getOraAttuale(),
-                    data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, 
-                    euro: e, 
-                    prezzo: p 
-                });
+                db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
                 salva(); showToast("⛽ Salvato!");
             }
         }
@@ -241,16 +229,7 @@
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                db.sessioni.push({ 
-                    id: Date.now(), 
-                    oraIns: getOraAttuale(),
-                    lordo: l, 
-                    ore: parseFloat(document.getElementById('sessOre').value)||0, 
-                    km: parseFloat(document.getElementById('sessKm').value)||0, 
-                    l100: parseFloat(document.getElementById('sessL100').value)||0, 
-                    scarto: parseFloat(document.getElementById('sessScarto').value)||0, 
-                    data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` 
-                });
+                db.sessioni.push({ id: Date.now(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
                 salva(); showToast("✅ Salvato!");
             }
         }
@@ -284,9 +263,21 @@
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
                 let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
                 let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
-                let oraVisual = i.oraIns ? `<span class="hist-time">alle ${i.oraIns}</span>` : "";
                 let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Litri: <b>${(i.euro/i.prezzo).toFixed(2)}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}</b>`;
                 h += `<div class="history-item" style="border-left-color: ${color}">
                     <div class="hist-details">
-                        <span class="hist-header">${dataIT} ${oraVisual} - ${label}</span>
-                        <span class="hist-main-val">${val}
+                        <span class="hist-header">${dataIT} - ${label}</span>
+                        <span class="hist-main-val">${val}</span>
+                        <div class="hist-sub-val">${extra}</div>
+                    </div>
+                    <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                </div>`;
+            });
+            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#666;'>Nessun dato</div>";
+        }
+
+        function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
+    </script>
+</body>
+</html>
