@@ -23,11 +23,10 @@
         
         .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
         
-        /* Correzione selettori data */
-        .date-row { display: flex; gap: 4px; margin-bottom: 10px; width: 100%; justify-content: space-between; }
-        .date-box-select { flex: 1; display: flex; flex-direction: column; }
+        /* Layout Date Robusto */
+        .date-row { display: flex; gap: 4px; margin-bottom: 10px; width: 100%; }
         
-        input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; appearance: none; -webkit-appearance: none; }
+        input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 13px; text-align: center; width: 100%; }
         
         .input-row { display: flex; gap: 6px; margin-bottom: 10px; }
         .input-group { flex: 1; }
@@ -43,12 +42,16 @@
 
         #wrapperStorico { display: none; max-height: 400px; overflow-y: auto; background: #161616; padding: 8px; border-radius: 10px; border: 1px solid #333; margin-top: 5px; }
 
+        /* Stile Storico v94 Completo */
         .history-item { background: #1e1e1e; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left-width: 6px; }
+        .hist-details { flex: 1; min-width: 0; }
         .hist-header { font-size: 11px; font-weight: bold; color: #00CCBC; margin-bottom: 2px; display: block; }
-        .hist-time-info { color: #777; font-weight: normal; margin-left: 4px; font-size: 10px; }
+        .hist-time-tag { color: #888; font-weight: normal; margin-left: 4px; font-size: 10px; }
         .hist-main-val { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 2px; display: block; }
-        .hist-sub-val { font-size: 10px; color: #aaa; text-transform: uppercase; }
-        
+        .hist-sub-val { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hist-sub-val b { color: #fff; }
+        .btn-del-v94 { width: 44px; height: 44px; background: #ff4444; color: #fff; border-radius: 10px; border: none; font-size: 18px; flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
+
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 99999; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 90%; max-width: 320px; text-align: center; }
 
@@ -94,11 +97,9 @@
 
     <div class="card" style="border-color: #ffa50066;">
         <div class="section-title" style="color:#ffa500">⛽ REGISTRA RIFORNIMENTO</div>
-        <span class="label-mini">DATA RIFORNIMENTO</span>
+        <span class="label-mini">DATA</span>
         <div class="date-row">
-            <select id="fDay"></select>
-            <select id="fMonth"></select>
-            <select id="fYear"></select>
+            <select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select>
         </div>
         <div class="input-row">
             <div class="input-group"><span class="label-mini">€ SPESI</span><input type="number" id="fuelEuro"></div>
@@ -112,11 +113,9 @@
 
     <div class="card" style="border-color: #00ccbc66;">
         <div class="section-title">➕ AGGIUNGI TURNO</div>
-        <span class="label-mini">DATA TURNO</span>
+        <span class="label-mini">DATA</span>
         <div class="date-row">
-            <select id="sDay"></select>
-            <select id="sMonth"></select>
-            <select id="sYear"></select>
+            <select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select>
         </div>
         <div class="input-row">
             <div class="input-group"><span class="label-mini">LORDO €</span><input type="number" id="sessLordo"></div>
@@ -146,7 +145,7 @@
             document.getElementById('targetInput').value = db.target || "";
         }
 
-        function getOraOra() {
+        function getOraAttuale() {
             const d = new Date();
             return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
         }
@@ -157,7 +156,6 @@
             const days = document.querySelectorAll('#fDay, #sDay');
             const months = document.querySelectorAll('#fMonth, #sMonth');
             const years = document.querySelectorAll('#fYear, #sYear');
-
             days.forEach(el => { el.innerHTML = ""; for(let i=1; i<=31; i++) el.innerHTML += `<option value="${i}" ${i==gg?'selected':''}>${i}</option>`; });
             months.forEach(el => { el.innerHTML = ""; for(let i=1; i<=12; i++) el.innerHTML += `<option value="${i}" ${i==mm?'selected':''}>${i}</option>`; });
             years.forEach(el => { el.innerHTML = ""; for(let i=2024; i<=2026; i++) el.innerHTML += `<option value="${i}" ${i==aa?'selected':''}>${i}</option>`; });
@@ -165,16 +163,16 @@
 
         function toggleStorico() {
             const w = document.getElementById('wrapperStorico'), b = document.getElementById('btnToggleStorico');
-            const isVisible = w.style.display === 'block';
-            w.style.display = isVisible ? 'none' : 'block';
-            b.innerText = isVisible ? '📜 MOSTRA CRONOLOGIA' : '📜 NASCONDI CRONOLOGIA';
-            if(!isVisible) renderStorico();
+            const isVis = w.style.display === 'block';
+            w.style.display = isVis ? 'none' : 'block';
+            b.innerText = isVis ? '📜 MOSTRA CRONOLOGIA' : '📜 NASCONDI CRONOLOGIA';
+            if(!isVis) renderStorico();
         }
 
         function aggiungiBenza() {
             let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0 && p > 0) {
-                db.rifornimenti.push({ id: Date.now(), ora: getOraOra(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
+                db.rifornimenti.push({ id: Date.now(), ora: getOraAttuale(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, euro: e, prezzo: p });
                 salva(); showToast("⛽ Salvato!");
             }
         }
@@ -182,7 +180,7 @@
         function aggiungiSessione() {
             let l = parseFloat(document.getElementById('sessLordo').value) || 0;
             if(l > 0) {
-                db.sessioni.push({ id: Date.now(), ora: getOraOra(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
+                db.sessioni.push({ id: Date.now(), ora: getOraAttuale(), lordo: l, ore: parseFloat(document.getElementById('sessOre').value)||0, km: parseFloat(document.getElementById('sessKm').value)||0, l100: parseFloat(document.getElementById('sessL100').value)||0, scarto: parseFloat(document.getElementById('sessScarto').value)||0, data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}` });
                 salva(); showToast("✅ Salvato!");
             }
         }
@@ -211,14 +209,19 @@
             let h = "";
             let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'B'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
-                let d = i.data.split("-");
+                let d = i.data.split("-"); let dataIT = `${d[2]}/${d[1]}/${d[0]}`;
                 let color = i.t=='S' ? '#00CCBC' : '#ffa500';
+                let label = i.t=='S' ? 'TURNO' : 'RIFORNIMENTO';
+                let val = i.t=='S' ? `€${i.lordo.toFixed(2)}` : `€${i.euro.toFixed(2)}`;
+                let oraStr = i.ora ? `<span class="hist-time-tag">(${i.ora})</span>` : "";
+                let extra = i.t=='S' ? `Ore: <b>${i.ore}</b> | KM: <b>${i.km}</b> | Cons: <b>${i.l100}L</b>` : `Litri: <b>${(i.euro/i.prezzo).toFixed(2)}L</b> | Prezzo: <b>€${i.prezzo.toFixed(3)}</b>`;
                 h += `<div class="history-item" style="border-left-color: ${color}">
-                    <div style="flex:1">
-                        <span class="hist-header">${d[2]}/${d[1]}/${d[0]} <span class="hist-time-info">(${i.ora || '--:--'})</span> - ${i.t=='S'?'TURNO':'BENZINA'}</span>
-                        <span class="hist-main-val">€${(i.lordo || i.euro).toFixed(2)}</span>
+                    <div class="hist-details">
+                        <span class="hist-header">${dataIT} ${oraStr} - ${label}</span>
+                        <span class="hist-main-val">${val}</span>
+                        <div class="hist-sub-val">${extra}</div>
                     </div>
-                    <button style="width:40px; background:#ff4444; color:white;" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
+                    <button class="btn-del-v94" onclick="elimina('${i.t=='S'?'sessioni':'rifornimenti'}', ${i.id})">🗑️</button>
                 </div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#666;'>Vuoto</div>";
@@ -232,8 +235,9 @@
         function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
         
         function mostraInfo(k) { 
+            const spiegazioni = { lordoTot: "Lordo totale incassato.", nettoTot: "Guadagno pulito dopo tasse e benzina.", oreTot: "Ore lavorate totali.", consTot: "Litri consumati stimati.", medKml: "Media km con un litro.", spesaBenz: "Costo totale carburante.", mancante: "Lordo necessario per il target.", ggAttivi: "Giorni lavorati." };
             document.getElementById('infoTitle').innerText = "INFO";
-            document.getElementById('infoText').innerText = "Dettaglio statistica selezionata.";
+            document.getElementById('infoText').innerText = spiegazioni[k];
             document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">OK</button>';
             document.getElementById('infoModal').style.display = 'flex'; 
         }
@@ -246,7 +250,20 @@
         }
 
         function avviaScan() { document.getElementById('cameraInput').click(); }
-        function processaScan(event) { showToast("Analisi..."); /* Logica Tesseract qui */ }
+        function processaScan(event) {
+            const file = event.target.files[0]; if (!file) return;
+            showToast("Analisi...");
+            Tesseract.recognize(file, 'ita').then(({ data: { text } }) => {
+                const numbers = text.match(/\d+[.,]\d{2,3}/g);
+                if (numbers) {
+                    const sorted = numbers.map(n => parseFloat(n.replace(',', '.'))).sort((a,b) => b-a);
+                    if (sorted[0]) document.getElementById('fuelEuro').value = sorted[0];
+                    const p = sorted.find(n => n < 3 && n > 1);
+                    if (p) document.getElementById('fuelPrezzo').value = p;
+                    showToast("Dati estratti!");
+                } else { showToast("Dati non trovati"); }
+            }).catch(() => showToast("Errore Scan"));
+        }
     </script>
 </body>
 </html>
