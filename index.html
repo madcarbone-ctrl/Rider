@@ -45,6 +45,7 @@
         .cam-ui { height: 120px; background: #121212; display: flex; justify-content: space-around; align-items: center; padding-bottom: 20px; }
         .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid #555; }
 
+        /* Modal Stile v94 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 100%; max-width: 300px; text-align: center; }
 
@@ -69,11 +70,13 @@
         <canvas id="camCanvas" style="display:none;"></canvas>
     </div>
 
-    <div id="infoModal" class="modal-overlay" onclick="chiudiInfo()">
+    <div id="infoModal" class="modal-overlay" onclick="chiudiModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="infoTitle" style="color:#00CCBC; font-weight:bold; margin-bottom:12px; text-transform:uppercase;">INFORMAZIONE</div>
             <div id="infoText" style="font-size:13px; line-height:1.5; margin-bottom:20px;"></div>
-            <button onclick="chiudiInfo()" style="background:#00CCBC; color:#000; height:36px;">CHIUDI</button>
+            <div id="modalButtons" style="display:flex; flex-direction:column; gap:8px;">
+                <button id="modalCloseBtn" onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>
+            </div>
         </div>
     </div>
 
@@ -144,7 +147,7 @@
     </div>
 
     <div id="storico"></div>
-    <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222; width:100%;" onclick="apriReset()">⚠️ AZZERA TUTTO</button>
+    <button style="background:#441111; color:#ffcccc; margin-top:20px; font-size:11px; height:34px; border:1px solid #662222; width:100%;" onclick="chiediReset()">⚠️ AZZERA TUTTO</button>
     
     <div id="toast"></div>
 
@@ -166,8 +169,34 @@
             sezTurno: "Inserisci i dati del tuo turno giornaliero."
         };
 
-        function mostraInfo(k) { document.getElementById('infoText').innerText = spiegazioni[k]; document.getElementById('infoModal').style.display = 'flex'; }
-        function chiudiInfo() { document.getElementById('infoModal').style.display = 'none'; }
+        function mostraInfo(k) { 
+            document.getElementById('infoTitle').innerText = "INFORMAZIONE";
+            document.getElementById('infoTitle').style.color = "#00CCBC";
+            document.getElementById('infoText').innerText = spiegazioni[k];
+            document.getElementById('modalButtons').innerHTML = '<button onclick="chiudiModal()" style="background:#00CCBC; color:#000;">CHIUDI</button>';
+            document.getElementById('infoModal').style.display = 'flex'; 
+        }
+
+        function chiediReset() {
+            document.getElementById('infoTitle').innerText = "ATTENZIONE";
+            document.getElementById('infoTitle').style.color = "#ff4444";
+            document.getElementById('infoText').innerText = "Sei sicuro di voler eliminare definitivamente tutti i dati, inclusi i turni, i rifornimenti e l'obiettivo?";
+            document.getElementById('modalButtons').innerHTML = `
+                <button onclick="eseguiReset()" style="background:#ff4444; color:#fff; margin-bottom:8px;">SÌ, AZZERA TUTTO</button>
+                <button onclick="chiudiModal()" style="background:#333; color:#fff;">ANNULLA</button>
+            `;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function eseguiReset() {
+            db = { sessioni: [], rifornimenti: [], target: 0 };
+            document.getElementById('targetInput').value = "";
+            salva();
+            chiudiModal();
+            showToast("⚠️ Dati azzerati!");
+        }
+
+        function chiudiModal() { document.getElementById('infoModal').style.display = 'none'; }
 
         async function apriCamera() {
             try {
@@ -260,17 +289,4 @@
                 if(i.tipo == 'S') {
                     h += `<div class="history-item"><div class="hist-details"><div class="hist-main">📅 ${dataIT} - TURNO</div><span>💰 <b>€${i.lordo.toFixed(2)}</b> | ⏱️ ${i.ore}h | 📍 ${i.km}km</span></div><button class="btn-del" onclick="elimina('sessioni', ${i.id})">🗑️</button></div>`;
                 } else {
-                    h += `<div class="history-item" style="border-left-color: #ffa500;"><div class="hist-details"><div class="hist-main">📅 ${dataIT} - ⛽ RIF.</div><span>⛽ <b>€${i.euro.toFixed(2)}</b> | 🏷️ €${i.prezzo}/L</span></div><button class="btn-del" onclick="elimina('rifornimenti', ${i.id})">🗑️</button></div>`;
-                }
-            });
-            document.getElementById('storico').innerHTML = h ? "<div class='section-title'>📜 CRONOLOGIA</div>" + h : "";
-        }
-
-        function elimina(t, id) { db[t] = db[t].filter(x => x.id !== id); salva(); }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-        function apriReset() { if(confirm("Azzero tutto?")) { db={sessioni:[],rifornimenti:[],target:0}; document.getElementById('targetInput').value=""; salva(); } }
-        
-        popolaDate(); calcola(); document.getElementById('targetInput').value = db.target || "";
-    </script>
-</body>
-</html>
+                    h += `<div class="history-item" style="border-left-colo
