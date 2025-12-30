@@ -3,260 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v1.0.972</title>
+    <title>Rider Tracker Pro v1.0.973</title>
     <style>
         body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: env(safe-area-inset-top) 8px 10px 8px; overflow-x: hidden; width: 100vw; -webkit-user-select: none; user-select: none; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         input, select { -webkit-user-select: text; user-select: text; }
 
-        /* HEADER V94 PERFETTO */
-        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 30px; }
-        .lang-side { display: flex; gap: 4px; flex: 1; }
-        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 3px; padding: 2px 4px; font-size: 10px; cursor: pointer; }
-        .main-title { color: #00CCBC; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; flex: 2; text-align: center; white-space: nowrap; }
-        .version-side { flex: 1; text-align: right; }
-        .version-badge { font-size: 8px; background: #333; color: #00CCBC; padding: 2px 5px; border-radius: 4px; border: 1px solid #00CCBC; }
+        /* HEADER */
+        .header-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 0 5px; }
+        .btn-flag { background: #252525; border: 1px solid #444; border-radius: 4px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+        .main-title { color: #00CCBC; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .version-badge { font-size: 9px; background: #333; color: #00CCBC; padding: 2px 6px; border-radius: 4px; border: 1px solid #00CCBC; }
 
         /* POPUP MODALE */
         #infoOverlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); z-index: 999999; align-items: center; justify-content: center; 
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
-        .info-card { 
-            background: #1e1e1e; width: 85%; max-width: 320px; padding: 25px; 
-            border-radius: 20px; border: 1px solid #00CCBC; text-align: center; 
-            box-shadow: 0 0 30px rgba(0,204,188,0.4);
-        }
-        .info-btn { background: #00CCBC; color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; margin-top: 20px; display: inline-block; cursor: pointer; }
+        .info-card { background: #1e1e1e; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; border: 1px solid #00CCBC; text-align: center; }
+        .info-btn { background: #00CCBC; color: #000; padding: 12px 35px; border-radius: 25px; font-weight: bold; margin-top: 20px; display: inline-block; cursor: pointer; }
 
-        /* GRIGLIA UNIFORME V94 */
-        .card { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; }
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        /* TABELLA STATISTICHE (Screenshot Style) */
+        .stats-container { background: #1e1e1e; padding: 10px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         
-        .data-box { 
+        .stat-box { 
             background: #252525; 
-            height: 55px; /* Altezza fissa per uniformità totale */
+            padding: 10px 4px; 
             border-radius: 8px; 
             border: 1px solid #333; 
+            text-align: center; 
             display: flex; 
             flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            position: relative;
+            justify-content: space-between;
+            min-height: 65px;
         }
         
-        .stat-label { font-size: 7px; color: #aaa; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
-        .info-i { color: #00CCBC; font-size: 10px; margin-left: 3px; cursor: pointer; padding: 2px; }
+        .label-text { font-size: 8px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .value-text { font-size: 13px; font-weight: 900; color: #fff; }
+        .info-i { color: #00CCBC; font-size: 11px; margin-left: 4px; cursor: pointer; }
 
-        /* INPUT TARGET INTEGRATO NELLA CASELLA */
-        .target-input {
-            background: transparent; border: none; border-bottom: 1px solid #444;
-            color: #fff; font-size: 11px; font-weight: bold; width: 80%; text-align: center;
-            outline: none; height: 18px;
+        /* INPUT TARGET PERFETTO */
+        .target-input { 
+            background: #111; border: 1px solid #444; color: #00CCBC; 
+            font-size: 13px; font-weight: 900; width: 90%; text-align: center; 
+            border-radius: 4px; height: 24px; margin-top: 2px;
         }
 
-        /* RESTO UI */
-        .label-mini { font-size: 9px; color: #888; margin-bottom: 3px; display: block; font-weight: bold; text-transform: uppercase; }
-        input, select { height: 38px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; font-size: 14px; text-align: center; width: 100%; }
-        .row-flex { display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end; }
-        
-        .progress-container { width: 100%; background: #1a1a1a; border-radius: 10px; height: 26px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
+        /* PROGRESS BAR */
+        .progress-wrap { background: #111; border-radius: 10px; height: 28px; margin-top: 10px; position: relative; overflow: hidden; border: 1px solid #333; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4444, #00CCBC); transition: width 0.8s ease; }
+        .progress-label { position: absolute; width: 100%; text-align: center; top: 6px; font-size: 12px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
-        button { width: 100%; height: 42px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .btn-add { background: #00CCBC; color: #000; }
+        /* SEZIONI INPUT */
+        .section-card { background: #1e1e1e; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; }
+        .section-title { font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        
+        .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .input-group { flex: 1; }
+        .mini-tag { font-size: 9px; color: #666; font-weight: bold; margin-bottom: 4px; display: block; }
+        
+        input, select { width: 100%; height: 40px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 8px; font-size: 14px; text-align: center; }
+        
+        button { width: 100%; height: 45px; border: none; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 13px; }
         .btn-fuel { background: #ffa500; color: #000; }
-        .btn-reset { background: #441111; color: #ffcccc; margin-top: 20px; font-size: 10px; height: 32px; border: 1px solid #662222; }
+        .btn-work { background: #00CCBC; color: #000; }
         
-        #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #00CCBC; padding: 10px 20px; border-radius: 50px; border: 1px solid #00CCBC; z-index: 10000; }
-        #toast.show { visibility: visible; }
-        .history-item { background: #252525; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00CCBC; }
+        /* CRONOLOGIA */
+        .history-box { margin-top: 15px; }
+        .history-item { background: #1e1e1e; padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; border-left: 4px solid #00CCBC; position: relative; }
+        .del-btn { position: absolute; right: 10px; top: 10px; background: #ff4444; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body onload="inizializza()">
 
     <div id="infoOverlay" onclick="this.style.display='none'">
         <div class="info-card" onclick="event.stopPropagation()">
-            <h3 id="infoTitle">INFO</h3>
-            <p id="infoText"></p>
+            <h3 id="infoTitle" style="color:#00CCBC; margin-bottom:10px;"></h3>
+            <p id="infoText" style="color:#ccc; font-size:14px; line-height:1.4;"></p>
             <div class="info-btn" onclick="document.getElementById('infoOverlay').style.display='none'">CHIUDI</div>
         </div>
     </div>
 
     <div class="header-main">
-        <div class="lang-side">
-            <div class="btn-flag" onclick="setLang('it')">🇮🇹</div>
-            <div class="btn-flag" onclick="setLang('en')">🇬🇧</div>
-        </div>
+        <div class="btn-flag" onclick="showToast('Lingua: IT')">🇮🇹</div>
         <div class="main-title">RIDER TRACKER PRO</div>
-        <div class="version-side"><span class="version-badge">v1.0.972</span></div>
+        <span class="version-badge">v1.0.973</span>
     </div>
 
-    <div class="card">
-        <div class="summary-grid">
-            <div class="data-box">
-                <span class="stat-label">LORDO TOT <span class="info-i" onclick="openPopup('LORDO TOTALE', 'Totale lordo guadagnato.')">ⓘ</span></span>
-                <span class="stat-val" style="color:#00CCBC">€ <span id="lordoTotale">0.00</span></span>
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="label-text">LORDO TOTALE <span class="info-i" onclick="openPop('LORDO','Totale guadagni lordi.')">ⓘ</span></span>
+                <span class="value-text" style="color:#00CCBC;">€ <span id="valLordo">0.00</span></span>
             </div>
-            <div class="data-box">
-                <span class="stat-label">NETTO REAL <span class="info-i" onclick="openPopup('NETTO REALE', 'Guadagno al netto di tasse (20%) e benzina.')">ⓘ</span></span>
-                <span class="stat-val">€ <span id="nettoReale">0.00</span></span>
+            <div class="stat-box">
+                <span class="label-text">NETTO REALE <span class="info-i" onclick="openPop('NETTO','Lordo - 20% tasse - Benzina.')">ⓘ</span></span>
+                <span class="value-text">€ <span id="valNetto">0.00</span></span>
             </div>
-            <div class="data-box">
-                <span class="stat-label">ORE LAVORO <span class="info-i" onclick="openPopup('ORE LAVORO', 'Somma delle ore lavorate.')">ⓘ</span></span>
-                <span class="stat-val" id="oreTotali">0.0</span>
+            <div class="stat-box">
+                <span class="label-text">ORE LAVORO <span class="info-i" onclick="openPop('ORE','Totale ore effettive.')">ⓘ</span></span>
+                <span class="value-text" id="valOre">0.0</span>
             </div>
-            <div class="data-box">
-                <span class="stat-label">TARGET € <span class="info-i" onclick="openPopup('OBIETTIVO', 'Il tuo traguardo netto.')">ⓘ</span></span>
-                <input type="number" id="targetInput" class="target-input" oninput="salvaTarget()" placeholder="0">
+            <div class="stat-box">
+                <span class="label-text">CONSUMO L <span class="info-i" onclick="openPop('LITRI','Litri totali consumati.')">ⓘ</span></span>
+                <span class="value-text" id="valLitri">0.0 L</span>
             </div>
-            <div class="data-box">
-                <span class="stat-label">MANCANTE <span class="info-i" onclick="openPopup('LORDO MANCANTE', 'Lordo necessario per il target netto.')">ⓘ</span></span>
-                <span class="stat-val" style="color:#ff4444">€ <span id="lordoMancante">0.00</span></span>
+            <div class="stat-box">
+                <span class="label-text">MEDIA KM/L <span class="info-i" onclick="openPop('MEDIA','Efficienza media del mezzo.')">ⓘ</span></span>
+                <span class="value-text" style="color:#ffa500;" id="valMedia">0.0</span>
             </div>
-            <div class="data-box">
-                <span class="stat-label">GG LAVORO <span class="info-i" onclick="openPopup('GIORNI', 'Giorni totali di attività.')">ⓘ</span></span>
-                <span class="stat-val" id="giorniLavorati">0</span>
+            <div class="stat-box">
+                <span class="label-text">SPESA BENZA <span class="info-i" onclick="openPop('BENZINA','Costo totale del carburante.')">ⓘ</span></span>
+                <span class="value-text" style="color:#ff4444;">€ <span id="valSpesaB">0.00</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="label-text">OBIETTIVO € <span class="info-i" onclick="openPop('TARGET','Il tuo traguardo netto.')">ⓘ</span></span>
+                <input type="number" id="targetIn" class="target-input" oninput="salvaTarget()" placeholder="0">
+            </div>
+            <div class="stat-box">
+                <span class="label-text">LORDO MANC. <span class="info-i" onclick="openPop('MANCANTE','Lordo da fare per arrivare al target.')">ⓘ</span></span>
+                <span class="value-text" style="color:#ff4444;">€ <span id="valManc">0.00</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="label-text">GG LAVORO <span class="info-i" onclick="openPop('GIORNI','Giorni di attività registrati.')">ⓘ</span></span>
+                <span class="value-text" id="valGG">0</span>
             </div>
         </div>
-        <div class="progress-container">
-            <div id="pBar" class="progress-bar"></div>
-            <div id="progressoPerc" class="progress-text">0%</div>
+        
+        <div class="progress-wrap">
+            <div id="pBar" class="progress-fill"></div>
+            <div id="pPerc" class="progress-label">0%</div>
         </div>
     </div>
 
-    <div class="card" style="border-left: 4px solid #ffa500;">
-        <div class="row-flex">
-            <div>
-                <span class="label-mini">DATA</span>
-                <div style="display:flex; gap:3px;"><select id="fDay" style="width:42px"></select><select id="fMonth" style="width:42px"></select><select id="fYear" style="width:64px"></select></div>
+    <div class="section-card" style="border-top: 4px solid #ffa500;">
+        <div class="section-title">⛽ REGISTRA RIFORNIMENTO</div>
+        <div class="input-row">
+            <div style="flex:1.5"><span class="mini-tag">DATA</span>
+                <div style="display:flex; gap:2px;"><select id="fd"></select><select id="fm"></select></div>
             </div>
-            <div style="flex:1">
-                <span class="label-mini">EURO SPESI <span class="info-i" onclick="openPopup('EURO SPESI', 'Importo totale rifornimento.')">ⓘ</span></span>
-                <input type="number" id="fuelEuro" placeholder="0.00">
-            </div>
-            <div style="flex:1">
-                <span class="label-mini">€ / LITRO <span class="info-i" onclick="openPopup('PREZZO/L', 'Costo benzina al litro.')">ⓘ</span></span>
-                <input type="number" id="fuelPrezzo" step="0.001" placeholder="0.000">
-            </div>
+            <div class="input-group"><span class="mini-tag">€ SPESI</span><input type="number" id="fE" placeholder="0.00"></div>
+            <div class="input-group"><span class="mini-tag">€/LITRO</span><input type="number" id="fP" step="0.001" placeholder="1.xxx"></div>
         </div>
-        <button class="btn-fuel" onclick="aggiungiBenza()">SALVA RIFORNIMENTO</button>
+        <button class="btn-fuel" onclick="addFuel()">SALVA RIFORNIMENTO</button>
     </div>
 
-    <div class="card" style="border-left: 4px solid #00CCBC;">
-        <div class="row-flex">
-            <div>
-                <span class="label-mini">DATA</span>
-                <div style="display:flex; gap:3px;"><select id="sDay" style="width:42px"></select><select id="sMonth" style="width:42px"></select><select id="sYear" style="width:64px"></select></div>
+    <div class="section-card" style="border-top: 4px solid #00CCBC;">
+        <div class="section-title">➕ AGGIUNGI TURNO</div>
+        <div class="input-row">
+            <div style="flex:1.5"><span class="mini-tag">DATA</span>
+                <div style="display:flex; gap:2px;"><select id="sd"></select><select id="sm"></select></div>
             </div>
-            <div style="flex:1">
-                <span class="label-mini">LORDO € <span class="info-i" onclick="openPopup('LORDO', 'Guadagno lordo del turno.')">ⓘ</span></span>
-                <input type="number" id="sessLordo">
-            </div>
-            <div style="flex:1">
-                <span class="label-mini">ORE <span class="info-i" onclick="openPopup('ORE', 'Durata turno (es: 4.5).')">ⓘ</span></span>
-                <input type="number" id="sessOre" step="0.5">
-            </div>
+            <div class="input-group"><span class="mini-tag">LORDO €</span><input type="number" id="sL"></div>
+            <div class="input-group"><span class="mini-tag">ORE</span><input type="number" id="sO" step="0.5"></div>
         </div>
-        <div class="row-flex">
-            <div style="flex:1"><span class="label-mini">KM <span class="info-i" onclick="openPopup('KM', 'KM totali turno.')">ⓘ</span></span><input type="number" id="sessKm"></div>
-            <div style="flex:1"><span class="label-mini">L/100KM <span class="info-i" onclick="openPopup('CONSUMO', 'Consumo da computer di bordo.')">ⓘ</span></span><input type="number" id="sessL100" step="0.1"></div>
-            <div style="flex:1"><span class="label-mini">SCARTO <span class="info-i" onclick="openPopup('SCARTO', 'KM da escludere.')">ⓘ</span></span><input type="number" id="sessScarto"></div>
+        <div class="input-row">
+            <div class="input-group"><span class="mini-tag">KM PERCORSI</span><input type="number" id="sK"></div>
+            <div class="input-group"><span class="mini-tag">L/100 KM</span><input type="number" id="sC" step="0.1"></div>
+            <div class="input-group"><span class="mini-tag">SCARTO</span><input type="number" id="sS"></div>
         </div>
-        <button class="btn-add" onclick="aggiungiSessione()">SALVA TURNO</button>
+        <button class="btn-work" onclick="addShift()">SALVA TURNO</button>
     </div>
 
-    <div id="storico"></div>
-    <button class="btn-reset" onclick="apriReset()">⚠️ AZZERA TUTTO</button>
-    <div id="toast"></div>
+    <div id="cronologia" class="history-box"></div>
+    <button onclick="resetAll()" style="background:#441111; color:#ffcccc; margin:20px 0; height:35px; font-size:10px;">⚠️ AZZERA TUTTI I DATI</button>
+    <div id="toast" style="visibility:hidden; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#00CCBC; color:#000; padding:10px 20px; border-radius:50px; font-weight:bold; z-index:10000;"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_pro_v1.0.950')) || { sessioni: [], rifornimenti: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_pro_v973')) || { shifts: [], fuels: [], target: 0 };
 
-        function openPopup(title, text) {
-            document.getElementById('infoTitle').innerText = title;
-            document.getElementById('infoText').innerText = text;
-            document.getElementById('infoOverlay').style.display = 'flex';
+        function openPop(t, txt) { 
+            document.getElementById('infoTitle').innerText = t; 
+            document.getElementById('infoText').innerText = txt; 
+            document.getElementById('infoOverlay').style.display = 'flex'; 
         }
 
         function inizializza() {
-            popolaDate();
-            document.getElementById('targetInput').value = db.target || "";
-            calcola();
+            popDate();
+            document.getElementById('targetIn').value = db.target || "";
+            calc();
         }
 
-        function popolaDate() {
+        function popDate() {
             const d = new Date();
-            ['fDay','sDay'].forEach(id => { let s=document.getElementById(id); for(let i=1;i<=31;i++) s.innerHTML+=`<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
-            ['fMonth','sMonth'].forEach(id => { let s=document.getElementById(id); for(let i=1;i<=12;i++) s.innerHTML+=`<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
-            ['fYear','sYear'].forEach(id => { let s=document.getElementById(id); for(let i=2024;i<=2026;i++) s.innerHTML+=`<option value="${i}" ${i==d.getFullYear()?'selected':''}>${i}</option>`; });
+            const days = [document.getElementById('fd'), document.getElementById('sd')];
+            const months = [document.getElementById('fm'), document.getElementById('sm')];
+            days.forEach(s => { for(let i=1;i<=31;i++) s.innerHTML+=`<option value="${i}" ${i==d.getDate()?'selected':''}>${i}</option>`; });
+            months.forEach(s => { for(let i=1;i<=12;i++) s.innerHTML+=`<option value="${i}" ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; });
         }
 
-        function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        function salva() { localStorage.setItem('rider_pro_v1.0.950', JSON.stringify(db)); calcola(); }
+        function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
+        function save() { localStorage.setItem('rider_pro_v973', JSON.stringify(db)); calc(); }
 
-        function aggiungiBenza() {
-            let e = parseFloat(document.getElementById('fuelEuro').value), p = parseFloat(document.getElementById('fuelPrezzo').value);
+        function addFuel() {
+            let e = parseFloat(document.getElementById('fE').value), p = parseFloat(document.getElementById('fP').value);
             if(e > 0 && p > 0) {
-                db.rifornimenti.push({ id: Date.now(), data: `${document.getElementById('fYear').value}-${document.getElementById('fMonth').value}-${document.getElementById('fDay').value}`, ora: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}), euro: e, prezzo: p });
-                salva(); ['fuelEuro','fuelPrezzo'].forEach(i=>document.getElementById(i).value=""); showToast("⛽ Rifornimento Salvato!");
+                db.fuels.push({ id: Date.now(), d: `${document.getElementById('fd').value}/${document.getElementById('fm').value}`, e: e, p: p, time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) });
+                save(); ['fE','fP'].forEach(id => document.getElementById(id).value=""); showToast("⛽ Salvato!");
             }
         }
 
-        function aggiungiSessione() {
-            let l = parseFloat(document.getElementById('sessLordo').value);
+        function addShift() {
+            let l = parseFloat(document.getElementById('sL').value);
             if(l > 0) {
-                db.sessioni.push({ 
-                    id: Date.now(), lordo: l, 
-                    ore: parseFloat(document.getElementById('sessOre').value)||0, 
-                    km: parseFloat(document.getElementById('sessKm').value)||0, 
-                    l100: parseFloat(document.getElementById('sessL100').value)||0, 
-                    scarto: parseFloat(document.getElementById('sessScarto').value)||0,
-                    data: `${document.getElementById('sYear').value}-${document.getElementById('sMonth').value}-${document.getElementById('sDay').value}`,
-                    ora: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
+                db.shifts.push({
+                    id: Date.now(), l: l, o: parseFloat(document.getElementById('sO').value)||0,
+                    k: parseFloat(document.getElementById('sK').value)||0, c: parseFloat(document.getElementById('sC').value)||0,
+                    s: parseFloat(document.getElementById('sS').value)||0,
+                    d: `${document.getElementById('sd').value}/${document.getElementById('sm').value}`,
+                    time: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
                 });
-                salva(); ['sessLordo','sessOre','sessKm','sessL100','sessScarto'].forEach(i=>document.getElementById(i).value=""); showToast("✅ Turno Salvato!");
+                save(); ['sL','sO','sK','sC','sS'].forEach(id => document.getElementById(id).value=""); showToast("✅ Turno Salvato!");
             }
         }
 
-        function calcola() {
-            let tL = 0, tO = 0, cB = 0;
-            let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            db.sessioni.forEach(s => {
-                tL += s.lordo; tO += s.ore;
-                let kmEff = Math.max(0, s.km - s.scarto);
-                cB += ((kmEff / 100) * s.l100) * uP;
+        function calc() {
+            let tL=0, tO=0, tLit=0, tSp=0;
+            let lastP = db.fuels.length > 0 ? db.fuels[db.fuels.length-1].p : 1.85;
+
+            db.shifts.forEach(s => {
+                tL += s.l; tO += s.o;
+                let kEff = Math.max(0, s.k - s.s);
+                let lit = (kEff / 100) * s.c;
+                tLit += lit; tSp += (lit * lastP);
             });
-            let nR = (tL * 0.8) - cB;
-            document.getElementById('lordoTotale').innerText = tL.toFixed(2);
-            document.getElementById('nettoReale').innerText = nR.toFixed(2);
-            document.getElementById('oreTotali').innerText = tO.toFixed(1);
-            document.getElementById('giorniLavorati').innerText = [...new Set(db.sessioni.map(s => s.data))].length;
-            document.getElementById('lordoMancante').innerText = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25).toFixed(2) : "0.00";
+
+            let nR = (tL * 0.8) - tSp;
+            document.getElementById('valLordo').innerText = tL.toFixed(2);
+            document.getElementById('valNetto').innerText = nR.toFixed(2);
+            document.getElementById('valOre').innerText = tO.toFixed(1);
+            document.getElementById('valLitri').innerText = tLit.toFixed(1) + " L";
+            document.getElementById('valSpesaB').innerText = tSp.toFixed(2);
+            document.getElementById('valMedia').innerText = tLit > 0 ? ((tL/tLit)).toFixed(1) : "0.0";
+            document.getElementById('valGG').innerText = [...new Set(db.shifts.map(s => s.d))].length;
+            
+            let manc = db.target > 0 ? Math.max(0, (db.target - nR) * 1.25) : 0;
+            document.getElementById('valManc').innerText = manc.toFixed(2);
+            
             let perc = db.target > 0 ? Math.min(100, Math.round((nR / db.target) * 100)) : 0;
             document.getElementById('pBar').style.width = perc + "%";
-            document.getElementById('progressoPerc').innerText = perc + "%";
-            renderStorico();
+            document.getElementById('pPerc').innerText = perc + "%";
+            render();
         }
 
-        function renderStorico() {
+        function render() {
             let h = "";
-            let tutti = [...db.sessioni.map(s=>({...s, t:'S'})), ...db.rifornimenti.map(r=>({...r, t:'R'}))].sort((a,b)=>b.id-a.id);
-            tutti.forEach(i => {
-                let d = i.data.split("-").reverse().join("/");
-                if(i.t === 'S') h += `<div class="history-item"><div><b>${d}</b> <small>${i.ora}</small> - Turno: €${i.lordo}</div><button onclick="elimina('sessioni',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
-                else h += `<div class="history-item" style="border-left-color:#ffa500;"><div><b>${d}</b> <small>${i.ora}</small> - Riforn: €${i.euro}</div><button onclick="elimina('rifornimenti',${i.id})" style="width:40px; height:20px; font-size:9px; background:#f44; color:#fff; border-radius:4px;">DEL</button></div>`;
+            let all = [...db.shifts.map(s=>({...s, type:'S'})), ...db.fuels.map(f=>({...f, type:'F'}))].sort((a,b)=>b.id-a.id);
+            all.forEach(i => {
+                if(i.type === 'S') h += `<div class="history-item"><b>${i.d}/2025 - TURNO</b> <small>alle ${i.time}</small><br>Lordo: €${i.l} | Ore: ${i.o}h<button class="del-btn" onclick="del('shifts',${i.id})">ELIMINA</button></div>`;
+                else h += `<div class="history-item" style="border-left-color:#ffa500;"><b>${i.d}/2025 - RIFORNI.</b> <small>alle ${i.time}</small><br>Spesa: €${i.e} | Prezzo: ${i.p}€/L<button class="del-btn" onclick="del('fuels',${i.id})">ELIMINA</button></div>`;
             });
-            document.getElementById('storico').innerHTML = h ? "<div style='font-size:10px; color:#666; margin:10px 0 5px 5px; font-weight:bold;'>📜 CRONOLOGIA</div>" + h : "";
+            document.getElementById('cronologia').innerHTML = h ? "<div style='font-size:11px; font-weight:bold; color:#888; margin-bottom:10px;'>📜 CRONOLOGIA ATTIVITÀ</div>" + h : "";
         }
 
-        function elimina(tipo, id) { db[tipo] = db[tipo].filter(x => x.id !== id); salva(); }
-        function apriReset() { if(confirm("Vuoi resettare tutto?")) { db = { sessioni: [], rifornimenti: [], target: 0 }; document.getElementById('targetInput').value = ""; salva(); showToast("Reset!"); } }
-        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 2000); }
-        function setLang(l) { showToast(l === 'it' ? "Italiano" : "English"); }
+        function del(t, id) { db[t] = db[t].filter(x => x.id !== id); save(); }
+        function resetAll() { if(confirm("Azzera tutto?")) { db = { shifts: [], fuels: [], target: 0 }; document.getElementById('targetIn').value = ""; save(); } }
+        function showToast(m) { let t = document.getElementById('toast'); t.innerText = m; t.style.visibility = "visible"; setTimeout(()=>t.style.visibility="hidden", 2000); }
     </script>
 </body>
 </html>
