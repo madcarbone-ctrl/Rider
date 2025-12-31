@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v3</title>
+    <title>Rider Tracker Pro v4</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { 
@@ -15,7 +15,6 @@
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            /* Modificato per permettere lo scroll se la tastiera copre i campi */
             overflow-y: auto; 
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -66,7 +65,7 @@
 <body onload="init()">
 
     <div class="card">
-        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V3 PRO</div>
+        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V4 PRO</div>
         <div class="summary-grid">
             <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Netto','Basato solo sui dati dei Turni.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
@@ -128,7 +127,6 @@
             document.getElementById('targetIn').value = db.target || ""; 
             calcola(); 
             
-            // Gestione automatica dello scroll quando si tocca un input
             const inputs = document.querySelectorAll('input');
             inputs.forEach(input => {
                 input.addEventListener('focus', () => {
@@ -145,7 +143,8 @@
                 const el = document.getElementById(id); el.innerHTML = "";
                 if(id.includes('Day')) for(let i=1;i<=31;i++) el.innerHTML+=`<option ${i==d.getDate()?'selected':''}>${i}</option>`;
                 if(id.includes('Month')) for(let i=1;i<=12;i++) el.innerHTML+=`<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
-                if(id.includes('Year')) for(let i=2024;i<=2026;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
+                // Modificato: selezione anni estesa fino al 2040
+                if(id.includes('Year')) for(let i=2024;i<=2040;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
             });
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
         }
