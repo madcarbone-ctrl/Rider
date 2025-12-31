@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 Recovery</title>
+    <title>Rider Tracker Pro v94 KM Extra</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -89,7 +89,7 @@
             <input type="number" id="tLordo" placeholder="Lordo €"><input type="number" id="tOre" placeholder="Ore"><input type="number" id="tKm" placeholder="KM">
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:4px;">
-            <input type="number" id="tConsumo" placeholder="L/100km"><input type="number" id="tScarto" placeholder="Scarto">
+            <input type="number" id="tConsumo" placeholder="L/100km"><input type="number" id="tScarto" placeholder="KM Extra">
         </div>
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
@@ -133,7 +133,8 @@
             let lordo=0, ore=0, kmTot=0, litriTurni=0, spesaBenzaTurni=0;
             db.s.forEach(x => { 
                 lordo += x.l; ore += x.o; kmTot += x.k;
-                let litri = (x.k * (x.c / 100)) + x.sc;
+                // La logica ora esclude x.sc (KM Extra) dal consumo carburante
+                let litri = (x.k * (x.c / 100)); 
                 litriTurni += litri;
                 spesaBenzaTurni += litri * 1.85; 
             });
@@ -187,9 +188,8 @@
                 
                 let details = "";
                 if(i.type === 'T') {
-                    details = `KM: ${i.k} | Cons: ${i.c}L/100`;
+                    details = `KM: ${i.k} | Cons: ${i.c} | Extra: ${i.sc}km`;
                 } else {
-                    // Calcolo litri sicuro per lo storico
                     let L = (i.p > 0) ? (i.e / i.p).toFixed(2) : "0.00";
                     details = `Litri: ${L}L | €${(i.p||0).toFixed(2)}/L`;
                 }
