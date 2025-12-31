@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V22</title>
+    <title>Rider Tracker Pro v94 V22.1</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Blocca interferenze di sistema come la ricerca Google al tocco */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
         input, select { user-select: auto; }
 
@@ -135,7 +134,7 @@
             if(e > 0) {
                 db.r.push({ id: Date.now(), e: e, p: p || 0 });
                 salva();
-                // AZZERAMENTO CAMPI DOPO SALVATAGGIO
+                // SVUOTA ENTRAMBI I CAMPI
                 document.getElementById('fuelEuro').value = "";
                 document.getElementById('fuelPrezzo').value = "";
             }
