@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 Gradient</title>
+    <title>Rider Tracker Pro v94 Flash</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -16,32 +16,30 @@
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        /* BARRA PERCENTUALE CON GRADIENTE DINAMICO */
+        /* BARRA PERCENTUALE CON ANIMAZIONE */
         .progress-container { background: #111; height: 22px; border-radius: 6px; margin: 8px 0 4px 0; overflow: hidden; position: relative; border: 1px solid #333; }
         .progress-bar { 
-            /* Gradiente: Rosso -> Azzurro -> Blu -> Verde */
             background: linear-gradient(90deg, #ff4444 0%, #00d2ff 40%, #3a7bd5 70%, #2ecc71 100%);
-            background-size: 100vw 100%; /* Mantiene il gradiente fisso rispetto alla larghezza totale */
+            background-size: 100vw 100%;
             height: 100%; 
             width: 0%; 
             transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); 
         }
+
+        /* Effetto Lampeggio 100% */
+        @keyframes pulseSuccess {
+            0% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.6; filter: brightness(1.5); }
+            100% { opacity: 1; filter: brightness(1); }
+        }
+        .flash-active { animation: pulseSuccess 0.8s infinite ease-in-out; }
+
         .perc-text { position: absolute; width: 100%; text-align: center; font-size: 11px; font-weight: 900; line-height: 22px; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
         input, select { height: 32px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         
-        #wrapperStorico { 
-            display: none; 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            background: #000; 
-            padding: 10px 5px; 
-            border-radius: 12px; 
-            border: 1px solid #333; 
-            margin: 5px 0;
-            -webkit-overflow-scrolling: touch; 
-        }
+        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
         .hist-data { font-size: 9px; color: #888; }
@@ -142,18 +140,25 @@
                 spesaBenzaTurni += litri * 1.85; 
             });
             let netto = (lordo * 0.8) - spesaBenzaTurni;
-            let t = db.target || 0;
-            let p = t > 0 ? Math.min(100, (netto / t) * 100) : 0;
+            let target = db.target || 0;
+            let p = target > 0 ? Math.min(100, (netto / target) * 100) : 0;
+            
+            const pBar = document.getElementById('pBar');
+            pBar.style.width = p + "%";
+            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
+
+            // LOGICA LAMPEGGIO
+            if(p >= 100) pBar.classList.add('flash-active');
+            else pBar.classList.remove('flash-active');
+
             document.getElementById('lordoTot').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTot').innerText = ore.toFixed(1);
             document.getElementById('spesaBenza').innerText = spesaBenzaTurni.toFixed(2);
             document.getElementById('consTot').innerText = litriTurni.toFixed(1);
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
-            document.getElementById('mancante').innerText = Math.max(0, t - netto).toFixed(2);
+            document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
             document.getElementById('ggLavoro').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
-            document.getElementById('pBar').style.width = p + "%";
-            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
 
@@ -198,18 +203,12 @@
             const bB = document.getElementById('boxBenza');
             const bT = document.getElementById('boxTurno');
             const btn = document.getElementById('btnToggle');
-            
             if (w.style.display === 'block') {
-                w.style.display = 'none';
-                bB.style.display = 'block';
-                bT.style.display = 'block';
+                w.style.display = 'none'; bB.style.display = 'block'; bT.style.display = 'block';
                 btn.innerText = "📜 MOSTRA STORICO";
             } else {
-                w.style.display = 'block';
-                bB.style.display = 'none';
-                bT.style.display = 'none';
-                btn.innerText = "❌ NASCONDI STORICO";
-                renderStorico();
+                w.style.display = 'block'; bB.style.display = 'none'; bT.style.display = 'none';
+                btn.innerText = "❌ NASCONDI STORICO"; renderStorico();
             }
         }
 
@@ -219,23 +218,16 @@
             calcola(); renderStorico();
         }
 
-        function showModal(title, body) {
-            document.getElementById('mTitle').innerText = title;
-            document.getElementById('mBody').innerText = body;
-            document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">CHIUDI</button>`;
-            document.getElementById('infoModal').style.display = 'flex';
-        }
-
         function confirmAzzera() {
             document.getElementById('mTitle').innerText = "⚠️ RESET";
             document.getElementById('mBody').innerText = "Cancellare tutto?";
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
-
         function azzeraReal() { db = { s: [], r: [], target: 0 }; document.getElementById('targetIn').value = ""; calcola(); renderStorico(); closeModal(); }
         function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; calcola(); }
+        function showModal(title, body) { document.getElementById('mTitle').innerText = title; document.getElementById('mBody').innerText = body; document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">CHIUDI</button>`; document.getElementById('infoModal').style.display = 'flex'; }
     </script>
 </body>
 </html>
