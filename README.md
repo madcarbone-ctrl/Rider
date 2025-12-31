@@ -3,7 +3,7 @@
 </p>
 
 <div align="center">
-  <h1 align="center">🚗 Rider Tracker Pro (v1.0.942)</h1>
+  <h1 align="center">🚗 Rider Tracker Pro (v1.0.943 - Versione 3)</h1>
   
   <p align="center">
     <b>🌍 Want this app in your language? Leave a comment in the <a href="../../discussions">Discussions</a>!</b>
@@ -33,29 +33,29 @@
 
 A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
 
-### ✨ Novità della Versione 1.0.942:
-- 📊 **Media KM/L Totale:** La media chilometrica di tutte le sessioni sempre visibile nel riepilogo.
-- 🕒 **Cronologia con Orari:** Ogni turno e ogni rifornimento mostra la data e l'**ora esatta** di registrazione.
-- ⛽ **Dettagli Rifornimento:** Calcolo automatico dei litri immessi nel serbatoio basato su spesa e prezzo al litro.
-- 🎯 **Target Progressivo:** Monitora il tuo obiettivo netto mensile con barra dinamica.
-- 🔒 **Privacy:** Dati salvati localmente (LocalStorage). Nessun server esterno.
+### ✨ Novità della Versione 3 (Definitiva):
+- 🌈 **Barra Progresso Dinamica:** Nuovo gradiente lineare che parte da rosso (0%), attraversa l'azzurro/blu e arriva al verde (100%).
+- 🚨 **Feedback Visivo 100%:** La barra percentuale lampeggia con effetto "pulse" quando raggiungi il tuo obiettivo netto.
+- 🛣️ **Gestione KM Extra:** Nuovo campo per tracciare i km privati o fuori turno; salvati nello storico ma esclusi dal calcolo dei costi lavorativi.
+- ⛽ **Dettagli Rifornimento:** Calcolo automatico e visualizzazione dei litri immessi nel serbatoio nello storico.
+- 📊 **Media KM/L Ponderata:** Calcolo dell'efficienza basato sul totale complessivo dei turni per una precisione assoluta.
 
 <hr>
 
 ## 🇬🇧 Description (English)
 **Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on all major platforms.
 
-### ✨ Key Features (v1.0.942):
-- 📊 **Total KM/L Average:** Real-time calculation of your monthly fuel efficiency.
-- 🕒 **Timestamps:** Every entry logged with the **exact date and time**.
-- ⛽ **Fuel Details:** Automatically tracks liters added and per-shift efficiency.
-- 🎯 **Goal Tracking:** Visual progress bar toward your monthly net target.
+### ✨ Key Features (v3 - Final):
+- 🌈 **Dynamic Progress Bar:** New color gradient from red (0%) to green (100%) through shades of blue.
+- 🚨 **Goal Celebration:** The progress bar flashes when you hit 100% of your net target.
+- 🛣️ **Extra KM Tracking:** Log private mileage separately; it's saved in history but won't affect work-related fuel costs.
+- ⛽ **Fuel Analytics:** Real-time liters tracking in the history tab and global weighted KM/L average.
 
 <hr>
 
 ## 🛠️ Tech Stack
-- **Version:** 1.0.942
-- **Languages:** HTML5, CSS3, JavaScript (Vanilla JS)
+- **Version:** 1.0.943 (Version 3)
+- **Languages:** HTML5, CSS3 (Dynamic Animations), JavaScript (Vanilla JS)
 - **Persistence:** LocalStorage API (Offline-first)
 
 <hr>
@@ -75,7 +75,7 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 ## 💬 Community & Feedback
 <p align="center">
 🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
-👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulla v1.0.943!<br>
+👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulle prossime versioni!<br>
 👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
 </p>
 
@@ -90,7 +90,7 @@ A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **
 <hr>
 
 <div align="center">
-  <i>"La migliore versione del codice è la versione 94."</i>
+  <i>"La versione definitiva per le future ricerche è la versione 3."</i>
   <br><br>
   <p>Visite totali al progetto:</p>
   <img src="https://komarev.com/ghpvc/?username=madcarbone-ctrl-rider&color=orange&style=flat-square&label=VISITE" alt="Visitor Count">
