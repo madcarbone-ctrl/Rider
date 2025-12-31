@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 Final UI</title>
+    <title>Rider Tracker Pro v94 Gradient</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -16,10 +16,17 @@
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        /* BARRA PERCENTUALE INGRANDITA */
-        .progress-container { background: #222; height: 20px; border-radius: 6px; margin: 8px 0 4px 0; overflow: hidden; position: relative; border: 1px solid #333; }
-        .progress-bar { background: var(--main); height: 100%; width: 0%; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .perc-text { position: absolute; width: 100%; text-align: center; font-size: 10px; font-weight: 900; line-height: 20px; color: #fff; text-shadow: 1px 1px 2px #000; }
+        /* BARRA PERCENTUALE CON GRADIENTE DINAMICO */
+        .progress-container { background: #111; height: 22px; border-radius: 6px; margin: 8px 0 4px 0; overflow: hidden; position: relative; border: 1px solid #333; }
+        .progress-bar { 
+            /* Gradiente: Rosso -> Azzurro -> Blu -> Verde */
+            background: linear-gradient(90deg, #ff4444 0%, #00d2ff 40%, #3a7bd5 70%, #2ecc71 100%);
+            background-size: 100vw 100%; /* Mantiene il gradiente fisso rispetto alla larghezza totale */
+            height: 100%; 
+            width: 0%; 
+            transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); 
+        }
+        .perc-text { position: absolute; width: 100%; text-align: center; font-size: 11px; font-weight: 900; line-height: 22px; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
         input, select { height: 32px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
@@ -221,7 +228,7 @@
 
         function confirmAzzera() {
             document.getElementById('mTitle').innerText = "⚠️ RESET";
-            document.getElementById('mBody').innerText = "Cancellare tutti i dati?";
+            document.getElementById('mBody').innerText = "Cancellare tutto?";
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
