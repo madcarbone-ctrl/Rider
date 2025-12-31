@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V22.4</title>
+    <title>Rider Tracker Pro v94 V22.5</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -12,9 +12,8 @@
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
         
-        /* GRIGLIA SUPERIORE RIPRISTINATA A 3 COLONNE */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 4px; }
-        .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; }
         
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
@@ -31,14 +30,14 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
             <div class="data-box"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
             <div class="data-box"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
@@ -65,7 +64,7 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:4px;">
             <input type="number" id="tLordo" placeholder="Lordo €">
             <input type="number" id="tOre" placeholder="Ore">
-            <input type="number" id="tKm" placeholder="KM">
+            <input type="number" id="tKm" placeholder="KM Tot">
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:4px;">
             <input type="number" id="tConsumo" placeholder="L/100km">
@@ -102,19 +101,21 @@
         }
 
         function calcola() {
-            let lordo=0, ore=0, benza=0, km=0;
+            let lordo=0, ore=0, benza=0, km=0, litriEffettivi=0;
             db.s.forEach(x => { lordo += (x.l || 0); ore += (x.o || 0); km += (x.k || 0); });
-            db.r.forEach(x => { benza += (x.e || 0); });
+            db.r.forEach(x => { 
+                benza += (x.e || 0); 
+                if(x.p > 0) litriEffettivi += (x.e / x.p);
+            });
             
             let netto = (lordo * 0.8) - benza;
-            let litri = benza > 0 ? benza / 1.7 : 0; // Stima litri se manca il prezzo preciso
-
+            
             document.getElementById('lordoTotale').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTotali').innerText = ore.toFixed(1);
             document.getElementById('spesaBenza').innerText = benza.toFixed(2);
-            document.getElementById('consTot').innerText = litri.toFixed(1);
-            document.getElementById('kmLitro').innerText = litri > 0 ? (km / litri).toFixed(1) : "0.0";
+            document.getElementById('consTot').innerText = litriEffettivi.toFixed(1);
+            document.getElementById('kmLitro').innerText = litriEffettivi > 0 ? (km / litriEffettivi).toFixed(1) : "0.0";
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - netto) * 1.25).toFixed(2);
             document.getElementById('giorniLavorati').innerText = [...new Set(db.s.map(x => x.d))].length;
         }
@@ -129,7 +130,6 @@
                     d: document.getElementById('sDay').value 
                 });
                 salva();
-                // AZZERAMENTO CAMPI
                 document.getElementById('tLordo').value="";
                 document.getElementById('tOre').value="";
                 document.getElementById('tKm').value="";
@@ -140,13 +140,10 @@
 
         function addFuel() {
             const e = parseFloat(document.getElementById('fuelEuro').value);
+            const p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0) {
-                db.r.push({ 
-                    id: Date.now(), e: e, 
-                    p: parseFloat(document.getElementById('fuelPrezzo').value) || 0 
-                });
+                db.r.push({ id: Date.now(), e: e, p: p || 0 });
                 salva();
-                // AZZERAMENTO CAMPI
                 document.getElementById('fuelEuro').value = "";
                 document.getElementById('fuelPrezzo').value = "";
             }
