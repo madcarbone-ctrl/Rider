@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V22.2</title>
+    <title>Rider Tracker Pro v94 V22.3</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -59,6 +59,10 @@
             <input type="number" id="tOre" placeholder="Ore">
             <input type="number" id="tKm" placeholder="KM">
         </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:4px;">
+            <input type="number" id="tConsumo" placeholder="L/100km">
+            <input type="number" id="tScarto" placeholder="Scarto KM">
+        </div>
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
 
@@ -113,20 +117,32 @@
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, d: document.getElementById('sDay').value });
+                db.s.push({ 
+                    id: Date.now(), 
+                    l: l, 
+                    o: parseFloat(document.getElementById('tOre').value)||0, 
+                    d: document.getElementById('sDay').value 
+                });
                 salva();
+                // SVUOTA TUTTI I CAMPI TURNO
                 document.getElementById('tLordo').value="";
                 document.getElementById('tOre').value="";
                 document.getElementById('tKm').value="";
+                document.getElementById('tConsumo').value="";
+                document.getElementById('tScarto').value="";
             }
         }
 
         function addFuel() {
             const e = parseFloat(document.getElementById('fuelEuro').value);
-            const p = parseFloat(document.getElementById('fuelPrezzo').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: p || 0 });
+                db.r.push({ 
+                    id: Date.now(), 
+                    e: e, 
+                    p: parseFloat(document.getElementById('fuelPrezzo').value) || 0 
+                });
                 salva();
+                // SVUOTA ENTRAMBI I CAMPI BENZINA
                 document.getElementById('fuelEuro').value = "";
                 document.getElementById('fuelPrezzo').value = "";
             }
@@ -140,9 +156,7 @@
         }
 
         function chiudiPop() { document.getElementById('modal').style.display = 'none'; }
-        
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value) || 0; salva(); }
-        
         function salva() { localStorage.setItem('rider_db_v94', JSON.stringify(db)); calcola(); renderStorico(); }
 
         function toggleStorico() {
@@ -172,13 +186,8 @@
         function reset() {
             if(confirm("VUOI AZZERARE TUTTO? (Dati + Target)")) {
                 db = { s: [], r: [], target: 0 };
-                // SVUOTA FISICAMENTE TUTTE LE CASELLE
-                document.getElementById('targetInput').value = "";
-                document.getElementById('fuelEuro').value = "";
-                document.getElementById('fuelPrezzo').value = "";
-                document.getElementById('tLordo').value = "";
-                document.getElementById('tOre').value = "";
-                document.getElementById('tKm').value = "";
+                // RESET FISICO DI OGNI INPUT ESISTENTE
+                document.querySelectorAll('input').forEach(i => i.value = "");
                 salva();
             }
         }
