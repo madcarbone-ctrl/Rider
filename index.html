@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 Scroll Fix</title>
+    <title>Rider Tracker Pro v94 Final</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -23,7 +23,6 @@
         input, select { height: 32px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         
-        /* FIX SCROLL STORICO */
         #wrapperStorico { 
             display: none; 
             flex-grow: 1; 
@@ -33,7 +32,7 @@
             border-radius: 12px; 
             border: 1px solid #333; 
             margin: 5px 0;
-            -webkit-overflow-scrolling: touch; /* Scroll fluido iOS/Chrome */
+            -webkit-overflow-scrolling: touch; 
         }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
@@ -198,7 +197,7 @@
                 w.style.display = 'block';
                 bB.style.display = 'none';
                 bT.style.display = 'none';
-                btn.innerText = "➕ INSERISCI DATI";
+                btn.innerText = "❌ NASCONDI STORICO";
                 renderStorico();
             }
         }
