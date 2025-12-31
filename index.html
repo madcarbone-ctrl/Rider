@@ -3,29 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V22.1</title>
+    <title>Rider Tracker Pro v94 V22.2</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
         input, select { user-select: auto; }
-
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
-        
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 10000; }
         .modal-card { background: #222; width: 85%; padding: 25px; border-radius: 20px; border: 2px solid var(--main); text-align: center; }
-        
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
-        
         input, select { height: 30px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 36px; cursor: pointer; text-transform: uppercase; }
-        
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #333; margin-bottom: 5px; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
     </style>
@@ -134,7 +127,6 @@
             if(e > 0) {
                 db.r.push({ id: Date.now(), e: e, p: p || 0 });
                 salva();
-                // SVUOTA ENTRAMBI I CAMPI
                 document.getElementById('fuelEuro').value = "";
                 document.getElementById('fuelPrezzo').value = "";
             }
@@ -180,7 +172,13 @@
         function reset() {
             if(confirm("VUOI AZZERARE TUTTO? (Dati + Target)")) {
                 db = { s: [], r: [], target: 0 };
+                // SVUOTA FISICAMENTE TUTTE LE CASELLE
                 document.getElementById('targetInput').value = "";
+                document.getElementById('fuelEuro').value = "";
+                document.getElementById('fuelPrezzo').value = "";
+                document.getElementById('tLordo').value = "";
+                document.getElementById('tOre').value = "";
+                document.getElementById('tKm').value = "";
                 salva();
             }
         }
