@@ -49,13 +49,13 @@
         .modal-btns { display: flex; gap: 8px; justify-content: center; }
         .modal-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
 
-        .sticky-footer { margin-top: auto; padding: 5px 5px 30px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
+        .sticky-footer { margin-top: auto; padding: 5px 5px 60px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
     </style>
 </head>
 <body onload="init()">
 
     <div class="card">
-        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V94 PRO</div>
+        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V3 PRO</div>
         <div class="summary-grid">
             <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Netto','Basato solo sui dati dei Turni.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
@@ -133,7 +133,6 @@
             let lordo=0, ore=0, kmTot=0, litriTurni=0, spesaBenzaTurni=0;
             db.s.forEach(x => { 
                 lordo += x.l; ore += x.o; kmTot += x.k;
-                // La logica ora esclude x.sc (KM Extra) dal consumo carburante
                 let litri = (x.k * (x.c / 100)); 
                 litriTurni += litri;
                 spesaBenzaTurni += litri * 1.85; 
