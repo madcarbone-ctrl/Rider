@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V26</title>
+    <title>Rider Tracker Pro v94 V27</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -13,7 +13,6 @@
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
         
-        /* GRIGLIA 3x3 ORIGINALE */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 42px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; pointer-events: none; }
@@ -32,7 +31,7 @@
         .modal-card { background: #1e1e1e; width: 85%; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--main); }
 
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #222; margin-bottom: 5px; }
-        .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
+        .hist-item { background:#1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body onload="init()">
@@ -155,7 +154,7 @@
                 db.r.push({ id: Date.now(), e: parseFloat(e), p: parseFloat(p) || 0, dt: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}` });
                 salva();
                 document.getElementById('fuelEuro').value = "";
-                document.getElementById('fuelPrezzo').value = ""; // AZZERAMENTO €/L
+                document.getElementById('fuelPrezzo').value = ""; 
             }
         }
 
@@ -215,10 +214,15 @@
 
         function resetApp() {
             if(confirm("AZZERARE TUTTO?")) {
+                localStorage.removeItem('rider_db_v94');
                 db = { s: [], r: [], target: 0 };
-                document.getElementById('targetInput').value = ""; // SVUOTA TARGET
-                salva();
-                location.reload();
+                document.getElementById('targetInput').value = "";
+                document.getElementById('fuelEuro').value = "";
+                document.getElementById('fuelPrezzo').value = "";
+                document.getElementById('tLordo').value = "";
+                calcola();
+                // NON uso location.reload() per evitare riapparizioni di vecchie versioni
+                alert("Dati azzerati correttamente.");
             }
         }
     </script>
