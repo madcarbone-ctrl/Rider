@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V32</title>
+    <title>Rider Tracker Pro v94 V33</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -21,18 +21,18 @@
         .section-title { color: var(--main); margin-bottom: 4px; text-align: center; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 11px; height: 34px; }
         
-        /* FIX STORICO */
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #222; margin-bottom: 5px; }
-        .hist-item { background:#1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid var(--main); position: relative; }
-        .hist-header { display: flex; justify-content: space-between; align-items: center; padding-right: 35px; }
-        .hist-date { font-size: 12px; font-weight: bold; color: #fff; }
-        .hist-time { color: var(--main); font-size: 11px; font-weight: 900; }
-        .hist-val { font-size: 13px; font-weight: 900; color: #fff; }
-        .hist-sub { font-size: 9px; color: #888; text-transform: uppercase; margin: 2px 0; }
-        .hist-details { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 5px; border-top: 1px solid #222; padding-top: 5px; }
-        .det-box { font-size: 10px; color: #aaa; }
-        .det-box b { color: #eee; }
-        .btn-del { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: #311; color: #f44; border-radius: 8px; border: 1px solid #522; font-size: 16px; display:flex; align-items:center; justify-content:center; }
+        .hist-item { background:#1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 5px solid var(--main); position: relative; }
+        .hist-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; padding-right: 40px; }
+        .hist-date-box { display: flex; flex-direction: column; }
+        .hist-date { font-size: 14px; font-weight: 900; color: #fff; }
+        .hist-time { font-size: 11px; color: var(--main); font-weight: bold; }
+        .hist-val { font-size: 15px; font-weight: 900; color: #fff; }
+        .hist-label { font-size: 9px; text-transform: uppercase; font-weight: 800; margin-top: 2px; }
+        .hist-details { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; border-top: 1px solid #333; padding-top: 8px; }
+        .det-box { font-size: 10px; color: #bbb; }
+        .det-box b { color: #fff; }
+        .btn-del { position: absolute; right: 8px; top: 12px; width: 34px; height: 34px; background: #300; color: #ff4444; border-radius: 8px; border: 1px solid #600; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body onload="init()">
@@ -92,11 +92,6 @@
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
         }
 
-        function getOra() {
-            const n = new Date();
-            return n.getHours().toString().padStart(2, '0') + ":" + n.getMinutes().toString().padStart(2, '0');
-        }
-
         function calcola() {
             let lordo=0, ore=0, benza=0, km=0, litri=0;
             db.s.forEach(x => { lordo += (x.l||0); ore += (x.o||0); km += (x.k||0); litri += (x.k * (x.c||5) / 100); });
@@ -118,8 +113,10 @@
         function addFuel() {
             const e = document.getElementById('fuelEuro').value;
             const p = document.getElementById('fuelPrezzo').value;
+            const now = new Date();
+            const oraEsatta = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             if(parseFloat(e)>0) {
-                db.r.push({ id: Date.now(), e: parseFloat(e), p: parseFloat(p)||0, dt: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}`, h: getOra() });
+                db.r.push({ id: Date.now(), e: parseFloat(e), p: parseFloat(p)||0, dt: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}`, ora: oraEsatta });
                 salva();
                 document.getElementById('fuelEuro').value = ""; document.getElementById('fuelPrezzo').value = "";
             }
@@ -127,16 +124,17 @@
 
         function addTurno() {
             const l = document.getElementById('tLordo').value;
+            const now = new Date();
+            const oraEsatta = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             if(parseFloat(l)>0) {
                 db.s.push({ 
-                    id: Date.now(), 
-                    l: parseFloat(l), 
+                    id: Date.now(), l: parseFloat(l), 
                     o: parseFloat(document.getElementById('tOre').value)||0, 
                     k: parseFloat(document.getElementById('tKm').value)||0, 
                     c: parseFloat(document.getElementById('tConsumo').value)||5, 
                     sc: document.getElementById('tScarto').value||0, 
                     dt: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}`,
-                    h: getOra()
+                    ora: oraEsatta
                 });
                 salva();
                 ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value="");
@@ -155,10 +153,15 @@
                 const color = isT ? 'var(--main)' : 'var(--fuel)';
                 h += `<div class="hist-item" style="border-left-color:${color}">
                     <div class="hist-header">
-                        <span class="hist-date">${i.dt} - <span class="hist-time">${i.h || '--:--'}</span></span>
-                        <span class="hist-val">€${(isT ? i.l : i.e).toFixed(2)}</span>
+                        <div class="hist-date-box">
+                            <span class="hist-date">${i.dt}</span>
+                            <span class="hist-time">ORE ${i.ora || '--:--'}</span>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="hist-val">€${(isT ? i.l : i.e).toFixed(2)}</span>
+                            <div class="hist-label" style="color:${color}">${isT?'Turno':'Benzina'}</div>
+                        </div>
                     </div>
-                    <div class="hist-sub" style="color:${color}">${isT?'Registrazione Turno':'Rifornimento Benzina'}</div>
                     <div class="hist-details">
                         ${isT ? `
                             <div class="det-box">⏱️ Ore: <b>${i.o}</b></div>
