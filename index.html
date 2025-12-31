@@ -59,16 +59,16 @@
         <div class="summary-grid">
             <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Netto','Basato solo sui dati dei Turni.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Ore','Somma ore turni.')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Ore','ore lavorative effettive del turno')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Consumo','Litri calcolati nei Turni.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="showModal('Consumo','litri consumati nel turno')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
             <div class="data-box" onclick="showModal('KM/L','Media KM/L dei Turni.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="showModal('Benza','Costo stimato nei Turni.')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Benza','benzina realmente consumata nel turno')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="showModal('Mancante','Mancante al target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Mancante','€ lordi mancanti per raggiungere il target')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Giorni','Giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
         </div>
         <div class="progress-container">
