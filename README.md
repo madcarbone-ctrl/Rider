@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Screenshot_20251229_193525_Chrome.jpg" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
+  <img src="Screenshot_20251231_205604_Rider Tracker Pro" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
 </p>
 
 <div align="center">
