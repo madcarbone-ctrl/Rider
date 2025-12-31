@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V25</title>
+    <title>Rider Tracker Pro v94 V26</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -13,22 +13,21 @@
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
         
-        /* GRIGLIA ORIGINALE V94 */
+        /* GRIGLIA 3x3 ORIGINALE */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 42px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; pointer-events: none; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
         
-        .progress-container { width: 100%; background: #111; border-radius: 10px; height: 16px; margin-top: 6px; position: relative; overflow: hidden; border: 1px solid #222; }
+        .progress-container { width: 100%; background: #111; border-radius: 10px; height: 14px; margin-top: 6px; position: relative; overflow: hidden; border: 1px solid #222; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), var(--main)); transition: width 0.5s; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 900; color: #fff; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-size: 8px; font-weight: 900; color: #fff; }
 
-        input, select { height: 28px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
+        input, select { height: 28px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 11px; text-align: center; width: 100%; outline: none; }
         .section-title { color: var(--main); margin-bottom: 4px; text-align: center; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 11px; height: 34px; }
         
-        /* MODAL POPUP */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-card { background: #1e1e1e; width: 85%; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--main); }
 
@@ -41,17 +40,17 @@
     <div class="card">
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="apriPop('📊','LORDO','Somma di tutti i guadagni lordi.')"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('📊','LORDO','Incasso lordo totale.')"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
             <div class="data-box" onclick="apriPop('💰','NETTO','Netto (-20% tasse e benzina).')"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
             <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore lavorate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="apriPop('⛽','CONSUMO','Litri totali consumati stimati.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
-            <div class="data-box" onclick="apriPop('📈','KM/L','Media chilometri con un litro.')"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
-            <div class="data-box" onclick="apriPop('💸','BENZINA','Costo totale benzina.')"><span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('⛽','CONSUMO','Litri totali consumati.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="apriPop('📈','KM/L','Media efficienza chilometrica.')"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
+            <div class="data-box" onclick="apriPop('💸','BENZINA','Spesa totale carburante.')"><span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo per raggiungere il target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
+            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo necessario per il target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni di lavoro registrati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -65,7 +64,7 @@
             <select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select>
         </div>
         <div style="display:flex; gap:4px; margin-bottom:4px;">
-            <input type="number" id="fuelEuro" placeholder="€ spesi">
+            <input type="number" id="fuelEuro" placeholder="€ Spesi">
             <input type="number" id="fuelPrezzo" placeholder="€/Litro">
         </div>
         <button style="background:var(--fuel); color:#000;" onclick="addFuel()">SALVA BENZINA</button>
@@ -79,7 +78,11 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:4px;">
             <input type="number" id="tLordo" placeholder="Lordo €">
             <input type="number" id="tOre" placeholder="Ore">
-            <input type="number" id="tKm" placeholder="KM">
+            <input type="number" id="tKm" placeholder="KM Tot">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:4px;">
+            <input type="number" id="tConsumo" placeholder="L/100km">
+            <input type="number" id="tScarto" placeholder="Scarto KM">
         </div>
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
@@ -122,21 +125,14 @@
 
         function calcola() {
             let lordo=0, ore=0, benza=0, km=0, litri=0;
-            let ultimoPrezzo = db.r.length > 0 ? db.r[db.r.length-1].p : 1.75;
-
             db.s.forEach(x => { 
                 lordo += (x.l || 0); 
                 ore += (x.o || 0); 
-                let l = (x.k || 0) * 0.05; // Stima litri se non inseriti
-                litri += l;
-                benza += (l * ultimoPrezzo);
+                km += (x.k || 0);
+                litri += (x.k * (x.c || 5) / 100); 
             });
+            db.r.forEach(x => { benza += (x.e || 0); });
             
-            // Se ci sono rifornimenti reali usiamo quelli per il costo
-            let spesaRealeBenza = 0;
-            db.r.forEach(x => { spesaRealeBenza += (x.e || 0); });
-            if(spesaRealeBenza > 0) benza = spesaRealeBenza;
-
             let netto = (lordo * 0.8) - benza;
             let perc = db.target > 0 ? Math.min(100, (netto/db.target)*100) : 0;
 
@@ -144,7 +140,8 @@
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTotali').innerText = ore.toFixed(1);
             document.getElementById('costoBenzaTot').innerText = benza.toFixed(2);
-            document.getElementById('litriTot').innerText = (benza / ultimoPrezzo).toFixed(1);
+            document.getElementById('litriTot').innerText = litri.toFixed(1);
+            document.getElementById('mediaKml').innerText = litri > 0 ? (km / litri).toFixed(1) : "0.0";
             document.getElementById('giorniLavorati').innerText = [...new Set(db.s.map(x => x.dt))].length;
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - netto) * 1.25).toFixed(2);
             document.getElementById('pBar').style.width = perc + "%";
@@ -157,19 +154,26 @@
             if(parseFloat(e) > 0) {
                 db.r.push({ id: Date.now(), e: parseFloat(e), p: parseFloat(p) || 0, dt: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}` });
                 salva();
-                document.getElementById('fuelEuro').value = ""; // Azzeramento
-                document.getElementById('fuelPrezzo').value = ""; // Azzeramento
+                document.getElementById('fuelEuro').value = "";
+                document.getElementById('fuelPrezzo').value = ""; // AZZERAMENTO €/L
             }
         }
 
         function addTurno() {
             const l = document.getElementById('tLordo').value;
             if(parseFloat(l) > 0) {
-                db.s.push({ id: Date.now(), l: parseFloat(l), o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, dt: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}` });
+                db.s.push({ 
+                    id: Date.now(), 
+                    l: parseFloat(l), 
+                    o: parseFloat(document.getElementById('tOre').value)||0, 
+                    k: parseFloat(document.getElementById('tKm').value)||0, 
+                    c: parseFloat(document.getElementById('tConsumo').value)||5,
+                    dt: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}` 
+                });
                 salva();
-                document.getElementById('tLordo').value = "";
-                document.getElementById('tOre').value = "";
-                document.getElementById('tKm').value = "";
+                document.getElementById('tLordo').value = ""; document.getElementById('tOre').value = "";
+                document.getElementById('tKm').value = ""; document.getElementById('tConsumo').value = "";
+                document.getElementById('tScarto').value = "";
             }
         }
 
@@ -212,7 +216,7 @@
         function resetApp() {
             if(confirm("AZZERARE TUTTO?")) {
                 db = { s: [], r: [], target: 0 };
-                document.getElementById('targetInput').value = "";
+                document.getElementById('targetInput').value = ""; // SVUOTA TARGET
                 salva();
                 location.reload();
             }
