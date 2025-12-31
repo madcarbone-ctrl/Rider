@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V2 Detail</title>
+    <title>Rider Tracker Pro v94 V2 Time</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -28,7 +28,6 @@
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
         .hist-data { font-size: 9px; color: #888; }
 
-        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; border: 1px solid var(--main); width: 100%; max-width: 300px; text-align: center; }
         .modal-title { color: var(--main); font-weight: 900; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }
@@ -93,6 +92,7 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0 };
         function init() { riempiDate(); document.getElementById('targetIn').value = db.target || ""; calcola(); }
+        
         function riempiDate() {
             const d = new Date();
             const fill = (ids) => ids.forEach(id => {
@@ -103,6 +103,12 @@
             });
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
         }
+
+        function getNowTime() {
+            const n = new Date();
+            return n.getHours().toString().padStart(2, '0') + ":" + n.getMinutes().toString().padStart(2, '0');
+        }
+
         function calcola() {
             let l=0, o=0, b=0, k=0, li=0;
             db.s.forEach(x => { l += x.l; o += x.o; k += x.k; });
@@ -115,27 +121,32 @@
             document.getElementById('consTot').innerText = li.toFixed(1);
             document.getElementById('kmLitro').innerText = li > 0 ? (k / li).toFixed(1) : "0.0";
             document.getElementById('mancante').innerText = Math.max(0, t - n).toFixed(2);
-            document.getElementById('ggLavoro').innerText = [...new Set(db.s.map(x => x.d))].length;
+            document.getElementById('ggLavoro').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
             document.getElementById('pBar').style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
+
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}` });
+                const dataStr = `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}`;
+                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, d: dataStr });
                 ['tLordo','tOre','tKm'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
         }
+
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value)||0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}` });
+                const dataStr = `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}`;
+                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value)||0, d: dataStr });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
         }
+
         function renderStorico() {
             let h = "";
             const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
@@ -154,23 +165,27 @@
             });
             document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#555;'>Nessun dato</div>";
         }
+
         function elimina(type, id) {
             if(type === 'T') db.s = db.s.filter(x => x.id !== id);
             else db.r = db.r.filter(x => x.id !== id);
             calcola(); renderStorico();
         }
+
         function showModal(title, body) {
             document.getElementById('mTitle').innerText = title;
             document.getElementById('mBody').innerText = body;
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">CHIUDI</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
+
         function confirmAzzera() {
             document.getElementById('mTitle').innerText = "⚠️ RESET";
             document.getElementById('mBody').innerText = "Cancellare tutti i dati e l'obiettivo?";
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI, AZZERA</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
+
         function azzeraReal() { db = { s: [], r: [], target: 0 }; document.getElementById('targetIn').value = ""; calcola(); renderStorico(); closeModal(); }
         function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; calcola(); }
