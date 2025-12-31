@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker v18</title>
+    <title>Rider Tracker V2</title>
     <style>
         :root { --main: #00CCBC; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 10px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -14,48 +14,49 @@
         .data-box { background: #1f1f1f; padding: 8px; border-radius: 10px; border: 1px solid #333; text-align: center; }
         
         .stat-label { font-size: 8px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
-        .stat-val { font-size: 13px; font-weight: bold; color: #fff; }
+        .stat-val { font-size: 14px; font-weight: bold; color: #fff; }
         
         input, select { height: 35px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; font-size: 13px; text-align: center; width: 100%; outline: none; }
-        .input-group { margin-bottom: 10px; }
         
-        button { width: 100%; border: none; border-radius: 10px; font-weight: bold; height: 40px; cursor: pointer; text-transform: uppercase; }
-        .btn-main { background: var(--main); color: #000; }
+        button { width: 100%; border: none; border-radius: 10px; font-weight: bold; height: 42px; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+        .btn-save { background: var(--main); color: #000; }
         .btn-reset { background: #300; color: var(--danger); height: 30px; font-size: 10px; margin-top: 5px; }
         
-        #storico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 5px; }
-        .hist-item { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
+        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-top: 5px; border: 1px solid #333; }
+        .hist-item { background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
+        .hist-info { display: flex; flex-direction: column; gap: 2px; }
+        .hist-date { font-size: 9px; color: #666; }
     </style>
 </head>
 <body onload="init()">
 
     <div class="card">
-        <div style="text-align:center; color:var(--main); font-weight:900; font-size:14px; margin-bottom:10px;">📊 RIDER STATS v18</div>
+        <div style="text-align:center; color:var(--main); font-weight:900; font-size:14px; margin-bottom:12px;">📊 RIDER TRACKER V2</div>
         <div class="grid">
             <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordo">0.00</span></span></div>
             <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="netto">0.00</span></span></div>
             <div class="data-box"><span class="stat-label">Ore</span><span id="ore" class="stat-val">0.0</span></div>
         </div>
         <div class="grid">
-            <div class="data-box"><span class="stat-label">Scarto KM</span><span id="scarto" class="stat-val">0</span></div>
-            <div class="data-box"><span class="stat-label">Target</span><input type="number" id="targetIn" oninput="salva()" style="height:20px; font-size:11px; border:none; background:transparent;"></div>
+            <div class="data-box"><span class="stat-label">GG Lavoro</span><span id="gg" class="stat-val">0</span></div>
+            <div class="data-box"><span class="stat-label">Target</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
             <div class="data-box"><span class="stat-label">Mancante</span><span id="mancante" class="stat-val" style="color:var(--danger)">0.00</span></div>
         </div>
     </div>
 
     <div class="card">
         <div class="grid">
-            <select id="gDay"></select><select id="gMonth"></select><select id="gYear"></select>
+            <select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select>
         </div>
         <div class="grid">
             <input type="number" id="inLordo" placeholder="Lordo €">
             <input type="number" id="inOre" placeholder="Ore">
-            <input type="number" id="inScarto" placeholder="Scarto">
+            <input type="number" id="inKm" placeholder="KM">
         </div>
-        <button class="btn-main" onclick="aggiungi()">SALVA TURNO</button>
+        <button class="btn-save" onclick="aggiungi()">SALVA TURNO</button>
     </div>
 
-    <div id="storico"></div>
+    <div id="wrapperStorico"></div>
 
     <div style="margin-top:auto;">
         <button onclick="toggleStorico()" style="background:#222; color:var(--main); margin-bottom:5px;">📜 MOSTRA STORICO</button>
@@ -63,66 +64,70 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_v18')) || { turni: [], target: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_v2_db')) || { turni: [], target: 0 };
 
         function init() {
-            const d = new Date();
-            const fill = (id, start, end, sel) => {
-                let el = document.getElementById(id);
-                for(let i=start; i<=end; i++) el.innerHTML += `<option ${i==sel?'selected':''}>${i}</option>`;
-            };
-            fill('gDay', 1, 31, d.getDate());
-            fill('gMonth', 1, 12, d.getMonth()+1);
-            fill('gYear', 2024, 2026, d.getFullYear());
+            riempiDate();
             document.getElementById('targetIn').value = db.target || "";
             calcola();
         }
 
+        function riempiDate() {
+            const d = new Date();
+            const day = document.getElementById('sDay'), mon = document.getElementById('sMonth'), year = document.getElementById('sYear');
+            for(let i=1; i<=31; i++) day.innerHTML += `<option ${i==d.getDate()?'selected':''}>${i}</option>`;
+            for(let i=1; i<=12; i++) mon.innerHTML += `<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
+            for(let i=2024; i<=2026; i++) year.innerHTML += `<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
+        }
+
         function calcola() {
-            let lordo = 0, ore = 0, scarto = 0;
-            db.turni.forEach(t => { lordo += t.l; ore += t.o; scarto += t.s; });
-            let netto = lordo * 0.8;
+            let lordo = 0, ore = 0;
+            db.turni.forEach(t => { lordo += t.l; ore += t.o; });
+            let netto = lordo * 0.8; // Esempio: -20% tasse
             let target = parseFloat(document.getElementById('targetIn').value) || 0;
             
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = netto.toFixed(2);
             document.getElementById('ore').innerText = ore.toFixed(1);
-            document.getElementById('scarto').innerText = scarto;
+            document.getElementById('gg').innerText = db.turni.length;
             document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
             
             db.target = target;
-            localStorage.setItem('rider_v18', JSON.stringify(db));
+            localStorage.setItem('rider_v2_db', JSON.stringify(db));
         }
 
         function aggiungi() {
             let l = parseFloat(document.getElementById('inLordo').value);
             let o = parseFloat(document.getElementById('inOre').value) || 0;
-            let s = parseFloat(document.getElementById('inScarto').value) || 0;
+            let d = `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}`;
             
             if(l > 0) {
-                db.turni.push({ l: l, o: o, s: s, id: Date.now() });
+                db.turni.push({ l: l, o: o, d: d, id: Date.now() });
                 document.getElementById('inLordo').value = "";
                 document.getElementById('inOre').value = "";
-                document.getElementById('inScarto').value = "";
+                document.getElementById('inKm').value = "";
                 calcola();
                 renderStorico();
             }
         }
 
         function renderStorico() {
-            let div = document.getElementById('storico');
-            div.innerHTML = db.turni.map(t => `
+            let container = document.getElementById('wrapperStorico');
+            container.innerHTML = db.turni.slice().reverse().map(t => `
                 <div class="hist-item">
-                    <span>Lordo: <b>€${t.l.toFixed(2)}</b> | Ore: ${t.o}</span>
-                    <button onclick="elimina(${t.id})" style="width:30px; background:#300; color:red;">X</button>
+                    <div class="hist-info">
+                        <span class="hist-date">${t.d}</span>
+                        <span>Lordo: <b>€${t.l.toFixed(2)}</b> | Ore: ${t.o}</span>
+                    </div>
+                    <button onclick="elimina(${t.id})" style="width:30px; height:30px; background:#300; color:red; font-size:10px; border-radius:5px;">X</button>
                 </div>
-            `).join('');
+            `).join('') || "<div style='text-align:center; color:#555;'>Nessun turno salvato</div>";
         }
 
         function toggleStorico() {
-            let s = document.getElementById('storico');
+            let s = document.getElementById('wrapperStorico');
             s.style.display = s.style.display === 'block' ? 'none' : 'block';
-            renderStorico();
+            if(s.style.display === 'block') renderStorico();
         }
 
         function elimina(id) {
@@ -131,16 +136,17 @@
             renderStorico();
         }
 
+        function salvaTarget() { calcola(); }
+
         function reset() {
-            if(confirm("Vuoi azzerare tutto?")) {
+            if(confirm("Vuoi azzerare tutto (Dati + Target)?")) {
                 db = { turni: [], target: 0 };
                 document.getElementById('targetIn').value = "";
+                document.querySelectorAll('input').forEach(i => i.value = "");
                 calcola();
                 renderStorico();
             }
         }
-
-        function salva() { calcola(); }
     </script>
 </body>
 </html>
