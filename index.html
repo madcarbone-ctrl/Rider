@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 Flash</title>
+    <title>Rider Tracker Pro v94 Fuel Liters</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -16,7 +16,6 @@
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
         
-        /* BARRA PERCENTUALE CON ANIMAZIONE */
         .progress-container { background: #111; height: 22px; border-radius: 6px; margin: 8px 0 4px 0; overflow: hidden; position: relative; border: 1px solid #333; }
         .progress-bar { 
             background: linear-gradient(90deg, #ff4444 0%, #00d2ff 40%, #3a7bd5 70%, #2ecc71 100%);
@@ -26,7 +25,6 @@
             transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); 
         }
 
-        /* Effetto Lampeggio 100% */
         @keyframes pulseSuccess {
             0% { opacity: 1; filter: brightness(1); }
             50% { opacity: 0.6; filter: brightness(1.5); }
@@ -147,7 +145,6 @@
             pBar.style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
 
-            // LOGICA LAMPEGGIO
             if(p >= 100) pBar.classList.add('flash-active');
             else pBar.classList.remove('flash-active');
 
@@ -173,8 +170,16 @@
 
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
-            if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value)||0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
+            const p = parseFloat(document.getElementById('fPrezzo').value);
+            if(e > 0 && p > 0) {
+                const litriInseriti = e / p;
+                db.r.push({ 
+                    id: Date.now(), 
+                    e: e, 
+                    p: p, 
+                    litri: litriInseriti,
+                    d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` 
+                });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
                 renderStorico();
             }
@@ -186,11 +191,17 @@
             all.forEach(i => {
                 const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)';
                 const label = i.type === 'T' ? 'TURNO' : 'RIFORN.';
+                let details = "";
+                if(i.type === 'T') {
+                    details = `KM: ${i.k} | Cons: ${i.c}L/100`;
+                } else {
+                    details = `Litri: ${i.litri.toFixed(2)}L | €${i.p}/L`;
+                }
                 h += `<div class="hist-item" style="border-left-color:${color}">
                     <div class="hist-info">
                         <span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span>
                         <b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b>
-                        <span class="hist-data">${i.type==='T'?`KM: ${i.k} | Cons: ${i.c}L`:`Prezzo: €${i.p}/L`}</span>
+                        <span class="hist-data">${details}</span>
                     </div>
                     <button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button>
                 </div>`;
