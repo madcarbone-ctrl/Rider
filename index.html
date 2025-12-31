@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 KM Extra</title>
+    <title>Rider Tracker Pro v3</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
-        body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { 
+            background: var(--bg); 
+            color: #eee; 
+            font-family: sans-serif; 
+            margin: 0; 
+            padding: 5px; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            /* Modificato per permettere lo scroll se la tastiera copre i campi */
+            overflow-y: auto; 
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; flex-shrink: 0; }
@@ -49,7 +60,7 @@
         .modal-btns { display: flex; gap: 8px; justify-content: center; }
         .modal-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
 
-        .sticky-footer { margin-top: auto; padding: 5px 5px 60px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
+        .sticky-footer { margin-top: auto; padding: 5px 5px 80px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
     </style>
 </head>
 <body onload="init()">
@@ -111,7 +122,22 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0 };
-        function init() { riempiDate(); document.getElementById('targetIn').value = db.target || ""; calcola(); }
+        
+        function init() { 
+            riempiDate(); 
+            document.getElementById('targetIn').value = db.target || ""; 
+            calcola(); 
+            
+            // Gestione automatica dello scroll quando si tocca un input
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                });
+            });
+        }
         
         function riempiDate() {
             const d = new Date();
