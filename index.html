@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V38</title>
+    <title>Rider Tracker Pro v94 V39</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; -webkit-user-select: none; user-select: none; }
@@ -17,7 +17,7 @@
         .progress-container { width: 100%; background: #111; border-radius: 10px; height: 14px; margin-top: 6px; position: relative; overflow: hidden; border: 1px solid #222; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), var(--main)); transition: width 0.5s; }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-size: 8px; font-weight: 900; color: #fff; }
-        input, select { height: 28px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 11px; text-align: center; width: 100%; outline: none; -webkit-user-select: text; user-select: text; }
+        input, select { height: 28px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 11px; text-align: center; width: 100%; outline: none; }
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #222; margin-bottom: 5px; }
         .hist-item { background:#1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 5px solid var(--main); position: relative; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
@@ -34,7 +34,7 @@
             <div class="data-box" id="popOre"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
             <div class="data-box" id="popConsumo"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
             <div class="data-box" id="popKml"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
-            <div class="data-box" id="popBenza"><span class="stat-label">Benza Spesa</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaStimato">0.00</span></span></div>
+            <div class="data-box" id="popBenza"><span class="stat-label">Spesa Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaStimato">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
@@ -75,7 +75,6 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94')) || { s: [], r: [], target: 0 };
-        function salva() { localStorage.setItem('rider_db_v94', JSON.stringify(db)); calcola(); if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico(); }
 
         function init() { 
             riempiDate(); 
@@ -86,14 +85,14 @@
 
         function setupPopups() {
             const pops = {
-                popLordo: ['📊','LORDO','Incasso totale lordo.'],
-                popNetto: ['💰','NETTO','Guadagno pulito: (Lordo - 20%) - (Consumo KM * Prezzo Benza).'],
+                popLordo: ['📊','LORDO','Incasso totale lordo registrato.'],
+                popNetto: ['💰','NETTO','Guadagno pulito: (Lordo - 20%) - Costo benzina consumata.'],
                 popOre: ['⏱️','ORE','Totale ore lavorate.'],
-                popConsumo: ['⛽','CONSUMO','Litri consumati basati sui KM del turno.'],
-                popKml: ['📈','KM/L','Media efficienza veicolo.'],
-                popBenza: ['💸','COSTO KM','Costo stimato della benzina USATA per le consegne.'],
-                popMancante: ['🎯','MANCANTE','Lordo necessario per il target netto.'],
-                popGiorni: ['🗓️','GIORNI','Giorni di attività.']
+                popConsumo: ['⛽','CONSUMO','Litri consumati basati sul consumo medio.'],
+                popKml: ['📈','KM/L','Chilometri percorsi per ogni litro.'],
+                popBenza: ['💸','COSTO BENZA','Spesa calcolata sul consumo reale del veicolo.'],
+                popMancante: ['🎯','MANCANTE','Lordo per arrivare al target netto.'],
+                popGiorni: ['🗓️','GG Lavoro','Giorni lavorati totali.']
             };
             Object.keys(pops).forEach(id => {
                 document.getElementById(id).onclick = (e) => {
@@ -108,24 +107,29 @@
         }
 
         function calcola() {
-            let lordo=0, ore=0, km=0, litriTot=0, costoBenzaUsata=0;
-            let ultimoPrezzo = db.r.length > 0 ? db.r[db.r.length-1].p : 1.80; // Default se non c'è rifornimento
-
+            let lordo=0, ore=0, km=0, litriTot=0, costoBenzaConsumata=0;
+            
             db.s.forEach(x => { 
-                lordo += (x.l||0); ore += (x.o||0); km += (x.k||0);
+                lordo += (x.l||0); 
+                ore += (x.o||0); 
+                km += (x.k||0);
                 let litriTurno = (x.k * (x.c||5) / 100);
                 litriTot += litriTurno;
-                costoBenzaUsata += (litriTurno * ultimoPrezzo);
+                
+                // Cerca il prezzo benzina più vicino a questo turno
+                let prezzoRif = 1.80;
+                if(db.r.length > 0) prezzoRif = db.r[db.r.length-1].p;
+                costoBenzaConsumata += (litriTurno * prezzoRif);
             });
 
-            let netto = (lordo * 0.8) - costoBenzaUsata;
+            let netto = (lordo * 0.8) - costoBenzaConsumata;
             let perc = db.target > 0 ? Math.min(100, (netto/db.target)*100) : 0;
 
             document.getElementById('lordoTotale').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTotali').innerText = ore.toFixed(1);
             document.getElementById('litriTot').innerText = litriTot.toFixed(1);
-            document.getElementById('costoBenzaStimato').innerText = costoBenzaUsata.toFixed(2);
+            document.getElementById('costoBenzaStimato').innerText = costoBenzaConsumata.toFixed(2);
             document.getElementById('mediaKml').innerText = litriTot > 0 ? (km/litriTot).toFixed(1) : "0.0";
             document.getElementById('giorniLavorati').innerText = [...new Set(db.s.map(x => x.dt))].length;
             document.getElementById('lordoMancante').innerText = Math.max(0, (db.target - netto) * 1.25).toFixed(2);
@@ -169,8 +173,11 @@
             });
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
         }
+
+        function salva() { localStorage.setItem('rider_db_v94', JSON.stringify(db)); calcola(); if(document.getElementById('wrapperStorico').style.display === 'block') renderStorico(); }
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetInput').value)||0; salva(); }
         function toggleStorico() { const w = document.getElementById('wrapperStorico'); w.style.display = w.style.display === 'block' ? 'none' : 'block'; if(w.style.display === 'block') renderStorico(); }
+        
         function renderStorico() {
             let h = "";
             const tutti = [...db.s.map(x=>({...x, tp:'T'})), ...db.r.map(x=>({...x, tp:'B'}))].sort((a,b)=>b.id-a.id);
@@ -181,13 +188,13 @@
                         <div><b>${i.dt}</b> <small>${i.ora}</small></div>
                         <div style="text-align:right"><b>€${(isT?i.l:i.e).toFixed(2)}</b><br><small>${isT?'TURNO':'RIFORNIMENTO'}</small></div>
                     </div>
-                    <button style="position:absolute; right:5px; bottom:5px; width:30px; height:30px; background:#300; border-radius:5px; color:red" onclick="elimina('${i.tp}', ${i.id})">🗑️</button>
+                    <button style="position:absolute; right:5px; bottom:5px; width:30px; height:30px; background:#300; border-radius:5px; color:red; border:none;" onclick="elimina('${i.tp}', ${i.id})">🗑️</button>
                 </div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "Vuoto";
         }
         function elimina(t, id) { if(t=='T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); salva(); }
-        function resetApp() { if(confirm("RESET?")) { db = { s: [], r: [], target: 0 }; document.getElementById('targetInput').value=""; salva(); } }
+        function resetApp() { if(confirm("RESET TOTALE?")) { db = { s: [], r: [], target: 0 }; document.getElementById('targetInput').value=""; salva(); } }
     </script>
 </body>
 </html>
