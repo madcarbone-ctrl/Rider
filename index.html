@@ -3,30 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V28</title>
+    <title>Rider Tracker Pro v94 V29</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .main-title { color: var(--main); margin-bottom: 5px; text-align: center; font-size: 13px; font-weight: 900; }
+        
+        /* Griglia Superiore 3x3 */
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 42px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-label { font-size: 7px; color: #888; text-transform: uppercase; pointer-events: none; }
         .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
+        
         .progress-container { width: 100%; background: #111; border-radius: 10px; height: 14px; margin-top: 6px; position: relative; overflow: hidden; border: 1px solid #222; }
         .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--danger), var(--main)); transition: width 0.5s; }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-size: 8px; font-weight: 900; color: #fff; }
+
         input, select { height: 28px; background: #222; border: 1px solid #333; color: white; border-radius: 6px; font-size: 11px; text-align: center; width: 100%; outline: none; }
         .section-title { color: var(--main); margin-bottom: 4px; text-align: center; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 11px; height: 34px; }
+        
+        /* Modal Pop-up */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-card { background: #1e1e1e; width: 85%; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--main); }
+
+        /* Storico Dettagliato */
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #222; margin-bottom: 5px; }
-        .hist-item { background:#1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid var(--main); display: flex; flex-direction: column; gap: 4px; position: relative; }
-        .hist-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .hist-details { font-size: 9px; color: #888; display: flex; gap: 8px; }
-        .btn-del { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: #300; color: red; border-radius: 6px; border: none; font-size: 14px; }
+        .hist-item { background:#1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid var(--main); position: relative; display: flex; flex-direction: column; gap: 2px; }
+        .hist-main { display: flex; justify-content: space-between; align-items: center; padding-right: 40px; }
+        .hist-date { font-size: 12px; font-weight: bold; }
+        .hist-type { font-size: 10px; color: var(--main); text-transform: uppercase; }
+        .hist-val { font-size: 13px; font-weight: 900; }
+        .hist-details { font-size: 9px; color: #888; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+        .btn-del { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: #311; color: #f44; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 1px solid #411; }
     </style>
 </head>
 <body onload="init()">
@@ -35,16 +46,16 @@
         <div class="main-title">🚗 RIDER TRACKER PRO</div>
         <div class="summary-grid">
             <div class="data-box" onclick="apriPop('📊','LORDO','Incasso lordo totale.')"><span class="stat-label">Lordo</span><span class="stat-val" style="color:var(--main)">€<span id="lordoTotale">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('💰','NETTO','Netto (-20% tasse e benzina).')"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('💰','NETTO','Netto (-20% tasse e spese benzina).')"><span class="stat-label">Netto</span><span class="stat-val">€<span id="nettoReale">0.00</span></span></div>
             <div class="data-box" onclick="apriPop('⏱️','ORE','Totale ore lavorate.')"><span class="stat-label">Ore</span><span id="oreTotali" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="apriPop('⛽','CONSUMO','Litri totali consumati.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
-            <div class="data-box" onclick="apriPop('📈','KM/L','Media efficienza chilometrica.')"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
-            <div class="data-box" onclick="apriPop('💸','BENZINA','Spesa totale carburante.')"><span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaTot">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('⛽','CONSUMO','Litri totali consumati stimati.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="litriTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="apriPop('📈','KM/L','Media chilometri per litro.')"><span class="stat-label">Km/L</span><span id="mediaKml" class="stat-val" style="color:var(--fuel)">0.0</span></div>
+            <div class="data-box" onclick="apriPop('💸','BENZINA','Costo totale benzina.')"><span class="stat-label">Benzina</span><span class="stat-val" style="color:var(--danger)">€<span id="costoBenzaTot">0.00</span></span></div>
         </div>
         <div class="summary-grid" style="margin-top:4px;">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetInput" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo necessario per il target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
-            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Giorni di lavoro registrati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
+            <div class="data-box" onclick="apriPop('🎯','MANCANTE','Lordo che manca per il target.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger);">€<span id="lordoMancante">0.00</span></span></div>
+            <div class="data-box" onclick="apriPop('🗓️','GIORNI','Numero di giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="giorniLavorati" class="stat-val" style="color:var(--main);">0</span></div>
         </div>
         <div class="progress-container">
             <div id="pBar" class="progress-bar"></div>
@@ -133,15 +144,22 @@
         function toggleStorico() { const w = document.getElementById('wrapperStorico'); w.style.display = w.style.display === 'block' ? 'none' : 'block'; if(w.style.display === 'block') renderStorico(); }
         function renderStorico() {
             let h = "";
-            const tutti = [...db.s.map(x=>({...x, t:'T'})), ...db.r.map(x=>({...x, t:'B'}))].sort((a,b)=>b.id-a.id);
+            const tutti = [...db.s.map(x=>({...x, tp:'T'})), ...db.r.map(x=>({...x, tp:'B'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
-                const color = i.t=='T'?'var(--main)':'var(--fuel)';
+                const isT = i.tp === 'T';
+                const color = isT ? 'var(--main)' : 'var(--fuel)';
                 h += `<div class="hist-item" style="border-left-color:${color}">
-                    <div class="hist-row"><span>${i.dt} - <b>${i.t=='T'?'TURNO':'BENZINA'}</b></span><b style="color:${color}; margin-right:40px;">€${(i.l||i.e).toFixed(2)}</b></div>
-                    <div class="hist-details">
-                        ${i.t=='T'?`<span>⏱️${i.o}h</span><span>📍${i.k}km</span><span>⛽${i.c}L/100</span><span>⚠️${i.sc}</span>`:`<span>⛽ Prezzo: €${i.p}/L</span>`}
+                    <div class="hist-main">
+                        <div style="display:flex; flex-direction:column;">
+                            <span class="hist-date">${i.dt}</span>
+                            <span class="hist-type" style="color:${color}">${isT?'Turno':'Benzina'}</span>
+                        </div>
+                        <span class="hist-val">€${(isT ? i.l : i.e).toFixed(2)}</span>
                     </div>
-                    <button class="btn-del" onclick="elimina('${i.t}', ${i.id})">🗑️</button>
+                    <div class="hist-details">
+                        ${isT ? `<span>⏱️ ${i.o}h</span> <span>📍 ${i.k}km</span> <span>⛽ ${i.c}L/100</span> <span>⚠️ ${i.sc} scarto</span>` : `<span>⛽ Prezzo: €${i.p}/L</span>`}
+                    </div>
+                    <button class="btn-del" onclick="elimina('${i.tp}', ${i.id})">🗑️</button>
                 </div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "Vuoto";
