@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V2 Fix</title>
+    <title>Rider Tracker Pro v94 V2 Turno-Centric</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -43,19 +43,19 @@
     <div class="card">
         <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V94 MODAL</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Lordo','Totale lordo guadagnato dai turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Netto','Calcolo: (Lordo - 20%) - Spesa Benzina totale.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Ore','Somma delle ore di tutti i turni.')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Netto','Calcolato solo sui dati inseriti nei Turni.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Ore','Somma ore dei turni.')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Consumo','Litri totali caricati nei rifornimenti.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
-            <div class="data-box" onclick="showModal('KM/L','Media KM fatti con i litri totali dei rifornimenti.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="showModal('Benza','Somma totale degli Euro spesi in rifornimenti.')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Consumo','Litri consumati dichiarati nei Turni.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="showModal('KM/L','Media KM/Litro calcolata nei Turni.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Benza','Costo benzina calcolato nei Turni.')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="showModal('Mancante','Quanto manca al Netto per arrivare all\'Obiettivo.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Giorni','Giorni unici in cui hai lavorato.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
+            <div class="data-box" onclick="showModal('Mancante','Mancante al target netto.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Giorni','Giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
         </div>
         <div class="progress-container"><div class="perc-text" id="percLabel">0%</div><div class="progress-bar" id="pBar"></div></div>
     </div>
@@ -63,13 +63,16 @@
     <div class="card" style="border: 1px solid var(--fuel)">
         <div style="display:flex; gap:4px; margin-bottom:4px;"><select id="fDay"></select><select id="fMonth"></select><select id="fYear"></select></div>
         <div style="display:flex; gap:4px; margin-bottom:4px;"><input type="number" id="fEuro" placeholder="€ spesi"><input type="number" id="fPrezzo" placeholder="€/Litro"></div>
-        <button style="background:var(--fuel); color:#000;" onclick="addBenza()">SALVA BENZINA</button>
+        <button style="background:var(--fuel); color:#000;" onclick="addBenza()">SALVA RIFORNIMENTO</button>
     </div>
 
     <div class="card" style="border: 1px solid var(--main)">
         <div style="display:flex; gap:4px; margin-bottom:4px;"><select id="sDay"></select><select id="sMonth"></select><select id="sYear"></select></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px; margin-bottom:4px;">
             <input type="number" id="tLordo" placeholder="Lordo €"><input type="number" id="tOre" placeholder="Ore"><input type="number" id="tKm" placeholder="KM">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:4px;">
+            <input type="number" id="tConsumo" placeholder="L/100km"><input type="number" id="tScarto" placeholder="Scarto">
         </div>
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
@@ -110,25 +113,31 @@
         }
 
         function calcola() {
-            let l=0, o=0, b=0, k=0, li=0;
-            db.s.forEach(x => { l += x.l; o += x.o; k += x.k; });
-            db.r.forEach(x => { 
-                b += x.e; 
-                if(x.p > 0) li += (x.e / x.p); 
+            let lordo=0, ore=0, kmTot=0, litriTurni=0, spesaBenzaTurni=0;
+            
+            // Calcoli basati SOLO sui turni
+            db.s.forEach(x => { 
+                lordo += x.l; 
+                ore += x.o; 
+                kmTot += x.k;
+                // Calcolo litri consumati nel turno (KM * Consumo/100) + Scarto
+                let litri = (x.k * (x.c / 100)) + x.sc;
+                litriTurni += litri;
+                // Costo teorico (stimato a 1.85€/L se non specificato altrimenti)
+                spesaBenzaTurni += litri * 1.85; 
             });
 
-            // LOGICA CORRETTA: Il netto ora sottrae TUTTA la benzina inserita nella sezione arancione
-            let n = (l * 0.8) - b; 
+            let netto = (lordo * 0.8) - spesaBenzaTurni; 
             let t = db.target || 0; 
-            let p = t > 0 ? Math.min(100, (n / t) * 100) : 0;
+            let p = t > 0 ? Math.min(100, (netto / t) * 100) : 0;
 
-            document.getElementById('lordoTot').innerText = l.toFixed(2);
-            document.getElementById('nettoReale').innerText = n.toFixed(2);
-            document.getElementById('oreTot').innerText = o.toFixed(1);
-            document.getElementById('spesaBenza').innerText = b.toFixed(2);
-            document.getElementById('consTot').innerText = li.toFixed(1);
-            document.getElementById('kmLitro').innerText = li > 0 ? (k / li).toFixed(1) : "0.0";
-            document.getElementById('mancante').innerText = Math.max(0, t - n).toFixed(2);
+            document.getElementById('lordoTot').innerText = lordo.toFixed(2);
+            document.getElementById('nettoReale').innerText = netto.toFixed(2);
+            document.getElementById('oreTot').innerText = ore.toFixed(1);
+            document.getElementById('spesaBenza').innerText = spesaBenzaTurni.toFixed(2);
+            document.getElementById('consTot').innerText = litriTurni.toFixed(1);
+            document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
+            document.getElementById('mancante').innerText = Math.max(0, t - netto).toFixed(2);
             document.getElementById('ggLavoro').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
             document.getElementById('pBar').style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
@@ -139,8 +148,16 @@
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
                 const dataStr = `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}`;
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, d: dataStr });
-                ['tLordo','tOre','tKm'].forEach(id => document.getElementById(id).value = "");
+                db.s.push({ 
+                    id: Date.now(), 
+                    l: l, 
+                    o: parseFloat(document.getElementById('tOre').value)||0, 
+                    k: parseFloat(document.getElementById('tKm').value)||0, 
+                    c: parseFloat(document.getElementById('tConsumo').value)||0, 
+                    sc: parseFloat(document.getElementById('tScarto').value)||0, 
+                    d: dataStr 
+                });
+                ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
         }
@@ -148,11 +165,11 @@
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
             const p = parseFloat(document.getElementById('fPrezzo').value);
-            if(e > 0 && p > 0) {
+            if(e > 0) {
                 const dataStr = `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}`;
                 db.r.push({ id: Date.now(), e: e, p: p, d: dataStr });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
-                calcola(); renderStorico();
+                renderStorico(); // Solo render, non influisce sul calcolo [cite: 2025-12-31]
             }
         }
 
@@ -161,8 +178,8 @@
             const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
             all.forEach(i => {
                 const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)';
-                const label = i.type === 'T' ? 'TURNO' : 'BENZINA';
-                const details = i.type === 'T' ? `Ore: ${i.o} | KM: ${i.k}` : `Prezzo: €${i.p}/L | Litri: ${(i.e/i.p).toFixed(1)}`;
+                const label = i.type === 'T' ? 'TURNO' : 'RIFORN.';
+                const details = i.type === 'T' ? `Ore: ${i.o} | KM: ${i.k} | Cons: ${i.c}L/100` : `Prezzo: €${i.p}/L`;
                 h += `<div class="hist-item" style="border-left-color:${color}">
                     <div class="hist-info">
                         <span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span>
@@ -190,7 +207,7 @@
 
         function confirmAzzera() {
             document.getElementById('mTitle').innerText = "⚠️ RESET";
-            document.getElementById('mBody').innerText = "Cancellare tutti i dati e l'obiettivo?";
+            document.getElementById('mBody').innerText = "Cancellare tutto (anche target)?";
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI, AZZERA</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
