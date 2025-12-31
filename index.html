@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V2 Time</title>
+    <title>Rider Tracker Pro v94 V2 Fix</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -41,21 +41,21 @@
 <body onload="init()">
 
     <div class="card">
-        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V94 PRO</div>
+        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V94 MODAL</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Lordo','Totale lordo guadagnato.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Netto','Lordo - 20% tasse - Benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Ore','Totale ore dei turni.')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Lordo','Totale lordo guadagnato dai turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Netto','Calcolo: (Lordo - 20%) - Spesa Benzina totale.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Ore','Somma delle ore di tutti i turni.')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Consumo','Litri totali calcolati spesa/prezzo.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
-            <div class="data-box" onclick="showModal('KM/L','Chilometri percorsi per ogni litro.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="showModal('Benza','Totale speso in carburante.')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Consumo','Litri totali caricati nei rifornimenti.')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
+            <div class="data-box" onclick="showModal('KM/L','Media KM fatti con i litri totali dei rifornimenti.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Benza','Somma totale degli Euro spesi in rifornimenti.')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box" onclick="showModal('Mancante','Differenza tra Target e Netto.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Giorni','Giorni totali di lavoro.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
+            <div class="data-box" onclick="showModal('Mancante','Quanto manca al Netto per arrivare all\'Obiettivo.')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Giorni','Giorni unici in cui hai lavorato.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
         </div>
         <div class="progress-container"><div class="perc-text" id="percLabel">0%</div><div class="progress-bar" id="pBar"></div></div>
     </div>
@@ -112,8 +112,16 @@
         function calcola() {
             let l=0, o=0, b=0, k=0, li=0;
             db.s.forEach(x => { l += x.l; o += x.o; k += x.k; });
-            db.r.forEach(x => { b += x.e; if(x.p > 0) li += (x.e / x.p); });
-            let n = (l * 0.8) - b; let t = db.target || 0; let p = t > 0 ? Math.min(100, (n / t) * 100) : 0;
+            db.r.forEach(x => { 
+                b += x.e; 
+                if(x.p > 0) li += (x.e / x.p); 
+            });
+
+            // LOGICA CORRETTA: Il netto ora sottrae TUTTA la benzina inserita nella sezione arancione
+            let n = (l * 0.8) - b; 
+            let t = db.target || 0; 
+            let p = t > 0 ? Math.min(100, (n / t) * 100) : 0;
+
             document.getElementById('lordoTot').innerText = l.toFixed(2);
             document.getElementById('nettoReale').innerText = n.toFixed(2);
             document.getElementById('oreTot').innerText = o.toFixed(1);
@@ -139,9 +147,10 @@
 
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
-            if(e > 0) {
+            const p = parseFloat(document.getElementById('fPrezzo').value);
+            if(e > 0 && p > 0) {
                 const dataStr = `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}`;
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value)||0, d: dataStr });
+                db.r.push({ id: Date.now(), e: e, p: p, d: dataStr });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
