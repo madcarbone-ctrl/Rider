@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v94 V2</title>
+    <title>Rider Tracker Pro v94 Modal</title>
     <style>
-        :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; }
+        :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.85); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         .card { background: var(--card); padding: 8px; border-radius: 12px; border: 1px solid #222; margin-bottom: 5px; }
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 4px; }
-        .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; }
+        .data-box { background: #1f1f1f; padding: 5px; border-radius: 8px; border: 1px solid #333; text-align: center; min-height: 45px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         
-        .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
-        .stat-val { font-size: 11px; font-weight: bold; color: #fff; }
+        .stat-label { font-size: 7px; color: #888; text-transform: uppercase; margin-bottom: 2px; pointer-events: none; }
+        .stat-val { font-size: 11px; font-weight: bold; color: #fff; pointer-events: none; }
         
         .progress-container { background: #222; height: 10px; border-radius: 5px; margin: 5px 0; overflow: hidden; position: relative; }
         .progress-bar { background: var(--main); height: 100%; width: 0%; transition: 0.3s; }
@@ -25,26 +25,49 @@
         
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 5px; border-radius: 10px; border: 1px solid #333; margin-bottom: 5px; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:6px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
+
+        /* MODAL STYLE */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; border: 1px solid var(--main); width: 100%; max-width: 300px; text-align: center; }
+        .modal-title { color: var(--main); font-weight: 900; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }
+        .modal-body { font-size: 12px; line-height: 1.5; color: #ccc; margin-bottom: 15px; }
+        .modal-close { background: #333; color: white; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body onload="init()">
 
     <div class="card">
-        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER PRO V94 V2</div>
+        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V94 MODAL</div>
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
+            <div class="data-box" onclick="showModal('Lordo','Totale guadagnato prima di tasse e spese.')">
+                <span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span>
+            </div>
+            <div class="data-box" onclick="showModal('Netto','Guadagno pulito: Lordo - 20% tasse - Spesa Benzina.')">
+                <span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span>
+            </div>
+            <div class="data-box" onclick="showModal('Ore','Ore totali lavorate calcolate dai turni.')">
+                <span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span>
+            </div>
         </div>
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
-            <div class="data-box"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Consumo','Litri di carburante consumati calcolati dai rifornimenti.')">
+                <span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span>
+            </div>
+            <div class="data-box" onclick="showModal('KM/L','Media chilometri percorsi con un litro di carburante.')">
+                <span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span>
+            </div>
+            <div class="data-box" onclick="showModal('Benza','Totale speso in carburante.')">
+                <span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span>
+            </div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
-            <div class="data-box"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
-            <div class="data-box"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
+            <div class="data-box" onclick="showModal('Mancante','Quanto manca al netto per raggiungere il tuo target.')">
+                <span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span>
+            </div>
+            <div class="data-box" onclick="showModal('Giorni','Numero di giorni in cui hai effettuato almeno un turno.')">
+                <span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span>
+            </div>
         </div>
         <div class="progress-container">
             <div class="perc-text" id="percLabel">0%</div>
@@ -86,6 +109,14 @@
         <button style="background:#300; color:var(--danger); height:28px; font-size:10px;" onclick="azzera()">⚠️ AZZERA TUTTO</button>
     </div>
 
+    <div id="infoModal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title" id="mTitle">INFO</div>
+            <div class="modal-body" id="mBody">Descrizione qui.</div>
+            <div class="modal-close" onclick="closeModal()">CHIUDI</div>
+        </div>
+    </div>
+
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0 };
 
@@ -110,11 +141,9 @@
             let l=0, o=0, b=0, k=0, li=0;
             db.s.forEach(x => { l += x.l; o += x.o; k += x.k; });
             db.r.forEach(x => { b += x.e; if(x.p > 0) li += (x.e / x.p); });
-            
             let n = (l * 0.8) - b;
             let t = db.target || 0;
             let p = t > 0 ? Math.min(100, (n / t) * 100) : 0;
-
             document.getElementById('lordoTot').innerText = l.toFixed(2);
             document.getElementById('nettoReale').innerText = n.toFixed(2);
             document.getElementById('oreTot').innerText = o.toFixed(1);
@@ -123,7 +152,6 @@
             document.getElementById('kmLitro').innerText = li > 0 ? (k / li).toFixed(1) : "0.0";
             document.getElementById('mancante').innerText = Math.max(0, t - n).toFixed(2);
             document.getElementById('ggLavoro').innerText = [...new Set(db.s.map(x => x.d))].length;
-            
             document.getElementById('pBar').style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
@@ -146,6 +174,14 @@
                 calcola(); renderStorico();
             }
         }
+
+        function showModal(title, body) {
+            document.getElementById('mTitle').innerText = title;
+            document.getElementById('mBody').innerText = body;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
 
         function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; calcola(); }
 
