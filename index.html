@@ -9,7 +9,14 @@
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Nasconde la barra di scorrimento globale del browser */
+        /* Rimozione totale scroll browser */
+        html, body { 
+            overflow-x: hidden; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
             background: var(--bg); 
@@ -17,13 +24,14 @@
             margin: 0; 
             padding: 10px; 
             padding-bottom: 220px; 
-            overflow-x: hidden;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
         }
-        body::-webkit-scrollbar { display: none; } /* Chrome/Safari */
         
-        body.hist-open { padding-bottom: 20px; }
+        /* Quando lo storico è aperto, blocca lo scroll del body */
+        body.hist-open { 
+            padding-bottom: 20px; 
+            overflow: hidden; 
+            height: 100vh;
+        }
 
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
@@ -42,17 +50,25 @@
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        /* SEZIONE STORICO SENZA BARRA VISIBILE */
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 70vh; }
+        /* SEZIONE STORICO OTTIMIZZATA SENZA BARRE */
+        .history-section { 
+            background: var(--card); 
+            border-radius: 15px; 
+            border: 1px solid var(--primary); 
+            padding: 15px; 
+            margin-top: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            max-height: 80vh; 
+        }
         #historyList { 
             overflow-y: auto; 
             flex-grow: 1; 
             margin-bottom: 10px; 
             padding-right: 5px;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
+            scrollbar-width: none;
         }
-        #historyList::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        #historyList::-webkit-scrollbar { display: none; }
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
@@ -135,7 +151,7 @@
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
         <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
-        <button class="foot-btn btn-full btn-azzera" onclick="azzera()">AZZERA TUTTO LO STORICO E TARGET</button>
+        <button class="foot-btn btn-full btn-azzera" onclick="azzera()"><i class="fas fa-trash-alt"></i> AZZERA TUTTO LO STORICO E TARGET</button>
     </div>
 
     <script>
