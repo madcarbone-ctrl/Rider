@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v5.4</title>
+    <title>Rider Tracker Pro v5.5</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -23,21 +23,17 @@
         input, select { height: 32px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         
-        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
+        #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; }
         .hist-header { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--main); text-align: center; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; flex-grow: 1; }
         .hist-data { font-size: 9px; color: #888; }
         .hist-actions { display: flex; gap: 5px; align-items: center; }
 
-        .btn-cal { background: #333; color: white; border-radius: 6px; font-size: 9px; padding: 5px; height: 30px; border: 1px solid #444; font-weight: bold; display: flex; align-items: center; gap: 3px; }
+        .btn-cal { background: #333; color: white; border-radius: 6px; font-size: 9px; padding: 5px; height: 30px; border: 1px solid #444; font-weight: bold; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; border: 1px solid var(--main); width: 100%; max-width: 300px; text-align: center; }
-        .modal-title { color: var(--main); font-weight: 900; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }
-        .modal-body { font-size: 12px; line-height: 1.5; color: #ccc; margin-bottom: 15px; }
-        .modal-btns { display: flex; gap: 8px; justify-content: center; }
-        .modal-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
 
         .sticky-footer { margin-top: auto; padding: 5px 5px 80px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
     </style>
@@ -45,21 +41,21 @@
 <body onload="init()">
 
     <div class="card">
-        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V4 PRO</div>
+        <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V5 PRO</div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Netto','Basato sui turni meno tasse e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Ore','ore lavorative effettive del turno')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
+            <div class="data-box"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
-            <div class="data-box" onclick="showModal('Consumo','litri consumati nel turno')"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
-            <div class="data-box" onclick="showModal('KM/L','Media KM/L dei Turni.')"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
-            <div class="data-box" onclick="showModal('Benza','benzina realmente consumata nel turno')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Consumo</span><span class="stat-val"><span id="consTot">0.0</span>L</span></div>
+            <div class="data-box"><span class="stat-label">KM/L</span><span id="kmLitro" class="stat-val">0.0</span></div>
+            <div class="data-box"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Target €</span><input type="number" id="targetIn" oninput="salvaImpostazioni()" placeholder="€"></div>
             <div class="data-box"><span class="stat-label">Tasse %</span><input type="number" id="taxIn" oninput="salvaImpostazioni()" placeholder="%"></div>
-            <div class="data-box" onclick="showModal('Mancante','€ lordi mancanti per raggiungere il target')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
+            <div class="data-box"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
         </div>
         <div class="progress-container">
             <div class="perc-text" id="percLabel">0%</div>
@@ -85,10 +81,7 @@
     </div>
 
     <div id="wrapperStorico">
-        <div class="hist-header">
-            <span class="stat-label" style="font-size: 10px;">Riepilogo Attività</span><br>
-            <span class="stat-val" style="color:var(--main); font-size: 14px;"><span id="ggLavoroHist">0</span> Giorni Lavorati</span>
-        </div>
+        <div class="hist-header"><span class="stat-val" style="color:var(--main);"><span id="ggLavoroHist">0</span> Giorni Lavorati</span></div>
         <div id="listaStorico"></div>
     </div>
 
@@ -99,21 +92,15 @@
 
     <div id="infoModal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-title" id="mTitle">INFO</div>
-            <div class="modal-body" id="mBody"></div>
-            <div class="modal-btns" id="mBtns"></div>
+            <div id="mTitle" style="color:var(--main); font-weight:900; margin-bottom:10px;"></div>
+            <div id="mBody" style="font-size:12px; margin-bottom:15px;"></div>
+            <div id="mBtns" style="display:flex; gap:8px;"></div>
         </div>
     </div>
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
-        
-        function init() { 
-            riempiDate(); 
-            document.getElementById('targetIn').value = db.target || ""; 
-            document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
-            calcola(); 
-        }
+        function init() { riempiDate(); document.getElementById('targetIn').value = db.target || ""; document.getElementById('taxIn').value = db.tax || 20; calcola(); }
         
         function riempiDate() {
             const d = new Date();
@@ -125,8 +112,6 @@
             });
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
         }
-
-        function getNowTime() { const n = new Date(); return n.getHours().toString().padStart(2, '0') + ":" + n.getMinutes().toString().padStart(2, '0'); }
 
         function calcola() {
             let lordo=0, ore=0, kmTot=0, litriTurni=0, spesaBenzaTurni=0;
@@ -142,7 +127,6 @@
             document.getElementById('consTot').innerText = litriTurni.toFixed(1);
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
             document.getElementById('mancante').innerText = Math.max(0, (db.target || 0) - netto).toFixed(2);
-            
             let p = db.target > 0 ? Math.min(100, (netto / db.target) * 100) : 0;
             document.getElementById('pBar').style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
@@ -153,24 +137,21 @@
         function inviaACalendario(item) {
             const isT = item.type === 'T';
             const titolo = encodeURIComponent(isT ? `🏎️ Rider: €${item.l.toFixed(2)}` : `⛽ Benza: €${item.e.toFixed(2)}`);
-            const dataParti = item.d.split(' ')[0].split('/');
-            const giorno = dataParti[0].padStart(2, '0');
-            const mese = dataParti[1].padStart(2, '0');
-            const anno = item.y || new Date().getFullYear();
-            const dataF = `${anno}${mese}${giorno}`;
+            const dataP = item.d.split(' ')[0].split('/');
+            const dF = `${item.y || new Date().getFullYear()}${dataP[1].padStart(2,'0')}${dataP[0].padStart(2,'0')}`;
+            const note = encodeURIComponent(isT ? `Lordo: €${item.l}\nOre: ${item.o}\nKM: ${item.k}` : `Spesa: €${item.e}`);
 
-            const note = encodeURIComponent(isT ? 
-                `Lordo: €${item.l}\nOre: ${item.o}\nKM: ${item.k}\nExtra: ${item.sc}km` : 
-                `Spesa: €${item.e}\nPrezzo: €${item.p}/L`);
-
-            const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titolo}&dates=${dataF}/${dataF}&details=${note}&sf=true&output=xml`;
-            window.open(url, '_blank');
+            // Questo URL forza l'apertura tramite l'applicazione Calendario se installata
+            const url = `intent://calendar/render?action=TEMPLATE&text=${titolo}&dates=${dF}/${dF}&details=${note}#Intent;scheme=https;package=com.google.android.calendar;end`;
+            
+            // Se non hai Google Calendar installato, questa stringa intercetta comunque il Calendario Samsung
+            window.location.href = url;
         }
 
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}`, y: document.getElementById('sYear').value });
+                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value}`, y: document.getElementById('sYear').value });
                 ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
@@ -179,9 +160,8 @@
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value) || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}`, y: document.getElementById('fYear').value });
-                ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
-                renderStorico();
+                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value) || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value}`, y: document.getElementById('fYear').value });
+                document.getElementById('fEuro').value = ""; calcola(); renderStorico();
             }
         }
 
@@ -193,18 +173,14 @@
                 const color = isT ? 'var(--main)' : 'var(--fuel)';
                 const itemStr = JSON.stringify(i).replace(/'/g, "&apos;");
                 h += `<div class="hist-item" style="border-left-color:${color}">
-                    <div class="hist-info">
-                        <span style="font-size:10px; font-weight:bold; color:${color}">${isT?'TURNO':'RIFORN.'} (${i.d})</span>
-                        <b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b>
-                        <span class="hist-data">${isT ? 'KM: '+i.k+' | ORE: '+i.o : 'PREZZO: €'+i.p+'/L'}</span>
-                    </div>
+                    <div class="hist-info"><b style="color:${color}">${isT?'TURNO':'BENZA'} (${i.d})</b><br>€${(i.l || i.e).toFixed(2)}</div>
                     <div class="hist-actions">
                         <button class="btn-cal" onclick='inviaACalendario(${itemStr})'>📅 CAL</button>
                         <button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%; border:none;">X</button>
                     </div>
                 </div>`;
             });
-            document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#555;'>Vuoto</div>";
+            document.getElementById('listaStorico').innerHTML = h || "Vuoto";
         }
 
         function toggleStorico() {
@@ -214,11 +190,10 @@
         }
 
         function elimina(type, id) { if(type === 'T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); calcola(); renderStorico(); }
-        function confirmAzzera() { document.getElementById('mTitle').innerText = "⚠️ RESET"; document.getElementById('mBody').innerText = "Cancellare tutto?"; document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI</button>`; document.getElementById('infoModal').style.display = 'flex'; }
-        function azzeraReal() { db = { s: [], r: [], target: 0, tax: 20 }; document.getElementById('targetIn').value = ""; document.getElementById('taxIn').value = 20; calcola(); renderStorico(); closeModal(); }
+        function confirmAzzera() { document.getElementById('mTitle').innerText = "⚠️ RESET"; document.getElementById('mBody').innerText = "Cancellare tutto?"; document.getElementById('mBtns').innerHTML = `<button onclick="closeModal()" style="background:#333; color:white; padding:10px; border-radius:8px; flex:1; border:none;">NO</button><button onclick="azzeraReal()" style="background:var(--danger); color:white; padding:10px; border-radius:8px; flex:1; border:none;">SI</button>`; document.getElementById('infoModal').style.display = 'flex'; }
+        function azzeraReal() { db = { s: [], r: [], target: 0, tax: 20 }; document.getElementById('targetIn').value = ""; calcola(); renderStorico(); closeModal(); }
         function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
         function salvaImpostazioni() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; db.tax = parseFloat(document.getElementById('taxIn').value) || 0; calcola(); }
-        function showModal(title, body) { document.getElementById('mTitle').innerText = title; document.getElementById('mBody').innerText = body; document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">CHIUDI</button>`; document.getElementById('infoModal').style.display = 'flex'; }
     </script>
 </body>
 </html>
