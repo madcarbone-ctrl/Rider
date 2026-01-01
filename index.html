@@ -9,18 +9,37 @@
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; --orange: #ffa500; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Scrollbar generale nascosta */
-        *::-webkit-scrollbar { display: none; }
+        /* 1. BLOCCO TOTALE A LIVELLO RADICE */
+        html {
+            height: 100%;
+            overscroll-behavior: none; /* Blocca il rimbalzo su Chrome Desktop/Mobile */
+        }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
             margin: 0; 
-            padding: 10px; 
-            padding-bottom: 280px; 
+            padding: 0; /* Il padding lo spostiamo nel wrapper */
+            height: 100%; /* Occupa tutto lo schermo */
+            overflow: hidden; /* IL BODY NON DEVE SCROLLARE MAI -> NIENTE REFRESH */
+            position: fixed; /* Ancora di sicurezza per iOS/Webkit */
+            width: 100%;
+        }
+
+        /* 2. NUOVO CONTENITORE CHE GESTISCE LO SCROLL */
+        .scroll-wrapper {
+            height: 100%;
+            overflow-y: auto; /* Abilita lo scroll qui dentro */
+            padding: 10px;
+            padding-bottom: 120px; /* Spazio extra per il footer */
+            -webkit-overflow-scrolling: touch; /* Scroll fluido su mobile */
         }
         
+        /* Nasconde la scrollbar principale (quella della home) */
+        .scroll-wrapper::-webkit-scrollbar { display: none; }
+
+        /* --- STILI COMPONENTI --- */
         .app-title { text-align: center; margin: 10px 0 15px 0; font-size: 24px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
@@ -34,42 +53,32 @@
         .progress-bar { background: #222; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% ); height: 100%; width: 0%; transition: width 0.6s ease; }
         
+        /* --- STORICO (MODIFICATO PER BARRA ARANCIONE) --- */
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; padding-bottom: 60px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; }
         
-        /* BARRA SCORRIMENTO STORICO ARANCIONE */
         #historyList { 
-            overflow-y: scroll; /* Forza lo scroll */
+            overflow-y: scroll; /* Forza scrollbar visibile */
             flex-grow: 1; 
             margin-bottom: 20px; 
-            padding-right: 15px;
-            scrollbar-width: thick; /* Per Firefox */
-            scrollbar-color: var(--orange) #222; /* Per Firefox */
+            padding-right: 10px; /* Spazio per non sovrapporre testo e barra */
         }
-        #historyList::-webkit-scrollbar { 
-            display: block !important; 
-            width: 14px; 
-        }
-        #historyList::-webkit-scrollbar-track { 
-            background: #222; 
-            border-radius: 10px; 
-        }
-        #historyList::-webkit-scrollbar-thumb { 
-            background: var(--orange); 
-            border-radius: 10px; 
-            border: 2px solid #222;
-        }
+        /* Configurazione Barra Arancione */
+        #historyList::-webkit-scrollbar { display: block; width: 12px; }
+        #historyList::-webkit-scrollbar-track { background: #222; border-radius: 6px; }
+        #historyList::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 6px; border: 2px solid #222; }
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
         .hist-info { font-size: 11px; line-height: 1.4; color: #eee; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
+        /* --- MODALI E FOOTER (Devono stare FUORI dal wrapper scrollabile) --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; padding: 10px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
         
-        .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
+        .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 1000; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
         .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
@@ -78,28 +87,29 @@
 </head>
 <body>
 
-    <div class="app-title">Rider Tracker Pro</div>
+    <div class="scroll-wrapper">
+        <div class="app-title">Rider Tracker Pro</div>
 
-    <div class="grid">
-        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
-        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
-        <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
-    </div>
-
-    <div class="progress-container">
-        <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
-            <span>PROGRESSO OBIETTIVO</span>
-            <span id="perc">0%</span>
+        <div class="grid">
+            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
+            <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
+            <div class="card"><span class="label">LITRI CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
+            <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
+            <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
+            <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
+            <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
+            <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
         </div>
-        <div class="progress-bar"><div id="bar"></div></div>
-    </div>
 
+        <div class="progress-container">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
+                <span>PROGRESSO OBIETTIVO</span>
+                <span id="perc">0%</span>
+            </div>
+            <div class="progress-bar"><div id="bar"></div></div>
+        </div>
+    </div>
     <div id="histView">
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
@@ -130,6 +140,17 @@
     </div>
 
     <script>
+        // SCRIPT DI SICUREZZA: Previene il comportamento elastico (rubber-banding)
+        // che spesso innesca il refresh su iOS e alcune WebView Android
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.scroll-wrapper') || e.target.closest('#historyList')) {
+                // Lascia scrollare solo i contenitori autorizzati
+                return; 
+            }
+            // Blocca tutto il resto
+            e.preventDefault();
+        }, { passive: false });
+
         let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
 
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
