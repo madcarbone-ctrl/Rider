@@ -180,10 +180,12 @@
                 
                 let infoHTML = "";
                 if(i.type === 's') {
+                    // "L" ripristinata qui per i turni
                     infoHTML = `<b>TURNO ${i.time}</b><br>€${i.l.toFixed(2)} | ${i.o} ore | ${i.k}km | ${(i.k*(i.c/100)).toFixed(1)}L`;
                 } else {
                     let litriRif = i.e / i.p;
-                    infoHTML = `<b>RIFORN. ${i.time}</b><br>Spesa €${i.e.toFixed(2)} | Prezzo €${i.p.toFixed(3)}/L | <b>Litri: ${litriRif.toFixed(2)}L</b>`;
+                    // "L" rimossa qui per i rifornimenti
+                    infoHTML = `<b>RIFORN. ${i.time}</b><br>Spesa €${i.e.toFixed(2)} | Prezzo €${i.p.toFixed(3)}/L | <b>Litri: ${litriRif.toFixed(2)}</b>`;
                 }
                 
                 div.innerHTML = `<div class="hist-info">${infoHTML}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})">×</button>`;
