@@ -18,8 +18,10 @@
             color: var(--text); 
             margin: 0; 
             padding: 10px; 
-            padding-bottom: 260px; /* Aumentato per non coprire il contenuto */
+            /* Aumentato lo spazio in fondo per permettere lo scroll con tastiera aperta */
+            padding-bottom: 350px; 
             overflow-x: hidden;
+            transition: padding-bottom 0.3s;
         }
         
         body.hist-open { overflow: hidden; height: 100vh; padding-bottom: 0; }
@@ -69,14 +71,13 @@
         .hist-info { font-size: 11px; line-height: 1.4; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; margin-top: 20px; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; }
         
-        /* FOOTER RIALZATO PER SMARTPHONE */
         .sticky-footer { 
             position: fixed; 
-            bottom: 40px; /* ALZATO QUI */
+            bottom: 40px; 
             left: 10px; 
             right: 10px; 
             background: #111; 
@@ -88,6 +89,7 @@
             border: 1px solid #333; 
             box-shadow: 0 -5px 20px rgba(0,0,0,0.8); 
             z-index: 999; 
+            transition: transform 0.3s;
         }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
@@ -103,6 +105,9 @@
             border: 1px solid #400 !important;
             letter-spacing: 1px;
         }
+
+        /* Classe per nascondere il footer quando la tastiera è aperta (opzionale) */
+        .footer-hidden { transform: translateY(250px); }
     </style>
 </head>
 <body onclick="handleInputFocus(event)">
@@ -116,8 +121,8 @@
         <div class="card"><span class="label">LITRI CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
         <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
         <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
-        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
+        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" onfocus="focusField(this)" placeholder="0"></div>
+        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" onfocus="focusField(this)" placeholder="20"></div>
         <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
     </div>
 
@@ -154,7 +159,29 @@
         let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
 
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
-        function handleInputFocus(e) { if (e.target.tagName === 'INPUT') { setTimeout(() => { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); } }
+
+        // Gestione avanzata dello scroll quando si clicca un input
+        function focusField(el) {
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // Rileva apertura tastiera per nascondere il footer se necessario
+        window.visualViewport.addEventListener('resize', () => {
+            const footer = document.getElementById('mainFooter');
+            if (window.visualViewport.height < window.innerHeight * 0.8) {
+                footer.classList.add('footer-hidden');
+            } else {
+                footer.classList.remove('footer-hidden');
+            }
+        });
+
+        function handleInputFocus(e) { 
+            if (e.target.tagName === 'INPUT') { 
+                focusField(e.target);
+            } 
+        }
 
         function toggleHist() { 
             const h = document.getElementById('histView'); 
