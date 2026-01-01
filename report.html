@@ -6,18 +6,17 @@
     <title>Report Rider Tracker Pro</title>
     <style>
         body { font-family: sans-serif; padding: 15px; background: white; color: black; }
-        .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px; width: 100%; }
+        .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; width: 100%; }
         .header-report { border-bottom: 2px solid #00CCBC; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
         h2 { color: #00CCBC; margin: 0; }
-        h3 { border-left: 4px solid #00CCBC; padding-left: 10px; margin-top: 30px; font-size: 16px; color: #333; }
+        h3 { border-left: 4px solid #00CCBC; padding-left: 10px; margin-top: 25px; font-size: 15px; }
         .riepilogo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
         .box-dato { text-align: center; }
         .label { font-size: 10px; color: #666; display: block; }
         .valore { font-size: 16px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 5px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-        th { background: #f4f4f4; color: #444; }
-        .sez-benza { border-left-color: #ffa500; }
+        th { background: #f4f4f4; }
         @media print { .btn-stampa { display: none; } }
     </style>
 </head>
@@ -27,40 +26,25 @@
 
     <div class="header-report">
         <h2>RIDER TRACKER PRO</h2>
-        <small>Riepilogo Attività al: <span id="dataGen"></span></small>
+        <small>Report al: <span id="dataGen"></span></small>
     </div>
     
     <div class="riepilogo">
-        <div class="box-dato"><span class="label">Lordo Totale</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Netto Stimato</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Ore Totali</span><span class="valore"><span id="resOre">0.0</span></span></div>
+        <div class="box-dato"><span class="label">Lordo</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Netto</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Ore</span><span class="valore"><span id="resOre">0.0</span></span></div>
     </div>
 
-    <h3>📊 ELENCO TURNI</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>DATA</th>
-                <th>LORDO</th>
-                <th>ORE</th>
-                <th>KM</th>
-                <th>EXTRA</th>
-            </tr>
-        </thead>
-        <tbody id="tabellaTurni"></tbody>
+    <h3>📊 TURNI</h3>
+    <table id="tabellaTurni">
+        <thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th></tr></thead>
+        <tbody></tbody>
     </table>
 
-    <h3 class="sez-benza">⛽ ELENCO RIFORNIMENTI</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>DATA</th>
-                <th>SPESA</th>
-                <th>PREZZO/L</th>
-                <th>LITRI</th>
-            </tr>
-        </thead>
-        <tbody id="tabellaBenza"></tbody>
+    <h3 style="border-color: #ffa500;">⛽ RIFORNIMENTI</h3>
+    <table id="tabellaBenza">
+        <thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead>
+        <tbody></tbody>
     </table>
 
     <script>
@@ -68,61 +52,37 @@
             const raw = localStorage.getItem('rider_db_v94v2');
             if (!raw) return;
             const db = JSON.parse(raw);
-            
             document.getElementById('dataGen').innerText = new Date().toLocaleDateString('it-IT');
-            
-            const tCorpo = document.getElementById('tabellaTurni');
-            const bCorpo = document.getElementById('tabellaBenza');
-            tCorpo.innerHTML = "";
-            bCorpo.innerHTML = "";
 
-            let lordoTotal = 0, oreTotal = 0, litriStimati = 0;
+            const tBody = document.querySelector("#tabellaTurni tbody");
+            const bBody = document.querySelector("#tabellaBenza tbody");
 
-            // 1. Elaborazione TURNI
+            let lordoTotal = 0, oreTotal = 0, litriPerNetto = 0;
+
+            // TURNI
             if (db.s && db.s.length > 0) {
-                db.s.sort((a, b) => b.id - a.id).forEach(t => {
+                db.s.sort((a,b) => b.id - a.id).forEach(t => {
                     lordoTotal += Number(t.l || 0);
                     oreTotal += Number(t.o || 0);
-                    litriStimati += (Number(t.k || 0) * (Number(t.c || 0) / 100));
-
-                    const row = tCorpo.insertRow();
-                    row.innerHTML = `
-                        <td>${t.d}</td>
-                        <td style="font-weight:bold">€${Number(t.l || 0).toFixed(2)}</td>
-                        <td>${t.o}h</td>
-                        <td>${t.k}km</td>
-                        <td>${t.sc || 0}km</td>
-                    `;
+                    litriPerNetto += (Number(t.k || 0) * (Number(t.c || 0) / 100));
+                    tBody.innerHTML += `<tr><td>${t.d}</td><td>€${Number(t.l).toFixed(2)}</td><td>${t.o}h</td><td>${t.k}km</td></tr>`;
                 });
-            } else {
-                tCorpo.innerHTML = "<tr><td colspan='5' style='text-align:center'>Nessun turno registrato</td></tr>";
             }
 
-            // 2. Elaborazione RIFORNIMENTI
+            // RIFORNIMENTI
             if (db.r && db.r.length > 0) {
-                db.r.sort((a, b) => b.id - a.id).forEach(r => {
-                    const euro = Number(r.e || 0);
-                    const prezzo = Number(r.p || 0);
-                    const litri = prezzo > 0 ? (euro / prezzo).toFixed(2) : "0.00";
-
-                    const row = bCorpo.insertRow();
-                    row.innerHTML = `
-                        <td>${r.d}</td>
-                        <td style="font-weight:bold; color:#ffa500">€${euro.toFixed(2)}</td>
-                        <td>€${prezzo.toFixed(3)}/L</td>
-                        <td>${litri}L</td>
-                    `;
+                db.r.sort((a,b) => b.id - a.id).forEach(r => {
+                    const ltr = r.p > 0 ? (r.e / r.p).toFixed(2) : "0.00";
+                    bBody.innerHTML += `<tr><td>${r.d}</td><td style="color:#ffa500;font-weight:bold">€${Number(r.e).toFixed(2)}</td><td>€${Number(r.p).toFixed(2)}/L</td><td>${ltr}L</td></tr>`;
                 });
             } else {
-                bCorpo.innerHTML = "<tr><td colspan='4' style='text-align:center'>Nessun rifornimento registrato</td></tr>";
+                bBody.innerHTML = "<tr><td colspan='4' style='text-align:center'>Nessun rifornimento trovato</td></tr>";
             }
 
-            // 3. Calcolo Riepilogo
-            const tassi = db.tax !== undefined ? db.tax : 20;
-            const netto = (lordoTotal * ((100 - tassi) / 100)) - (litriStimati * 1.85);
-
+            const tassi = db.tax || 20;
+            const netto = (lordoTotal * ((100 - tassi) / 100)) - (litriPerNetto * 1.85);
             document.getElementById('resLordo').innerText = lordoTotal.toFixed(2);
-            document.getElementById('resNetto').innerText = isNaN(netto) ? "0.00" : netto.toFixed(2);
+            document.getElementById('resNetto').innerText = netto.toFixed(2);
             document.getElementById('resOre').innerText = oreTotal.toFixed(1);
         }
     </script>
