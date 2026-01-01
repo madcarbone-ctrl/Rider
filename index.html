@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.5</title>
+    <title>Rider Tracker Pro v4.6</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -104,10 +104,6 @@
             document.getElementById('targetIn').value = db.target || ""; 
             document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
             calcola(); 
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', () => { setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); });
-            });
         }
         
         function riempiDate() {
@@ -160,7 +156,9 @@
             const p = parseFloat(document.getElementById('fPrezzo').value);
             if(e > 0) {
                 db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
+                localStorage.setItem('rider_db_v94v2', JSON.stringify(db)); // FISSA IL DATO
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
+                calcola();
                 renderStorico();
             }
         }
@@ -194,7 +192,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `Report_Rider_${new Date().getMonth()+1}_${new Date().getFullYear()}.csv`);
+            link.setAttribute("download", `Report_Rider_${new Date().getMonth()+1}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
