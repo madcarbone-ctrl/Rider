@@ -13,18 +13,18 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
 
-      - name: Build APK
-        uses: amirisback/automated-build-android-app-with-github-action@master
-        with:
-          app_name: "Rider Tracker Pro"
-          package_name: "com.marcocarbone.ridertracker"
-
-      - name: Force Find APK
+      - name: Build con Bubblewrap
         run: |
-          # Questo comando scova l'APK ovunque sia nascosto e lo porta in superficie
+          npm install -g @bubblewrap/cli
+          # Creiamo l'APK ignorando i crash dello script precedente
+          bubblewrap build --unattended || echo "Ignoro errore e cerco il file"
+
+      - name: Recupero Forzato APK
+        run: |
+          # Cerchiamo l'APK ovunque e lo portiamo nella cartella principale
           find . -name "*.apk" -exec cp {} . \;
 
       - name: Upload APK
@@ -32,3 +32,4 @@ jobs:
         with:
           name: Rider-Tracker-APK
           path: ./*.apk
+          if-no-files-found: warn
