@@ -12,7 +12,7 @@ jobs:
 
       - name: Prepare Files
         run: |
-          # Spostiamo i file fuori da www solo per il build
+          # Copiamo i file dalla cartella www alla cartella principale per il build
           cp www/index.html .
           cp www/report.html .
 
