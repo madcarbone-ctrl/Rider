@@ -62,7 +62,7 @@
         <div class="card standard-text"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
         <div class="card standard-text"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card red-text"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
-        <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
+        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
     </div>
 
@@ -142,7 +142,6 @@
         
         function closeModals() { 
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-            // Azzeramento campi alla chiusura/salvataggio
             ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = "");
         }
 
