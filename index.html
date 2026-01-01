@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.2</title>
+    <title>Rider Tracker Pro v4.3</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -24,7 +24,7 @@
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
-        .hist-header { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--main); text-align: center; }
+        .hist-header { background: #111; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--main); text-align: center; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
         .hist-data { font-size: 9px; color: #888; }
@@ -84,7 +84,8 @@
     <div id="wrapperStorico">
         <div class="hist-header">
             <span class="stat-label" style="font-size: 10px;">Riepilogo Attività</span><br>
-            <span class="stat-val" style="color:var(--main); font-size: 14px;"><span id="ggLavoroHist">0</span> Giorni Lavorati</span>
+            <span class="stat-val" style="color:var(--main); font-size: 16px;"><span id="ggLavoroHist">0</span> Giorni Lavorati</span><br>
+            <button onclick="esportaExcel()" style="margin-top:10px; height:28px; font-size:10px; background:#2ecc71; color:white; border-radius:6px; width:80%;">📊 ESPORTA EXCEL (CSV)</button>
         </div>
         <div id="listaStorico"></div>
     </div>
@@ -156,7 +157,6 @@
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
             document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
             
-            // Aggiorna GG Lavoro sia nel calcolo che nell'intestazione dello storico
             const ggCount = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
             document.getElementById('ggLavoroHist').innerText = ggCount;
 
@@ -198,6 +198,21 @@
             const w = document.getElementById('wrapperStorico'), bB = document.getElementById('boxBenza'), bT = document.getElementById('boxTurno'), btn = document.getElementById('btnToggle');
             if (w.style.display === 'block') { w.style.display = 'none'; bB.style.display = 'block'; bT.style.display = 'block'; btn.innerText = "📜 MOSTRA STORICO"; }
             else { w.style.display = 'block'; bB.style.display = 'none'; bT.style.display = 'none'; btn.innerText = "❌ NASCONDI STORICO"; renderStorico(); }
+        }
+
+        function esportaExcel() {
+            let csv = "Data;Tipo;Valore Lordo/Spesa (€);Ore;KM;Consumo L/100;KM Extra\n";
+            const all = [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id);
+            all.forEach(i => {
+                if(i.type === 'TURNO') csv += `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n`;
+                else csv += `${i.d};${i.type};${i.e};-;-;-;-\n`;
+            });
+            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Rider_Report_${new Date().getMonth()+1}_${new Date().getFullYear()}.csv`);
+            link.click();
         }
 
         function elimina(type, id) { if(type === 'T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); calcola(); renderStorico(); }
