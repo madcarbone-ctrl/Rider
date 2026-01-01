@@ -10,29 +10,23 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Prepara File
+        run: |
+          # Creiamo una cartella specifica con entrambi i tuoi file
+          mkdir -p web_app
+          cp index.html web_app/
+          cp report.html web_app/
+
+      - name: Build APK Completo
+        uses: amirisback/automated-build-android-app-with-github-action@master
         with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Install Tools
-        run: |
-          npm install -g @bubblewrap/cli
-          # Crea una cartella per il risultato
-          mkdir -p dist
-
-      - name: Generate Package
-        run: |
-          # Questo trasforma i tuoi file index e report in un pacchetto
-          bubblewrap build --unattended || echo "Procedo al recupero forzato"
-        continue-on-error: true
+          app_name: "Rider Tracker Pro"
+          package_name: "com.marcocarbone.ridertracker"
+          # Diciamo allo script di guardare nella cartella con entrambi i file
+          source_dir: "web_app"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-APK
-          path: |
-            **/*.apk
-            index.html
-          if-no-files-found: warn
+          name: Rider-Tracker-Completo
+          path: "**/*.apk"
