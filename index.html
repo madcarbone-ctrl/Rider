@@ -10,11 +10,10 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 100px; }
         
-        /* Griglia con altezza fissa per uniformità */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { 
             background: var(--card); 
-            height: 70px; /* Altezza uniforme fissa */
+            height: 70px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -25,13 +24,10 @@
         
         .label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
         .val { font-size: 15px; font-weight: bold; }
-        
-        /* Colori specifici */
         .card.main .val { color: var(--primary); }
         .card.alt .val { color: var(--accent); }
         #netto { color: var(--accent) !important; }
         
-        /* Input stilizzati per stare dentro le caselle */
         .card input { 
             width: 80%; 
             background: transparent; 
@@ -42,15 +38,13 @@
             font-size: 15px; 
             font-weight: bold;
             outline: none;
-            padding: 2px;
         }
-        .card input:focus { border-bottom-color: var(--primary); }
 
         .progress-container { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 10px; margin-top: 10px; }
+        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; }
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; }
@@ -60,8 +54,9 @@
         .modal input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; }
         
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #111; padding: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid #333; }
-        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
+        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: none; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
+        .btn-full { width: 100%; margin-top: 10px; padding: 12px; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -74,11 +69,9 @@
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        
         <div class="card"><span class="label">CONSUMO</span><span class="val" id="cons">0.0L</span></div>
         <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
         <div class="card alt"><span class="label">BENZA</span><span class="val" id="spesaB">€0.00</span></div>
-        
         <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
         <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card alt"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
@@ -94,8 +87,16 @@
 
     <div id="histView" style="display:none">
         <div class="history-section">
+            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA ATTIVITÀ</h4>
             <div id="historyList"></div>
-            <button class="foot-btn" onclick="azzera()" style="width:100%; background:#400; margin-top:10px; border:none;">AZZERA STORICO</button>
+            
+            <button class="foot-btn btn-full" onclick="toggleHist()" style="background: #333; color: var(--primary);">
+                <i class="fas fa-eye-slash"></i> CHIUDI STORICO
+            </button>
+            
+            <button class="foot-btn btn-full" onclick="azzera()" style="background: #400; color: #fff;">
+                <i class="fas fa-trash-alt"></i> AZZERA TUTTO
+            </button>
         </div>
     </div>
 
@@ -106,8 +107,8 @@
             <input type="number" id="tOre" placeholder="Ore" step="0.1">
             <input type="number" id="tKm" placeholder="KM">
             <input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1">
-            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold" onclick="addTurno()">SALVA</button>
-            <button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addTurno()">SALVA</button>
+            <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -116,8 +117,8 @@
             <h3 style="margin:0 0 10px 0; text-align:center">Rifornimento</h3>
             <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
-            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold" onclick="addBenza()">SALVA</button>
-            <button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addBenza()">SALVA</button>
+            <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -151,8 +152,23 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Azzera tutto lo storico?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); } }
-        function toggleHist() { const h = document.getElementById('histView'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }
+        
+        function azzera() { 
+            if(confirm("Azzera tutto lo storico?")) { 
+                db = { s: [], r: [], target: 0, tax: 20 }; 
+                save(); 
+                toggleHist(); // Chiude lo storico dopo il reset
+            } 
+        }
+
+        function toggleHist() { 
+            const h = document.getElementById('histView'); 
+            h.style.display = h.style.display === 'none' ? 'block' : 'none'; 
+            if(h.style.display === 'block') {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
@@ -167,7 +183,6 @@
                 costoBenza += (ltr * prezzo);
             });
 
-            // Calcolo Netto: Lordo - %Tasse - Benzina
             let tasseEuro = lordo * (taxPerc / 100);
             let nettoVal = lordo - tasseEuro - costoBenza;
 
