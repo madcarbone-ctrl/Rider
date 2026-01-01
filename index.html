@@ -8,23 +8,20 @@
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 200px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px; }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         
-        /* STILI COLORI */
         .card.red-text .label { color: var(--accent) !important; }
         .card.red-text input { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
         .card.main .val, .card.mancante-style .val { color: var(--primary); }
         #netto { color: var(--accent) !important; }
-        
-        /* € Benz. Consumata ora segue lo stile standard come Media KM/L */
         .card.standard-text .val { color: var(--text); }
 
-        .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
+        .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; padding: 2px 0; }
 
         .progress-container { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
@@ -36,12 +33,13 @@
         .hist-info { font-size: 11px; line-height: 1.4; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; overflow-y: auto; max-height: 90vh; }
-        .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 14px; text-align: center; }
+        /* MODALI OTTIMIZZATI PER TASTIERA */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; margin-top: 20px; margin-bottom: 20px; }
+        .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; -webkit-appearance: none; }
         
         .date-selector { display: flex; gap: 5px; margin-bottom: 10px; }
-        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; border: 1px solid #444; }
+        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; border: 1px solid #444; font-size: 14px; }
 
         .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); z-index: 999; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
@@ -50,7 +48,7 @@
         .btn-azzera { background: #400 !important; color: #fff !important; font-size: 11px; height: 45px; margin-top: 8px; border-radius: 10px; opacity: 0.9; }
     </style>
 </head>
-<body>
+<body onclick="handleInputFocus(event)">
 
     <div style="text-align: center; margin-bottom: 15px;">
         <h2 style="margin:0; font-size: 18px; color: var(--primary);">Rider Tracker Pro V5 🛵</h2>
@@ -120,6 +118,15 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v5')) || { s: [], r: [], target: 0, tax: 20 };
+
+        // Funzione per evitare che la tastiera copra l'input
+        function handleInputFocus(e) {
+            if (e.target.tagName === 'INPUT') {
+                setTimeout(() => {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        }
 
         function save() { localStorage.setItem('rider_db_v94v5', JSON.stringify(db)); render(); }
         
