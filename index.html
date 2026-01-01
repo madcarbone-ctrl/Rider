@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.3</title>
+    <title>Rider Tracker Pro v4.4</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -23,8 +23,10 @@
         input, select { height: 32px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; font-size: 12px; text-align: center; width: 100%; outline: none; }
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         
+        /* STORICO MINIMIZZATO */
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
-        .hist-header { background: #111; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--main); text-align: center; }
+        .hist-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #111; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
+        .btn-excel { background: #1f1f1f; color: #2ecc71; border: 1px solid #2ecc71; font-size: 9px; height: 22px; width: auto; padding: 0 10px; text-transform: none; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
         .hist-data { font-size: 9px; color: #888; }
@@ -45,7 +47,7 @@
         <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V4 PRO</div>
         <div class="summary-grid">
             <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Netto','Basato sui turni meno tasse e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Netto','Turni meno tasse e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Ore','ore lavorative effettive del turno')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
@@ -56,7 +58,7 @@
         <div class="summary-grid">
             <div class="data-box"><span class="stat-label">Target €</span><input type="number" id="targetIn" oninput="salvaImpostazioni()" placeholder="€"></div>
             <div class="data-box"><span class="stat-label">Tasse %</span><input type="number" id="taxIn" oninput="salvaImpostazioni()" placeholder="%"></div>
-            <div class="data-box" onclick="showModal('Mancante','€ lordi mancanti per raggiungere il target')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Mancante','€ lordi mancanti')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
         </div>
         <div class="progress-container">
             <div class="perc-text" id="percLabel">0%</div>
@@ -83,9 +85,8 @@
 
     <div id="wrapperStorico">
         <div class="hist-header">
-            <span class="stat-label" style="font-size: 10px;">Riepilogo Attività</span><br>
-            <span class="stat-val" style="color:var(--main); font-size: 16px;"><span id="ggLavoroHist">0</span> Giorni Lavorati</span><br>
-            <button onclick="esportaExcel()" style="margin-top:10px; height:28px; font-size:10px; background:#2ecc71; color:white; border-radius:6px; width:80%;">📊 ESPORTA EXCEL (CSV)</button>
+            <span style="font-size: 11px; font-weight: bold; color: var(--main);">📅 <span id="ggLavoroHist">0</span> GG Lavorati</span>
+            <button onclick="esportaExcel()" class="btn-excel">📊 EXCEL</button>
         </div>
         <div id="listaStorico"></div>
     </div>
@@ -139,16 +140,12 @@
                 lordo += x.l; ore += x.o; kmTot += x.k;
                 let litri = (x.k * (x.c / 100)); litriTurni += litri; spesaBenzaTurni += litri * 1.85; 
             });
-
             let taxMultiplier = (100 - (db.tax || 0)) / 100;
             let netto = (lordo * taxMultiplier) - spesaBenzaTurni;
             let target = db.target || 0;
             let p = target > 0 ? Math.min(100, (netto / target) * 100) : 0;
-            
-            const pBar = document.getElementById('pBar');
-            pBar.style.width = p + "%";
+            document.getElementById('pBar').style.width = p + "%";
             document.getElementById('percLabel').innerText = Math.floor(p) + "%";
-            
             document.getElementById('lordoTot').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTot').innerText = ore.toFixed(1);
@@ -156,10 +153,7 @@
             document.getElementById('consTot').innerText = litriTurni.toFixed(1);
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
             document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
-            
-            const ggCount = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
-            document.getElementById('ggLavoroHist').innerText = ggCount;
-
+            document.getElementById('ggLavoroHist').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
 
@@ -201,17 +195,13 @@
         }
 
         function esportaExcel() {
-            let csv = "Data;Tipo;Valore Lordo/Spesa (€);Ore;KM;Consumo L/100;KM Extra\n";
-            const all = [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id);
-            all.forEach(i => {
-                if(i.type === 'TURNO') csv += `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n`;
-                else csv += `${i.d};${i.type};${i.e};-;-;-;-\n`;
+            let csv = "Data;Tipo;Valore (€);Ore;KM;Consumo;Extra\n";
+            [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id).forEach(i => {
+                csv += i.type==='TURNO' ? `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n` : `${i.d};${i.type};${i.e};-;-;-;-\n`;
             });
-            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Rider_Report_${new Date().getMonth()+1}_${new Date().getFullYear()}.csv`);
+            link.href = URL.createObjectURL(new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' }));
+            link.download = `Rider_Report_${new Date().getMonth()+1}.csv`;
             link.click();
         }
 
