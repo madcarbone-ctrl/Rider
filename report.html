@@ -63,56 +63,61 @@
                 <th>Dettagli</th>
             </tr>
         </thead>
-        <tbody id="tabellaCorpo">
-            </tbody>
+        <tbody id="tabellaCorpo"></tbody>
     </table>
 
     <script>
         function caricaDati() {
-            // Recupero dati dal database della tua app
             const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], tax: 20 };
             const corpo = document.getElementById('tabellaCorpo');
             const dataGen = document.getElementById('dataGen');
             
-            // Imposta data odierna nel titolo
             const oggi = new Date();
             dataGen.innerText = oggi.toLocaleDateString('it-IT');
 
-            let lordo = 0, ore = 0, litri = 0;
+            let lordo = 0, ore = 0, litriStimati = 0;
             corpo.innerHTML = "";
 
-            // Uniamo turni e rifornimenti in una sola lista ordinata per ID (tempo)
+            // Uniamo turni e rifornimenti
             const tutti = [
                 ...db.s.map(x => ({...x, type: 'TURNO'})),
                 ...db.r.map(x => ({...x, type: 'RIFORN.'}))
             ].sort((a, b) => b.id - a.id);
 
             tutti.forEach(i => {
-                const isT = i.type === 'TURNO';
-                
-                if(isT) {
+                const riga = document.createElement('tr');
+                let importoStr = "";
+                let dettagliStr = "";
+                let classeTipo = "";
+
+                if(i.type === 'TURNO') {
                     lordo += (i.l || 0); 
                     ore += (i.o || 0);
-                    // Calcolo litri per il netto (usando KM turno + KM extra come avevamo discusso)
-                    litri += ((i.k || 0) * ((i.c || 0) / 100));
+                    litriStimati += ((i.k || 0) * ((i.c || 0) / 100));
+                    
+                    importoStr = `€${(i.l || 0).toFixed(2)}`;
+                    dettagliStr = `${i.k}km | Cons: ${i.c} | Extra: ${i.sc || 0}km`;
+                    classeTipo = "tipo-t";
+                } else {
+                    // Logica specifica per il RIFORNIMENTO
+                    importoStr = `€${(i.e || 0).toFixed(2)}`;
+                    const litriEffettivi = i.p > 0 ? (i.e / i.p).toFixed(2) : 0;
+                    dettagliStr = `Litri: ${litriEffettivi}L | €${(i.p || 0).toFixed(2)}/L`;
+                    classeTipo = "tipo-b";
                 }
 
-                const riga = document.createElement('tr');
                 riga.innerHTML = `
                     <td>${i.d}</td>
-                    <td class="${isT ? 'tipo-t' : 'tipo-b'}">${i.type}</td>
-                    <td>€${(i.l || i.e || 0).toFixed(2)}</td>
-                    <td>${isT ? (i.k || 0)+'km | '+(i.o || 0)+'h' : '€'+(i.p || 0)+'/L'}</td>
+                    <td class="${classeTipo}">${i.type}</td>
+                    <td>${importoStr}</td>
+                    <td>${dettagliStr}</td>
                 `;
                 corpo.appendChild(riga);
             });
 
-            // Calcolo Netto: (Lordo - Tasse) - Costo Benzina stimato
             const percTasse = db.tax !== undefined ? db.tax : 20;
-            const costoBenzaStimato = litri * 1.85;
-            const netto = (lordo * ((100 - percTasse) / 100)) - costoBenzaStimato;
+            const netto = (lordo * ((100 - percTasse) / 100)) - (litriStimati * 1.85);
 
-            // Aggiornamento Box Riepilogo
             document.getElementById('resLordo').innerText = lordo.toFixed(2);
             document.getElementById('resNetto').innerText = isNaN(netto) ? "0.00" : netto.toFixed(2);
             document.getElementById('resOre').innerText = ore.toFixed(1);
