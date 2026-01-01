@@ -54,4 +54,4 @@
 
 ---
 
-**Sviluppato con Gemini 3 Flash | Versione Finale 95**
+**Sviluppato da [Marco Carbone](https://facebook.com/madmaddj) | Versione Finale 95**
