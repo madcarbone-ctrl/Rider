@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Rider Tracker Pro</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: white; color: black; }
+        .btn-stampa { background: #ff4444; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
+        th { background: #eee; }
+        .riepilogo { display: flex; gap: 20px; margin-bottom: 20px; font-weight: bold; }
+        @media print { .btn-stampa { display: none; } }
+    </style>
+</head>
+<body onload="caricaDati()">
+
+    <button class="btn-stampa" onclick="window.print()">SALVA REPORT IN PDF</button>
+
+    <h2>Report Attività Rider</h2>
+    
+    <div class="riepilogo">
+        <div>Lordo: €<span id="resLordo">0</span></div>
+        <div>Netto: €<span id="resNetto">0</span></div>
+        <div>Ore: <span id="resOre">0</span></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Importo</th>
+                <th>Dettagli</th>
+            </tr>
+        </thead>
+        <tbody id="tabellaCorpo"></tbody>
+    </table>
+
+    <script>
+        function caricaDati() {
+            // Legge i dati salvati dalla tua App principale
+            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], tax: 20 };
+            const corpo = document.getElementById('tabellaCorpo');
+            let lordo = 0, ore = 0, litri = 0;
+
+            const tutti = [
+                ...db.s.map(x => ({...x, type: 'TURNO'})),
+                ...db.r.map(x => ({...x, type: 'RIFORN.'}))
+            ].sort((a, b) => b.id - a.id);
+
+            tutti.forEach(i => {
+                const isT = i.type === 'TURNO';
+                if(isT) {
+                    lordo += i.l; ore += i.o;
+                    litri += (i.k * (i.c / 100));
+                }
+                const riga = `<tr>
+                    <td>${i.d}</td>
+                    <td>${i.type}</td>
+                    <td>€${(i.l || i.e).toFixed(2)}</td>
+                    <td>${isT ? i.k+'km | '+i.o+'h' : '€'+i.p+'/L'}</td>
+                </tr>`;
+                corpo.innerHTML += riga;
+            });
+
+            const netto = (lordo * ((100 - db.tax) / 100)) - (litri * 1.85);
+            document.getElementById('resLordo').innerText = lordo.toFixed(2);
+            document.getElementById('resNetto').innerText = netto.toFixed(2);
+            document.getElementById('resOre').innerText = ore.toFixed(1);
+        }
+    </script>
+</body>
+</html>
