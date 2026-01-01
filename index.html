@@ -3,41 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rider Tracker Pro</title>
+    <title>Rider Tracker Pro v4</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 18px; border: none; border-radius: 10px; cursor: pointer; }
-        .btn-main { background: #27ae60; color: white; }
-        .btn-secondary { background: #2980b9; color: white; }
-        #reportPage { display: none; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; }
+        .page { display: none; }
+        .active { display: block; }
+        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        .btn-reg { background-color: #27ae60; color: white; }
+        .btn-view { background-color: #2980b9; color: white; }
+        .btn-back { background-color: #95a5a6; color: white; }
+        .status { margin-top: 15px; padding: 10px; border-radius: 8px; background: #d5f5e3; color: #1e8449; display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+        th { background-color: #f8f9fa; }
     </style>
 </head>
 <body>
 
-    <div id="trackerPage" class="card">
+<div class="container">
+    <div id="trackerPage" class="page active">
         <h1>Rider Tracker Pro</h1>
-        <p>Versione 4.0 Definita</p>
-        <button class="btn-main" onclick="alert('Consegna Registrata!')">Registra Consegna</button>
-        <button class="btn-secondary" onclick="switchPage('report')">Vedi Report</button>
+        <button class="btn-reg" onclick="registraConsegna()">REGISTRA CONSEGNA</button>
+        <div id="msgConsegna" class="status">Consegna salvata! ✅</div>
+        <button class="btn-view" onclick="mostraPagina('reportPage')">VEDI REPORT</button>
     </div>
 
-    <div id="reportPage" class="card">
+    <div id="reportPage" class="page">
         <h1>Report Consegne</h1>
-        <div id="datiReport">Nessuna consegna registrata.</div>
-        <button class="btn-secondary" onclick="switchPage('tracker')">Torna al Tracker</button>
+        <table id="tabellaReport">
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabella">
+                </tbody>
+        </table>
+        <button class="btn-back" onclick="mostraPagina('trackerPage')">TORNA AL TRACKER</button>
     </div>
+</div>
 
-    <script>
-        function switchPage(page) {
-            if(page === 'report') {
-                document.getElementById('trackerPage').style.display = 'none';
-                document.getElementById('reportPage').style.display = 'block';
-            } else {
-                document.getElementById('trackerPage').style.display = 'block';
-                document.getElementById('reportPage').style.display = 'none';
-            }
-        }
-    </script>
+<script>
+    let consegne = JSON.parse(localStorage.getItem('consegne')) || [];
+
+    function registraConsegna() {
+        const ora = new Date().toLocaleString('it-IT');
+        consegne.push({ ora: ora, tipo: 'Consegna Standard' });
+        localStorage.setItem('consegne', JSON.stringify(consegne));
+        
+        const msg = document.getElementById('msgConsegna');
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 2000);
+    }
+
+    function mostraPagina(idPagina) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(idPagina).classList.add('active');
+        if(idPagina === 'reportPage') aggiornaTabella();
+    }
+
+    function aggiornaTabella() {
+        const corpo = document.getElementById('corpoTabella');
+        corpo.innerHTML = consegne.length === 0 ? '<tr><td colspan="2">Nessun dato</td></tr>' : '';
+        consegne.forEach(c => {
+            const riga = `<tr><td>${c.ora}</td><td>${c.tipo}</td></tr>`;
+            corpo.innerHTML += riga;
+        });
+    }
+</script>
+
 </body>
 </html>
