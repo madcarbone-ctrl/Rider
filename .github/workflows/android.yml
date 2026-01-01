@@ -13,22 +13,19 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Android Build Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y nodejs npm
-          npm install -g @bubblewrap/cli
-
       - name: Build APK
-        run: |
-          # Questo comando forza la creazione dell'APK ignorando gli errori minori
-          bubblewrap build --unattended || echo "Build completato con avvisi"
+        uses: amirisback/automated-build-android-app-with-github-action@master
+        with:
+          app_name: "Rider Tracker Pro"
+          package_name: "com.marcocarbone.ridertracker"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Rider-Tracker-APK
+          # Cerchiamo l'APK ovunque, ma con un comando più potente
           path: "**/*.apk"
+          if-no-files-found: error
