@@ -8,9 +8,21 @@
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px; overflow-x: hidden; }
         
-        /* Classe per rimuovere il padding quando lo storico è aperto */
+        /* Nasconde la barra di scorrimento globale del browser */
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 10px; 
+            padding-bottom: 220px; 
+            overflow-x: hidden;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        body::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        
         body.hist-open { padding-bottom: 20px; }
 
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -30,11 +42,17 @@
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        /* SEZIONE STORICO OTTIMIZZATA */
+        /* SEZIONE STORICO SENZA BARRA VISIBILE */
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 70vh; }
-        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; padding-right: 5px; }
-        #historyList::-webkit-scrollbar { width: 4px; }
-        #historyList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        #historyList { 
+            overflow-y: auto; 
+            flex-grow: 1; 
+            margin-bottom: 10px; 
+            padding-right: 5px;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        #historyList::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
@@ -183,15 +201,14 @@
         function toggleHist() { 
             const h = document.getElementById('histView'); 
             const f = document.getElementById('mainFooter');
-            
             if (h.style.display === 'none') {
                 h.style.display = 'block';
                 f.style.display = 'none';
-                document.body.classList.add('hist-open'); // Rimuove padding bottom
+                document.body.classList.add('hist-open');
             } else {
                 h.style.display = 'none';
                 f.style.display = 'grid';
-                document.body.classList.remove('hist-open'); // Ripristina padding bottom
+                document.body.classList.remove('hist-open');
             }
         }
         
