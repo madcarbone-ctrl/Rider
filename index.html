@@ -21,31 +21,48 @@
         .progress-bar { background: #222; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% ); height: 100%; width: 0%; transition: width 0.6s ease; }
         
+        /* STORICO */
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; padding-bottom: 60px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; position: relative; }
         #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 20px; scroll-behavior: smooth; }
         #historyList::-webkit-scrollbar { display: none; }
-
         .scroll-buttons { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 2100; }
         .scroll-btn { background: rgba(0, 204, 188, 0.2); border: 1px solid var(--primary); color: var(--primary); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-right: 55px; }
         .hist-item.benza { border-left-color: #ffa500; }
         .hist-info { font-size: 11px; line-height: 1.5; color: #eee; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
+        /* MODALI */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; text-align: center; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
-        
         .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: 1px solid #444; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
         .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
         .btn-azzera { background: #200 !important; color: #ff4d4d !important; font-size: 10px; height: 30px; margin-top: 4px; border-radius: 6px; border: 1px solid #400 !important; }
+
+        /* --- STILE SPECIFICO PER IL PDF --- */
+        #printSection { display: none; background: white; color: black; padding: 20px; }
+        @media print {
+            body > * { display: none !important; }
+            #printSection { display: block !important; }
+            .print-item { border-bottom: 1px solid #ccc; padding: 10px 0; page-break-inside: avoid; }
+            .print-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px; border: 1px solid #000; padding: 10px; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="printSection">
+        <h1 style="text-align:center; color:#00CCBC">Report Rider Tracker Pro</h1>
+        <div id="printDate" style="text-align:center; margin-bottom:20px;"></div>
+        <div class="print-grid" id="printTotals"></div>
+        <h3>Dettaglio Cronologia</h3>
+        <div id="printList"></div>
+    </div>
+
     <div class="app-title">Rider Tracker Pro</div>
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -58,43 +75,35 @@
         <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
     </div>
+
     <div class="progress-container">
         <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
-            <span>PROGRESSO OBIETTIVO</span>
-            <span id="perc">0%</span>
+            <span>PROGRESSO OBIETTIVO</span><span id="perc">0%</span>
         </div>
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
     <div id="histView">
         <div class="history-section">
-            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
+            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA</h4>
             <div class="scroll-buttons">
                 <div class="scroll-btn" onclick="scrollHist(-150)"><i class="fas fa-arrow-up"></i></div>
                 <div class="scroll-btn" onclick="scrollHist(150)"><i class="fas fa-arrow-down"></i></div>
             </div>
             <div id="historyList"></div>
-            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 18px; border: none; border-radius: 12px; margin-bottom: 10px;" onclick="toggleHist()">CHIUDI STORICO</button>
+            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 18px; border: none; border-radius: 12px; margin-bottom: 10px;" onclick="toggleHist()">CHIUDI</button>
         </div>
     </div>
 
-    <div id="mAzzera" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--accent)">ATTENZIONE</h3>
-            <p>Sei sicuro di voler azzerare tutti i dati e il target?</p>
-            <button class="foot-btn" style="width:100%; background:var(--accent); color:#fff; font-weight:bold; padding:12px; border:none;" onclick="confermaAzzera()">SI, AZZERA TUTTO</button>
-            <button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button>
-        </div>
-    </div>
+    <div id="mAzzera" class="modal"><div class="modal-content"><h3 style="color:var(--accent)">AZZERA DATI?</h3><p>Perderai tutto lo storico e il target.</p><button class="foot-btn" style="width:100%; background:var(--accent); color:#fff; font-weight:bold; padding:12px; border:none;" onclick="confermaAzzera()">SI, AZZERA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">NO, ANNULLA</button></div></div>
+    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">CHIUDI</button></div></div>
+    <div id="mBenza" class="modal"><div class="modal-content"><h3>Benzina</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro (€)" step="0.01"><input type="tel" id="bP" placeholder="Prezzo (es: 1720)" oninput="autoDecimal(this)"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">CHIUDI</button></div></div>
 
-    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA TURNO</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-    <div id="mBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01"><input type="tel" id="bP" placeholder="Prezzo (es: 1653)" oninput="autoDecimal(this)"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA BENZINA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-    
     <div id="mainFooter" class="sticky-footer">
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
-        <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
+        <button class="foot-btn btn-full" onclick="generaPDF()" style="background: var(--primary); color: #000;">GENERA REPORT PDF</button>
         <button class="foot-btn btn-full btn-azzera" onclick="openM('mAzzera')">AZZERA TUTTO</button>
     </div>
 
@@ -103,52 +112,69 @@
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display === 'flex') ? 'none' : 'flex'; }
         function scrollHist(val) { document.getElementById('historyList').scrollBy(0, val); }
+        
+        function generaPDF() {
+            const date = new Date();
+            document.getElementById('printDate').innerText = "Report del " + date.toLocaleDateString();
+            document.getElementById('printTotals').innerHTML = `
+                <div style="text-align:center"><b>LORDO</b><br>€${document.getElementById('lordo').innerText}</div>
+                <div style="text-align:center"><b>NETTO</b><br>${document.getElementById('netto').innerText}</div>
+                <div style="text-align:center"><b>ORE</b><br>${document.getElementById('ore').innerText}h</div>
+            `;
+            let listHTML = "";
+            [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
+                if(i.type === 's') listHTML += `<div class="print-item"><b>${i.time} - TURNO:</b> €${i.l.toFixed(2)} | ${i.o}h | ${i.k}km</div>`;
+                else listHTML += `<div class="print-item"><b>${i.time} - BENZINA:</b> €${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L</div>`;
+            });
+            document.getElementById('printList').innerHTML = listHTML;
+            window.print();
+        }
+
         function autoDecimal(el) { let v = el.value.replace(/\D/g, ""); if (v.length > 0) el.value = (parseFloat(v) / 1000).toFixed(3); }
         function createDateSelectors(containerId) { 
             const container = document.getElementById(containerId); 
-            if(!container) return;
-            const now = new Date(); let days = '', months = '', years = ''; for(let i=1; i<=31; i++) days += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`; const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"]; mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`); for(let i=2025; i<=2030; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`; container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`; 
+            const now = new Date(); let d = '', m = '', y = '';
+            for(let i=1; i<=31; i++) d += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`;
+            const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+            mNames.forEach((n, i) => m += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${n}</option>`);
+            for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
+            container.innerHTML = `<select id="${containerId}D">${d}</select><select id="${containerId}M">${m}</select><select id="${containerId}Y">${y}</select>`;
         }
         function openM(id) { if(id !== 'mAzzera') createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; }); }
-        
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function confermaAzzera() { db = { s: [], r: [], target: 0, tax: 20 }; save(); closeModals(); }
-
-        function addTurno() { let l = parseFloat(document.getElementById('tLordo').value) || 0, o = parseFloat(document.getElementById('tOre').value) || 0, k = parseInt(document.getElementById('tKm').value) || 0, c = parseFloat(document.getElementById('tCons').value) || 0; if(l > 0) { db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); save(); closeModals(); } }
-        function addBenza() { let e = parseFloat(document.getElementById('bEuro').value) || 0, p = parseFloat(document.getElementById('bP').value) || 0; if(e > 0 && p > 0) { db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); save(); closeModals(); } }
-        function getSelectedDate(prefix) { const d = document.getElementById(prefix + 'D').value.padStart(2, '0'), m = document.getElementById(prefix + 'M').value.padStart(2, '0'), y = document.getElementById(prefix + 'Y').value; return `${d}/${m}/${y}`; }
-        function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
-        function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
+        function addTurno() { let l = parseFloat(document.getElementById('tLordo').value)||0, o = parseFloat(document.getElementById('tOre').value)||0, k = parseInt(document.getElementById('tKm').value)||0, c = parseFloat(document.getElementById('tCons').value)||0; if(l>0){ db.s.push({id:Date.now(), time:getSelectedDate('dateTurno'), l, o, k, c}); save(); closeModals(); } }
+        function addBenza() { let e = parseFloat(document.getElementById('bEuro').value)||0, p = parseFloat(document.getElementById('bP').value)||0; if(e>0 && p>0){ db.r.push({id:Date.now(), time:getSelectedDate('dateBenza'), e, p}); save(); closeModals(); } }
+        function getSelectedDate(prefix) { return document.getElementById(prefix+'D').value.padStart(2,'0')+'/'+document.getElementById(prefix+'M').value.padStart(2,'0')+'/'+document.getElementById(prefix+'Y').value; }
+        function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value)||0; save(); }
+        function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||0; save(); }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
-            let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
+            let lordo = 0, ore = 0, kmT = 0, litT = 0, spesaB = 0;
             db.s.forEach(t => { 
-                lordo += t.l; ore += t.o; kmTotal += t.k; 
-                let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno; 
-                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85; 
-                costoBenzaTotal += (ltrTurno * prezzo); 
+                lordo += t.l; ore += t.o; kmT += t.k; 
+                let ltr = (t.k * (t.c / 100)); litT += ltr; 
+                let p = db.r.length > 0 ? db.r[db.r.length-1].p : 1.85; spesaB += (ltr * p); 
             });
-            let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
+            let netto = lordo - (lordo * (db.tax/100)) - spesaB;
             document.getElementById('lordo').innerText = lordo.toFixed(2);
-            document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
+            document.getElementById('netto').innerText = `€${netto.toFixed(2)}`;
             document.getElementById('ore').innerText = ore.toFixed(1);
-            document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
-            document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
-            document.getElementById('kml').innerText = litriTotal > 0 ? (kmTotal / litriTotal).toFixed(1) : "0.0";
-            let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
-            document.getElementById('bar').style.width = perc + "%";
-            document.getElementById('perc').innerText = Math.round(perc) + "%";
-            document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
+            document.getElementById('cons').innerText = `${litT.toFixed(1)}L`;
+            document.getElementById('spesaB').innerText = `€${spesaB.toFixed(2)}`;
+            document.getElementById('kml').innerText = litT > 0 ? (kmT/litT).toFixed(1) : "0.0";
+            let p = db.target > 0 ? Math.min(100, (netto/db.target)*100) : 0;
+            document.getElementById('bar').style.width = p + "%";
+            document.getElementById('perc').innerText = Math.round(p) + "%";
+            document.getElementById('mancante').innerText = `€${Math.max(0, db.target-netto).toFixed(2)}`;
             document.getElementById('targetIn').value = db.target || "";
             document.getElementById('taxIn').value = db.tax;
-            
-            const list = document.getElementById('historyList');
-            list.innerHTML = "";
+            const list = document.getElementById('historyList'); list.innerHTML = "";
             [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
-                const div = document.createElement('div'); div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
-                let infoHTML = (i.type === 's') ? `<b>TURNO ${i.time}</b><br>€${i.l.toFixed(2)} | ${i.o}h | ${i.k}km<br><small>Media: ${i.c}L/100km | ${(i.k*(i.c/100)).toFixed(2)}L</small>` : `<b>RIFORN. ${i.time}</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L<br><small>Litri: ${(i.e/i.p).toFixed(2)}L</small>`;
-                div.innerHTML = `<div class="hist-info">${infoHTML}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})">×</button>`;
+                const div = document.createElement('div'); div.className = `hist-item ${i.type==='r'?'benza':''}`;
+                let h = (i.type==='s')?`<b>TURNO ${i.time}</b><br>€${i.l.toFixed(2)} | ${i.o}h | ${i.k}km` : `<b>BENZINA ${i.time}</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L`;
+                div.innerHTML = `<div class="hist-info">${h}</div><button class="del-btn" onclick="del('${i.type}',${i.id})">×</button>`;
                 list.appendChild(div);
             });
         }
