@@ -11,34 +11,14 @@
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 100px; }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .card { 
-            background: var(--card); 
-            height: 75px; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px; 
-            border: 1px solid #333; 
-        }
-        
+        .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         .card.main .val { color: var(--primary); }
         .card.alt .val { color: var(--accent); }
         #netto { color: var(--accent) !important; }
         
-        .card input { 
-            width: 85%; 
-            background: transparent; 
-            border: none; 
-            border-bottom: 1px solid #444; 
-            color: #fff; 
-            text-align: center; 
-            font-size: 14px; 
-            font-weight: bold;
-            outline: none;
-        }
+        .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
 
         .progress-container { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
@@ -51,9 +31,12 @@
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; }
-        .modal input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; overflow-y: auto; max-height: 90vh; }
+        .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 14px; text-align: center; }
         
+        .date-selector { display: flex; gap: 5px; margin-bottom: 10px; }
+        .date-selector select { flex: 1; padding: 10px 2px; }
+
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #111; padding: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid #333; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: none; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
@@ -70,11 +53,9 @@
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        
         <div class="card"><span class="label">TOT L. BENZA</span><span class="val" id="cons">0.0L</span></div>
         <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
         <div class="card alt"><span class="label">COSTO BENZA</span><span class="val" id="spesaB">€0.00</span></div>
-        
         <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
         <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card alt"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
@@ -92,20 +73,15 @@
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
             <div id="historyList"></div>
-            
-            <button class="foot-btn btn-full" onclick="toggleHist()" style="background: #333; color: var(--primary);">
-                <i class="fas fa-eye-slash"></i> CHIUDI STORICO
-            </button>
-            
-            <button class="foot-btn btn-full" onclick="azzera()" style="background: #400; color: #fff;">
-                <i class="fas fa-trash-alt"></i> AZZERA TUTTO
-            </button>
+            <button class="foot-btn btn-full" onclick="toggleHist()" style="background: #333; color: var(--primary);"><i class="fas fa-eye-slash"></i> CHIUDI STORICO</button>
+            <button class="foot-btn btn-full" onclick="azzera()" style="background: #400; color: #fff;"><i class="fas fa-trash-alt"></i> AZZERA TUTTO</button>
         </div>
     </div>
 
     <div id="mTurno" class="modal">
         <div class="modal-content">
             <h3 style="margin:0 0 10px 0; text-align:center">Nuovo Turno</h3>
+            <div class="date-selector" id="dateTurno"></div>
             <input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01">
             <input type="number" id="tOre" placeholder="Ore" step="0.1">
             <input type="number" id="tKm" placeholder="KM Totali">
@@ -118,6 +94,7 @@
     <div id="mBenza" class="modal">
         <div class="modal-content">
             <h3 style="margin:0 0 10px 0; text-align:center">Rifornimento</h3>
+            <div class="date-selector" id="dateBenza"></div>
             <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
             <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addBenza()">SALVA BENZINA</button>
@@ -136,12 +113,32 @@
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
 
         function save() { localStorage.setItem('rider_db_v94v2', JSON.stringify(db)); render(); }
-        function openM(id) { document.getElementById(id).style.display = 'flex'; }
+        
+        function createDateSelectors(containerId) {
+            const container = document.getElementById(containerId);
+            const now = new Date();
+            let days = '', months = '', years = '';
+            for(let i=1; i<=31; i++) days += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`;
+            const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+            mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`);
+            for(let i=2025; i<=2045; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
+            container.innerHTML = `<select id="${containerId}D">${days}</select><select id="${containerId}M">${months}</select><select id="${containerId}Y">${years}</select>`;
+        }
+
+        function openM(id) { 
+            createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza');
+            document.getElementById(id).style.display = 'flex'; 
+        }
+        
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
-        function getNow() {
-            const d = new Date();
-            return d.toLocaleString('it-IT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+        function getSelectedDate(prefix) {
+            const d = document.getElementById(prefix + 'D').value.padStart(2, '0');
+            const m = document.getElementById(prefix + 'M').value.padStart(2, '0');
+            const y = document.getElementById(prefix + 'Y').value;
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+            return `${d}/${m}/${y} ${time}`;
         }
 
         function addTurno() {
@@ -150,7 +147,7 @@
             let k = parseInt(document.getElementById('tKm').value) || 0;
             let c = parseFloat(document.getElementById('tCons').value) || 0;
             if(l > 0) { 
-                db.s.push({ id: Date.now(), time: getNow(), l, o, k, c }); 
+                db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); 
                 save(); closeModals(); 
             }
         }
@@ -159,77 +156,48 @@
             let e = parseFloat(document.getElementById('bEuro').value) || 0;
             let p = parseFloat(document.getElementById('bP').value) || 0;
             if(e > 0 && p > 0) { 
-                db.r.push({ id: Date.now(), time: getNow(), e, p }); 
+                db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); 
                 save(); closeModals(); 
             }
         }
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Azzera tutto lo storico e i parametri?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); toggleHist(); } }
+        function azzera() { if(confirm("Azzera tutto?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); toggleHist(); } }
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
             let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
-            let taxPerc = Number(db.tax) || 0;
-
             db.s.forEach(t => {
-                lordo += t.l; 
-                ore += t.o; 
-                kmTotal += t.k;
-                let ltrTurno = (t.k * (t.c / 100));
-                litriTotal += ltrTurno;
-                let prezzoAttuale = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
-                costoBenzaTotal += (ltrTurno * prezzoAttuale);
+                lordo += t.l; ore += t.o; kmTotal += t.k;
+                let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno;
+                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+                costoBenzaTotal += (ltrTurno * prezzo);
             });
-
-            let nettoVal = lordo - (lordo * (taxPerc / 100)) - costoBenzaTotal;
-
+            let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
             document.getElementById('ore').innerText = ore.toFixed(1);
             document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
             document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
             document.getElementById('kml').innerText = litriTotal > 0 ? (kmTotal / litriTotal).toFixed(1) : "0.0";
-            
             let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
             document.getElementById('bar').style.width = (perc > 0 ? perc : 0) + "%";
             document.getElementById('perc').innerText = Math.round(perc) + "%";
             document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
-            
             document.getElementById('targetIn').value = db.target || "";
             document.getElementById('taxIn').value = db.tax;
-
             const list = document.getElementById('historyList');
             list.innerHTML = "";
-            
-            const entries = [
-                ...db.s.map(x => ({...x, type: 's'})),
-                ...db.r.map(x => ({...x, type: 'r'}))
-            ].sort((a,b) => b.id - a.id);
-
-            entries.forEach(i => {
+            [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
                 const div = document.createElement('div');
                 div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
-                
                 if(i.type === 's') {
                     let ltr = (i.k * (i.c / 100)).toFixed(2);
-                    let m = i.k > 0 ? (i.k / ltr).toFixed(1) : "0.0";
-                    div.innerHTML = `
-                        <div class="hist-info">
-                            <b style="color:var(--primary)">TURNO ${i.time}</b><br>
-                            Lordo: €${i.l.toFixed(2)} | KM: ${i.k}<br>
-                            Consumo: ${ltr}L | Media: ${m} km/l
-                        </div>
-                        <button class="del-btn" onclick="del('s', ${i.id})">×</button>`;
+                    div.innerHTML = `<div class="hist-info"><b>TURNO ${i.time}</b><br>€${i.l.toFixed(2)} | ${i.k}km | ${ltr}L | ${(i.k/ltr||0).toFixed(1)}km/l</div><button class="del-btn" onclick="del('s', ${i.id})">×</button>`;
                 } else {
-                    div.innerHTML = `
-                        <div class="hist-info">
-                            <b style="color:#ffa500">RIFORNIMENTO ${i.time}</b><br>
-                            Spesa: €${i.e.toFixed(2)} | Prezzo: €${i.p.toFixed(3)}/L
-                        </div>
-                        <button class="del-btn" onclick="del('r', ${i.id})">×</button>`;
+                    div.innerHTML = `<div class="hist-info"><b>RIFORN. ${i.time}</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L</div><button class="del-btn" onclick="del('r', ${i.id})">×</button>`;
                 }
                 list.appendChild(div);
             });
