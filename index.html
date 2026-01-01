@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4</title>
+    <title>Rider Tracker Pro v4.1</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { 
@@ -68,7 +68,7 @@
         <div style="color:var(--main); text-align:center; font-weight:900; font-size:13px; margin-bottom:8px;">🏎️ RIDER TRACKER V4 PRO</div>
         <div class="summary-grid">
             <div class="data-box" onclick="showModal('Lordo','Totale lordo dei turni.')"><span class="stat-label">Lordo</span><span class="stat-val">€<span id="lordoTot">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Netto','Basato solo sui dati dei Turni.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
+            <div class="data-box" onclick="showModal('Netto','Basato sui turni meno la percentuale tasse e benzina.')"><span class="stat-label">Netto</span><span class="stat-val" style="color:var(--main)">€<span id="nettoReale">0.00</span></span></div>
             <div class="data-box" onclick="showModal('Ore','ore lavorative effettive del turno')"><span class="stat-label">Ore</span><span id="oreTot" class="stat-val">0.0</span></div>
         </div>
         <div class="summary-grid">
@@ -77,10 +77,11 @@
             <div class="data-box" onclick="showModal('Benza','benzina realmente consumata nel turno')"><span class="stat-label">Benza</span><span class="stat-val" style="color:var(--danger)">€<span id="spesaBenza">0.00</span></span></div>
         </div>
         <div class="summary-grid">
-            <div class="data-box"><span class="stat-label">Obiettivo Netto</span><input type="number" id="targetIn" oninput="salvaTarget()" placeholder="€"></div>
+            <div class="data-box"><span class="stat-label">Target €</span><input type="number" id="targetIn" oninput="salvaImpostazioni()" placeholder="Target"></div>
+            <div class="data-box"><span class="stat-label">Tasse %</span><input type="number" id="taxIn" oninput="salvaImpostazioni()" placeholder="%"></div>
             <div class="data-box" onclick="showModal('Mancante','€ lordi mancanti per raggiungere il target')"><span class="stat-label">Mancante</span><span class="stat-val" style="color:var(--danger)">€<span id="mancante">0.00</span></span></div>
-            <div class="data-box" onclick="showModal('Giorni','Giorni lavorati.')"><span class="stat-label">GG Lavoro</span><span id="ggLavoro" class="stat-val">0</span></div>
         </div>
+        <div style="text-align:center; margin-top:5px;"><span class="stat-label">GG Lavoro: </span><span id="ggLavoro" class="stat-val">0</span></div>
         <div class="progress-container">
             <div class="perc-text" id="percLabel">0%</div>
             <div class="progress-bar" id="pBar"></div>
@@ -120,11 +121,13 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0 };
+        // Aggiunto campo tax nel db
+        let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
         
         function init() { 
             riempiDate(); 
             document.getElementById('targetIn').value = db.target || ""; 
+            document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
             calcola(); 
             
             const inputs = document.querySelectorAll('input');
@@ -143,7 +146,6 @@
                 const el = document.getElementById(id); el.innerHTML = "";
                 if(id.includes('Day')) for(let i=1;i<=31;i++) el.innerHTML+=`<option ${i==d.getDate()?'selected':''}>${i}</option>`;
                 if(id.includes('Month')) for(let i=1;i<=12;i++) el.innerHTML+=`<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
-                // Modificato: selezione anni estesa fino al 2040
                 if(id.includes('Year')) for(let i=2024;i<=2040;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
             });
             fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
@@ -162,7 +164,11 @@
                 litriTurni += litri;
                 spesaBenzaTurni += litri * 1.85; 
             });
-            let netto = (lordo * 0.8) - spesaBenzaTurni;
+
+            // Calcolo netto usando la percentuale dinamica
+            let taxMultiplier = (100 - (db.tax || 0)) / 100;
+            let netto = (lordo * taxMultiplier) - spesaBenzaTurni;
+            
             let target = db.target || 0;
             let p = target > 0 ? Math.min(100, (netto / target) * 100) : 0;
             
@@ -256,9 +262,15 @@
             document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">NO</button><button class="modal-btn" style="background:var(--danger); color:white;" onclick="azzeraReal()">SI</button>`;
             document.getElementById('infoModal').style.display = 'flex';
         }
-        function azzeraReal() { db = { s: [], r: [], target: 0 }; document.getElementById('targetIn').value = ""; calcola(); renderStorico(); closeModal(); }
+        function azzeraReal() { db = { s: [], r: [], target: 0, tax: 20 }; document.getElementById('targetIn').value = ""; document.getElementById('taxIn').value = 20; calcola(); renderStorico(); closeModal(); }
         function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
-        function salvaTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; calcola(); }
+        
+        function salvaImpostazioni() { 
+            db.target = parseFloat(document.getElementById('targetIn').value) || 0; 
+            db.tax = parseFloat(document.getElementById('taxIn').value) || 0;
+            calcola(); 
+        }
+
         function showModal(title, body) { document.getElementById('mTitle').innerText = title; document.getElementById('mBody').innerText = body; document.getElementById('mBtns').innerHTML = `<button class="modal-btn" style="background:#333; color:white;" onclick="closeModal()">CHIUDI</button>`; document.getElementById('infoModal').style.display = 'flex'; }
     </script>
 </body>
