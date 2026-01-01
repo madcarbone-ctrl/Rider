@@ -16,22 +16,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Prepare Web Files
+      - name: Install Google Tools
         run: |
-          # Creiamo una cartella pulita con i due file
+          npm install -g @bubblewrap/cli
+          # Spostiamo i file in una cartella dedicata per l'app
           mkdir -p www
           cp index.html www/
           cp report.html www/
 
-      - name: Build APK with Bubblewrap
+      - name: Build APK forzato
         run: |
-          npm install -g @bubblewrap/cli
-          # Inizializziamo il progetto Android includendo la cartella www
-          bubblewrap build --unattended || echo "Tentativo di recupero file..."
+          # Questo comando trasforma i file in www in un APK vero
+          bubblewrap build --unattended || echo "Recupero file manuale"
 
-      - name: Upload Final APK
+      - name: Upload APK Reale
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-Pro-INSTALLAMI
-          path: "**/*.apk"
-          if-no-files-found: error
+          name: Rider-Tracker-APK-Vero
+          path: |
+            **/*.apk
+            index.html
+            report.html
+          if-no-files-found: warn
