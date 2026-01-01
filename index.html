@@ -6,7 +6,7 @@
     <title>Rider Tracker Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; --orange: #ffa500; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         /* Scrollbar generale nascosta */
@@ -37,25 +37,27 @@
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; padding-bottom: 60px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; }
         
-        /* CONFIGURAZIONE BARRA SCORRIMENTO STORICO */
+        /* BARRA SCORRIMENTO STORICO ARANCIONE */
         #historyList { 
-            overflow-y: auto; 
+            overflow-y: scroll; /* Forza lo scroll */
             flex-grow: 1; 
             margin-bottom: 20px; 
-            padding-right: 10px;
+            padding-right: 15px;
+            scrollbar-width: thick; /* Per Firefox */
+            scrollbar-color: var(--orange) #222; /* Per Firefox */
         }
         #historyList::-webkit-scrollbar { 
             display: block !important; 
-            width: 12px; 
+            width: 14px; 
         }
         #historyList::-webkit-scrollbar-track { 
             background: #222; 
             border-radius: 10px; 
         }
         #historyList::-webkit-scrollbar-thumb { 
-            background: var(--primary); 
+            background: var(--orange); 
             border-radius: 10px; 
-            border: 3px solid #222;
+            border: 2px solid #222;
         }
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
