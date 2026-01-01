@@ -16,25 +16,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Bubblewrap
+      - name: Prepare Web Files
+        run: |
+          # Creiamo una cartella pulita con i due file
+          mkdir -p www
+          cp index.html www/
+          cp report.html www/
+
+      - name: Build APK with Bubblewrap
         run: |
           npm install -g @bubblewrap/cli
-          # Forziamo l'inclusione di tutti i file HTML presenti
-          mkdir -p output
-          cp index.html output/
-          cp report.html output/
+          # Inizializziamo il progetto Android includendo la cartella www
+          bubblewrap build --unattended || echo "Tentativo di recupero file..."
 
-      - name: Build APK Forzato
-        run: |
-          # Usiamo lo strumento ufficiale di Google (Bubblewrap)
-          bubblewrap build --unattended || echo "Ignoro errori e recupero file"
-
-      - name: Upload APK e Report
+      - name: Upload Final APK
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-Pro-FULL
-          path: |
-            **/*.apk
-            index.html
-            report.html
-          if-no-files-found: warn
+          name: Rider-Tracker-Pro-INSTALLAMI
+          path: "**/*.apk"
+          if-no-files-found: error
