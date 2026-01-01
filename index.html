@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v5.1 PDF</title>
+    <title>Rider Tracker Pro v4.2</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -37,16 +37,6 @@
         .modal-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
 
         .sticky-footer { margin-top: auto; padding: 5px 5px 80px 5px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); flex-shrink: 0; }
-
-        /* --- STILI PER PDF --- */
-        #sezioneStampa { display: none; background: white !important; color: black !important; padding: 20px; }
-        @media print {
-            body * { display: none !important; }
-            #sezioneStampa, #sezioneStampa * { display: block !important; visibility: visible; }
-            #sezioneStampa { position: absolute; left: 0; top: 0; width: 100%; }
-            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-            th, td { border: 1px solid #000; padding: 6px; text-align: left; font-size: 10px; color: black !important; }
-        }
     </style>
 </head>
 <body onload="init()">
@@ -91,15 +81,6 @@
         <button style="background:var(--main); color:#000;" onclick="addTurno()">SALVA TURNO</button>
     </div>
 
-    <div id="sezioneStampa">
-        <h2 style="color:black; margin:0; text-align:center;">REPORT RIDER TRACKER</h2>
-        <p id="infoGeneraliPDF" style="font-size:12px; margin:10px 0; color:black;"></p>
-        <table>
-            <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Dettagli</th></tr></thead>
-            <tbody id="corpoTabellaPDF"></tbody>
-        </table>
-    </div>
-
     <div id="wrapperStorico">
         <div class="hist-header">
             <span class="stat-label" style="font-size: 10px;">Riepilogo Attività</span><br>
@@ -109,7 +90,6 @@
     </div>
 
     <div class="sticky-footer">
-        <button onclick="stampaPDF()" style="background:#fff; color:#000; height:30px; font-size:11px; margin-bottom:5px;">💾 SALVA REPORT PDF</button>
         <button id="btnToggle" style="background:#222; color:var(--main);" onclick="toggleStorico()">📜 MOSTRA STORICO</button>
         <button style="background:#300; color:var(--danger); height:30px; font-size:11px;" onclick="confirmAzzera()">⚠️ AZZERA TUTTO</button>
     </div>
@@ -130,6 +110,13 @@
             document.getElementById('targetIn').value = db.target || ""; 
             document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
             calcola(); 
+            
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+                });
+            });
         }
         
         function riempiDate() {
@@ -151,19 +138,27 @@
                 lordo += x.l; ore += x.o; kmTot += x.k;
                 let litri = (x.k * (x.c / 100)); litriTurni += litri; spesaBenzaTurni += litri * 1.85; 
             });
-            let netto = (lordo * (100 - (db.tax || 0)) / 100) - spesaBenzaTurni;
+
+            let taxMultiplier = (100 - (db.tax || 0)) / 100;
+            let netto = (lordo * taxMultiplier) - spesaBenzaTurni;
+            let target = db.target || 0;
+            let p = target > 0 ? Math.min(100, (netto / target) * 100) : 0;
+            
+            const pBar = document.getElementById('pBar');
+            pBar.style.width = p + "%";
+            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
+            
             document.getElementById('lordoTot').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTot').innerText = ore.toFixed(1);
             document.getElementById('spesaBenza').innerText = spesaBenzaTurni.toFixed(2);
             document.getElementById('consTot').innerText = litriTurni.toFixed(1);
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
-            document.getElementById('mancante').innerText = Math.max(0, (db.target || 0) - netto).toFixed(2);
+            document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
             
-            let p = db.target > 0 ? Math.min(100, (netto / db.target) * 100) : 0;
-            document.getElementById('pBar').style.width = p + "%";
-            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
-            document.getElementById('ggLavoroHist').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
+            const ggCount = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
+            document.getElementById('ggLavoroHist').innerText = ggCount;
+
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
 
@@ -178,8 +173,9 @@
 
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
+            const p = parseFloat(document.getElementById('fPrezzo').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value) || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
+                db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
                 renderStorico();
             }
@@ -189,34 +185,12 @@
             let h = "";
             const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
             all.forEach(i => {
-                const isT = i.type === 'T';
-                const color = isT ? 'var(--main)' : 'var(--fuel)';
-                h += `<div class="hist-item" style="border-left-color:${color}">
-                    <div class="hist-info">
-                        <span style="font-size:10px; font-weight:bold; color:${color}">${isT?'TURNO':'RIFORN.'} (${i.d})</span>
-                        <b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b>
-                        <span class="hist-data">${isT ? 'KM: '+i.k+' | ORE: '+i.o : 'PREZZO: €'+i.p+'/L'}</span>
-                    </div>
-                    <button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button>
-                </div>`;
+                const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)';
+                const label = i.type === 'T' ? 'TURNO' : 'RIFORN.';
+                let details = i.type === 'T' ? `KM: ${i.k} | Cons: ${i.c} | Extra: ${i.sc}km` : `Litri: ${(i.p>0?(i.e/i.p):0).toFixed(2)}L | €${(i.p||0).toFixed(2)}/L`;
+                h += `<div class="hist-item" style="border-left-color:${color}"><div class="hist-info"><span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span><b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b><span class="hist-data">${details}</span></div><button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button></div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#555;'>Vuoto</div>";
-        }
-
-        function stampaPDF() {
-            const corpo = document.getElementById('corpoTabellaPDF');
-            corpo.innerHTML = "";
-            document.getElementById('infoGeneraliPDF').innerHTML = `<b>Lordo:</b> €${document.getElementById('lordoTot').innerText} | <b>Netto:</b> €${document.getElementById('nettoReale').innerText} | <b>Ore:</b> ${document.getElementById('oreTot').innerText}`;
-            
-            const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
-            all.forEach(i => {
-                const row = corpo.insertRow();
-                row.insertCell(0).innerText = i.d;
-                row.insertCell(1).innerText = i.type === 'T' ? 'TURNO' : 'BENZINA';
-                row.insertCell(2).innerText = '€' + (i.l || i.e).toFixed(2);
-                row.insertCell(3).innerText = i.type === 'T' ? i.k+'km - '+i.o+'h' : 'Rifornimento';
-            });
-            window.print();
         }
 
         function toggleStorico() {
