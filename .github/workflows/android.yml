@@ -10,31 +10,16 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Build APK con Tool Alternativo
+        uses: elvis-perez/web-to-apk-action@v1
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          # Questo trasforma i tuoi HTML in un'app reale
+          app_name: "Rider Tracker Pro"
+          package_name: "com.madcarbone.rider"
+          source_dir: "."
 
-      - name: Install Google Tools
-        run: |
-          npm install -g @bubblewrap/cli
-          # Spostiamo i file in una cartella dedicata per l'app
-          mkdir -p www
-          cp index.html www/
-          cp report.html www/
-
-      - name: Build APK forzato
-        run: |
-          # Questo comando trasforma i file in www in un APK vero
-          bubblewrap build --unattended || echo "Recupero file manuale"
-
-      - name: Upload APK Reale
+      - name: Upload APK Installabile
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-APK-Vero
-          path: |
-            **/*.apk
-            index.html
-            report.html
-          if-no-files-found: warn
+          name: Rider-Tracker-APP-REALE
+          path: "**/*.apk"
