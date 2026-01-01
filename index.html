@@ -48,11 +48,11 @@
     </div>
 
     <div class="grid">
-        <div class="card main" onclick="alert('Lordo totale guadagnato')">
+        <div class="card main">
             <span class="label">LORDO</span>
             <span class="val">€<span id="lordo">0.00</span></span>
         </div>
-        <div class="card main" onclick="alert('Netto stimato dopo tasse e benzina')">
+        <div class="card main">
             <span class="label">NETTO</span>
             <span class="val" id="netto">€0.00</span>
         </div>
@@ -80,7 +80,7 @@
             <span class="label">TASSE %</span>
             <input type="number" id="taxIn" placeholder="%" oninput="setTax()" style="margin:0; padding:2px; height:25px; text-align:center; background:transparent; border:1px solid #333; font-size:14px;">
         </div>
-        <div class="card alt" onclick="alert('Quanto manca per raggiungere il netto desiderato')">
+        <div class="card alt">
             <span class="label">MANCANTE</span>
             <span class="val" id="mancante">€0.00</span>
         </div>
@@ -141,9 +141,8 @@
     </div>
 
     <script>
-        // Database con inizializzazione sicura
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
-        if (!db.r) db.r = []; // Protezione se l'array rifornimenti manca
+        if (!db.r) db.r = [];
 
         function save() { 
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db)); 
@@ -177,8 +176,8 @@
             let e = parseFloat(document.getElementById('bEuro').value) || 0;
             let p = parseFloat(document.getElementById('bP').value) || 0;
             if(e > 0 && p > 0) {
-                db.r.push({ id: Date.now(), d: getD(), e, p }); // Aggiunge all'array r
-                save(); // Salva permanentemente
+                db.r.push({ id: Date.now(), d: getD(), e, p });
+                save(); 
                 closeModals();
             }
         }
@@ -189,7 +188,7 @@
         function azzera() {
             if(confirm("Vuoi cancellare tutto lo storico?")) {
                 db = { s: [], r: [], target: 0, tax: 20 };
-                document.getElementById('targetIn').value = ""; // Reset visivo target
+                document.getElementById('targetIn').value = "";
                 save();
             }
         }
@@ -231,7 +230,6 @@
             const mancaneVal = db.target > 0 ? Math.max(0, (db.target - nettoVal) / ((100 - db.tax) / 100)) : 0;
             document.getElementById('mancante').innerText = `€${mancaneVal.toFixed(2)}`;
 
-            // Render Liste
             const list = document.getElementById('historyList');
             list.innerHTML = "";
             
@@ -246,7 +244,8 @@
                 if(i.type === 's') {
                     div.innerHTML = `<div><b>TURNO (${i.d})</b><br>€${i.l.toFixed(2)} | ${i.k}km | ${i.o}h</div><div class="del-btn" onclick="del('s', ${i.id})">×</div>`;
                 } else {
-                    div.innerHTML = `<div><b>RIFORN. (${i.d})</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(2)}/L</div><div class="del-btn" onclick="del('r', ${i.id})">×</div>`;
+                    // Visualizzazione con 3 cifre decimali per il prezzo (es. 1.765)
+                    div.innerHTML = `<div><b>RIFORN. (${i.d})</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L</div><div class="del-btn" onclick="del('r', ${i.id})">×</div>`;
                 }
                 list.appendChild(div);
             });
