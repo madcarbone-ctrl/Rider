@@ -10,6 +10,12 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Prepare Files
+        run: |
+          # Spostiamo i file fuori da www solo per il build
+          cp www/index.html .
+          cp www/report.html .
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -21,5 +27,3 @@ jobs:
         with:
           app_name: "Rider Tracker Pro"
           package_name: "com.marcocarbone.ridertracker"
-          # Specifichiamo la cartella corretta
-          source_dir: "www"
