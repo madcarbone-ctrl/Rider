@@ -13,20 +13,13 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Bubblewrap
-        run: npm install -g @bubblewrap/cli
-
       - name: Build APK
-        run: |
-          # Questo comando trasforma la tua cartella www in un APK vero
-          bubblewrap build --unattended
-        continue-on-error: true
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: amirisback/automated-build-android-app-with-github-action@master
         with:
-          name: Rider-Tracker-APK
-          path: ./*.apk
+          app_name: "Rider Tracker Pro"
+          package_name: "com.marcocarbone.ridertracker"
+          # Specifichiamo la cartella corretta
+          source_dir: "www"
