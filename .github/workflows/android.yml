@@ -13,20 +13,19 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Bubblewrap
-        run: npm install -g @bubblewrap/cli
-
       - name: Build APK
-        run: |
-          # Questo comando crea l'APK direttamente dai tuoi file index e report
-          bubblewrap build --unattended || true
-        
+        uses: amirisback/automated-build-android-app-with-github-action@master
+        with:
+          app_name: "Rider Tracker Pro"
+          package_name: "com.marcocarbone.ridertracker"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Rider-Tracker-APK
-          path: ./*.apk
-          if-no-files-found: warn
+          # Questo comando forza GitHub a cercare l'APK in ogni cartella creata
+          path: "**/*.apk"
+          if-no-files-found: error
