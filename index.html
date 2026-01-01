@@ -21,20 +21,18 @@
         .progress-bar { background: #222; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% ); height: 100%; width: 0%; transition: width 0.6s ease; }
         
-        /* MODALE STORICO MODIFICATA */
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; padding-bottom: 60px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; position: relative; }
         #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 20px; scroll-behavior: smooth; }
         #historyList::-webkit-scrollbar { display: none; }
 
-        /* PULSANTI FRECCE */
         .scroll-buttons { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 2100; }
         .scroll-btn { background: rgba(0, 204, 188, 0.2); border: 1px solid var(--primary); color: var(--primary); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
         .scroll-btn:active { background: var(--primary); color: #000; }
 
-        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-right: 50px; }
+        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-right: 55px; }
         .hist-item.benza { border-left-color: #ffa500; }
-        .hist-info { font-size: 11px; line-height: 1.4; color: #eee; }
+        .hist-info { font-size: 11px; line-height: 1.5; color: #eee; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
@@ -71,12 +69,10 @@
     <div id="histView">
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
-            
             <div class="scroll-buttons">
-                <div class="scroll-btn" onclick="scrollHist(-100)"><i class="fas fa-arrow-up"></i></div>
-                <div class="scroll-btn" onclick="scrollHist(100)"><i class="fas fa-arrow-down"></i></div>
+                <div class="scroll-btn" onclick="scrollHist(-150)"><i class="fas fa-arrow-up"></i></div>
+                <div class="scroll-btn" onclick="scrollHist(150)"><i class="fas fa-arrow-down"></i></div>
             </div>
-
             <div id="historyList"></div>
             <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 18px; border: none; border-radius: 12px; margin-bottom: 10px;" onclick="toggleHist()">CHIUDI STORICO</button>
         </div>
@@ -97,12 +93,7 @@
         let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display === 'flex') ? 'none' : 'flex'; }
-        
-        // FUNZIONE PER SCROLLARE LO STORICO
-        function scrollHist(val) {
-            document.getElementById('historyList').scrollBy(0, val);
-        }
-
+        function scrollHist(val) { document.getElementById('historyList').scrollBy(0, val); }
         function autoDecimal(el) { let v = el.value.replace(/\D/g, ""); if (v.length > 0) el.value = (parseFloat(v) / 1000).toFixed(3); }
         function createDateSelectors(containerId) { const container = document.getElementById(containerId); const now = new Date(); let days = '', months = '', years = ''; for(let i=1; i<=31; i++) days += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`; const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"]; mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`); for(let i=2025; i<=2030; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`; container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`; }
         function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
@@ -114,9 +105,15 @@
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); } }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
+
         function render() {
             let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
-            db.s.forEach(t => { lordo += t.l; ore += t.o; kmTotal += t.k; let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno; let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85; costoBenzaTotal += (ltrTurno * prezzo); });
+            db.s.forEach(t => { 
+                lordo += t.l; ore += t.o; kmTotal += t.k; 
+                let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno; 
+                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85; 
+                costoBenzaTotal += (ltrTurno * prezzo); 
+            });
             let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
@@ -130,11 +127,26 @@
             document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
             document.getElementById('targetIn').value = db.target || "";
             document.getElementById('taxIn').value = db.tax;
+            
             const list = document.getElementById('historyList');
             list.innerHTML = "";
             [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
-                const div = document.createElement('div'); div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
-                let infoHTML = (i.type === 's') ? `<b>TURNO ${i.time}</b><br>€${i.l.toFixed(2)} | ${i.o} ore | ${i.k}km` : `<b>RIFORN. ${i.time}</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L`;
+                const div = document.createElement('div');
+                div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
+                
+                let infoHTML = "";
+                if(i.type === 's') {
+                    let ltr = (i.k * (i.c / 100)).toFixed(2);
+                    infoHTML = `<b>TURNO ${i.time}</b><br>
+                                €${i.l.toFixed(2)} | ${i.o}h | ${i.k}km<br>
+                                <small>Media: ${i.c}L/100km | Litri: ${ltr}L</small>`;
+                } else {
+                    let ltrRif = (i.e / i.p).toFixed(2);
+                    infoHTML = `<b>RIFORN. ${i.time}</b><br>
+                                Spesa: €${i.e.toFixed(2)} | Prezzo: €${i.p.toFixed(3)}/L<br>
+                                <small>Litri immessi: ${ltrRif}L</small>`;
+                }
+                
                 div.innerHTML = `<div class="hist-info">${infoHTML}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})">×</button>`;
                 list.appendChild(div);
             });
