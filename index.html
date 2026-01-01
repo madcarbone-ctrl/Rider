@@ -7,17 +7,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        *::-webkit-scrollbar { display: none !important; }
+        
+        /* SOLUZIONE RADICALE: Blocca il refresh a livello globale */
+        html, body { 
+            overflow: hidden; 
+            height: 100%; 
+            position: fixed; 
+            width: 100%;
+            overscroll-behavior-y: none; 
+        }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
             margin: 0; 
-            padding: 10px; 
-            padding-bottom: 280px;
-            overscroll-behavior-y: none; /* Protezione CSS */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contenitore principale scrollabile per la home */
+        #mainScrollContainer {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 250px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .app-title { text-align: center; margin: 10px 0 15px 0; font-size: 24px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
@@ -33,15 +48,16 @@
         .progress-bar { background: #222; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% ); height: 100%; width: 0%; transition: width 0.6s ease; }
         
+        /* STORICO ISOLATO */
         #histView { 
             position: fixed; 
-            inset: 0; 
+            top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); 
-            z-index: 2000; 
+            z-index: 3000; 
             display: none; 
             flex-direction: column; 
-            padding: 15px;
-            overscroll-behavior: contain;
+            padding: 10px;
+            overscroll-behavior: none;
         }
         .history-section { 
             background: var(--card); 
@@ -50,15 +66,14 @@
             padding: 15px; 
             display: flex; 
             flex-direction: column; 
-            height: calc(100vh - 100px); 
-            margin-bottom: 60px;
+            height: calc(100% - 70px); /* Lascia spazio ai tasti in fondo */
         }
         #historyList { 
             overflow-y: auto; 
             flex-grow: 1; 
             -webkit-overflow-scrolling: touch;
             padding-bottom: 20px;
-            touch-action: pan-y; /* Permette solo lo scroll verticale */
+            overscroll-behavior: contain;
         }
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
@@ -70,37 +85,39 @@
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
         
-        .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
+        .sticky-footer { position: fixed; bottom: 35px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
         .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
         .btn-azzera { background: #200 !important; color: #ff4d4d !important; font-size: 10px; height: 30px; margin-top: 4px; border-radius: 6px; border: 1px solid #400 !important; }
 
-        .close-hist-container { padding: 10px 0; background: var(--card); }
+        .close-hist-container { padding-top: 15px; padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="app-title">Rider Tracker Pro</div>
+    <div id="mainScrollContainer">
+        <div class="app-title">Rider Tracker Pro</div>
 
-    <div class="grid" id="mainGrid">
-        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
-        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
-        <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
-    </div>
-
-    <div class="progress-container">
-        <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
-            <span>PROGRESSO OBIETTIVO</span>
-            <span id="perc">0%</span>
+        <div class="grid">
+            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
+            <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
+            <div class="card"><span class="label">LITRI CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
+            <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
+            <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
+            <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
+            <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
+            <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
         </div>
-        <div class="progress-bar"><div id="bar"></div></div>
+
+        <div class="progress-container">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
+                <span>PROGRESSO OBIETTIVO</span>
+                <span id="perc">0%</span>
+            </div>
+            <div class="progress-bar"><div id="bar"></div></div>
+        </div>
     </div>
 
     <div id="histView">
@@ -127,38 +144,26 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
 
-        // SOLUZIONE DEFINITIVA PULL-TO-REFRESH
-        const histView = document.getElementById('histView');
-        const historyList = document.getElementById('historyList');
-        let startY = 0;
-
-        histView.addEventListener('touchstart', e => {
-            startY = e.touches[0].pageY;
-        }, { passive: false });
-
-        histView.addEventListener('touchmove', e => {
-            const y = e.touches[0].pageY;
-            const scrollTop = historyList.scrollTop;
-
-            // Se siamo in cima allo storico e trasciniamo verso il basso, blocca tutto
-            if (scrollTop <= 0 && y > startY) {
-                if (e.cancelable) e.preventDefault();
+        // BLOCCA REFRESH PREVENENDO LO SCROLL DEL BODY
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('#historyList') || e.target.closest('#mainScrollContainer')) {
+                return; // Permetti lo scroll dentro i contenitori
             }
+            e.preventDefault(); // Blocca tutto il resto
         }, { passive: false });
 
+        function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
+        
         function toggleHist() { 
-            const isOpen = histView.style.display === 'flex';
-            histView.style.display = isOpen ? 'none' : 'flex';
-            // Blocca lo scroll del body quando lo storico è aperto
-            document.body.style.overflow = isOpen ? 'auto' : 'hidden';
+            const h = document.getElementById('histView'); 
+            h.style.display = (h.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // Funzioni database e render rimangono le stesse (v95)
-        function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function autoDecimal(el) {
             let v = el.value.replace(/\D/g, "");
             if (v.length > 0) el.value = (parseFloat(v) / 1000).toFixed(3);
         }
+
         function createDateSelectors(containerId) {
             const container = document.getElementById(containerId);
             const now = new Date();
@@ -169,20 +174,25 @@
             for(let i=2025; i<=2030; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
             container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`;
         }
+
         function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = ""); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
         function addTurno() {
             let l = parseFloat(document.getElementById('tLordo').value) || 0, o = parseFloat(document.getElementById('tOre').value) || 0, k = parseInt(document.getElementById('tKm').value) || 0, c = parseFloat(document.getElementById('tCons').value) || 0;
             if(l > 0) { db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); save(); closeModals(); }
         }
+
         function addBenza() {
             let e = parseFloat(document.getElementById('bEuro').value) || 0, p = parseFloat(document.getElementById('bP').value) || 0;
             if(e > 0 && p > 0) { db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); save(); closeModals(); }
         }
+
         function getSelectedDate(prefix) {
             const d = document.getElementById(prefix + 'D').value.padStart(2, '0'), m = document.getElementById(prefix + 'M').value.padStart(2, '0'), y = document.getElementById(prefix + 'Y').value;
             return `${d}/${m}/${y}`;
         }
+
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); } }
