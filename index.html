@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v5.2</title>
+    <title>Rider Tracker Pro v5.3</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -30,7 +30,7 @@
         .hist-data { font-size: 9px; color: #888; }
         .hist-actions { display: flex; gap: 5px; align-items: center; }
 
-        .btn-cal { background: #333; color: white; border-radius: 6px; font-size: 9px; padding: 5px; height: 30px; border: 1px solid #444; }
+        .btn-cal { background: #333; color: white; border-radius: 6px; font-size: 9px; padding: 5px; height: 30px; border: 1px solid #444; font-weight: bold; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; border: 1px solid var(--main); width: 100%; max-width: 300px; text-align: center; }
@@ -170,17 +170,37 @@
 
         function inviaACalendario(item) {
             const isT = item.type === 'T';
-            const titolo = isT ? `🏎️ Turno Rider: €${item.l.toFixed(2)}` : `⛽ Rifornimento: €${item.e.toFixed(2)}`;
+            const titolo = isT ? `Rider: €${item.l.toFixed(2)}` : `Benza: €${item.e.toFixed(2)}`;
             const dataParti = item.d.split(' ')[0].split('/');
             const giorno = dataParti[0].padStart(2, '0');
             const mese = dataParti[1].padStart(2, '0');
             const anno = item.y || new Date().getFullYear();
-            
             const dataFormattata = `${anno}${mese}${giorno}`;
-            const note = isT ? `Lordo: €${item.l}\nOre: ${item.o}\nKM: ${item.k}\nConsumo: ${item.c}L/100km` : `Spesa: €${item.e}\nPrezzo: €${item.p}/L`;
-            
-            const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titolo)}&dates=${dataFormattata}/${dataFormattata}&details=${encodeURIComponent(note)}&sf=true&output=xml`;
-            window.open(url, '_blank');
+
+            const note = isT ? 
+                `Lordo: €${item.l} | Ore: ${item.o} | KM: ${item.k} | Consumo: ${item.c}L/100km` : 
+                `Spesa: €${item.e} | Prezzo: €${item.p}/L`;
+
+            const icsContent = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//RiderTracker//Pro//IT",
+                "BEGIN:VEVENT",
+                `DTSTART;VALUE=DATE:${dataFormattata}`,
+                `DTEND;VALUE=DATE:${dataFormattata}`,
+                `SUMMARY:${titolo}`,
+                `DESCRIPTION:${note}`,
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ].join("\r\n");
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', `evento_rider_${dataFormattata}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function renderStorico() {
@@ -189,6 +209,7 @@
             all.forEach(i => {
                 const isT = i.type === 'T';
                 const color = isT ? 'var(--main)' : 'var(--fuel)';
+                const itemData = JSON.stringify(i).replace(/'/g, "&apos;");
                 h += `<div class="hist-item" style="border-left-color:${color}">
                     <div class="hist-info">
                         <span style="font-size:10px; font-weight:bold; color:${color}">${isT?'TURNO':'RIFORN.'} (${i.d})</span>
@@ -196,7 +217,7 @@
                         <span class="hist-data">${isT ? 'KM: '+i.k+' | ORE: '+i.o : 'PREZZO: €'+i.p+'/L'}</span>
                     </div>
                     <div class="hist-actions">
-                        <button class="btn-cal" onclick='inviaACalendario(${JSON.stringify(i)})'>📅 CAL</button>
+                        <button class="btn-cal" onclick='inviaACalendario(${itemData})'>📅 CAL</button>
                         <button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%; border:none;">X</button>
                     </div>
                 </div>`;
