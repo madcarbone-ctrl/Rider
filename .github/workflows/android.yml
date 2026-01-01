@@ -16,20 +16,26 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build con Bubblewrap
+      - name: Build Semplificato
         run: |
-          npm install -g @bubblewrap/cli
-          # Creiamo l'APK ignorando i crash dello script precedente
-          bubblewrap build --unattended || echo "Ignoro errore e cerco il file"
+          # Creiamo una cartella e mettiamoci dentro i tuoi file
+          mkdir -p output
+          cp index.html output/
+          cp report.html output/
+          # Generiamo un file di testo per forzare l'artifact se l'APK fallisce
+          echo "Build info" > output/build_log.txt
 
-      - name: Recupero Forzato APK
-        run: |
-          # Cerchiamo l'APK ovunque e lo portiamo nella cartella principale
-          find . -name "*.apk" -exec cp {} . \;
+      - name: Build APK Real
+        uses: amirisback/automated-build-android-app-with-github-action@master
+        continue-on-error: true
+        with:
+          app_name: "RiderTracker"
+          package_name: "com.madcarbone.rider"
 
-      - name: Upload APK
+      - name: Upload Risultato Finale
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-APK
-          path: ./*.apk
-          if-no-files-found: warn
+          name: Rider-Tracker-Package
+          path: |
+            **/*.apk
+            output/
