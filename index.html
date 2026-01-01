@@ -15,13 +15,15 @@
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         
-        /* COLORI PERSONALIZZATI */
-        .card.white-text .label, .card.white-text .val { color: #ffffff !important; }
+        /* STILI COLORI */
         .card.red-text .label { color: var(--accent) !important; }
         .card.red-text input { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
         .card.main .val, .card.mancante-style .val { color: var(--primary); }
         #netto { color: var(--accent) !important; }
         
+        /* € Benz. Consumata ora segue lo stile standard come Media KM/L */
+        .card.standard-text .val { color: var(--text); }
+
         .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
 
         .progress-container { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
@@ -59,8 +61,8 @@
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
         <div class="card"><span class="label">LITRI CARBURANTE CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card white-text"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
+        <div class="card standard-text"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
+        <div class="card standard-text"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card red-text"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
         <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
