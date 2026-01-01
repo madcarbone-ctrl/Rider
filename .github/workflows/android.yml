@@ -21,4 +21,3 @@ jobs:
         with:
           app_name: "Rider Tracker Pro"
           package_name: "com.marcocarbone.ridertracker"
-          # L'azione cercherà i file nella cartella www che abbiamo creato
