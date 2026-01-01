@@ -1,97 +1,75 @@
-<p align="center">
-  <img src="Screenshot_20251231_205604_Rider Tracker Pro.jpg" alt="Anteprima Rider Tracker Pro" width="300" style="border-radius: 20px; border: 1px solid #333;">
-</p>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuale Rider Tracker Pro v95</title>
+    <style>
+        :root { --primary: #00CCBC; --bg: #121212; --text: #e0e0e0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        h2 { color: var(--primary); margin-top: 30px; border-left: 4px solid var(--primary); padding-left: 10px; }
+        .lang-section { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        code { background: #333; padding: 2px 5px; border-radius: 4px; color: #ff4d4d; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        hr { border: 0; border-top: 1px solid #444; margin: 40px 0; }
+        .badge { background: var(--primary); color: black; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.8em; }
+    </style>
+</head>
+<body>
 
-<div align="center">
-  <h1 align="center">🚗 Rider Tracker Pro (v1.0.943 - Versione 3)</h1>
-  
-  <p align="center">
-    <b>🌍 Want this app in your language? Leave a comment in the <a href="../../discussions">Discussions</a>!</b>
-  </p>
+    <h1>Rider Tracker Pro <span class="badge">v95 Final</span></h1>
 
-  <p align="center">
-    <b>Gestione professionale dei guadagni reali e dei consumi per Rider.</b><br>
-    <i>Ottimizzato per corrieri e rider delle principali piattaforme di delivery.</i>
-  </p>
+    <div class="lang-section">
+        <h2>🇮🇹 Istruzioni in Italiano</h2>
+        <p><strong>Rider Tracker Pro</strong> è lo strumento definitivo per monitorare i tuoi guadagni e i costi del carburante durante i tuoi turni di consegna.</p>
+        
+        <h3>Configurazione</h3>
+        <ul>
+            <li>Assicurati che i file <code>index.html</code> e <code>report.html</code> siano nella stessa cartella.</li>
+            <li>Inserisci il tuo <strong>Target €</strong> (l'importo netto che vuoi raggiungere) e la tua percentuale di <strong>Tasse</strong>.</li>
+        </ul>
 
-  <p align="center">
-    <code>Deliveroo</code> • <code>Glovo</code> • <code>Uber Eats</code> • <code>Just Eat</code> • <code>Foodracers</code> • <code>InPost</code> • <code>Amazon Flex</code>
-  </p>
-</div>
+        <h3>Funzioni Principali</h3>
+        <ul>
+            <li><strong>Nuovo Turno:</strong> Registra lordo, ore, chilometri e consumo medio (L/100km).</li>
+            <li><strong>Benzina:</strong> Registra i rifornimenti; l'ultimo prezzo inserito aggiornerà automaticamente il calcolo del costo carburante per i turni.</li>
+            <li><strong>Progresso Obiettivo:</strong> Una barra stile mixer che si riempie in base al tuo guadagno netto rispetto al target.</li>
+            <li><strong>Report A4:</strong> Genera un documento professionale ottimizzato per la stampa o il salvataggio in PDF.</li>
+        </ul>
 
-<hr>
+        <h3>Salvataggio Dati</h3>
+        <p>I dati vengono salvati localmente (<code>localStorage</code>) sulla chiave <code>rider_db_v95</code>. Non cancellare i dati del browser per non perdere lo storico.</p>
+    </div>
 
-## 📲 Download APK
-<p align="center">
-  <a href="Rider Tracker Pro_v1.49.apk"><b>➡️ Scarica Rider Tracker Pro_v1.49.apk ⬅️</b></a>
-</p>
+    <hr>
 
-<hr>
+    <div class="lang-section">
+        <h2>🇬🇧 Instructions in English</h2>
+        <p><strong>Rider Tracker Pro</strong> is the ultimate tool for tracking your earnings and fuel costs during your delivery shifts.</p>
+        
+        <h3>Setup</h3>
+        <ul>
+            <li>Ensure <code>index.html</code> and <code>report.html</code> are stored in the same directory.</li>
+            <li>Set your <strong>Target €</strong> (the net amount you want to earn) and your <strong>Tax %</strong>.</li>
+        </ul>
 
-## 🇮🇹 Descrizione (Italiano)
-**Rider Tracker Pro** è una Progressive Web App (PWA) avanzata, sviluppata per i rider delle consegne che necessitano di una visione chiara sui loro guadagni effettivi. 
+        <h3>Key Features</h3>
+        <ul>
+            <li><strong>New Shift:</strong> Record gross pay, hours, kilometers, and average consumption (L/100km).</li>
+            <li><strong>Fuel:</strong> Log your refuels; the latest price per liter will automatically update fuel cost calculations.</li>
+            <li><strong>Goal Progress:</strong> A mixer-style bar that fills based on your net earnings vs. target.</li>
+            <li><strong>A4 Report:</strong> Generates a professional document optimized for printing or saving as a PDF.</li>
+        </ul>
 
-A differenza di altri strumenti, questa app non si ferma al lordo: calcola il **Netto Reale** sottraendo la ritenuta d'acconto (20%) e le spese di carburante basate sul consumo reale del mezzo. È lo strumento ideale per chi lavora con le principali piattaforme di logistica e delivery.
+        <h3>Data Storage</h3>
+        <p>Data is saved locally (<code>localStorage</code>) under the <code>rider_db_v95</code> key. Avoid clearing browser data to keep your history intact.</p>
+    </div>
 
-### ✨ Novità della Versione 3 (Definitiva):
-- 🌈 **Barra Progresso Dinamica:** Nuovo gradiente lineare che parte da rosso (0%), attraversa l'azzurro/blu e arriva al verde (100%).
-- 🚨 **Feedback Visivo 100%:** La barra percentuale lampeggia con effetto "pulse" quando raggiungi il tuo obiettivo netto.
-- 🛣️ **Gestione KM Extra:** Nuovo campo per tracciare i km privati o fuori turno; salvati nello storico ma esclusi dal calcolo dei costi lavorativi.
-- ⛽ **Dettagli Rifornimento:** Calcolo automatico e visualizzazione dei litri immessi nel serbatoio nello storico.
-- 📊 **Media KM/L Ponderata:** Calcolo dell'efficienza basato sul totale complessivo dei turni per una precisione assoluta.
+    <p style="text-align: center; font-size: 0.8em; color: #666; margin-top: 50px;">
+        Sviluppato con Gemini 3 Flash | 2026 Edition
+    </p>
 
-<hr>
-
-## 🇬🇧 Description (English)
-**Rider Tracker Pro** is a high-performance PWA for delivery riders. It provides a crystal-clear view of **Real Net Profit** by automatically deducting tax withholding (20%) and fuel costs. Perfect for multi-apping on all major platforms.
-
-### ✨ Key Features (v3 - Final):
-- 🌈 **Dynamic Progress Bar:** New color gradient from red (0%) to green (100%) through shades of blue.
-- 🚨 **Goal Celebration:** The progress bar flashes when you hit 100% of your net target.
-- 🛣️ **Extra KM Tracking:** Log private mileage separately; it's saved in history but won't affect work-related fuel costs.
-- ⛽ **Fuel Analytics:** Real-time liters tracking in the history tab and global weighted KM/L average.
-
-<hr>
-
-## 🛠️ Tech Stack
-- **Version:** 1.0.943 (Version 3)
-- **Languages:** HTML5, CSS3 (Dynamic Animations), JavaScript (Vanilla JS)
-- **Persistence:** LocalStorage API (Offline-first)
-
-<hr>
-
-## 📦 Installazione / Installation
-### 🤖 Android (APK)
-1. Clicca sul link **"Scarica Rider Tracker Pro_v1.49.apk"** in alto.
-2. Apri il file scaricato sul tuo smartphone.
-3. Se il sistema lo richiede, autorizza l'installazione da "origini sconosciute" nelle impostazioni.
-
-### 🌐 Web App (PWA)
-1. Apri il file `index.html` o l'URL del progetto nel browser del tuo smartphone (Chrome o Safari).
-2. Usa la funzione **"Aggiungi a schermata Home"** per installarla come un'app nativa sul tuo telefono.
-
-<hr>
-
-## 💬 Community & Feedback
-<p align="center">
-🇮🇹 <b>Aiutami a migliorare l'app!</b><br>
-👉 Partecipa alle <b><a href="../../discussions">Discussions</a></b> per pareri e idee sulle prossime versioni!<br>
-👉 Apri una <b><a href="../../issues">Issue</a></b> per segnalare bug tecnici.
-</p>
-
-<br>
-
-<p align="center">
-🇬🇧 <b>Let's build together!</b><br>
-👉 Join the <b><a href="../../discussions">Discussions</a></b> tab to share your feedback!<br>
-👉 Use the <b><a href="../../issues">Issues</a></b> tab for technical bugs.
-</p>
-
-<hr>
-
-<div align="center">
-  <i>"La versione definitiva per le future ricerche è la versione 3."</i>
-  <br><br>
-  <p>Visite totali al progetto:</p>
-  <img src="https://komarev.com/ghpvc/?username=madcarbone-ctrl-rider&color=orange&style=flat-square&label=VISITE" alt="Visitor Count">
-</div>
+</body>
+</html>
