@@ -27,7 +27,8 @@
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 400px; }
+        /* SEZIONE STORICO */
+        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 500px; }
         #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; padding-right: 5px; }
         #historyList::-webkit-scrollbar { width: 4px; }
         #historyList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -108,7 +109,7 @@
         </div>
     </div>
 
-    <div class="sticky-footer">
+    <div id="mainFooter" class="sticky-footer">
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
@@ -183,12 +184,22 @@
                 db = { s: [], r: [], target: 0, tax: 20 }; 
                 save(); 
                 document.getElementById('histView').style.display = 'none';
+                document.getElementById('mainFooter').style.display = 'grid'; // Assicura che riappaia se azzeri
             } 
         }
 
+        // FUNZIONE AGGIORNATA PER NASCONDERE IL FOOTER
         function toggleHist() { 
             const h = document.getElementById('histView'); 
-            h.style.display = h.style.display === 'none' ? 'block' : 'none';
+            const f = document.getElementById('mainFooter');
+            
+            if (h.style.display === 'none') {
+                h.style.display = 'block';
+                f.style.display = 'none'; // Nasconde i tasti
+            } else {
+                h.style.display = 'none';
+                f.style.display = 'grid'; // Fa riapparire i tasti
+            }
         }
         
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
