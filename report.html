@@ -2,88 +2,110 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Rider Tracker Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 15px; background: white; color: black; }
-        .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; width: 100%; }
-        .header-report { border-bottom: 2px solid #00CCBC; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
-        h2 { color: #00CCBC; margin: 0; }
-        h3 { border-left: 4px solid #00CCBC; padding-left: 10px; margin-top: 25px; font-size: 15px; }
-        .riepilogo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .box-dato { text-align: center; }
-        .label { font-size: 10px; color: #666; display: block; }
-        .valore { font-size: 16px; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-        th { background: #f4f4f4; }
-        @media print { .btn-stampa { display: none; } }
+        body { font-family: sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 20px; text-align: center; }
+        .btn-report { background: #00CCBC; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin: 10px; }
+        .btn-back { background: #333; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
     </style>
 </head>
-<body onload="caricaDati()">
+<body>
 
-    <button class="btn-stampa" onclick="window.print()">📄 SALVA REPORT IN PDF</button>
-
-    <div class="header-report">
-        <h2>RIDER TRACKER PRO</h2>
-        <small>Report al: <span id="dataGen"></span></small>
-    </div>
+    <h2>Generazione Report PDF</h2>
+    <p>Clicca il pulsante qui sotto per scaricare il riepilogo dettagliato dei turni e dei rifornimenti.</p>
     
-    <div class="riepilogo">
-        <div class="box-dato"><span class="label">Lordo</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Netto</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Ore</span><span class="valore"><span id="resOre">0.0</span></span></div>
-    </div>
-
-    <h3>📊 TURNI</h3>
-    <table id="tabellaTurni">
-        <thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th></tr></thead>
-        <tbody></tbody>
-    </table>
-
-    <h3 style="border-color: #ffa500;">⛽ RIFORNIMENTI</h3>
-    <table id="tabellaBenza">
-        <thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead>
-        <tbody></tbody>
-    </table>
+    <button class="btn-report" onclick="generatePDF()">SCARICA REPORT PDF</button>
+    <br>
+    <a href="index.html" class="btn-back">Torna all'App</a>
 
     <script>
-        function caricaDati() {
-            const raw = localStorage.getItem('rider_db_v94v2');
-            if (!raw) return;
-            const db = JSON.parse(raw);
-            document.getElementById('dataGen').innerText = new Date().toLocaleDateString('it-IT');
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Recupero dati (stesso ID versione dell'app principale)
+            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
 
-            const tBody = document.querySelector("#tabellaTurni tbody");
-            const bBody = document.querySelector("#tabellaBenza tbody");
+            // Titolo
+            doc.setFontSize(18);
+            doc.text("REPORT ATTIVITÀ RIDER TRACKER PRO", 14, 20);
+            
+            // --- TABELLA TURNI ---
+            doc.setFontSize(14);
+            doc.text("Dettaglio Turni", 14, 35);
+            
+            const turniRows = db.s.map(t => {
+                let ltr = (t.k * (t.c / 100)).toFixed(2);
+                let media = t.k > 0 ? (t.k / ltr).toFixed(1) : "0.0";
+                return [
+                    t.time || "N/D", // Qui riprendiamo la data salvata
+                    "€" + t.l.toFixed(2),
+                    t.o + "h",
+                    t.k + " km",
+                    ltr + " L",
+                    media + " km/l"
+                ];
+            });
 
-            let lordoTotal = 0, oreTotal = 0, litriPerNetto = 0;
+            doc.autoTable({
+                startY: 40,
+                head: [['Data/Ora', 'Lordo', 'Ore', 'KM', 'Consumo L', 'Media']],
+                body: turniRows,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 204, 188] }
+            });
 
-            // TURNI
-            if (db.s && db.s.length > 0) {
-                db.s.sort((a,b) => b.id - a.id).forEach(t => {
-                    lordoTotal += Number(t.l || 0);
-                    oreTotal += Number(t.o || 0);
-                    litriPerNetto += (Number(t.k || 0) * (Number(t.c || 0) / 100));
-                    tBody.innerHTML += `<tr><td>${t.d}</td><td>€${Number(t.l).toFixed(2)}</td><td>${t.o}h</td><td>${t.k}km</td></tr>`;
-                });
-            }
+            // --- TABELLA RIFORNIMENTI ---
+            let finalY = doc.lastAutoTable.finalY + 15;
+            doc.text("Dettaglio Carburante", 14, finalY);
+            
+            const benzaRows = db.r.map(b => [
+                b.time || "N/D", // Qui riprendiamo la data salvata
+                "€" + b.e.toFixed(2),
+                "€" + b.p.toFixed(3) + "/L"
+            ]);
 
-            // RIFORNIMENTI
-            if (db.r && db.r.length > 0) {
-                db.r.sort((a,b) => b.id - a.id).forEach(r => {
-                    const ltr = r.p > 0 ? (r.e / r.p).toFixed(2) : "0.00";
-                    bBody.innerHTML += `<tr><td>${r.d}</td><td style="color:#ffa500;font-weight:bold">€${Number(r.e).toFixed(2)}</td><td>€${Number(r.p).toFixed(2)}/L</td><td>${ltr}L</td></tr>`;
-                });
-            } else {
-                bBody.innerHTML = "<tr><td colspan='4' style='text-align:center'>Nessun rifornimento trovato</td></tr>";
-            }
+            doc.autoTable({
+                startY: finalY + 5,
+                head: [['Data/Ora Inserimento', 'Spesa (€)', 'Prezzo al Litro']],
+                body: benzaRows,
+                theme: 'striped',
+                headStyles: { fillColor: [255, 165, 0] }
+            });
 
-            const tassi = db.tax || 20;
-            const netto = (lordoTotal * ((100 - tassi) / 100)) - (litriPerNetto * 1.85);
-            document.getElementById('resLordo').innerText = lordoTotal.toFixed(2);
-            document.getElementById('resNetto').innerText = netto.toFixed(2);
-            document.getElementById('resOre').innerText = oreTotal.toFixed(1);
+            // --- RIEPILOGO FINALE ---
+            let riepilogoY = doc.lastAutoTable.finalY + 15;
+            let lordoTot = db.s.reduce((acc, curr) => acc + curr.l, 0);
+            let oreTot = db.s.reduce((acc, curr) => acc + curr.o, 0);
+            let kmTot = db.s.reduce((acc, curr) => acc + curr.k, 0);
+            
+            // Calcolo costo benzina basato sui turni
+            let litriTot = 0;
+            let costoBenzaTot = 0;
+            db.s.forEach(t => {
+                let ltr = (t.k * (t.c / 100));
+                litriTot += ltr;
+                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+                costoBenzaTot += (ltr * prezzo);
+            });
+
+            let tasseEuro = lordoTot * (db.tax / 100);
+            let nettoTot = lordoTot - tasseEuro - costoBenzaTot;
+
+            doc.setFontSize(14);
+            doc.text("RIEPILOGO TOTALI", 14, riepilogoY);
+            doc.setFontSize(10);
+            doc.text(`Lordo Totale: €${lordoTot.toFixed(2)}`, 14, riepilogoY + 10);
+            doc.text(`Tasse (${db.tax}%): €${tasseEuro.toFixed(2)}`, 14, riepilogoY + 17);
+            doc.text(`Costo Benzina Totale: €${costoBenzaTot.toFixed(2)}`, 14, riepilogoY + 24);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text(`NETTO GUADAGNATO: €${nettoTot.toFixed(2)}`, 14, riepilogoY + 34);
+
+            // Salvataggio
+            doc.save(`Report_Rider_${new Date().toLocaleDateString()}.pdf`);
         }
     </script>
 </body>
