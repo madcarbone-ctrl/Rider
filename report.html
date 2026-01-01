@@ -3,72 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Rider Tracker Pro</title>
+    <title>Report A4 - Rider Tracker Pro</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; color: #333; line-height: 1.6; }
-        h1, h2 { color: #000; border-bottom: 2px solid #00CCBC; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-        th { background-color: #00CCBC; color: white; padding: 10px; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #ddd; }
-        .summary { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .netto { font-size: 1.2em; font-weight: bold; color: #ff4d4d; }
-        .btn-print { background: #00CCBC; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 20px; }
-        @media print { .btn-print { display: none; } }
+        /* Setup Dimensioni A4 */
+        :root { --primary: #00CCBC; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            padding: 0; 
+            margin: 0; 
+            background: #f0f0f0; 
+            color: #333; 
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .btn-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .btn-print { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        h1 { color: #000; border-bottom: 3px solid var(--primary); padding-bottom: 10px; font-size: 24px; text-transform: uppercase; }
+        h2 { color: #444; font-size: 18px; margin-top: 30px; border-left: 5px solid var(--primary); padding-left: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
+        th { background-color: #f8f8f8; color: #555; border: 1px solid #ddd; padding: 10px; text-align: left; }
+        td { padding: 10px; border: 1px solid #ddd; }
+
+        .summary-box { 
+            margin-top: 30px; 
+            padding: 20px; 
+            background: #f9f9f9; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+            page-break-inside: avoid; /* Evita che il riepilogo venga spezzato tra due pagine */
+        }
+
+        .netto-row { font-size: 1.4em; font-weight: bold; color: #d32f2f; margin-top: 10px; display: flex; justify-content: space-between; }
+
+        /* Regole per la stampa */
+        @media print {
+            body { background: white; }
+            .page { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%;
+                min-height: initial;
+            }
+            .btn-container { display: none; }
+            
+            /* Forza l'interruzione di pagina intelligente */
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } /* Ripete l'intestazione su ogni pagina */
+        }
     </style>
 </head>
 <body>
 
-    <h1>REPORT ATTIVITÀ RIDER TRACKER PRO</h1>
-    <button class="btn-print" onclick="window.print()">STAMPA REPORT / SALVA PDF</button>
+    <div class="btn-container">
+        <button class="btn-print" onclick="window.print()">STAMPA PDF / A4</button>
+    </div>
 
-    <h2>Dettaglio Turni</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Data/Ora</th>
-                <th>Lordo</th>
-                <th>Ore</th>
-                <th>KM</th>
-                <th>Consumo L</th>
-            </tr>
-        </thead>
-        <tbody id="turniTable"></tbody>
-    </table>
+    <div class="page">
+        <h1>Report Attività Rider Tracker Pro</h1>
+        <p style="color: #666; font-size: 12px;">Generato il: <span id="reportDate"></span></p>
 
-    <h2>Dettaglio Carburante</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Data/Ora Inserimento</th>
-                <th>Spesa (€)</th>
-                <th>Prezzo al Litro</th>
-            </tr>
-        </thead>
-        <tbody id="benzaTable"></tbody>
-    </table>
+        <h2>Dettaglio Turni</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Lordo</th>
+                    <th>Ore</th>
+                    <th>KM</th>
+                    <th>Consumo (L)</th>
+                </tr>
+            </thead>
+            <tbody id="turniTable"></tbody>
+        </table>
 
-    <div class="summary">
-        <h2>RIPILOGO TOTALI</h2>
-        <p>Lordo Totale: <span id="totLordo">€0.00</span></p>
-        <p>Tasse (<span id="taxPerc">20</span>%): <span id="totTasse">€0.00</span></p>
-        <p>Costo Benzina Totale: <span id="totBenza">€0.00</span></p>
-        <p class="netto">NETTO GUADAGNATO: <span id="totNetto">€0.00</span></p>
+        <h2>Dettaglio Carburante</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Spesa (€)</th>
+                    <th>Prezzo Orario Orario Orario al Litro</th>
+                </tr>
+            </thead>
+            <tbody id="benzaTable"></tbody>
+        </table>
+
+        <div class="summary-box">
+            <h2>Riepilogo Totale</h2>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between;"><span>Lordo Totale:</span><span id="totLordo">€0.00</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>Tasse (<span id="taxPerc">20</span>%):</span><span id="totTasse">€0.00</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>Costo Benzina:</span><span id="totBenza">€0.00</span></div>
+                <hr style="width: 100%; border: 0; border-top: 1px solid #ddd;">
+                <div class="netto-row">
+                    <span>NETTO GUADAGNATO:</span>
+                    <span id="totNetto">€0.00</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         function renderReport() {
-            // Carica i dati dalla chiave v95 usata nell'index
             const db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], tax: 20 };
+            document.getElementById('reportDate').innerText = new Date().toLocaleString();
             
             const turniTable = document.getElementById('turniTable');
             const benzaTable = document.getElementById('benzaTable');
             
-            let lordoTot = 0;
-            let benzaTot = 0;
-            let kmTot = 0;
-            let litriTot = 0;
+            let lordoTot = 0, litriTot = 0;
 
-            // Render Turni
+            // Popola Turni
             turniTable.innerHTML = db.s.map(t => {
                 lordoTot += t.l;
                 let ltr = (t.k * (t.c / 100));
@@ -76,15 +149,14 @@
                 return `<tr><td>${t.time}</td><td>€${t.l.toFixed(2)}</td><td>${t.o}h</td><td>${t.k} km</td><td>${ltr.toFixed(2)} L</td></tr>`;
             }).join('');
 
-            // Render Benzina
+            // Popola Benzina
             benzaTable.innerHTML = db.r.map(b => {
                 return `<tr><td>${b.time}</td><td>€${b.e.toFixed(2)}</td><td>€${b.p.toFixed(3)}/L</td></tr>`;
             }).join('');
 
-            // Calcolo costi benzina (basato sul consumo dei turni e l'ultimo prezzo inserito)
+            // Calcoli Finali
             let ultimoPrezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
-            benzaTot = litriTot * ultimoPrezzo;
-
+            let benzaTot = litriTot * ultimoPrezzo;
             let tasse = lordoTot * (db.tax / 100);
             let netto = lordoTot - tasse - benzaTot;
 
