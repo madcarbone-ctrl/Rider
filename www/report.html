@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Report - Rider Tracker Pro</title>
+    <style>
+        :root { --primary: #00CCBC; --bg: #f4f4f4; }
+        
+        /* STILE PER VISUALIZZAZIONE SU SMARTPHONE */
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg); 
+            color: #333;
+        }
+
+        .nav-header {
+            background: #fff;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+            border: none;
+            font-size: 14px;
+        }
+        .btn-home { background: #333; color: white; }
+        .btn-print { background: var(--primary); color: white; }
+
+        /* Contenitore che si adatta allo schermo */
+        .report-content {
+            max-width: 800px;
+            margin: 15px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h1 { font-size: 20px; color: #000; border-bottom: 3px solid var(--primary); padding-bottom: 8px; margin-top: 0; }
+        h2 { font-size: 16px; margin-top: 25px; border-left: 4px solid var(--primary); padding-left: 10px; }
+
+        /* Tabelle Responsive */
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; min-width: 500px; }
+        th { background: #f8f8f8; text-align: left; padding: 10px; border: 1px solid #eee; color: #666; }
+        td { padding: 10px; border: 1px solid #eee; }
+
+        .summary-box { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #fdfdfd; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+        }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .total-row { font-size: 18px; font-weight: bold; color: #d32f2f; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #eee; }
+
+        /* CONFIGURAZIONE STAMPA A4 (SI ATTIVA SOLO AL CLIC SU STAMPA) */
+        @media print {
+            @page { size: A4; margin: 15mm; }
+            body { background: white; }
+            .nav-header { display: none; }
+            .report-content { 
+                margin: 0; 
+                padding: 0; 
+                box-shadow: none; 
+                max-width: none; 
+                width: 100%;
+            }
+            .table-wrapper { overflow: visible; }
+            table { min-width: 100%; font-size: 12pt; }
+            h1 { font-size: 22pt; }
+            h2 { font-size: 18pt; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav-header">
+        <a href="index.html" class="btn btn-home">CHIUDI</a>
+        <button class="btn btn-print" onclick="window.print()">STAMPA PDF / A4</button>
+    </div>
+
+    <div class="report-content">
+        <h1>Report Attività Rider Tracker Pro</h1>
+        <p style="font-size: 12px; color: #888;">Documento generato il: <span id="reportDate"></span></p>
+
+        <h2>Dettaglio Turni</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data/Ora</th>
+                        <th>Lordo</th>
+                        <th>Ore</th>
+                        <th>KM</th>
+                        <th>Consumo (L)</th>
+                    </tr>
+                </thead>
+                <tbody id="turniTable"></tbody>
+            </table>
+        </div>
+
+        <h2>Dettaglio Carburante</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data/Ora Inserimento</th>
+                        <th>Spesa (€)</th>
+                        <th>Prezzo al Litro</th>
+                    </tr>
+                </thead>
+                <tbody id="benzaTable"></tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <h2>Riepilogo Totale</h2>
+            <div class="row"><span>Lordo Totale:</span><span id="totLordo">€0.00</span></div>
+            <div class="row"><span>Tasse (<span id="taxPerc">20</span>%):</span><span id="totTasse">€0.00</span></div>
+            <div class="row"><span>Costo Benzina Totale:</span><span id="totBenza">€0.00</span></div>
+            <div class="row total-row">
+                <span>NETTO:</span>
+                <span id="totNetto">€0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function renderReport() {
+            const db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], tax: 20 };
+            document.getElementById('reportDate').innerText = new Date().toLocaleString('it-IT');
+            
+            const turniTable = document.getElementById('turniTable');
+            const benzaTable = document.getElementById('benzaTable');
+            
+            let lordoTot = 0, litriTot = 0;
+
+            // Carica Turni
+            turniTable.innerHTML = db.s.length ? db.s.map(t => {
+                lordoTot += t.l;
+                let ltr = (t.k * (t.c / 100));
+                litriTot += ltr;
+                return `<tr><td>${t.time}</td><td>€${t.l.toFixed(2)}</td><td>${t.o}h</td><td>${t.k} km</td><td>${ltr.toFixed(2)} L</td></tr>`;
+            }).join('') : '<tr><td colspan="5" style="text-align:center">Nessun turno registrato</td></tr>';
+
+            // Carica Benzina
+            benzaTable.innerHTML = db.r.length ? db.r.map(b => {
+                return `<tr><td>${b.time}</td><td>€${b.e.toFixed(2)}</td><td>€${b.p.toFixed(3)}/L</td></tr>`;
+            }).join('') : '<tr><td colspan="3" style="text-align:center">Nessun rifornimento registrato</td></tr>';
+
+            // Calcoli
+            let ultimoPrezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+            let benzaTot = litriTot * ultimoPrezzo;
+            let tasse = lordoTot * (db.tax / 100);
+            let netto = lordoTot - tasse - benzaTot;
+
+            document.getElementById('totLordo').innerText = `€${lordoTot.toFixed(2)}`;
+            document.getElementById('taxPerc').innerText = db.tax;
+            document.getElementById('totTasse').innerText = `€${tasse.toFixed(2)}`;
+            document.getElementById('totBenza').innerText = `€${benzaTot.toFixed(2)}`;
+            document.getElementById('totNetto').innerText = `€${netto.toFixed(2)}`;
+        }
+
+        window.onload = renderReport;
+    </script>
+</body>
+</html>
