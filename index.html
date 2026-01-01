@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rider Tracker Pro V5</title>
+    <title>Rider Tracker Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Nasconde le barre di scorrimento su tutti i browser */
         *::-webkit-scrollbar { display: none !important; }
         * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
@@ -23,11 +22,17 @@
             overflow-x: hidden;
         }
         
-        /* Layout Storico a tutto schermo senza scroll del body */
-        body.hist-open { 
-            overflow: hidden; 
-            height: 100vh;
-            padding-bottom: 0;
+        body.hist-open { overflow: hidden; height: 100vh; padding-bottom: 0; }
+
+        /* Titolo Ingrandito */
+        .app-title { 
+            text-align: center; 
+            margin: 15px 0 20px 0; 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -38,35 +43,35 @@
         #netto { color: var(--accent) !important; }
         .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
 
-        .progress-container { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
-        .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-        #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
+        /* Barra Progresso Mixer Style */
+        .progress-container { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .progress-bar { 
+            background: #222; 
+            height: 35px; /* Ingrandita */
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-top: 10px; 
+            border: 1px solid #444;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        #bar { 
+            /* Effetto Mixer Multicolor */
+            background: linear-gradient(90deg, 
+                #00ff00 0%,   /* Verde */
+                #ccff00 40%,  /* Giallo/Verde */
+                #ffff00 60%,  /* Giallo */
+                #ff9900 80%,  /* Arancio */
+                #ff0000 100%  /* Rosso */
+            );
+            background-size: 100vw 35px; /* Mantiene i colori fissi rispetto alla larghezza dello schermo */
+            height: 100%; 
+            width: 0%; 
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
         
-        /* SEZIONE STORICO OTTIMIZZATA PER SCORRIMENTO INTERNO */
-        #histView {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            padding: 15px;
-        }
-        .history-section { 
-            background: var(--card); 
-            border-radius: 15px; 
-            border: 1px solid var(--primary); 
-            padding: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; /* Occupa tutto lo spazio disponibile */
-        }
-        #historyList { 
-            overflow-y: auto; 
-            flex-grow: 1; 
-            margin-bottom: 10px;
-            -webkit-overflow-scrolling: touch; /* Scroll fluido su iOS */
-        }
+        #histView { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; }
+        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; }
+        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
 
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
@@ -86,9 +91,7 @@
 </head>
 <body onclick="handleInputFocus(event)">
 
-    <div style="text-align: center; margin-bottom: 15px;">
-        <h2 style="margin:0; font-size: 18px; color: var(--primary);">Rider Tracker Pro V5 🛵</h2>
-    </div>
+    <div class="app-title">Rider Tracker Pro</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -103,8 +106,8 @@
     </div>
 
     <div class="progress-container">
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold">
-            <span>Progresso Netto</span>
+        <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
+            <span>LIVE GAIN / PROGRESS</span>
             <span id="perc">0%</span>
         </div>
         <div class="progress-bar"><div id="bar"></div></div>
@@ -128,27 +131,22 @@
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
         <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
-        <button class="foot-btn btn-full btn-azzera" onclick="azzera()"><i class="fas fa-trash-alt"></i> AZZERA TUTTO LO STORICO E TARGET</button>
+        <button class="foot-btn btn-full btn-azzera" onclick="azzera()"><i class="fas fa-trash-alt"></i> AZZERA TUTTO</button>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v94v5')) || { s: [], r: [], target: 0, tax: 20 };
+        let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
 
-        function save() { localStorage.setItem('rider_db_v94v5', JSON.stringify(db)); render(); }
-        
+        function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function handleInputFocus(e) { if (e.target.tagName === 'INPUT') { setTimeout(() => { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); } }
 
         function toggleHist() { 
             const h = document.getElementById('histView'); 
             const f = document.getElementById('mainFooter');
             if (h.style.display === 'none' || h.style.display === '') {
-                h.style.display = 'flex';
-                f.style.display = 'none';
-                document.body.classList.add('hist-open');
+                h.style.display = 'flex'; f.style.display = 'none'; document.body.classList.add('hist-open');
             } else {
-                h.style.display = 'none';
-                f.style.display = 'grid';
-                document.body.classList.remove('hist-open');
+                h.style.display = 'none'; f.style.display = 'grid'; document.body.classList.remove('hist-open');
             }
         }
 
@@ -183,7 +181,7 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); toggleHist(); } }
+        function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); if(document.getElementById('histView').style.display === 'flex') toggleHist(); } }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
