@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.7</title>
+    <title>Rider Tracker Pro v4.8</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -158,8 +158,7 @@
                 db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
                 localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
-                calcola();
-                renderStorico();
+                calcola(); renderStorico();
             }
         }
 
@@ -186,33 +185,33 @@
                 alert("Nessun dato da esportare.");
                 return;
             }
-            let csv = "Data;Tipo;Valore (€);Ore;KM;Consumo;Extra\n";
+            let csv = "Data;Tipo;Valore Lordo;Ore;KM;Consumo;Extra\n";
             const dati = [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id);
             dati.forEach(i => {
                 if(i.type === 'TURNO') csv += `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n`;
                 else csv += `${i.d};${i.type};${i.e};-;-;-;-\n`;
             });
 
-            // Metodo corazzato per il download
-            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8' });
-            const fileName = `Report_Rider_${new Date().getMonth()+1}.csv`;
+            // LOGICA DI SALVATAGGIO RINFORZATA
+            const blob = new Blob(["\ufeff", csv], { type: 'application/octet-stream' });
+            const nomeFile = "Rider_Report_" + (new Date().getMonth()+1) + ".csv";
+            
+            const link = document.createElement("a");
+            const url = window.URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", nomeFile);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }, 200);
 
-            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                window.navigator.msSaveOrOpenBlob(blob, fileName);
-            } else {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.style.display = 'none';
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                }, 100);
-            }
-            alert("Esportazione avviata! Controlla i tuoi download.");
+            alert("File salvato: " + nomeFile);
         }
 
         function elimina(type, id) { if(type === 'T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); calcola(); renderStorico(); }
