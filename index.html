@@ -15,7 +15,7 @@
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         
-        /* STILI COLORI PERSONALIZZATI */
+        /* COLORI PERSONALIZZATI */
         .card.white-text .label, .card.white-text .val { color: #ffffff !important; }
         .card.red-text .label { color: var(--accent) !important; }
         .card.red-text input { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
@@ -58,7 +58,7 @@
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">TOT L. BENZA</span><span class="val" id="cons">0.0L</span></div>
+        <div class="card"><span class="label">LITRI CARBURANTE CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
         <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
         <div class="card white-text"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card red-text"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
@@ -117,7 +117,6 @@
     </div>
 
     <script>
-        // Database con versione aggiornata
         let db = JSON.parse(localStorage.getItem('rider_db_v94v5')) || { s: [], r: [], target: 0, tax: 20 };
 
         function save() { localStorage.setItem('rider_db_v94v5', JSON.stringify(db)); render(); }
@@ -191,7 +190,6 @@
             let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
             document.getElementById('bar').style.width = (perc > 0 ? perc : 0) + "%";
             document.getElementById('perc').innerText = Math.round(perc) + "%";
-            
             document.getElementById('mancante').innerText = isNaN(nettoVal) ? "€0.00" : `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
             
             document.getElementById('targetIn').value = db.target || "";
