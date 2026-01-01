@@ -22,8 +22,8 @@
         .card.red-text .label { color: var(--accent) !important; }
         .card.red-text input { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
 
-        .card.main .val { color: var(--primary); }
-        .card.alt .val { color: var(--accent); }
+        /* Colore Verde (Primary) per Lordo e Mancante Lordo */
+        .card.main .val, .card.mancante-style .val { color: var(--primary); }
         #netto { color: var(--accent) !important; }
         
         .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
@@ -67,7 +67,7 @@
         <div class="card white-text"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card red-text"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
         <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
-        <div class="card alt"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
+        <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
     </div>
 
     <div class="progress-container">
