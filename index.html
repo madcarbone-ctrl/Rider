@@ -43,8 +43,7 @@
 <body>
 
     <div style="text-align: center; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        <h2 style="margin:0; font-size: 18px;">Rider Tracker Pro</h2>
-        <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" width="30" height="30">
+        <h2 style="margin:0; font-size: 18px;">Rider Tracker Pro 🚲</h2>
     </div>
 
     <div class="grid">
@@ -209,25 +208,30 @@
             let lordo = 0, ore = 0, km = 0, litriTotal = 0;
             
             db.s.forEach(t => {
-                lordo += t.l; ore += t.o; km += t.k;
-                litriTotal += (t.k * (t.c / 100));
+                lordo += (Number(t.l) || 0); 
+                ore += (Number(t.o) || 0); 
+                km += (Number(t.k) || 0);
+                litriTotal += (Number(t.k) * (Number(t.c) / 100));
             });
 
+            const tassePerc = Number(db.tax) || 0;
+            const targetVal = Number(db.target) || 0;
+            
             const spesaBenza = litriTotal * 1.85;
-            const nettoVal = (lordo * ((100 - db.tax) / 100)) - spesaBenza;
+            const nettoVal = (lordo * ((100 - tassePerc) / 100)) - spesaBenza;
             
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
             document.getElementById('ore').innerText = ore.toFixed(1);
             document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
             document.getElementById('spesaB').innerText = `€${spesaBenza.toFixed(2)}`;
-            document.getElementById('kml').innerText = km > 0 ? (km / litriTotal).toFixed(1) : "0.0";
+            document.getElementById('kml').innerText = litriTotal > 0 ? (km / litriTotal).toFixed(1) : "0.0";
             
-            const perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
+            const perc = targetVal > 0 ? Math.min(100, (nettoVal / targetVal) * 100) : 0;
             document.getElementById('bar').style.width = perc + "%";
             document.getElementById('perc').innerText = Math.round(perc) + "%";
             
-            const mancaneVal = db.target > 0 ? Math.max(0, (db.target - nettoVal) / ((100 - db.tax) / 100)) : 0;
+            const mancaneVal = targetVal > 0 ? Math.max(0, (targetVal - nettoVal) / ((100 - tassePerc) / 100)) : 0;
             document.getElementById('mancante').innerText = `€${mancaneVal.toFixed(2)}`;
 
             const list = document.getElementById('historyList');
@@ -242,10 +246,9 @@
                 const div = document.createElement('div');
                 div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
                 if(i.type === 's') {
-                    div.innerHTML = `<div><b>TURNO (${i.d})</b><br>€${i.l.toFixed(2)} | ${i.k}km | ${i.o}h</div><div class="del-btn" onclick="del('s', ${i.id})">×</div>`;
+                    div.innerHTML = `<div><b>TURNO (${i.d})</b><br>€${Number(i.l).toFixed(2)} | ${i.k}km | ${i.o}h</div><div class="del-btn" onclick="del('s', ${i.id})">×</div>`;
                 } else {
-                    // Visualizzazione con 3 cifre decimali per il prezzo (es. 1.765)
-                    div.innerHTML = `<div><b>RIFORN. (${i.d})</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L</div><div class="del-btn" onclick="del('r', ${i.id})">×</div>`;
+                    div.innerHTML = `<div><b>RIFORN. (${i.d})</b><br>€${Number(i.e).toFixed(2)} | €${Number(i.p).toFixed(3)}/L</div><div class="del-btn" onclick="del('r', ${i.id})">×</div>`;
                 }
                 list.appendChild(div);
             });
