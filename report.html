@@ -7,110 +7,117 @@
     <style>
         body { font-family: sans-serif; padding: 15px; background: white; color: black; }
         .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px; width: 100%; }
-        .btn-sync { background: #00CCBC; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 20px; font-size: 12px; }
-        .header-report { border-bottom: 2px solid #00CCBC; padding-bottom: 10px; margin-bottom: 20px; }
+        .header-report { border-bottom: 2px solid #00CCBC; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
         h2 { color: #00CCBC; margin: 0; }
+        h3 { border-left: 4px solid #00CCBC; padding-left: 10px; margin-top: 30px; font-size: 16px; color: #333; }
         .riepilogo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
         .box-dato { text-align: center; }
         .label { font-size: 10px; color: #666; display: block; }
         .valore { font-size: 16px; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 11px; }
-        th { background: #f4f4f4; }
-        .tipo-t { color: #00CCBC; font-weight: bold; }
-        .tipo-r { color: #ffa500; font-weight: bold; }
-        @media print { .btn-stampa, .btn-sync { display: none; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
+        th { background: #f4f4f4; color: #444; }
+        .sez-benza { border-left-color: #ffa500; }
+        @media print { .btn-stampa { display: none; } }
     </style>
 </head>
 <body onload="caricaDati()">
 
     <button class="btn-stampa" onclick="window.print()">📄 SALVA REPORT IN PDF</button>
-    <button class="btn-sync" onclick="location.reload()">🔄 AGGIORNA DATI DALL'APP</button>
 
     <div class="header-report">
         <h2>RIDER TRACKER PRO</h2>
-        <small>Report al: <span id="dataGen"></span></small>
+        <small>Riepilogo Attività al: <span id="dataGen"></span></small>
     </div>
     
     <div class="riepilogo">
-        <div class="box-dato"><span class="label">Lordo</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Netto</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
-        <div class="box-dato"><span class="label">Ore</span><span class="valore"><span id="resOre">0.0</span></span></div>
+        <div class="box-dato"><span class="label">Lordo Totale</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Netto Stimato</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Ore Totali</span><span class="valore"><span id="resOre">0.0</span></span></div>
     </div>
 
+    <h3>📊 ELENCO TURNI</h3>
     <table>
         <thead>
             <tr>
                 <th>DATA</th>
-                <th>TIPO</th>
-                <th>IMPORTO</th>
-                <th>DETTAGLI</th>
+                <th>LORDO</th>
+                <th>ORE</th>
+                <th>KM</th>
+                <th>EXTRA</th>
             </tr>
         </thead>
-        <tbody id="tabellaCorpo"></tbody>
+        <tbody id="tabellaTurni"></tbody>
+    </table>
+
+    <h3 class="sez-benza">⛽ ELENCO RIFORNIMENTI</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>DATA</th>
+                <th>SPESA</th>
+                <th>PREZZO/L</th>
+                <th>LITRI</th>
+            </tr>
+        </thead>
+        <tbody id="tabellaBenza"></tbody>
     </table>
 
     <script>
         function caricaDati() {
-            const corpo = document.getElementById('tabellaCorpo');
-            corpo.innerHTML = "";
+            const raw = localStorage.getItem('rider_db_v94v2');
+            if (!raw) return;
+            const db = JSON.parse(raw);
             
-            // 1. Recupero database
-            const rawData = localStorage.getItem('rider_db_v94v2');
-            if (!rawData) {
-                corpo.innerHTML = "<tr><td colspan='4' style='text-align:center'>Nessun dato trovato. Apri prima l'app e inserisci dei turni.</td></tr>";
-                return;
-            }
-
-            const db = JSON.parse(rawData);
             document.getElementById('dataGen').innerText = new Date().toLocaleDateString('it-IT');
+            
+            const tCorpo = document.getElementById('tabellaTurni');
+            const bCorpo = document.getElementById('tabellaBenza');
+            tCorpo.innerHTML = "";
+            bCorpo.innerHTML = "";
 
             let lordoTotal = 0, oreTotal = 0, litriStimati = 0;
 
-            // 2. Creazione lista unificata super-controllata
-            let tutti = [];
-            
-            if (db.s && Array.isArray(db.s)) {
-                db.s.forEach(t => tutti.push({...t, CAT: 'T'}));
-            }
-            if (db.r && Array.isArray(db.r)) {
-                db.r.forEach(r => tutti.push({...r, CAT: 'R'}));
-            }
+            // 1. Elaborazione TURNI
+            if (db.s && db.s.length > 0) {
+                db.s.sort((a, b) => b.id - a.id).forEach(t => {
+                    lordoTotal += Number(t.l || 0);
+                    oreTotal += Number(t.o || 0);
+                    litriStimati += (Number(t.k || 0) * (Number(t.c || 0) / 100));
 
-            // 3. Ordinamento
-            tutti.sort((a, b) => b.id - a.id);
-
-            // 4. Generazione righe
-            tutti.forEach(item => {
-                const tr = document.createElement('tr');
-                
-                if (item.CAT === 'T') {
-                    lordoTotal += Number(item.l || 0);
-                    oreTotal += Number(item.o || 0);
-                    litriStimati += (Number(item.k || 0) * (Number(item.c || 0) / 100));
-
-                    tr.innerHTML = `
-                        <td>${item.d}</td>
-                        <td class="tipo-t">TURNO</td>
-                        <td>€${Number(item.l || 0).toFixed(2)}</td>
-                        <td>${item.k}km | Cons: ${item.c} | Extra: ${item.sc || 0}km</td>
+                    const row = tCorpo.insertRow();
+                    row.innerHTML = `
+                        <td>${t.d}</td>
+                        <td style="font-weight:bold">€${Number(t.l || 0).toFixed(2)}</td>
+                        <td>${t.o}h</td>
+                        <td>${t.k}km</td>
+                        <td>${t.sc || 0}km</td>
                     `;
-                } else {
-                    const euro = Number(item.e || 0);
-                    const prezzo = Number(item.p || 0);
+                });
+            } else {
+                tCorpo.innerHTML = "<tr><td colspan='5' style='text-align:center'>Nessun turno registrato</td></tr>";
+            }
+
+            // 2. Elaborazione RIFORNIMENTI
+            if (db.r && db.r.length > 0) {
+                db.r.sort((a, b) => b.id - a.id).forEach(r => {
+                    const euro = Number(r.e || 0);
+                    const prezzo = Number(r.p || 0);
                     const litri = prezzo > 0 ? (euro / prezzo).toFixed(2) : "0.00";
-                    
-                    tr.innerHTML = `
-                        <td>${item.d}</td>
-                        <td class="tipo-r">RIFORN.</td>
-                        <td>€${euro.toFixed(2)}</td>
-                        <td>Litri: ${litri}L | Prezzo: €${prezzo.toFixed(2)}/L</td>
-                    `;
-                }
-                corpo.appendChild(tr);
-            });
 
-            // 5. Riepilogo
+                    const row = bCorpo.insertRow();
+                    row.innerHTML = `
+                        <td>${r.d}</td>
+                        <td style="font-weight:bold; color:#ffa500">€${euro.toFixed(2)}</td>
+                        <td>€${prezzo.toFixed(3)}/L</td>
+                        <td>${litri}L</td>
+                    `;
+                });
+            } else {
+                bCorpo.innerHTML = "<tr><td colspan='4' style='text-align:center'>Nessun rifornimento registrato</td></tr>";
+            }
+
+            // 3. Calcolo Riepilogo
             const tassi = db.tax !== undefined ? db.tax : 20;
             const netto = (lordoTotal * ((100 - tassi) / 100)) - (litriStimati * 1.85);
 
