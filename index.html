@@ -10,6 +10,9 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px; overflow-x: hidden; }
         
+        /* Classe per rimuovere il padding quando lo storico è aperto */
+        body.hist-open { padding-bottom: 20px; }
+
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
@@ -27,8 +30,8 @@
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        /* SEZIONE STORICO */
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 500px; }
+        /* SEZIONE STORICO OTTIMIZZATA */
+        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 70vh; }
         #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; padding-right: 5px; }
         #historyList::-webkit-scrollbar { width: 4px; }
         #historyList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -140,11 +143,7 @@
         }
 
         function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
-        
-        function closeModals() { 
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-            ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = "");
-        }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = ""); }
 
         function getSelectedDate(prefix) {
             const d = document.getElementById(prefix + 'D').value.padStart(2, '0');
@@ -159,21 +158,13 @@
             let o = parseFloat(document.getElementById('tOre').value) || 0;
             let k = parseInt(document.getElementById('tKm').value) || 0;
             let c = parseFloat(document.getElementById('tCons').value) || 0;
-            if(l > 0) { 
-                db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); 
-                save(); 
-                closeModals(); 
-            }
+            if(l > 0) { db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); save(); closeModals(); }
         }
 
         function addBenza() {
             let e = parseFloat(document.getElementById('bEuro').value) || 0;
             let p = parseFloat(document.getElementById('bP').value) || 0;
-            if(e > 0 && p > 0) { 
-                db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); 
-                save(); 
-                closeModals(); 
-            }
+            if(e > 0 && p > 0) { db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); save(); closeModals(); }
         }
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
@@ -184,21 +175,23 @@
                 db = { s: [], r: [], target: 0, tax: 20 }; 
                 save(); 
                 document.getElementById('histView').style.display = 'none';
-                document.getElementById('mainFooter').style.display = 'grid'; // Assicura che riappaia se azzeri
+                document.getElementById('mainFooter').style.display = 'grid';
+                document.body.classList.remove('hist-open');
             } 
         }
 
-        // FUNZIONE AGGIORNATA PER NASCONDERE IL FOOTER
         function toggleHist() { 
             const h = document.getElementById('histView'); 
             const f = document.getElementById('mainFooter');
             
             if (h.style.display === 'none') {
                 h.style.display = 'block';
-                f.style.display = 'none'; // Nasconde i tasti
+                f.style.display = 'none';
+                document.body.classList.add('hist-open'); // Rimuove padding bottom
             } else {
                 h.style.display = 'none';
-                f.style.display = 'grid'; // Fa riapparire i tasti
+                f.style.display = 'grid';
+                document.body.classList.remove('hist-open'); // Ripristina padding bottom
             }
         }
         
