@@ -1,29 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rider Tracker Pro</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
-        .page { display: none; }
-        .active { display: block; }
-        button { padding: 15px; margin: 10px; width: 80%; font-size: 18px; }
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 18px; border: none; border-radius: 10px; cursor: pointer; }
+        .btn-main { background: #27ae60; color: white; }
+        .btn-secondary { background: #2980b9; color: white; }
+        #reportPage { display: none; }
     </style>
 </head>
 <body>
-    <div id="tracker" class="page active">
-        <h1>Rider Tracker</h1>
-        <button onclick="mostraPagina('report')">Vedi Report</button>
-        </div>
 
-    <div id="report" class="page">
+    <div id="trackerPage" class="card">
+        <h1>Rider Tracker Pro</h1>
+        <p>Versione 4.0 Definita</p>
+        <button class="btn-main" onclick="alert('Consegna Registrata!')">Registra Consegna</button>
+        <button class="btn-secondary" onclick="switchPage('report')">Vedi Report</button>
+    </div>
+
+    <div id="reportPage" class="card">
         <h1>Report Consegne</h1>
-        <button onclick="mostraPagina('tracker')">Torna al Tracker</button>
-        </div>
+        <div id="datiReport">Nessuna consegna registrata.</div>
+        <button class="btn-secondary" onclick="switchPage('tracker')">Torna al Tracker</button>
+    </div>
 
     <script>
-        function mostraPagina(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function switchPage(page) {
+            if(page === 'report') {
+                document.getElementById('trackerPage').style.display = 'none';
+                document.getElementById('reportPage').style.display = 'block';
+            } else {
+                document.getElementById('trackerPage').style.display = 'block';
+                document.getElementById('reportPage').style.display = 'none';
+            }
         }
     </script>
 </body>
