@@ -1,0 +1,23 @@
+name: Build Android APK
+on:
+  push:
+    branches: [ main ] # Si attiva ogni volta che carichi modifiche
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Build APK
+        uses: amirisback/automated-build-android-app-with-github-action@master
+        with:
+          app_name: "Rider Tracker Pro"
+          package_name: "com.marcocarbone.ridertracker"
