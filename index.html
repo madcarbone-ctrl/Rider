@@ -8,7 +8,7 @@
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 180px; } /* Aumentato spazio fondo */
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 200px; }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
@@ -35,14 +35,13 @@
         .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 14px; text-align: center; }
         
         .date-selector { display: flex; gap: 5px; margin-bottom: 10px; }
-        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; }
+        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; border: 1px solid #444; }
 
-        /* Footer Alzato per evitare tasti di sistema */
-        .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
-        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: none; }
+        .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); z-index: 999; }
+        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
-        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; }
-        .btn-azzera { background: #400 !important; color: #fff !important; font-size: 10px; height: 35px; margin-top: 5px; opacity: 0.8; }
+        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; text-align: center; border: none; }
+        .btn-azzera { background: #400 !important; color: #fff !important; font-size: 11px; height: 45px; margin-top: 8px; border-radius: 10px; opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -75,8 +74,8 @@
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
             <div id="historyList"></div>
-            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 12px;" onclick="toggleHist()">
-                <i class="fas fa-eye-slash"></i> CHIUDI STORICO
+            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 12px; border: none;" onclick="toggleHist()">
+                CHIUDI STORICO
             </button>
         </div>
     </div>
@@ -89,8 +88,8 @@
             <input type="number" id="tOre" placeholder="Ore" step="0.1">
             <input type="number" id="tKm" placeholder="KM Totali">
             <input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1">
-            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px;" onclick="addTurno()">SALVA TURNO</button>
-            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px;" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px; border: none;" onclick="addTurno()">SALVA TURNO</button>
+            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px; border: none;" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -100,8 +99,8 @@
             <div class="date-selector" id="dateBenza"></div>
             <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
-            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px;" onclick="addBenza()">SALVA BENZINA</button>
-            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px;" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px; border: none;" onclick="addBenza()">SALVA BENZINA</button>
+            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px; border: none;" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -109,14 +108,8 @@
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
-        
-        <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">
-            GENERA REPORT MENSILE
-        </button>
-        
-        <button class="foot-btn btn-full btn-azzera" onclick="azzera()">
-            <i class="fas fa-trash-alt" style="font-size: 12px; color: white;"></i> AZZERA TUTTO LO STORICO E TARGET
-        </button>
+        <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
+        <button class="foot-btn btn-full btn-azzera" onclick="azzera()">AZZERA TUTTO LO STORICO E TARGET</button>
     </div>
 
     <script>
@@ -135,11 +128,7 @@
             container.innerHTML = `<select id="${containerId}D">${days}</select><select id="${containerId}M">${months}</select><select id="${containerId}Y">${years}</select>`;
         }
 
-        function openM(id) { 
-            createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza');
-            document.getElementById(id).style.display = 'flex'; 
-        }
-        
+        function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
         function getSelectedDate(prefix) {
@@ -156,26 +145,20 @@
             let o = parseFloat(document.getElementById('tOre').value) || 0;
             let k = parseInt(document.getElementById('tKm').value) || 0;
             let c = parseFloat(document.getElementById('tCons').value) || 0;
-            if(l > 0) { 
-                db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); 
-                save(); closeModals(); 
-            }
+            if(l > 0) { db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); save(); closeModals(); }
         }
 
         function addBenza() {
             let e = parseFloat(document.getElementById('bEuro').value) || 0;
             let p = parseFloat(document.getElementById('bP').value) || 0;
-            if(e > 0 && p > 0) { 
-                db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); 
-                save(); closeModals(); 
-            }
+            if(e > 0 && p > 0) { db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); save(); closeModals(); }
         }
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         
         function azzera() { 
-            if(confirm("ATTENZIONE: Questo cancellerà tutti i turni, i rifornimenti e azzererà il target. Confermi?")) { 
+            if(confirm("Sei sicuro di voler azzerare tutto?")) { 
                 db = { s: [], r: [], target: 0, tax: 20 }; 
                 save(); 
                 document.getElementById('histView').style.display = 'none';
@@ -195,7 +178,7 @@
             });
             let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
             document.getElementById('lordo').innerText = lordo.toFixed(2);
-            document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
+            document.getElementById('netto').innerText = isNaN(nettoVal) ? "€0.00" : `€${nettoVal.toFixed(2)}`;
             document.getElementById('ore').innerText = ore.toFixed(1);
             document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
             document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
@@ -203,7 +186,7 @@
             let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
             document.getElementById('bar').style.width = (perc > 0 ? perc : 0) + "%";
             document.getElementById('perc').innerText = Math.round(perc) + "%";
-            document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
+            document.getElementById('mancante').innerText = isNaN(nettoVal) ? "€0.00" : `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
             document.getElementById('targetIn').value = db.target || "";
             document.getElementById('taxIn').value = db.tax;
             const list = document.getElementById('historyList');
