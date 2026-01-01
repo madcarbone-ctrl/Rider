@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rider Tracker Pro</title>
+    <title>Rider Tracker Pro V5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
@@ -15,14 +15,10 @@
         .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         
-        /* Colore Bianco per Benzina Consumata */
+        /* STILI COLORI PERSONALIZZATI */
         .card.white-text .label, .card.white-text .val { color: #ffffff !important; }
-        
-        /* Colore Rosso per Target */
         .card.red-text .label { color: var(--accent) !important; }
         .card.red-text input { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
-
-        /* Colore Verde (Primary) per Lordo e Mancante Lordo */
         .card.main .val, .card.mancante-style .val { color: var(--primary); }
         #netto { color: var(--accent) !important; }
         
@@ -55,7 +51,7 @@
 <body>
 
     <div style="text-align: center; margin-bottom: 15px;">
-        <h2 style="margin:0; font-size: 18px; color: var(--primary);">Rider Tracker Pro 🚲</h2>
+        <h2 style="margin:0; font-size: 18px; color: var(--primary);">Rider Tracker Pro V5 🛵</h2>
     </div>
 
     <div class="grid">
@@ -121,9 +117,10 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
+        // Database con versione aggiornata
+        let db = JSON.parse(localStorage.getItem('rider_db_v94v5')) || { s: [], r: [], target: 0, tax: 20 };
 
-        function save() { localStorage.setItem('rider_db_v94v2', JSON.stringify(db)); render(); }
+        function save() { localStorage.setItem('rider_db_v94v5', JSON.stringify(db)); render(); }
         
         function createDateSelectors(containerId) {
             const container = document.getElementById(containerId);
@@ -166,7 +163,7 @@
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         
         function azzera() { 
-            if(confirm("Sei sicuro di voler azzerare tutto?")) { 
+            if(confirm("Sei sicuro di voler azzerare tutto? (Verrà azzerato anche il Target)")) { 
                 db = { s: [], r: [], target: 0, tax: 20 }; 
                 save(); 
                 document.getElementById('histView').style.display = 'none';
@@ -195,7 +192,6 @@
             document.getElementById('bar').style.width = (perc > 0 ? perc : 0) + "%";
             document.getElementById('perc').innerText = Math.round(perc) + "%";
             
-            // Calcolo Mancante Lordo (Target - Netto)
             document.getElementById('mancante').innerText = isNaN(nettoVal) ? "€0.00" : `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
             
             document.getElementById('targetIn').value = db.target || "";
