@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.9.1</title>
+    <title>Rider Tracker Pro v4.9.3</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -20,7 +20,7 @@
         button { width: 100%; border: none; border-radius: 8px; font-weight: bold; height: 38px; cursor: pointer; text-transform: uppercase; }
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
         .hist-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #111; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
-        .btn-excel { background: #1f1f1f; color: #2ecc71; border: 1px solid #2ecc71; font-size: 9px; height: 22px; width: auto; padding: 0 10px; text-transform: none; }
+        .btn-excel { background: #2ecc71; color: #000; font-size: 10px; height: 28px; width: auto; padding: 0 15px; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { display: flex; flex-direction: column; gap: 2px; }
         .hist-data { font-size: 9px; color: #888; }
@@ -78,7 +78,7 @@
     <div id="wrapperStorico">
         <div class="hist-header">
             <span style="font-size: 11px; font-weight: bold; color: var(--main);">📅 <span id="ggLavoroHist">0</span> GG Lavorati</span>
-            <button onclick="esportaExcel()" class="btn-excel">📊 SALVA EXCEL (.CSV)</button>
+            <button onclick="esportaExcel()" class="btn-excel">💾 SALVA REPORT.CSV</button>
         </div>
         <div id="listaStorico"></div>
     </div>
@@ -99,32 +99,13 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
         
-        function init() { 
-            riempiDate(); 
-            document.getElementById('targetIn').value = db.target || ""; 
-            document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
-            calcola(); 
-        }
-        
-        function riempiDate() {
-            const d = new Date();
-            const fill = (ids) => ids.forEach(id => {
-                const el = document.getElementById(id); el.innerHTML = "";
-                if(id.includes('Day')) for(let i=1;i<=31;i++) el.innerHTML+=`<option ${i==d.getDate()?'selected':''}>${i}</option>`;
-                if(id.includes('Month')) for(let i=1;i<=12;i++) el.innerHTML+=`<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`;
-                if(id.includes('Year')) for(let i=2024;i<=2040;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`;
-            });
-            fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']);
-        }
-
+        function init() { riempiDate(); document.getElementById('targetIn').value = db.target || ""; document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20; calcola(); }
+        function riempiDate() { const d = new Date(); const fill = (ids) => ids.forEach(id => { const el = document.getElementById(id); el.innerHTML = ""; if(id.includes('Day')) for(let i=1;i<=31;i++) el.innerHTML+=`<option ${i==d.getDate()?'selected':''}>${i}</option>`; if(id.includes('Month')) for(let i=1;i<=12;i++) el.innerHTML+=`<option ${i==(d.getMonth()+1)?'selected':''}>${i}</option>`; if(id.includes('Year')) for(let i=2024;i<=2040;i++) el.innerHTML+=`<option ${i==d.getFullYear()?'selected':''}>${i}</option>`; }); fill(['fDay','sDay','fMonth','sMonth','fYear','sYear']); }
         function getNowTime() { const n = new Date(); return n.getHours().toString().padStart(2, '0') + ":" + n.getMinutes().toString().padStart(2, '0'); }
-
+        
         function calcola() {
             let lordo=0, ore=0, kmTot=0, litriTurni=0, spesaBenzaTurni=0;
-            db.s.forEach(x => { 
-                lordo += x.l; ore += x.o; kmTot += x.k;
-                let litri = (x.k * (x.c / 100)); litriTurni += litri; spesaBenzaTurni += litri * 1.85; 
-            });
+            db.s.forEach(x => { lordo += x.l; ore += x.o; kmTot += x.k; let litri = (x.k * (x.c / 100)); litriTurni += litri; spesaBenzaTurni += litri * 1.85; });
             let taxMultiplier = (100 - (db.tax || 0)) / 100;
             let netto = (lordo * taxMultiplier) - spesaBenzaTurni;
             let target = db.target || 0;
@@ -142,81 +123,46 @@
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
 
-        function addTurno() {
-            const l = parseFloat(document.getElementById('tLordo').value);
-            if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}` });
-                ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value = "");
-                calcola(); renderStorico();
-            }
-        }
-
-        function addBenza() {
-            const e = parseFloat(document.getElementById('fEuro').value);
-            const p = parseFloat(document.getElementById('fPrezzo').value);
-            if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
-                localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
-                ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
-                calcola(); renderStorico();
-            }
-        }
-
+        function addTurno() { const l = parseFloat(document.getElementById('tLordo').value); if(l > 0) { db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}` }); ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value = ""); calcola(); renderStorico(); } }
+        function addBenza() { const e = parseFloat(document.getElementById('fEuro').value); const p = parseFloat(document.getElementById('fPrezzo').value); if(e > 0) { db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` }); localStorage.setItem('rider_db_v94v2', JSON.stringify(db)); ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = ""); calcola(); renderStorico(); } }
+        
         function renderStorico() {
-            let h = "";
-            const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
-            all.forEach(i => {
-                const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)';
-                const label = i.type === 'T' ? 'TURNO' : 'RIFORN.';
-                let details = i.type === 'T' ? `KM: ${i.k} | Cons: ${i.c} | Extra: ${i.sc}km` : `Litri: ${(i.p>0?(i.e/i.p):0).toFixed(2)}L | €${(i.p||0).toFixed(2)}/L`;
-                h += `<div class="hist-item" style="border-left-color:${color}"><div class="hist-info"><span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span><b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b><span class="hist-data">${details}</span></div><button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button></div>`;
-            });
+            let h = ""; const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
+            all.forEach(i => { const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)'; const label = i.type === 'T' ? 'TURNO' : 'RIFORN.'; let details = i.type === 'T' ? `KM: ${i.k} | Cons: ${i.c} | Extra: ${i.sc}km` : `Litri: ${(i.p>0?(i.e/i.p):0).toFixed(2)}L | €${(i.p||0).toFixed(2)}/L`; h += `<div class="hist-item" style="border-left-color:${color}"><div class="hist-info"><span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span><b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b><span class="hist-data">${details}</span></div><button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button></div>`; });
             document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#555;'>Vuoto</div>";
         }
 
-        function toggleStorico() {
-            const w = document.getElementById('wrapperStorico'), bB = document.getElementById('boxBenza'), bT = document.getElementById('boxTurno'), btn = document.getElementById('btnToggle');
-            if (w.style.display === 'block') { w.style.display = 'none'; bB.style.display = 'block'; bT.style.display = 'block'; btn.innerText = "📜 MOSTRA STORICO"; }
-            else { w.style.display = 'block'; bB.style.display = 'none'; bT.style.display = 'none'; btn.innerText = "❌ NASCONDI STORICO"; renderStorico(); }
-        }
+        function toggleStorico() { const w = document.getElementById('wrapperStorico'), bB = document.getElementById('boxBenza'), bT = document.getElementById('boxTurno'), btn = document.getElementById('btnToggle'); if (w.style.display === 'block') { w.style.display = 'none'; bB.style.display = 'block'; bT.style.display = 'block'; btn.innerText = "📜 MOSTRA STORICO"; } else { w.style.display = 'block'; bB.style.display = 'none'; bT.style.display = 'none'; btn.innerText = "❌ NASCONDI STORICO"; renderStorico(); } }
 
-        async function esportaExcel() {
+        // --- ESPORTAZIONE ULTRA-COMPATIBILE ANDROID ---
+        function esportaExcel() {
             if(db.s.length === 0 && db.r.length === 0) { alert("Nessun dato!"); return; }
             
+            // Creiamo il contenuto CSV
             let csv = "sep=;\nData;Tipo;Valore Lordo;Ore;KM;Consumo;Extra\n";
             const dati = [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id);
-            
             dati.forEach(i => {
                 if(i.type === 'TURNO') csv += `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n`;
                 else csv += `${i.d};${i.type};${i.e};-;-;-;-\n`;
             });
 
-            const fileName = `Rider_Report_${new Date().getDate()}_${new Date().getMonth()+1}.csv`;
-
-            // METODO SCELTA CARTELLA (Browser Moderni)
-            if (window.showSaveFilePicker) {
-                try {
-                    const handle = await window.showSaveFilePicker({
-                        suggestedName: fileName,
-                        types: [{ description: 'File Excel CSV', accept: { 'text/csv': ['.csv'] } }],
-                    });
-                    const writable = await handle.createWritable();
-                    await writable.write("\ufeff" + csv);
-                    await writable.close();
-                    return;
-                } catch (err) { console.log("Salvataggio annullato"); }
-            }
-
-            // METODO DI RISERVA (Vecchio stile)
-            const blob = new Blob(["\ufeff", csv], { type: 'application/vnd.ms-excel' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => { window.URL.revokeObjectURL(url); document.body.removeChild(a); }, 500);
-            alert("File salvato come: " + fileName);
+            // Nome del file con estensione forzata
+            const fileName = "ReportRider_" + new Date().getDate() + "_" + (new Date().getMonth()+1) + ".csv";
+            
+            // Metodo Data URI: forza il browser a vedere il file come download con estensione
+            const encodedUri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            
+            // Esegue il download
+            link.click();
+            
+            // Pulizia
+            setTimeout(() => document.body.removeChild(link), 100);
+            
+            alert("Richiesta di download inviata per: " + fileName);
         }
 
         function elimina(type, id) { if(type === 'T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); calcola(); renderStorico(); }
