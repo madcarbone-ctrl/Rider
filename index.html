@@ -1,220 +1,30 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rider Tracker Pro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        *::-webkit-scrollbar { display: none !important; }
-        * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 10px; 
-            padding-bottom: 220px; 
-            overflow-x: hidden;
-        }
-        
-        body.hist-open { overflow: hidden; height: 100vh; padding-bottom: 0; }
-
-        /* Titolo Ingrandito */
-        .app-title { 
-            text-align: center; 
-            margin: 15px 0 20px 0; 
-            font-size: 28px; 
-            font-weight: 800; 
-            color: var(--primary); 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
-        .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
-        .val { font-size: 14px; font-weight: bold; }
-        .card.main .val, .card.mancante-style .val { color: var(--primary); }
-        #netto { color: var(--accent) !important; }
-        .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
-
-        /* Barra Progresso Mixer Style */
-        .progress-container { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        .progress-bar { 
-            background: #222; 
-            height: 35px; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            margin-top: 10px; 
-            border: 1px solid #444;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-        #bar { 
-            background: linear-gradient(90deg, 
-                #00ff00 0%,   
-                #ccff00 40%,  
-                #ffff00 60%,  
-                #ff9900 80%,  
-                #ff0000 100%  
-            );
-            background-size: 100vw 35px; 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        
-        #histView { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; }
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; }
-        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
-
-        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .hist-item.benza { border-left-color: #ffa500; }
-        .hist-info { font-size: 11px; line-height: 1.4; }
-        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
-        
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; margin-top: 20px; }
-        .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; }
-        
-        .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); z-index: 999; }
-        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
-        .foot-btn i { font-size: 18px; color: var(--primary); }
-        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
-        .btn-azzera { background: #400 !important; color: #fff !important; font-size: 11px; height: 45px; margin-top: 8px; border-radius: 10px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        .page { display: none; }
+        .active { display: block; }
+        button { padding: 15px; margin: 10px; width: 80%; font-size: 18px; }
     </style>
 </head>
-<body onclick="handleInputFocus(event)">
-
-    <div class="app-title">Rider Tracker Pro</div>
-
-    <div class="grid">
-        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI CARBURANTE CONSUMATI</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">€ BENZ. CONSUMATA</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
-        <div class="card"><span class="label">IMPOSTE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
-        <div class="card mancante-style"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
-    </div>
-
-    <div class="progress-container">
-        <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color: var(--primary)">
-            <span>PROGRESSO OBIETTIVO</span>
-            <span id="perc">0%</span>
+<body>
+    <div id="tracker" class="page active">
+        <h1>Rider Tracker</h1>
+        <button onclick="mostraPagina('report')">Vedi Report</button>
         </div>
-        <div class="progress-bar"><div id="bar"></div></div>
-    </div>
 
-    <div id="histView">
-        <div class="history-section">
-            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
-            <div id="historyList"></div>
-            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 15px; border: none; border-radius: 10px;" onclick="toggleHist()">
-                CHIUDI STORICO
-            </button>
+    <div id="report" class="page">
+        <h1>Report Consegne</h1>
+        <button onclick="mostraPagina('tracker')">Torna al Tracker</button>
         </div>
-    </div>
-
-    <div id="mTurno" class="modal"><div class="modal-content"><h3 style="text-align:center">Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA TURNO</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-    <div id="mBenza" class="modal"><div class="modal-content"><h3 style="text-align:center">Rifornimento</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA BENZINA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-
-    <div id="mainFooter" class="sticky-footer">
-        <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
-        <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
-        <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
-        <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
-        <button class="foot-btn btn-full btn-azzera" onclick="azzera()"><i class="fas fa-trash-alt"></i> AZZERA TUTTO</button>
-    </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
-
-        function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
-        function handleInputFocus(e) { if (e.target.tagName === 'INPUT') { setTimeout(() => { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); } }
-
-        function toggleHist() { 
-            const h = document.getElementById('histView'); 
-            const f = document.getElementById('mainFooter');
-            if (h.style.display === 'none' || h.style.display === '') {
-                h.style.display = 'flex'; f.style.display = 'none'; document.body.classList.add('hist-open');
-            } else {
-                h.style.display = 'none'; f.style.display = 'grid'; document.body.classList.remove('hist-open');
-            }
+        function mostraPagina(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
-
-        function createDateSelectors(containerId) {
-            const container = document.getElementById(containerId);
-            const now = new Date();
-            let days = '', months = '', years = '';
-            for(let i=1; i<=31; i++) days += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`;
-            const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
-            mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`);
-            for(let i=2025; i<=2045; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
-            container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`;
-        }
-
-        function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = ""); }
-
-        function addTurno() {
-            let l = parseFloat(document.getElementById('tLordo').value) || 0, o = parseFloat(document.getElementById('tOre').value) || 0, k = parseInt(document.getElementById('tKm').value) || 0, c = parseFloat(document.getElementById('tCons').value) || 0;
-            if(l > 0) { db.s.push({ id: Date.now(), time: getSelectedDate('dateTurno'), l, o, k, c }); save(); closeModals(); }
-        }
-
-        function addBenza() {
-            let e = parseFloat(document.getElementById('bEuro').value) || 0, p = parseFloat(document.getElementById('bP').value) || 0;
-            if(e > 0 && p > 0) { db.r.push({ id: Date.now(), time: getSelectedDate('dateBenza'), e, p }); save(); closeModals(); }
-        }
-
-        function getSelectedDate(prefix) {
-            const d = document.getElementById(prefix + 'D').value.padStart(2, '0'), m = document.getElementById(prefix + 'M').value.padStart(2, '0'), y = document.getElementById(prefix + 'Y').value;
-            const now = new Date(); return `${d}/${m}/${y} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-        }
-
-        function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
-        function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); if(document.getElementById('histView').style.display === 'flex') toggleHist(); } }
-        function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
-
-        function render() {
-            let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
-            db.s.forEach(t => {
-                lordo += t.l; ore += t.o; kmTotal += t.k;
-                let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno;
-                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
-                costoBenzaTotal += (ltrTurno * prezzo);
-            });
-            let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
-            document.getElementById('lordo').innerText = lordo.toFixed(2);
-            document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
-            document.getElementById('ore').innerText = ore.toFixed(1);
-            document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
-            document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
-            document.getElementById('kml').innerText = litriTotal > 0 ? (kmTotal / litriTotal).toFixed(1) : "0.0";
-            let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
-            document.getElementById('bar').style.width = perc + "%";
-            document.getElementById('perc').innerText = Math.round(perc) + "%";
-            document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
-            document.getElementById('targetIn').value = db.target || "";
-            document.getElementById('taxIn').value = db.tax;
-            
-            const list = document.getElementById('historyList');
-            list.innerHTML = "";
-            [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
-                const div = document.createElement('div');
-                div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
-                div.innerHTML = `<div class="hist-info"><b>${i.type === 's' ? 'TURNO' : 'RIFORN.'} ${i.time}</b><br>${i.type==='s'?`€${i.l.toFixed(2)} | ${i.k}km | ${(i.k*(i.c/100)).toFixed(2)}L` : `€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L`}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})">×</button>`;
-                list.appendChild(div);
-            });
-        }
-        render();
     </script>
 </body>
 </html>
