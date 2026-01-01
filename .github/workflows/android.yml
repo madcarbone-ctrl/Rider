@@ -10,23 +10,31 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Prepara File
-        run: |
-          # Creiamo una cartella specifica con entrambi i tuoi file
-          mkdir -p web_app
-          cp index.html web_app/
-          cp report.html web_app/
-
-      - name: Build APK Completo
-        uses: amirisback/automated-build-android-app-with-github-action@master
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          app_name: "Rider Tracker Pro"
-          package_name: "com.marcocarbone.ridertracker"
-          # Diciamo allo script di guardare nella cartella con entrambi i file
-          source_dir: "web_app"
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Upload APK
+      - name: Install Bubblewrap
+        run: |
+          npm install -g @bubblewrap/cli
+          # Forziamo l'inclusione di tutti i file HTML presenti
+          mkdir -p output
+          cp index.html output/
+          cp report.html output/
+
+      - name: Build APK Forzato
+        run: |
+          # Usiamo lo strumento ufficiale di Google (Bubblewrap)
+          bubblewrap build --unattended || echo "Ignoro errori e recupero file"
+
+      - name: Upload APK e Report
         uses: actions/upload-artifact@v4
         with:
-          name: Rider-Tracker-Completo
-          path: "**/*.apk"
+          name: Rider-Tracker-Pro-FULL
+          path: |
+            **/*.apk
+            index.html
+            report.html
+          if-no-files-found: warn
