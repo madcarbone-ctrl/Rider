@@ -2,111 +2,121 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Report Rider Tracker Pro</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Mensile - Rider Tracker Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 20px; text-align: center; }
-        .btn-report { background: #00CCBC; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin: 10px; }
-        .btn-back { background: #333; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --text: #e0e0e0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .month-selector { width: 100%; padding: 12px; background: var(--card); border: 1px solid #333; color: white; border-radius: 10px; font-size: 16px; margin-bottom: 20px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; text-align: center; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-val { font-size: 18px; font-weight: bold; color: var(--primary); }
+        .table-container { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { background: #222; color: var(--primary); padding: 12px 8px; text-align: left; border-bottom: 1px solid #333; }
+        td { padding: 10px 8px; border-bottom: 1px solid #222; }
+        .btn-back { display: block; width: 100%; background: var(--card); color: var(--primary); text-align: center; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: bold; border: 1px solid var(--primary); margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <h2>Generazione Report PDF</h2>
-    <p>Clicca il pulsante qui sotto per scaricare il riepilogo dettagliato dei turni e dei rifornimenti.</p>
-    
-    <button class="btn-report" onclick="generatePDF()">SCARICA REPORT PDF</button>
-    <br>
-    <a href="index.html" class="btn-back">Torna all'App</a>
+    <div class="header">
+        <h2 style="margin:0">REPORT MENSILE</h2>
+    </div>
+
+    <select id="monthPicker" class="month-selector" onchange="generateReport()">
+        </select>
+
+    <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Lordo Totale</div><div id="resLordo" class="stat-val">€0.00</div></div>
+        <div class="stat-card"><div class="stat-label">Netto Stimato</div><div id="resNetto" class="stat-val" style="color:#ff4d4d">€0.00</div></div>
+        <div class="stat-card"><div class="stat-label">Ore Totali</div><div id="resOre" class="stat-val">0.0h</div></div>
+        <div class="stat-card"><div class="stat-label">Media Oraria Netta</div><div id="resMedia" class="stat-val">€0.00/h</div></div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Lordo</th>
+                    <th>Netto</th>
+                    <th>Ore</th>
+                </tr>
+            </thead>
+            <tbody id="reportTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> TORNA ALLA DASHBOARD</a>
 
     <script>
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Recupero dati (stesso ID versione dell'app principale)
-            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
+        // Chiave sincronizzata con la pagina principale V95
+        const DB_KEY = 'rider_db_v95';
 
-            // Titolo
-            doc.setFontSize(18);
-            doc.text("REPORT ATTIVITÀ RIDER TRACKER PRO", 14, 20);
-            
-            // --- TABELLA TURNI ---
-            doc.setFontSize(14);
-            doc.text("Dettaglio Turni", 14, 35);
-            
-            const turniRows = db.s.map(t => {
-                let ltr = (t.k * (t.c / 100)).toFixed(2);
-                let media = t.k > 0 ? (t.k / ltr).toFixed(1) : "0.0";
-                return [
-                    t.time || "N/D", // Qui riprendiamo la data salvata
-                    "€" + t.l.toFixed(2),
-                    t.o + "h",
-                    t.k + " km",
-                    ltr + " L",
-                    media + " km/l"
-                ];
-            });
+        function init() {
+            const db = JSON.parse(localStorage.getItem(DB_KEY)) || { s: [] };
+            const months = [...new Set(db.s.map(t => {
+                const parts = t.time.split(' ')[0].split('/');
+                return parts[1] + '/' + parts[2];
+            }))].sort().reverse();
 
-            doc.autoTable({
-                startY: 40,
-                head: [['Data/Ora', 'Lordo', 'Ore', 'KM', 'Consumo L', 'Media']],
-                body: turniRows,
-                theme: 'striped',
-                headStyles: { fillColor: [0, 204, 188] }
-            });
+            const picker = document.getElementById('monthPicker');
+            if(months.length === 0) {
+                picker.innerHTML = '<option>Nessun dato disponibile</option>';
+                return;
+            }
 
-            // --- TABELLA RIFORNIMENTI ---
-            let finalY = doc.lastAutoTable.finalY + 15;
-            doc.text("Dettaglio Carburante", 14, finalY);
-            
-            const benzaRows = db.r.map(b => [
-                b.time || "N/D", // Qui riprendiamo la data salvata
-                "€" + b.e.toFixed(2),
-                "€" + b.p.toFixed(3) + "/L"
-            ]);
-
-            doc.autoTable({
-                startY: finalY + 5,
-                head: [['Data/Ora Inserimento', 'Spesa (€)', 'Prezzo al Litro']],
-                body: benzaRows,
-                theme: 'striped',
-                headStyles: { fillColor: [255, 165, 0] }
-            });
-
-            // --- RIEPILOGO FINALE ---
-            let riepilogoY = doc.lastAutoTable.finalY + 15;
-            let lordoTot = db.s.reduce((acc, curr) => acc + curr.l, 0);
-            let oreTot = db.s.reduce((acc, curr) => acc + curr.o, 0);
-            let kmTot = db.s.reduce((acc, curr) => acc + curr.k, 0);
-            
-            // Calcolo costo benzina basato sui turni
-            let litriTot = 0;
-            let costoBenzaTot = 0;
-            db.s.forEach(t => {
-                let ltr = (t.k * (t.c / 100));
-                litriTot += ltr;
-                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
-                costoBenzaTot += (ltr * prezzo);
-            });
-
-            let tasseEuro = lordoTot * (db.tax / 100);
-            let nettoTot = lordoTot - tasseEuro - costoBenzaTot;
-
-            doc.setFontSize(14);
-            doc.text("RIEPILOGO TOTALI", 14, riepilogoY);
-            doc.setFontSize(10);
-            doc.text(`Lordo Totale: €${lordoTot.toFixed(2)}`, 14, riepilogoY + 10);
-            doc.text(`Tasse (${db.tax}%): €${tasseEuro.toFixed(2)}`, 14, riepilogoY + 17);
-            doc.text(`Costo Benzina Totale: €${costoBenzaTot.toFixed(2)}`, 14, riepilogoY + 24);
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text(`NETTO GUADAGNATO: €${nettoTot.toFixed(2)}`, 14, riepilogoY + 34);
-
-            // Salvataggio
-            doc.save(`Report_Rider_${new Date().toLocaleDateString()}.pdf`);
+            picker.innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
+            generateReport();
         }
+
+        function generateReport() {
+            const db = JSON.parse(localStorage.getItem(DB_KEY)) || { s: [], r: [], tax: 20 };
+            const selectedMonth = document.getElementById('monthPicker').value;
+            const tableBody = document.getElementById('reportTableBody');
+            
+            let totalLordo = 0, totalNetto = 0, totalOre = 0;
+            tableBody.innerHTML = "";
+
+            // Filtra turni del mese selezionato
+            const monthlyTurns = db.s.filter(t => {
+                const parts = t.time.split(' ')[0].split('/');
+                return (parts[1] + '/' + parts[2]) === selectedMonth;
+            }).sort((a,b) => b.id - a.id);
+
+            monthlyTurns.forEach(t => {
+                // Calcolo carburante per il singolo turno (stessa logica della home)
+                let ltrTurno = (t.k * (t.c / 100));
+                let prezzoBenza = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+                let costoBenza = ltrTurno * prezzoBenza;
+                
+                let nettoTurno = t.l - (t.l * (db.tax / 100)) - costoBenza;
+
+                totalLordo += t.l;
+                totalNetto += nettoTurno;
+                totalOre += t.o;
+
+                const row = `<tr>
+                    <td>${t.time.split(' ')[0]}</td>
+                    <td>€${t.l.toFixed(2)}</td>
+                    <td>€${nettoTurno.toFixed(2)}</td>
+                    <td>${t.o}h</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            document.getElementById('resLordo').innerText = `€${totalLordo.toFixed(2)}`;
+            document.getElementById('resNetto').innerText = `€${totalNetto.toFixed(2)}`;
+            document.getElementById('resOre').innerText = `${totalOre.toFixed(1)}h`;
+            document.getElementById('resMedia').innerText = totalOre > 0 ? `€${(totalNetto / totalOre).toFixed(2)}/h` : "€0.00/h";
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
