@@ -23,28 +23,25 @@
         
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; padding-bottom: 60px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; position: relative; }
-        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 20px; scroll-behavior: smooth; }
-        #historyList::-webkit-scrollbar { display: none; }
-        .scroll-buttons { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 2100; }
-        .scroll-btn { background: rgba(0, 204, 188, 0.2); border: 1px solid var(--primary); color: var(--primary); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-right: 55px; }
+        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 20px; }
+        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
-        .hist-info { font-size: 11px; line-height: 1.5; color: #eee; }
-        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
+        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; border: none; background: transparent; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; text-align: center; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
+        
         .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
-        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: 1px solid #444; }
+        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
-        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
-        .btn-azzera { background: #200 !important; color: #ff4d4d !important; font-size: 10px; height: 30px; margin-top: 4px; border-radius: 6px; border: 1px solid #400 !important; }
+        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="app-title">Rider Tracker Pro</div>
+    
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -68,20 +65,20 @@
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA</h4>
             <div id="historyList"></div>
-            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 18px; border: none; border-radius: 12px;" onclick="toggleHist()">CHIUDI</button>
+            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); padding: 18px; border-radius: 12px;" onclick="toggleHist()">CHIUDI</button>
         </div>
     </div>
 
-    <div id="mAzzera" class="modal"><div class="modal-content"><h3 style="color:var(--accent)">AZZERA DATI?</h3><button class="foot-btn" style="width:100%; background:var(--accent); color:#fff; font-weight:bold; padding:12px;" onclick="confermaAzzera()">SI, AZZERA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">NO</button></div></div>
-    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno"></div><input type="number" id="tLordo" placeholder="Lordo (€)"><input type="number" id="tOre" placeholder="Ore"><input type="number" id="tKm" placeholder="KM"><input type="number" id="tCons" placeholder="L/100km"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">CHIUDI</button></div></div>
-    <div id="mBenza" class="modal"><div class="modal-content"><h3>Benzina</h3><div id="dateBenza"></div><input type="number" id="bEuro" placeholder="Euro"><input type="tel" id="bP" placeholder="Prezzo/L" oninput="autoDecimal(this)"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">CHIUDI</button></div></div>
+    <div id="mAzzera" class="modal"><div class="modal-content"><h3>AZZERA TUTTO?</h3><button class="foot-btn" style="width:100%; background:var(--accent);" onclick="confermaAzzera()">SI</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">NO</button></div></div>
+    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno"></div><input type="number" id="tLordo" placeholder="Lordo (€)"><input type="number" id="tOre" placeholder="Ore"><input type="number" id="tKm" placeholder="KM"><input type="number" id="tCons" placeholder="L/100km"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000;" onclick="addTurno()">SALVA</button></div></div>
+    <div id="mBenza" class="modal"><div class="modal-content"><h3>Benzina</h3><div id="dateBenza"></div><input type="number" id="bEuro" placeholder="Euro"><input type="tel" id="bP" placeholder="Prezzo/L" oninput="autoDecimal(this)"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000;" onclick="addBenza()">SALVA</button></div></div>
 
-    <div id="mainFooter" class="sticky-footer">
+    <div class="sticky-footer">
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
-        <button class="foot-btn btn-full" onclick="apriReport()" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
-        <button class="foot-btn btn-full btn-azzera" onclick="openM('mAzzera')">AZZERA TUTTO</button>
+        <button class="foot-btn btn-full" onclick="generaReportProfessionale()" style="background: var(--primary); color: #000;">GENERA REPORT MENSILE</button>
+        <button class="foot-btn btn-full" style="background: #200; color: #f44; font-size: 10px;" onclick="openM('mAzzera')">AZZERA TUTTO</button>
     </div>
 
     <script>
@@ -89,50 +86,69 @@
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display === 'flex') ? 'none' : 'flex'; }
         
-        // --- FUNZIONE CHE GENERA LA PAGINA REPORT AL VOLO ---
-        function apriReport() {
-            const reportWindow = window.open('', '_blank');
-            const dataOggi = new Date().toLocaleDateString();
-            
-            let listHTML = "";
-            const items = [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id);
-            items.forEach(i => {
-                if(i.type === 's') listHTML += `<tr><td>${i.time}</td><td>TURNO</td><td>€${i.l.toFixed(2)}</td><td>${i.o}h</td><td>${i.k}km</td></tr>`;
-                else listHTML += `<tr><td>${i.time}</td><td>BENZINA</td><td>€${i.e.toFixed(2)}</td><td>-</td><td>€${i.p.toFixed(3)}/L</td></tr>`;
+        // --- FUNZIONE REPORT COMPLETO (STILE SCREENSHOT) ---
+        function generaReportProfessionale() {
+            let lordoT = 0, oreT = 0, kmT = 0, litT = 0, spesaBT = 0;
+            let righeTurni = "", righeBenza = "";
+
+            db.s.forEach(t => {
+                let ltr = (t.k * (t.c / 100));
+                let prezzo = db.r.length > 0 ? db.r[db.r.length-1].p : 1.85;
+                let costoB = ltr * prezzo;
+                lordoT += t.l; oreT += t.o; kmT += t.k; litT += ltr; spesaBT += costoB;
+                righeTurni += `<tr><td>${t.time}</td><td>€${t.l.toFixed(2)}</td><td>${t.o}h</td><td>${t.k}km</td><td>${ltr.toFixed(2)}L</td><td>${(t.k/ltr).toFixed(1)} km/l</td></tr>`;
             });
 
-            reportWindow.document.write(`
-                <html>
-                <head>
-                    <title>Report Rider Tracker</title>
-                    <style>
-                        body { font-family: sans-serif; padding: 20px; color: #333; }
-                        h1 { color: #00CCBC; text-align: center; }
-                        .summary { display: flex; justify-content: space-around; background: #f4f4f4; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-                        th { background: #00CCBC; color: white; }
-                        .print-btn { background: #00CCBC; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; display: block; margin: 20px auto; }
-                        @media print { .print-btn { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    <h1>Report Rider Tracker Pro</h1>
-                    <p style="text-align:center">Data Report: ${dataOggi}</p>
-                    <div class="summary">
-                        <div><b>LORDO:</b><br>€${document.getElementById('lordo').innerText}</div>
-                        <div><b>NETTO:</b><br>${document.getElementById('netto').innerText}</div>
-                        <div><b>ORE:</b><br>${document.getElementById('ore').innerText}h</div>
-                    </div>
-                    <table>
-                        <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Dettaglio</th></tr></thead>
-                        <tbody>${listHTML}</tbody>
-                    </table>
-                    <button class="print-btn" onclick="window.print()">STAMPA O SALVA PDF</button>
-                </body>
-                </html>
-            `);
-            reportWindow.document.close();
+            db.r.forEach(b => {
+                righeBenza += `<tr><td>${b.time}</td><td>€${b.e.toFixed(2)}</td><td>€${b.p.toFixed(3)}/L</td></tr>`;
+            });
+
+            const tasse = lordoT * (db.tax/100);
+            const nettoG = lordoT - tasse - spesaBT;
+
+            const htmlContent = `
+            <html>
+            <head>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    h2 { color: #333; border-bottom: 2px solid #00CCBC; padding-bottom: 5px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+                    th { text-align: left; padding: 8px; color: white; }
+                    td { border-bottom: 1px solid #eee; padding: 8px; }
+                    .th-turni { background-color: #00CCBC; }
+                    .th-benza { background-color: #FFA500; }
+                    .summary { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
+                    .netto { font-size: 18px; font-weight: bold; color: #333; margin-top: 10px; }
+                    .btn-print { background: #00CCBC; color: white; padding: 15px; width: 100%; border: none; border-radius: 8px; font-weight: bold; margin-top: 20px; }
+                    @media print { .btn-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <h2>REPORT ATTIVITÀ RIDER TRACKER PRO</h2>
+                <h4>Dettaglio Turni</h4>
+                <table>
+                    <thead><tr class="th-turni"><th>Data</th><th>Lordo</th><th>Ore</th><th>KM</th><th>Consumo L</th><th>Media</th></tr></thead>
+                    <tbody>${righeTurni}</tbody>
+                </table>
+                <h4>Dettaglio Carburante</h4>
+                <table>
+                    <thead><tr class="th-benza"><th>Data Inserimento</th><th>Spesa (€)</th><th>Prezzo al Litro</th></tr></thead>
+                    <tbody>${righeBenza}</tbody>
+                </table>
+                <div class="summary">
+                    <h3>RIEPILOGO TOTALI</h3>
+                    <p>Lordo Totale: €${lordoT.toFixed(2)}</p>
+                    <p>Tasse (${db.tax}%): €${tasse.toFixed(2)}</p>
+                    <p>Costo Benzina Totale: €${spesaBT.toFixed(2)}</p>
+                    <div class="netto">NETTO GUADAGNATO: €${nettoG.toFixed(2)}</div>
+                </div>
+                <button class="btn-print" onclick="window.print()">STAMPA PDF</button>
+            </body>
+            </html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.location.href = url; // Apre il report direttamente nella stessa finestra per evitare blocchi pop-up
         }
 
         function autoDecimal(el) { let v = el.value.replace(/\D/g, ""); if (v.length > 0) el.value = (parseFloat(v) / 1000).toFixed(3); }
