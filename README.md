@@ -1,75 +1,57 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuale Rider Tracker Pro v95</title>
-    <style>
-        :root { --primary: #00CCBC; --bg: #121212; --text: #e0e0e0; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
-        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
-        h2 { color: var(--primary); margin-top: 30px; border-left: 4px solid var(--primary); padding-left: 10px; }
-        .lang-section { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        code { background: #333; padding: 2px 5px; border-radius: 4px; color: #ff4d4d; }
-        ul { padding-left: 20px; }
-        li { margin-bottom: 10px; }
-        hr { border: 0; border-top: 1px solid #444; margin: 40px 0; }
-        .badge { background: var(--primary); color: black; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 0.8em; }
-    </style>
-</head>
-<body>
+# Rider Tracker Pro - v95 (Final Version)
 
-    <h1>Rider Tracker Pro <span class="badge">v95 Final</span></h1>
+**Rider Tracker Pro** è una web-app leggera e reattiva progettata per i rider che vogliono monitorare in tempo reale i propri guadagni lordi e netti, i costi del carburante e il raggiungimento dei propri obiettivi economici.
 
-    <div class="lang-section">
-        <h2>🇮🇹 Istruzioni in Italiano</h2>
-        <p><strong>Rider Tracker Pro</strong> è lo strumento definitivo per monitorare i tuoi guadagni e i costi del carburante durante i tuoi turni di consegna.</p>
-        
-        <h3>Configurazione</h3>
-        <ul>
-            <li>Assicurati che i file <code>index.html</code> e <code>report.html</code> siano nella stessa cartella.</li>
-            <li>Inserisci il tuo <strong>Target €</strong> (l'importo netto che vuoi raggiungere) e la tua percentuale di <strong>Tasse</strong>.</li>
-        </ul>
+---
 
-        <h3>Funzioni Principali</h3>
-        <ul>
-            <li><strong>Nuovo Turno:</strong> Registra lordo, ore, chilometri e consumo medio (L/100km).</li>
-            <li><strong>Benzina:</strong> Registra i rifornimenti; l'ultimo prezzo inserito aggiornerà automaticamente il calcolo del costo carburante per i turni.</li>
-            <li><strong>Progresso Obiettivo:</strong> Una barra stile mixer che si riempie in base al tuo guadagno netto rispetto al target.</li>
-            <li><strong>Report A4:</strong> Genera un documento professionale ottimizzato per la stampa o il salvataggio in PDF.</li>
-        </ul>
+## 🇮🇹 Istruzioni in Italiano
 
-        <h3>Salvataggio Dati</h3>
-        <p>I dati vengono salvati localmente (<code>localStorage</code>) sulla chiave <code>rider_db_v95</code>. Non cancellare i dati del browser per non perdere lo storico.</p>
-    </div>
+### 1. Configurazione Iniziale
+* **File**: Assicurati che i file `index.html` e `report.html` si trovino nella stessa cartella sul tuo dispositivo.
+* **Apertura**: Apri il file `index.html` con il browser del tuo smartphone (Chrome o Safari consigliati).
+* **Dati Iniziali**: Inserisci il tuo **Target €** (l'obiettivo netto che desideri raggiungere) e la percentuale di **Imposte %** (es. 20%) nelle apposite schede.
 
-    <hr>
+### 2. Funzionamento dell'App
+* **Aggiungi Turno**: Clicca su **+ TURNO** per inserire il lordo guadagnato, le ore lavorate, i chilometri percorsi e il consumo medio del mezzo (L/100km).
+* **Aggiungi Benzina**: Clicca su **BENZINA** ogni volta che fai rifornimento. L'ultimo prezzo al litro inserito verrà utilizzato per calcolare automaticamente il costo del carburante nei turni registrati.
+* **Progresso Obiettivo**: La barra multicolore "Progresso Obiettivo" si riempie in tempo reale man mano che i tuoi guadagni netti si avvicinano al target impostato.
+* **Storico**: Clicca su **STORICO** per visualizzare, gestire o eliminare i singoli inserimenti di turni e carburante.
 
-    <div class="lang-section">
-        <h2>🇬🇧 Instructions in English</h2>
-        <p><strong>Rider Tracker Pro</strong> is the ultimate tool for tracking your earnings and fuel costs during your delivery shifts.</p>
-        
-        <h3>Setup</h3>
-        <ul>
-            <li>Ensure <code>index.html</code> and <code>report.html</code> are stored in the same directory.</li>
-            <li>Set your <strong>Target €</strong> (the net amount you want to earn) and your <strong>Tax %</strong>.</li>
-        </ul>
+### 3. Generazione Report
+* Clicca su **GENERA REPORT MENSILE** per accedere alla pagina dei report.
+* La pagina è ottimizzata per la visualizzazione mobile e per la **stampa in formato A4**.
+* Puoi salvare il report come PDF o stamparlo direttamente per tenere traccia della tua contabilità mensile.
 
-        <h3>Key Features</h3>
-        <ul>
-            <li><strong>New Shift:</strong> Record gross pay, hours, kilometers, and average consumption (L/100km).</li>
-            <li><strong>Fuel:</strong> Log your refuels; the latest price per liter will automatically update fuel cost calculations.</li>
-            <li><strong>Goal Progress:</strong> A mixer-style bar that fills based on your net earnings vs. target.</li>
-            <li><strong>A4 Report:</strong> Generates a professional document optimized for printing or saving as a PDF.</li>
-        </ul>
+### 4. Gestione Dati
+* I dati sono salvati localmente sul tuo smartphone tramite la chiave `rider_db_v95`.
+* **Attenzione**: Se cancelli la cronologia o i dati del browser, i dati dell'app verranno rimossi.
+* **Azzera Tutto**: Il pulsante rosso in fondo alla home resetta l'intero database, inclusi lo storico e l'obiettivo.
 
-        <h3>Data Storage</h3>
-        <p>Data is saved locally (<code>localStorage</code>) under the <code>rider_db_v95</code> key. Avoid clearing browser data to keep your history intact.</p>
-    </div>
+---
 
-    <p style="text-align: center; font-size: 0.8em; color: #666; margin-top: 50px;">
-        Sviluppato con Gemini 3 Flash | 2026 Edition
-    </p>
+## 🇬🇧 Instructions in English
 
-</body>
-</html>
+### 1. Initial Setup
+* **Files**: Keep `index.html` and `report.html` in the same directory on your device.
+* **Launch**: Open `index.html` using your mobile browser (Chrome or Safari recommended).
+* **Initial Data**: Enter your **Target €** (your net goal) and your **Tax %** (e.g., 20%) in the dedicated cards.
+
+### 2. App Features
+* **Add Shift**: Click **+ TURNO** to enter your gross earnings, hours worked, total kilometers, and average fuel consumption (L/100km).
+* **Add Fuel**: Click **BENZINA** when you refuel. The latest price per liter will be used to automatically calculate fuel costs for your recorded shifts.
+* **Goal Progress**: The "Progresso Obiettivo" multicolor bar fills in real-time as your net earnings approach your set target.
+* **History**: Click **STORICO** to view, manage, or delete specific shift and fuel entries.
+
+### 3. Report Generation
+* Click **GENERA REPORT MENSILE** to access the reports page.
+* The page is optimized for mobile viewing and **A4 paper printing**.
+* You can save the report as a PDF or print it directly to keep track of your monthly accounting.
+
+### 4. Data Management
+* Data is stored locally on your device using the `rider_db_v95` key.
+* **Warning**: Clearing your browser cache or data will delete all app records.
+* **Reset All**: The red button at the bottom of the home screen resets the entire database, including history and your target goal.
+
+---
+
+**Sviluppato con Gemini 3 Flash | Versione Finale 95**
