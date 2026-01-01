@@ -184,4 +184,36 @@
         function render() {
             let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
             db.s.forEach(t => {
-                lordo += t.l; ore += t.
+                lordo += t.l; ore += t.o; kmTotal += t.k;
+                let ltrTurno = (t.k * (t.c / 100)); litriTotal += ltrTurno;
+                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+                costoBenzaTotal += (ltrTurno * prezzo);
+            });
+            let nettoVal = lordo - (lordo * (db.tax / 100)) - costoBenzaTotal;
+            document.getElementById('lordo').innerText = lordo.toFixed(2);
+            document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
+            document.getElementById('ore').innerText = ore.toFixed(1);
+            document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
+            document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
+            document.getElementById('kml').innerText = litriTotal > 0 ? (kmTotal / litriTotal).toFixed(1) : "0.0";
+            let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
+            document.getElementById('bar').style.width = perc + "%";
+            document.getElementById('perc').innerText = Math.round(perc) + "%";
+            document.getElementById('mancante').innerText = `€${Math.max(0, db.target - nettoVal).toFixed(2)}`;
+            document.getElementById('targetIn').value = db.target || "";
+            document.getElementById('taxIn').value = db.tax;
+            
+            const list = document.getElementById('historyList');
+            list.innerHTML = "";
+            [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
+                const div = document.createElement('div');
+                div.className = `hist-item`;
+                div.style = "background:#111; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid " + (i.type==='r'?'#ffa500':var(--primary));
+                div.innerHTML = `<div style="font-size:11px;"><b>${i.time}</b><br>${i.type==='s'?`€${i.l} | ${i.k}km` : `Rif. €${i.e}`}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})" style="color:red; background:none; border:none; font-size:18px;">×</button>`;
+                list.appendChild(div);
+            });
+        }
+        render();
+    </script>
+</body>
+</html>
