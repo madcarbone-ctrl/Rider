@@ -5,29 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Rider Tracker Pro</title>
     <style>
-        body { font-family: sans-serif; padding: 15px; background: white; color: black; line-height: 1.4; }
-        .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; width: 100%; font-size: 14px; }
-        
+        body { font-family: sans-serif; padding: 15px; background: white; color: black; }
+        .btn-stampa { background: #ff4444; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; width: 100%; }
         .header-report { border-bottom: 2px solid #00CCBC; padding-bottom: 10px; margin-bottom: 20px; }
-        h2 { color: #00CCBC; margin: 0; font-size: 20px; }
-        
-        .riepilogo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+        h2 { color: #00CCBC; margin: 0; }
+        .riepilogo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; }
         .box-dato { text-align: center; }
-        .label { font-size: 10px; color: #666; text-transform: uppercase; display: block; }
+        .label { font-size: 10px; color: #666; display: block; }
         .valore { font-size: 16px; font-weight: bold; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 11px; }
-        th { background: #f4f4f4; text-transform: uppercase; font-size: 10px; }
-        
+        th { background: #f4f4f4; }
         .tipo-t { color: #00CCBC; font-weight: bold; }
-        .tipo-b { color: #ffa500; font-weight: bold; }
-
-        @media print { 
-            .btn-stampa { display: none; } 
-            body { padding: 0; }
-            .riepilogo { border: 1px solid #ccc; }
-        }
+        .tipo-r { color: #ffa500; font-weight: bold; }
+        @media print { .btn-stampa { display: none; } }
     </style>
 </head>
 <body onload="caricaDati()">
@@ -36,22 +27,13 @@
 
     <div class="header-report">
         <h2>RIDER TRACKER PRO</h2>
-        <small>Report Attività Generato il: <span id="dataGen"></span></small>
+        <small>Report al: <span id="dataGen"></span></small>
     </div>
     
     <div class="riepilogo">
-        <div class="box-dato">
-            <span class="label">Lordo</span>
-            <span class="valore">€<span id="resLordo">0.00</span></span>
-        </div>
-        <div class="box-dato">
-            <span class="label">Netto</span>
-            <span class="valore" style="color: #00CCBC;">€<span id="resNetto">0.00</span></span>
-        </div>
-        <div class="box-dato">
-            <span class="label">Ore</span>
-            <span class="valore"><span id="resOre">0.0</span></span>
-        </div>
+        <div class="box-dato"><span class="label">Lordo</span><span class="valore">€<span id="resLordo">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Netto</span><span class="valore" style="color:#00CCBC;">€<span id="resNetto">0.00</span></span></div>
+        <div class="box-dato"><span class="label">Ore</span><span class="valore"><span id="resOre">0.0</span></span></div>
     </div>
 
     <table>
@@ -68,56 +50,57 @@
 
     <script>
         function caricaDati() {
-            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
+            const data = localStorage.getItem('rider_db_v94v2');
+            if (!data) return;
+            const db = JSON.parse(data);
             const corpo = document.getElementById('tabellaCorpo');
-            const dataGen = document.getElementById('dataGen');
-            
-            const oggi = new Date();
-            dataGen.innerText = oggi.toLocaleDateString('it-IT');
+            document.getElementById('dataGen').innerText = new Date().toLocaleDateString('it-IT');
 
             let lordoTotal = 0, oreTotal = 0, litriStimati = 0;
             corpo.innerHTML = "";
 
-            // Prepariamo i dati unificati
-            const turni = (db.s || []).map(x => ({...x, type: 'TURNO'}));
-            const rifornimenti = (db.r || []).map(x => ({...x, type: 'RIFORN.'}));
-            
-            const tutti = [...turni, ...rifornimenti].sort((a, b) => b.id - a.id);
+            // 1. Estrazione separata per sicurezza
+            const listaTurni = db.s || [];
+            const listaRifornimenti = db.r || [];
 
+            // 2. Unione con etichetta chiara
+            let tutti = [];
+            listaTurni.forEach(t => tutti.push({...t, CATEGORIA: 'TURNO'}));
+            listaRifornimenti.forEach(r => tutti.push({...r, CATEGORIA: 'RIFORNIMENTO'}));
+
+            // 3. Ordinamento cronologico inverso
+            tutti.sort((a, b) => b.id - a.id);
+
+            // 4. Ciclo di stampa forzato
             tutti.forEach(item => {
-                const tr = document.createElement('tr');
+                const row = corpo.insertRow();
                 
-                if (item.type === 'TURNO') {
-                    // Calcoli per riepilogo
-                    lordoTotal += (item.l || 0);
-                    oreTotal += (item.o || 0);
-                    litriStimati += ((item.k || 0) * ((item.c || 0) / 100));
+                if (item.CATEGORIA === 'TURNO') {
+                    lordoTotal += (Number(item.l) || 0);
+                    oreTotal += (Number(item.o) || 0);
+                    litriStimati += (Number(item.k) * (Number(item.c) / 100));
 
-                    // Costruzione riga Turno
-                    tr.innerHTML = `
+                    row.innerHTML = `
                         <td>${item.d}</td>
                         <td class="tipo-t">TURNO</td>
-                        <td>€${(item.l || 0).toFixed(2)}</td>
+                        <td>€${Number(item.l).toFixed(2)}</td>
                         <td>${item.k}km | Cons: ${item.c} | Extra: ${item.sc || 0}km</td>
                     `;
                 } else {
-                    // Costruzione riga Rifornimento
                     const litriEffettivi = item.p > 0 ? (item.e / item.p).toFixed(2) : "0.00";
-                    tr.innerHTML = `
+                    row.innerHTML = `
                         <td>${item.d}</td>
-                        <td class="tipo-b">RIFORN.</td>
-                        <td>€${(item.e || 0).toFixed(2)}</td>
-                        <td>Litri: ${litriEffettivi}L | Prezzo: €${(item.p || 0).toFixed(2)}/L</td>
+                        <td class="tipo-r">RIFORNIMENTO</td>
+                        <td>€${Number(item.e).toFixed(2)}</td>
+                        <td>Litri: ${litriEffettivi}L | Prezzo: €${Number(item.p).toFixed(2)}/L</td>
                     `;
                 }
-                corpo.appendChild(tr);
             });
 
-            // Calcolo Netto finale (Logica App v4.2)
-            const percTasse = db.tax !== undefined ? db.tax : 20;
-            const netto = (lordoTotal * ((100 - percTasse) / 100)) - (litriStimati * 1.85);
+            // 5. Calcoli finali
+            const tassi = db.tax !== undefined ? db.tax : 20;
+            const netto = (lordoTotal * ((100 - tassi) / 100)) - (litriStimati * 1.85);
 
-            // Scrittura risultati nei box
             document.getElementById('resLordo').innerText = lordoTotal.toFixed(2);
             document.getElementById('resNetto').innerText = isNaN(netto) ? "0.00" : netto.toFixed(2);
             document.getElementById('resOre').innerText = oreTotal.toFixed(1);
