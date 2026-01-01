@@ -17,7 +17,7 @@
             color: var(--text); 
             margin: 0; 
             padding: 10px; 
-            padding-bottom: 280px; /* Spazio per i tasti bassi */
+            padding-bottom: 280px; 
         }
         
         .app-title { 
@@ -94,7 +94,17 @@
     </div>
 
     <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA TURNO</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-    <div id="mBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA BENZINA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
+    
+    <div id="mBenza" class="modal">
+        <div class="modal-content">
+            <h3>Rifornimento</h3>
+            <div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div>
+            <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
+            <input type="tel" id="bP" placeholder="Prezzo (es: 1653)" oninput="autoDecimal(this)">
+            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA BENZINA</button>
+            <button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button>
+        </div>
+    </div>
 
     <div id="mainFooter" class="sticky-footer">
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
@@ -109,6 +119,15 @@
 
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display === 'flex') ? 'none' : 'flex'; }
+
+        // NUOVA FUNZIONE PER FORMATTARE IL PREZZO AUTOMATICAMENTE
+        function autoDecimal(el) {
+            let v = el.value.replace(/\D/g, ""); // Rimuove tutto ciò che non è un numero
+            if (v.length > 0) {
+                // Converte la stringa in numero e divide per 1000
+                el.value = (parseFloat(v) / 1000).toFixed(3);
+            }
+        }
 
         function createDateSelectors(containerId) {
             const container = document.getElementById(containerId);
