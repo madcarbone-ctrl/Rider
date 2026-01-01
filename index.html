@@ -13,7 +13,7 @@
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { 
             background: var(--card); 
-            height: 70px; 
+            height: 75px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -22,20 +22,20 @@
             border: 1px solid #333; 
         }
         
-        .label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .val { font-size: 15px; font-weight: bold; }
+        .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
+        .val { font-size: 14px; font-weight: bold; }
         .card.main .val { color: var(--primary); }
         .card.alt .val { color: var(--accent); }
         #netto { color: var(--accent) !important; }
         
         .card input { 
-            width: 80%; 
+            width: 85%; 
             background: transparent; 
             border: none; 
             border-bottom: 1px solid #444; 
             color: #fff; 
             text-align: center; 
-            font-size: 15px; 
+            font-size: 14px; 
             font-weight: bold;
             outline: none;
         }
@@ -47,7 +47,8 @@
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; }
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
-        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; }
+        .hist-info { font-size: 11px; line-height: 1.4; }
+        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; }
@@ -69,9 +70,11 @@
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">CONSUMO</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card alt"><span class="label">BENZA</span><span class="val" id="spesaB">€0.00</span></div>
+        
+        <div class="card"><span class="label">TOT L. BENZA</span><span class="val" id="cons">0.0L</span></div>
+        <div class="card"><span class="label">MEDIA KM/L</span><span class="val" id="kml">0.0</span></div>
+        <div class="card alt"><span class="label">COSTO BENZA</span><span class="val" id="spesaB">€0.00</span></div>
+        
         <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="setTarget()" placeholder="0"></div>
         <div class="card"><span class="label">TASSE %</span><input type="number" id="taxIn" oninput="setTax()" placeholder="20"></div>
         <div class="card alt"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
@@ -79,7 +82,7 @@
 
     <div class="progress-container">
         <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold">
-            <span>Progresso</span>
+            <span>Progresso Netto</span>
             <span id="perc">0%</span>
         </div>
         <div class="progress-bar"><div id="bar"></div></div>
@@ -87,7 +90,7 @@
 
     <div id="histView" style="display:none">
         <div class="history-section">
-            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA ATTIVITÀ</h4>
+            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
             <div id="historyList"></div>
             
             <button class="foot-btn btn-full" onclick="toggleHist()" style="background: #333; color: var(--primary);">
@@ -105,9 +108,9 @@
             <h3 style="margin:0 0 10px 0; text-align:center">Nuovo Turno</h3>
             <input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01">
             <input type="number" id="tOre" placeholder="Ore" step="0.1">
-            <input type="number" id="tKm" placeholder="KM">
+            <input type="number" id="tKm" placeholder="KM Totali">
             <input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1">
-            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addTurno()">SALVA</button>
+            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addTurno()">SALVA TURNO</button>
             <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
@@ -117,7 +120,7 @@
             <h3 style="margin:0 0 10px 0; text-align:center">Rifornimento</h3>
             <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
-            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addBenza()">SALVA</button>
+            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addBenza()">SALVA BENZINA</button>
             <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
@@ -136,62 +139,59 @@
         function openM(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
+        function getNow() {
+            const d = new Date();
+            return d.toLocaleString('it-IT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+        }
+
         function addTurno() {
             let l = parseFloat(document.getElementById('tLordo').value) || 0;
             let o = parseFloat(document.getElementById('tOre').value) || 0;
             let k = parseInt(document.getElementById('tKm').value) || 0;
             let c = parseFloat(document.getElementById('tCons').value) || 0;
-            if(l > 0) { db.s.push({ id: Date.now(), l, o, k, c }); save(); closeModals(); }
+            if(l > 0) { 
+                db.s.push({ id: Date.now(), time: getNow(), l, o, k, c }); 
+                save(); closeModals(); 
+            }
         }
 
         function addBenza() {
             let e = parseFloat(document.getElementById('bEuro').value) || 0;
             let p = parseFloat(document.getElementById('bP').value) || 0;
-            if(e > 0) { db.r.push({ id: Date.now(), e, p }); save(); closeModals(); }
+            if(e > 0 && p > 0) { 
+                db.r.push({ id: Date.now(), time: getNow(), e, p }); 
+                save(); closeModals(); 
+            }
         }
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        
-        function azzera() { 
-            if(confirm("Azzera tutto lo storico?")) { 
-                db = { s: [], r: [], target: 0, tax: 20 }; 
-                save(); 
-                toggleHist(); // Chiude lo storico dopo il reset
-            } 
-        }
-
-        function toggleHist() { 
-            const h = document.getElementById('histView'); 
-            h.style.display = h.style.display === 'none' ? 'block' : 'none'; 
-            if(h.style.display === 'block') {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
-        }
-
+        function azzera() { if(confirm("Azzera tutto lo storico e i parametri?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); toggleHist(); } }
+        function toggleHist() { const h = document.getElementById('histView'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
-            let lordo = 0, ore = 0, km = 0, litri = 0, costoBenza = 0;
+            let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
             let taxPerc = Number(db.tax) || 0;
 
             db.s.forEach(t => {
-                lordo += t.l; ore += t.o; km += t.k;
-                let ltr = (t.k * (t.c / 100));
-                litri += ltr;
-                let prezzo = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
-                costoBenza += (ltr * prezzo);
+                lordo += t.l; 
+                ore += t.o; 
+                kmTotal += t.k;
+                let ltrTurno = (t.k * (t.c / 100));
+                litriTotal += ltrTurno;
+                let prezzoAttuale = db.r.length > 0 ? db.r[db.r.length - 1].p : 1.85;
+                costoBenzaTotal += (ltrTurno * prezzoAttuale);
             });
 
-            let tasseEuro = lordo * (taxPerc / 100);
-            let nettoVal = lordo - tasseEuro - costoBenza;
+            let nettoVal = lordo - (lordo * (taxPerc / 100)) - costoBenzaTotal;
 
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = `€${nettoVal.toFixed(2)}`;
             document.getElementById('ore').innerText = ore.toFixed(1);
-            document.getElementById('cons').innerText = `${litri.toFixed(1)}L`;
-            document.getElementById('spesaB').innerText = `€${costoBenza.toFixed(2)}`;
-            document.getElementById('kml').innerText = litri > 0 ? (km / litri).toFixed(1) : "0.0";
+            document.getElementById('cons').innerText = `${litriTotal.toFixed(1)}L`;
+            document.getElementById('spesaB').innerText = `€${costoBenzaTotal.toFixed(2)}`;
+            document.getElementById('kml').innerText = litriTotal > 0 ? (kmTotal / litriTotal).toFixed(1) : "0.0";
             
             let perc = db.target > 0 ? Math.min(100, (nettoVal / db.target) * 100) : 0;
             document.getElementById('bar').style.width = (perc > 0 ? perc : 0) + "%";
@@ -203,12 +203,34 @@
 
             const list = document.getElementById('historyList');
             list.innerHTML = "";
-            [...db.s, ...db.r].sort((a,b) => b.id - a.id).forEach(i => {
+            
+            const entries = [
+                ...db.s.map(x => ({...x, type: 's'})),
+                ...db.r.map(x => ({...x, type: 'r'}))
+            ].sort((a,b) => b.id - a.id);
+
+            entries.forEach(i => {
                 const div = document.createElement('div');
-                div.className = `hist-item ${i.e ? 'benza' : ''}`;
-                div.innerHTML = i.l ? 
-                    `<div><b>TURNO</b><br>€${i.l.toFixed(2)} | ${i.k}km</div><div class="del-btn" onclick="del('s', ${i.id})">×</div>` :
-                    `<div><b>RIFORN.</b><br>€${i.e.toFixed(2)} | €${i.p.toFixed(3)}/L</div><div class="del-btn" onclick="del('r', ${i.id})">×</div>`;
+                div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
+                
+                if(i.type === 's') {
+                    let ltr = (i.k * (i.c / 100)).toFixed(2);
+                    let m = i.k > 0 ? (i.k / ltr).toFixed(1) : "0.0";
+                    div.innerHTML = `
+                        <div class="hist-info">
+                            <b style="color:var(--primary)">TURNO ${i.time}</b><br>
+                            Lordo: €${i.l.toFixed(2)} | KM: ${i.k}<br>
+                            Consumo: ${ltr}L | Media: ${m} km/l
+                        </div>
+                        <button class="del-btn" onclick="del('s', ${i.id})">×</button>`;
+                } else {
+                    div.innerHTML = `
+                        <div class="hist-info">
+                            <b style="color:#ffa500">RIFORNIMENTO ${i.time}</b><br>
+                            Spesa: €${i.e.toFixed(2)} | Prezzo: €${i.p.toFixed(3)}/L
+                        </div>
+                        <button class="del-btn" onclick="del('r', ${i.id})">×</button>`;
+                }
                 list.appendChild(div);
             });
         }
