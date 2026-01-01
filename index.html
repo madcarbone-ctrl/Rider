@@ -9,92 +9,56 @@
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
+        *::-webkit-scrollbar { display: none !important; }
+
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
             margin: 0; 
             padding: 10px; 
-            overflow: hidden; /* Blocca lo scroll della pagina intera */
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding-bottom: 280px; /* Spazio per i tasti bassi */
         }
-
+        
         .app-title { 
             text-align: center; 
-            margin: 5px 0 10px 0; 
-            font-size: 22px; 
+            margin: 10px 0 15px 0; 
+            font-size: 24px; 
             font-weight: 800; 
             color: var(--primary); 
             text-transform: uppercase;
         }
 
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-        .card { background: var(--card); height: 70px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
-        .label { font-size: 8px; color: var(--dim); text-transform: uppercase; margin-bottom: 4px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
+        .label { font-size: 8px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
         .val { font-size: 14px; font-weight: bold; }
         .card.main .val, .card.mancante-style .val { color: var(--primary); }
         #netto { color: var(--accent) !important; }
         .card input { width: 85%; background: transparent; border: none; border-bottom: 1px solid #444; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
 
-        .progress-container { background: var(--card); padding: 12px; border-radius: 15px; border: 1px solid #333; margin-bottom: 10px; }
-        .progress-bar { 
-            background: #222; 
-            height: 25px; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            margin-top: 8px; 
-            border: 1px solid #444;
-        }
-        #bar { 
-            background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% );
-            height: 100%; width: 0%; transition: width 0.6s ease; 
-        }
+        .progress-container { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .progress-bar { background: #222; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #444; }
+        #bar { background: linear-gradient(90deg, #00ff00 0%, #ccff00 40%, #ffff00 60%, #ff9900 80%, #ff0000 100% ); height: 100%; width: 0%; transition: width 0.6s ease; }
         
-        /* Modali e Storico */
         #histView { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; padding: 15px; }
         .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; display: flex; flex-direction: column; height: 100%; }
         #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; }
 
+        .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .hist-item.benza { border-left-color: #ffa500; }
+        .hist-info { font-size: 11px; line-height: 1.4; color: #eee; }
+        .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
+        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; }
         .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
         
-        /* Footer */
-        .sticky-footer { 
-            position: fixed; 
-            bottom: 30px; 
-            left: 10px; 
-            right: 10px; 
-            background: #111; 
-            padding: 10px; 
-            display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; 
-            gap: 8px; 
-            border-radius: 15px; 
-            border: 1px solid #333; 
-            z-index: 999; 
-        }
-        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: 1px solid #444; }
+        .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
+        .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
         .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: flex; align-items: center; justify-content: center; border: none; }
-        
-        .btn-azzera { 
-            background: #200 !important; 
-            color: #ff4d4d !important; 
-            font-size: 10px; 
-            height: 28px; 
-            margin-top: 4px; 
-            border-radius: 6px; 
-            border: 1px solid #400 !important;
-        }
-
-        /* Gestione tastiera: nasconde footer quando lo spazio è poco */
-        @media screen and (max-height: 550px) {
-            .sticky-footer { display: none; }
-            body { overflow-y: auto; } /* Permette scroll solo se tastiera aperta */
-        }
+        .btn-azzera { background: #200 !important; color: #ff4d4d !important; font-size: 10px; height: 30px; margin-top: 4px; border-radius: 6px; border: 1px solid #400 !important; }
     </style>
 </head>
 <body>
@@ -121,17 +85,16 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-    
-    <div id="mBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
-
     <div id="histView">
         <div class="history-section">
-            <h4 style="text-align:center; color:var(--primary)">CRONOLOGIA</h4>
+            <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
             <div id="historyList"></div>
-            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); padding: 15px;" onclick="toggleHist()">CHIUDI</button>
+            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 15px; border: none; border-radius: 10px;" onclick="toggleHist()">CHIUDI STORICO</button>
         </div>
     </div>
+
+    <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="tLordo" placeholder="Lordo (€)" step="0.01"><input type="number" id="tOre" placeholder="Ore" step="0.1"><input type="number" id="tKm" placeholder="KM Totali"><input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addTurno()">SALVA TURNO</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
+    <div id="mBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateBenza" style="display:flex; gap:5px; margin-bottom:10px;"></div><input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight:bold; padding:12px;" onclick="addBenza()">SALVA BENZINA</button><button class="foot-btn" style="width:100%; margin-top:10px;" onclick="closeModals()">ANNULLA</button></div></div>
 
     <div id="mainFooter" class="sticky-footer">
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
@@ -145,11 +108,7 @@
         let db = JSON.parse(localStorage.getItem('rider_db_v95')) || { s: [], r: [], target: 0, tax: 20 };
 
         function save() { localStorage.setItem('rider_db_v95', JSON.stringify(db)); render(); }
-
-        function toggleHist() { 
-            const h = document.getElementById('histView'); 
-            h.style.display = (h.style.display === 'flex') ? 'none' : 'flex';
-        }
+        function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display === 'flex') ? 'none' : 'flex'; }
 
         function createDateSelectors(containerId) {
             const container = document.getElementById(containerId);
@@ -159,18 +118,11 @@
             const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
             mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`);
             for(let i=2025; i<=2030; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
-            container.innerHTML = `<select id="${containerId}D" style="flex:1; background:#333; color:#fff; border-radius:5px; border:1px solid #444; padding:5px;">${days}</select><select id="${containerId}M" style="flex:1; background:#333; color:#fff; border-radius:5px; border:1px solid #444; padding:5px;">${months}</select><select id="${containerId}Y" style="flex:1; background:#333; color:#fff; border-radius:5px; border:1px solid #444; padding:5px;">${years}</select>`;
+            container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`;
         }
 
-        function openM(id) { 
-            createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); 
-            document.getElementById(id).style.display = 'flex'; 
-        }
-        
-        function closeModals() { 
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-            ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = ""); 
-        }
+        function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => document.getElementById(id).value = ""); }
 
         function addTurno() {
             let l = parseFloat(document.getElementById('tLordo').value) || 0, o = parseFloat(document.getElementById('tOre').value) || 0, k = parseInt(document.getElementById('tKm').value) || 0, c = parseFloat(document.getElementById('tCons').value) || 0;
@@ -189,8 +141,8 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Azzerare tutti i dati e il target?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); } }
-        function del(type, id) { if(confirm("Eliminare?")) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); } }
+        function azzera() { if(confirm("Sei sicuro?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); } }
+        function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
             let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
@@ -218,8 +170,8 @@
             list.innerHTML = "";
             [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).forEach(i => {
                 const div = document.createElement('div');
-                div.style = "background:#111; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid " + (i.type==='r'?'#ffa500':'#00CCBC');
-                div.innerHTML = `<div style="font-size:11px;"><b>${i.time}</b><br>${i.type==='s'?`€${i.l} | ${i.k}km` : `Rif. €${i.e}`}</div><button onclick="del('${i.type}', ${i.id})" style="color:red; background:none; border:none; font-size:18px;">×</button>`;
+                div.className = `hist-item ${i.type === 'r' ? 'benza' : ''}`;
+                div.innerHTML = `<div class="hist-info"><b>${i.type === 's' ? 'TURNO' : 'RIFORN.'} ${i.time}</b><br>${i.type==='s'?`€${i.l.toFixed(2)} | ${i.o} ore | ${i.k}km | ${(i.k*(i.c/100)).toFixed(1)}L` : `Spesa €${i.e.toFixed(2)} | Prezzo €${i.p.toFixed(3)}/L`}</div><button class="del-btn" onclick="del('${i.type}', ${i.id})">×</button>`;
                 list.appendChild(div);
             });
         }
