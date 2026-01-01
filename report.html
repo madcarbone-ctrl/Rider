@@ -57,10 +57,10 @@
     <table>
         <thead>
             <tr>
-                <th>Data</th>
-                <th>Tipo</th>
-                <th>Importo</th>
-                <th>Dettagli</th>
+                <th>DATA</th>
+                <th>TIPO</th>
+                <th>IMPORTO</th>
+                <th>DETTAGLI</th>
             </tr>
         </thead>
         <tbody id="tabellaCorpo"></tbody>
@@ -68,59 +68,59 @@
 
     <script>
         function caricaDati() {
-            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], tax: 20 };
+            const db = JSON.parse(localStorage.getItem('rider_db_v94v2')) || { s: [], r: [], target: 0, tax: 20 };
             const corpo = document.getElementById('tabellaCorpo');
             const dataGen = document.getElementById('dataGen');
             
             const oggi = new Date();
             dataGen.innerText = oggi.toLocaleDateString('it-IT');
 
-            let lordo = 0, ore = 0, litriStimati = 0;
+            let lordoTotal = 0, oreTotal = 0, litriStimati = 0;
             corpo.innerHTML = "";
 
-            // Uniamo turni e rifornimenti
-            const tutti = [
-                ...db.s.map(x => ({...x, type: 'TURNO'})),
-                ...db.r.map(x => ({...x, type: 'RIFORN.'}))
-            ].sort((a, b) => b.id - a.id);
+            // Prepariamo i dati unificati
+            const turni = (db.s || []).map(x => ({...x, type: 'TURNO'}));
+            const rifornimenti = (db.r || []).map(x => ({...x, type: 'RIFORN.'}));
+            
+            const tutti = [...turni, ...rifornimenti].sort((a, b) => b.id - a.id);
 
-            tutti.forEach(i => {
-                const riga = document.createElement('tr');
-                let importoStr = "";
-                let dettagliStr = "";
-                let classeTipo = "";
+            tutti.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                if (item.type === 'TURNO') {
+                    // Calcoli per riepilogo
+                    lordoTotal += (item.l || 0);
+                    oreTotal += (item.o || 0);
+                    litriStimati += ((item.k || 0) * ((item.c || 0) / 100));
 
-                if(i.type === 'TURNO') {
-                    lordo += (i.l || 0); 
-                    ore += (i.o || 0);
-                    litriStimati += ((i.k || 0) * ((i.c || 0) / 100));
-                    
-                    importoStr = `€${(i.l || 0).toFixed(2)}`;
-                    dettagliStr = `${i.k}km | Cons: ${i.c} | Extra: ${i.sc || 0}km`;
-                    classeTipo = "tipo-t";
+                    // Costruzione riga Turno
+                    tr.innerHTML = `
+                        <td>${item.d}</td>
+                        <td class="tipo-t">TURNO</td>
+                        <td>€${(item.l || 0).toFixed(2)}</td>
+                        <td>${item.k}km | Cons: ${item.c} | Extra: ${item.sc || 0}km</td>
+                    `;
                 } else {
-                    // Logica specifica per il RIFORNIMENTO
-                    importoStr = `€${(i.e || 0).toFixed(2)}`;
-                    const litriEffettivi = i.p > 0 ? (i.e / i.p).toFixed(2) : 0;
-                    dettagliStr = `Litri: ${litriEffettivi}L | €${(i.p || 0).toFixed(2)}/L`;
-                    classeTipo = "tipo-b";
+                    // Costruzione riga Rifornimento
+                    const litriEffettivi = item.p > 0 ? (item.e / item.p).toFixed(2) : "0.00";
+                    tr.innerHTML = `
+                        <td>${item.d}</td>
+                        <td class="tipo-b">RIFORN.</td>
+                        <td>€${(item.e || 0).toFixed(2)}</td>
+                        <td>Litri: ${litriEffettivi}L | Prezzo: €${(item.p || 0).toFixed(2)}/L</td>
+                    `;
                 }
-
-                riga.innerHTML = `
-                    <td>${i.d}</td>
-                    <td class="${classeTipo}">${i.type}</td>
-                    <td>${importoStr}</td>
-                    <td>${dettagliStr}</td>
-                `;
-                corpo.appendChild(riga);
+                corpo.appendChild(tr);
             });
 
+            // Calcolo Netto finale (Logica App v4.2)
             const percTasse = db.tax !== undefined ? db.tax : 20;
-            const netto = (lordo * ((100 - percTasse) / 100)) - (litriStimati * 1.85);
+            const netto = (lordoTotal * ((100 - percTasse) / 100)) - (litriStimati * 1.85);
 
-            document.getElementById('resLordo').innerText = lordo.toFixed(2);
+            // Scrittura risultati nei box
+            document.getElementById('resLordo').innerText = lordoTotal.toFixed(2);
             document.getElementById('resNetto').innerText = isNaN(netto) ? "0.00" : netto.toFixed(2);
-            document.getElementById('resOre').innerText = ore.toFixed(1);
+            document.getElementById('resOre').innerText = oreTotal.toFixed(1);
         }
     </script>
 </body>
