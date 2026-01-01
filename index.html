@@ -8,7 +8,7 @@
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px; overflow-x: hidden; }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
@@ -27,20 +27,22 @@
         .progress-bar { background: #333; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
         #bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.5s ease; }
         
-        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; }
+        /* CRONOLOGIA SCORREVOLE INDIPENDENTE */
+        .history-section { background: var(--card); border-radius: 15px; border: 1px solid var(--primary); padding: 15px; margin-top: 10px; display: flex; flex-direction: column; max-height: 400px; }
+        #historyList { overflow-y: auto; flex-grow: 1; margin-bottom: 10px; padding-right: 5px; }
+        /* Scrollbar sottile per la cronologia */
+        #historyList::-webkit-scrollbar { width: 4px; }
+        #historyList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
         .hist-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .hist-item.benza { border-left-color: #ffa500; }
         .hist-info { font-size: 11px; line-height: 1.4; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
-        /* MODALI OTTIMIZZATI PER TASTIERA */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; margin-top: 20px; margin-bottom: 20px; }
-        .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; -webkit-appearance: none; }
+        .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 16px; text-align: center; }
         
-        .date-selector { display: flex; gap: 5px; margin-bottom: 10px; }
-        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; border: 1px solid #444; font-size: 14px; }
-
         .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); z-index: 999; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
@@ -119,7 +121,6 @@
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_v94v5')) || { s: [], r: [], target: 0, tax: 20 };
 
-        // Funzione per evitare che la tastiera copra l'input
         function handleInputFocus(e) {
             if (e.target.tagName === 'INPUT') {
                 setTimeout(() => {
@@ -138,7 +139,7 @@
             const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
             mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`);
             for(let i=2025; i<=2045; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`;
-            container.innerHTML = `<select id="${containerId}D">${days}</select><select id="${containerId}M">${months}</select><select id="${containerId}Y">${years}</select>`;
+            container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`;
         }
 
         function openM(id) { createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
@@ -171,14 +172,21 @@
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         
         function azzera() { 
-            if(confirm("Sei sicuro di voler azzerare tutto? (Verrà azzerato anche il Target)")) { 
+            if(confirm("Sei sicuro di voler azzerare tutto?")) { 
                 db = { s: [], r: [], target: 0, tax: 20 }; 
                 save(); 
                 document.getElementById('histView').style.display = 'none';
             } 
         }
 
-        function toggleHist() { const h = document.getElementById('histView'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }
+        function toggleHist() { 
+            const h = document.getElementById('histView'); 
+            h.style.display = h.style.display === 'none' ? 'block' : 'none';
+            if(h.style.display === 'block') {
+                h.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
         function render() {
