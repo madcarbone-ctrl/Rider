@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.2</title>
+    <title>Rider Tracker Pro v5.2</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -26,8 +26,11 @@
         #wrapperStorico { display: none; flex-grow: 1; overflow-y: auto; background: #000; padding: 10px 5px; border-radius: 12px; border: 1px solid #333; margin: 5px 0; -webkit-overflow-scrolling: touch; }
         .hist-header { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--main); text-align: center; }
         .hist-item { background:#1a1a1a; padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center; }
-        .hist-info { display: flex; flex-direction: column; gap: 2px; }
+        .hist-info { display: flex; flex-direction: column; gap: 2px; flex-grow: 1; }
         .hist-data { font-size: 9px; color: #888; }
+        .hist-actions { display: flex; gap: 5px; align-items: center; }
+
+        .btn-cal { background: #333; color: white; border-radius: 6px; font-size: 9px; padding: 5px; height: 30px; border: 1px solid #444; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; border: 1px solid var(--main); width: 100%; max-width: 300px; text-align: center; }
@@ -110,13 +113,6 @@
             document.getElementById('targetIn').value = db.target || ""; 
             document.getElementById('taxIn').value = db.tax !== undefined ? db.tax : 20;
             calcola(); 
-            
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', () => {
-                    setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
-                });
-            });
         }
         
         function riempiDate() {
@@ -138,34 +134,26 @@
                 lordo += x.l; ore += x.o; kmTot += x.k;
                 let litri = (x.k * (x.c / 100)); litriTurni += litri; spesaBenzaTurni += litri * 1.85; 
             });
-
-            let taxMultiplier = (100 - (db.tax || 0)) / 100;
-            let netto = (lordo * taxMultiplier) - spesaBenzaTurni;
-            let target = db.target || 0;
-            let p = target > 0 ? Math.min(100, (netto / target) * 100) : 0;
-            
-            const pBar = document.getElementById('pBar');
-            pBar.style.width = p + "%";
-            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
-            
+            let netto = (lordo * (100 - (db.tax || 0)) / 100) - spesaBenzaTurni;
             document.getElementById('lordoTot').innerText = lordo.toFixed(2);
             document.getElementById('nettoReale').innerText = netto.toFixed(2);
             document.getElementById('oreTot').innerText = ore.toFixed(1);
             document.getElementById('spesaBenza').innerText = spesaBenzaTurni.toFixed(2);
             document.getElementById('consTot').innerText = litriTurni.toFixed(1);
             document.getElementById('kmLitro').innerText = litriTurni > 0 ? (kmTot / litriTurni).toFixed(1) : "0.0";
-            document.getElementById('mancante').innerText = Math.max(0, target - netto).toFixed(2);
+            document.getElementById('mancante').innerText = Math.max(0, (db.target || 0) - netto).toFixed(2);
             
-            const ggCount = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
-            document.getElementById('ggLavoroHist').innerText = ggCount;
-
+            let p = db.target > 0 ? Math.min(100, (netto / db.target) * 100) : 0;
+            document.getElementById('pBar').style.width = p + "%";
+            document.getElementById('percLabel').innerText = Math.floor(p) + "%";
+            document.getElementById('ggLavoroHist').innerText = [...new Set(db.s.map(x => x.d.split(' ')[0]))].length;
             localStorage.setItem('rider_db_v94v2', JSON.stringify(db));
         }
 
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value);
             if(l > 0) {
-                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}` });
+                db.s.push({ id: Date.now(), l: l, o: parseFloat(document.getElementById('tOre').value)||0, k: parseFloat(document.getElementById('tKm').value)||0, c: parseFloat(document.getElementById('tConsumo').value)||0, sc: parseFloat(document.getElementById('tScarto').value)||0, d: `${document.getElementById('sDay').value}/${document.getElementById('sMonth').value} ${getNowTime()}`, y: document.getElementById('sYear').value });
                 ['tLordo','tOre','tKm','tConsumo','tScarto'].forEach(id => document.getElementById(id).value = "");
                 calcola(); renderStorico();
             }
@@ -173,22 +161,45 @@
 
         function addBenza() {
             const e = parseFloat(document.getElementById('fEuro').value);
-            const p = parseFloat(document.getElementById('fPrezzo').value);
             if(e > 0) {
-                db.r.push({ id: Date.now(), e: e, p: p || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}` });
+                db.r.push({ id: Date.now(), e: e, p: parseFloat(document.getElementById('fPrezzo').value) || 0, d: `${document.getElementById('fDay').value}/${document.getElementById('fMonth').value} ${getNowTime()}`, y: document.getElementById('fYear').value });
                 ['fEuro','fPrezzo'].forEach(id => document.getElementById(id).value = "");
                 renderStorico();
             }
+        }
+
+        function inviaACalendario(item) {
+            const isT = item.type === 'T';
+            const titolo = isT ? `🏎️ Turno Rider: €${item.l.toFixed(2)}` : `⛽ Rifornimento: €${item.e.toFixed(2)}`;
+            const dataParti = item.d.split(' ')[0].split('/');
+            const giorno = dataParti[0].padStart(2, '0');
+            const mese = dataParti[1].padStart(2, '0');
+            const anno = item.y || new Date().getFullYear();
+            
+            const dataFormattata = `${anno}${mese}${giorno}`;
+            const note = isT ? `Lordo: €${item.l}\nOre: ${item.o}\nKM: ${item.k}\nConsumo: ${item.c}L/100km` : `Spesa: €${item.e}\nPrezzo: €${item.p}/L`;
+            
+            const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titolo)}&dates=${dataFormattata}/${dataFormattata}&details=${encodeURIComponent(note)}&sf=true&output=xml`;
+            window.open(url, '_blank');
         }
 
         function renderStorico() {
             let h = "";
             const all = [...db.s.map(x=>({...x, type:'T'})), ...db.r.map(x=>({...x, type:'B'}))].sort((a,b)=>b.id-a.id);
             all.forEach(i => {
-                const color = i.type === 'T' ? 'var(--main)' : 'var(--fuel)';
-                const label = i.type === 'T' ? 'TURNO' : 'RIFORN.';
-                let details = i.type === 'T' ? `KM: ${i.k} | Cons: ${i.c} | Extra: ${i.sc}km` : `Litri: ${(i.p>0?(i.e/i.p):0).toFixed(2)}L | €${(i.p||0).toFixed(2)}/L`;
-                h += `<div class="hist-item" style="border-left-color:${color}"><div class="hist-info"><span style="font-size:10px; font-weight:bold; color:${color}">${label} (${i.d})</span><b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b><span class="hist-data">${details}</span></div><button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%;">X</button></div>`;
+                const isT = i.type === 'T';
+                const color = isT ? 'var(--main)' : 'var(--fuel)';
+                h += `<div class="hist-item" style="border-left-color:${color}">
+                    <div class="hist-info">
+                        <span style="font-size:10px; font-weight:bold; color:${color}">${isT?'TURNO':'RIFORN.'} (${i.d})</span>
+                        <b style="font-size:12px;">€${(i.l || i.e).toFixed(2)}</b>
+                        <span class="hist-data">${isT ? 'KM: '+i.k+' | ORE: '+i.o : 'PREZZO: €'+i.p+'/L'}</span>
+                    </div>
+                    <div class="hist-actions">
+                        <button class="btn-cal" onclick='inviaACalendario(${JSON.stringify(i)})'>📅 CAL</button>
+                        <button onclick="elimina('${i.type}', ${i.id})" style="width:30px; height:30px; background:#300; color:red; border-radius:50%; border:none;">X</button>
+                    </div>
+                </div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "<div style='text-align:center; padding:20px; color:#555;'>Vuoto</div>";
         }
