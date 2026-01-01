@@ -8,7 +8,7 @@
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #00CCBC; --accent: #ff4d4d; --text: #e0e0e0; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 100px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 180px; } /* Aumentato spazio fondo */
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .card { background: var(--card); height: 75px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; border: 1px solid #333; }
@@ -35,12 +35,14 @@
         .modal input, .modal select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; font-size: 14px; text-align: center; }
         
         .date-selector { display: flex; gap: 5px; margin-bottom: 10px; }
-        .date-selector select { flex: 1; padding: 10px 2px; }
+        .date-selector select { flex: 1; padding: 10px 2px; background: #333; color: white; border-radius: 5px; }
 
-        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #111; padding: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid #333; }
+        /* Footer Alzato per evitare tasti di sistema */
+        .sticky-footer { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: none; }
         .foot-btn i { font-size: 18px; color: var(--primary); }
-        .btn-full { width: 100%; margin-top: 10px; padding: 12px; font-weight: bold; text-transform: uppercase; }
+        .btn-full { grid-column: span 3; padding: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; }
+        .btn-azzera { background: #400 !important; color: #fff !important; font-size: 10px; height: 35px; margin-top: 5px; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -73,8 +75,9 @@
         <div class="history-section">
             <h4 style="margin:0 0 10px 0; text-align:center; color:var(--primary)">CRONOLOGIA DETTAGLIATA</h4>
             <div id="historyList"></div>
-            <button class="foot-btn btn-full" onclick="toggleHist()" style="background: #333; color: var(--primary);"><i class="fas fa-eye-slash"></i> CHIUDI STORICO</button>
-            <button class="foot-btn btn-full" onclick="azzera()" style="background: #400; color: #fff;"><i class="fas fa-trash-alt"></i> AZZERA TUTTO</button>
+            <button class="foot-btn" style="width:100%; background: #333; color: var(--primary); font-weight: bold; padding: 12px;" onclick="toggleHist()">
+                <i class="fas fa-eye-slash"></i> CHIUDI STORICO
+            </button>
         </div>
     </div>
 
@@ -86,8 +89,8 @@
             <input type="number" id="tOre" placeholder="Ore" step="0.1">
             <input type="number" id="tKm" placeholder="KM Totali">
             <input type="number" id="tCons" placeholder="Consumo (L/100km)" step="0.1">
-            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addTurno()">SALVA TURNO</button>
-            <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px;" onclick="addTurno()">SALVA TURNO</button>
+            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px;" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -97,8 +100,8 @@
             <div class="date-selector" id="dateBenza"></div>
             <input type="number" id="bEuro" placeholder="Euro Spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
-            <button class="foot-btn btn-full" style="background:var(--primary); color:#000;" onclick="addBenza()">SALVA BENZINA</button>
-            <button class="foot-btn btn-full" onclick="closeModals()">ANNULLA</button>
+            <button class="foot-btn" style="width:100%; background:var(--primary); color:#000; font-weight: bold; padding: 12px;" onclick="addBenza()">SALVA BENZINA</button>
+            <button class="foot-btn" style="width:100%; margin-top: 10px; padding: 10px;" onclick="closeModals()">ANNULLA</button>
         </div>
     </div>
 
@@ -106,7 +109,14 @@
         <button class="foot-btn" onclick="openM('mTurno')"><i class="fas fa-plus-circle"></i>TURNO</button>
         <button class="foot-btn" onclick="openM('mBenza')"><i class="fas fa-gas-pump"></i>BENZINA</button>
         <button class="foot-btn" onclick="toggleHist()"><i class="fas fa-history"></i>STORICO</button>
-        <button class="foot-btn" onclick="location.href='report.html'" style="grid-column: span 3; background: var(--primary); color: #000; font-weight: bold;">GENERA REPORT MENSILE</button>
+        
+        <button class="foot-btn btn-full" onclick="location.href='report.html'" style="background: var(--primary); color: #000;">
+            GENERA REPORT MENSILE
+        </button>
+        
+        <button class="foot-btn btn-full btn-azzera" onclick="azzera()">
+            <i class="fas fa-trash-alt" style="font-size: 12px; color: white;"></i> AZZERA TUTTO LO STORICO E TARGET
+        </button>
     </div>
 
     <script>
@@ -163,7 +173,15 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function azzera() { if(confirm("Azzera tutto?")) { db = { s: [], r: [], target: 0, tax: 20 }; save(); toggleHist(); } }
+        
+        function azzera() { 
+            if(confirm("ATTENZIONE: Questo cancellerà tutti i turni, i rifornimenti e azzererà il target. Confermi?")) { 
+                db = { s: [], r: [], target: 0, tax: 20 }; 
+                save(); 
+                document.getElementById('histView').style.display = 'none';
+            } 
+        }
+
         function toggleHist() { const h = document.getElementById('histView'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
 
