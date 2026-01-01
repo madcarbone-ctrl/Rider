@@ -10,12 +10,6 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Prepare Files
-        run: |
-          # Spostiamo temporaneamente i file per il build
-          cp www/index.html .
-          cp www/report.html .
-
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
