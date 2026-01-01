@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rider Tracker Pro v4.8</title>
+    <title>Rider Tracker Pro v4.9.1</title>
     <style>
         :root { --main: #00CCBC; --fuel: #ffa500; --bg: #0a0a0a; --card: #161616; --danger: #ff4444; --overlay: rgba(0,0,0,0.9); }
         body { background: var(--bg); color: #eee; font-family: sans-serif; margin: 0; padding: 5px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -78,7 +78,7 @@
     <div id="wrapperStorico">
         <div class="hist-header">
             <span style="font-size: 11px; font-weight: bold; color: var(--main);">📅 <span id="ggLavoroHist">0</span> GG Lavorati</span>
-            <button onclick="esportaExcel()" class="btn-excel">📊 EXCEL (CSV)</button>
+            <button onclick="esportaExcel()" class="btn-excel">📊 SALVA EXCEL (.CSV)</button>
         </div>
         <div id="listaStorico"></div>
     </div>
@@ -180,38 +180,43 @@
             else { w.style.display = 'block'; bB.style.display = 'none'; bT.style.display = 'none'; btn.innerText = "❌ NASCONDI STORICO"; renderStorico(); }
         }
 
-        function esportaExcel() {
-            if(db.s.length === 0 && db.r.length === 0) {
-                alert("Nessun dato da esportare.");
-                return;
-            }
-            let csv = "Data;Tipo;Valore Lordo;Ore;KM;Consumo;Extra\n";
+        async function esportaExcel() {
+            if(db.s.length === 0 && db.r.length === 0) { alert("Nessun dato!"); return; }
+            
+            let csv = "sep=;\nData;Tipo;Valore Lordo;Ore;KM;Consumo;Extra\n";
             const dati = [...db.s.map(x=>({...x, type:'TURNO'})), ...db.r.map(x=>({...x, type:'RIFORN.'}))].sort((a,b)=>a.id-b.id);
+            
             dati.forEach(i => {
                 if(i.type === 'TURNO') csv += `${i.d};${i.type};${i.l};${i.o};${i.k};${i.c};${i.sc}\n`;
                 else csv += `${i.d};${i.type};${i.e};-;-;-;-\n`;
             });
 
-            // LOGICA DI SALVATAGGIO RINFORZATA
-            const blob = new Blob(["\ufeff", csv], { type: 'application/octet-stream' });
-            const nomeFile = "Rider_Report_" + (new Date().getMonth()+1) + ".csv";
-            
-            const link = document.createElement("a");
-            const url = window.URL.createObjectURL(blob);
-            
-            link.setAttribute("href", url);
-            link.setAttribute("download", nomeFile);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-            }, 200);
+            const fileName = `Rider_Report_${new Date().getDate()}_${new Date().getMonth()+1}.csv`;
 
-            alert("File salvato: " + nomeFile);
+            // METODO SCELTA CARTELLA (Browser Moderni)
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{ description: 'File Excel CSV', accept: { 'text/csv': ['.csv'] } }],
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write("\ufeff" + csv);
+                    await writable.close();
+                    return;
+                } catch (err) { console.log("Salvataggio annullato"); }
+            }
+
+            // METODO DI RISERVA (Vecchio stile)
+            const blob = new Blob(["\ufeff", csv], { type: 'application/vnd.ms-excel' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => { window.URL.revokeObjectURL(url); document.body.removeChild(a); }, 500);
+            alert("File salvato come: " + fileName);
         }
 
         function elimina(type, id) { if(type === 'T') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); calcola(); renderStorico(); }
