@@ -11,7 +11,7 @@
         :root { 
             --bg:#0f0f0f; 
             --card:#1a1a1a; 
-            --primary:#00CCBC; /* Verde Acqua per UI */
+            --primary:#00CCBC; 
             --accent:#ff4d4d; 
             --text:#e0e0e0; 
             --dim:#888; 
@@ -33,11 +33,13 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
 
-        /* METER BRIDGE AUDIO PROFESSIONALE */
+        /* METER BRIDGE AUDIO */
         .progress-container { background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-labels { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px; }
         #label-obj { font-size:16px; font-weight:900; letter-spacing:1px; }
-        #perc { font-size:24px; font-weight:900; color:#fff; } 
+        
+        /* PERCENTUALE LEGGERMENTE PIÙ PICCOLA */
+        #perc { font-size:20px; font-weight:900; color:#fff; } 
         
         .meter-bg { 
             background:#080808; 
@@ -55,17 +57,15 @@
             height:75%; 
             width:0%; 
             transition:0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            /* Gradiente Audio Meter Standard */
             background: linear-gradient(90deg, 
-                #00FF00 0%,   /* Verde */
-                #00FF00 60%,  /* Verde */
-                #FFFF00 80%,  /* Giallo */
-                #FF0000 100%  /* Rosso */
+                #00FF00 0%,   
+                #00FF00 60%,  
+                #FFFF00 80%,  
+                #FF0000 100%  
             );
             border-radius:2px;
             position:relative;
         }
-        /* Effetto segmenti LED mixer */
         .meter-bg::after {
             content: "";
             position: absolute;
@@ -90,7 +90,7 @@
         .foot-btn i { color:var(--primary); font-size:18px; margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
         
-        /* TABELLE E REPORT */
+        /* REPORT */
         #reportView { display:none; position:fixed; inset:0; background:#fff; color:#000; z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; }
         table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; }
         th, td { border:1px solid #ccc; padding:6px; text-align:left; }
@@ -156,7 +156,6 @@
         <h2 style="text-align:center" id="reportTitle">Report</h2>
         <table id="tabellaReport"><thead><tr><th>Data</th><th>T</th><th>€</th><th>H</th><th>KM</th><th>L</th><th>C</th></tr></thead><tbody id="corpoReport"></tbody></table>
         <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000;"></div>
-        <button class="btn-modal" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
         <button class="btn-modal" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
 
@@ -166,7 +165,6 @@
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
         <div style="grid-column:span 3; display:flex; gap:5px; margin-top:5px;">
-            <button style="flex:1; background:#0055ff; border:none; border-radius:10px; padding:8px; color:#fff; font-size:10px; font-weight:bold;" onclick="alert('Cambio mese attivo.')">🧪 TEST</button>
             <button style="flex:1; background:#400; border:none; border-radius:10px; padding:8px; color:#fff; font-size:10px; font-weight:bold;" onclick="resetTotale()">RESET DB</button>
         </div>
     </div>
@@ -181,7 +179,6 @@
             document.querySelectorAll('.modal input').forEach(i => i.value = '');
         }
 
-        // AUTO-SCROLL
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
                 setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
@@ -229,12 +226,6 @@
             let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
             document.getElementById('perc').innerText = Math.round(p)+'%'; 
             document.getElementById('bar').style.width = p+'%';
-            
-            // Glow dinamico
-            const bar = document.getElementById('bar');
-            if(p > 85) bar.style.boxShadow = "0 0 15px #FF0000";
-            else if(p > 60) bar.style.boxShadow = "0 0 15px #FFFF00";
-            else bar.style.boxShadow = "0 0 15px rgba(0, 255, 0, 0.4)";
         }
 
         function apriM(id) {
