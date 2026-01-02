@@ -193,6 +193,26 @@
             salvaDB();
         }
 
+        function apriStorico() {
+            let h = "";
+            const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
+            tutti.forEach(i => {
+                const color = i.tipo === 'T' ? 'var(--primary)' : 'var(--orange)';
+                const icon = i.tipo === 'T' ? 'fa-motorcycle' : 'fa-gas-pump';
+                let dettagli = "";
+                if (i.tipo === 'T') {
+                    dettagli = `<div style="color:var(--dim); font-size:10px; margin-top:4px;"><i class="fas fa-clock"></i> ${i.ora} | <i class="fas fa-road"></i> ${i.km}km | <i class="fas fa-tint"></i> ${i.cons}L/100</div><div style="font-size:14px; margin-top:5px; font-weight:bold; color:var(--primary);">€${i.lordo.toFixed(2)}</div>`;
+                } else {
+                    let L = i.euro / i.prezzo;
+                    let kml = dati.turni.length > 0 ? (100 / dati.turni[dati.turni.length-1].cons).toFixed(1) : "0.0";
+                    dettagli = `<div style="color:var(--dim); font-size:10px; margin-top:4px;"><i class="fas fa-clock"></i> ${i.ora} | <i class="fas fa-tag"></i> €${i.prezzo.toFixed(3)}/L</div><div style="font-size:14px; margin-top:5px; font-weight:bold; color:var(--orange);">€${i.euro.toFixed(2)} <span style="font-size:10px; color:#fff;">(${L.toFixed(2)}L)</span></div><div style="color:var(--primary); font-size:10px; margin-top:4px;">RESA: ${kml} KM/L</div>`;
+                }
+                h += `<div style="background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border-left:5px solid ${color};"> <div style="flex:1;"><div style="font-size:12px; font-weight:bold; text-transform:uppercase;"><i class="fas ${icon}" style="margin-right:5px; color:${color}"></i>${i.data}</div>${dettagli}</div> <button onclick="elimina('${i.tipo==='T'?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:24px; padding-left:15px;"><i class="fas fa-times-circle"></i></button> </div>`;
+            });
+            document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
+            document.getElementById('histView').style.display = 'flex';
+        }
+
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tEuroB=0, tLitriS=0;
             dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
@@ -212,13 +232,12 @@
             else if (dati.rifornimenti.length > 0) ultP = dati.rifornimenti[dati.rifornimenti.length - 1].prezzo;
 
             let costoStimato = tLitriS * ultP;
-            let tasseCalc = tLordo * (dati.tax/100);
-            let netto = tLordo - tasseCalc - costoStimato;
+            let netto = tLordo - (tLordo * (dati.tax/100)) - costoStimato;
 
             document.getElementById('recapTable').innerHTML = `
                 <tr><th style="width:50%">VOCE RIASSUNTIVA</th><th style="width:50%">VALORE ATTUALE</th></tr>
                 <tr><td>Lordo Totale</td><td>€${tLordo.toFixed(2)}</td></tr>
-                <tr><td>Tasse (${dati.tax}%)</td><td>-€${tasseCalc.toFixed(2)}</td></tr>
+                <tr><td>Tasse (${dati.tax}%)</td><td>-€${(tLordo*(dati.tax/100)).toFixed(2)}</td></tr>
                 <tr><td>Costo Benzina Stimato</td><td>-€${costoStimato.toFixed(2)}</td></tr>
                 <tr style="background:#eee; font-weight:bold;"><td>NETTO ATTIVITÀ</td><td>€${netto.toFixed(2)}</td></tr>
                 <tr style="border-top:1.5px solid #000"><td>OBIETTIVO (TARGET)</td><td>€${targetMese.toFixed(2)}</td></tr>
@@ -229,13 +248,5 @@
 
         function salvaTurno() { const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return; const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; dati.turni.push({id:Date.now(), data, ora:getOraAttuale(), lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
         function salvaBenza() { const e = parseFloat(document.getElementById('bE').value)||0, p = parseFloat(document.getElementById('bP').value)||0; if(e<=0||p<=0) return; const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; dati.rifornimenti.push({id:Date.now(), data, ora:getOraAttuale(), euro:e, prezzo:p, litri:e/p}); salvaDB(); chiudiModali(); }
-        function apriStorico() { let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id); tutti.forEach(i => { const color = i.tipo === 'T' ? 'var(--primary)' : 'var(--orange)'; h += `<div style="background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; border-left:5px solid ${color}; border-right:5px solid ${color};"> <div style="font-size:11px;"><b>${i.data} - ${i.tipo==='T'?'TURNO':'BENZINA'}</b><br>${i.tipo==='T'?'€'+i.lordo.toFixed(2):'Spesa: €'+i.euro.toFixed(2)}</div> <button onclick="elimina('${i.tipo==='T'?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button> </div>`; }); document.getElementById('listaStorico').innerHTML = h || "Nessun dato"; document.getElementById('histView').style.display = 'flex'; }
         function apriReport() { const oggi = new Date(); const m = oggi.getMonth()+1, y = oggi.getFullYear(); document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[m-1]} ${y}`; generaTabellaReport(`${m.toString().padStart(2,'0')}/${y}`); document.getElementById('reportView').style.display = 'flex'; }
-        function apriM(id) { const ora = new Date(); let d='', m='', y=''; for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`; mesi.forEach((n, i) => m += `<option value="${i+1}" ${i==ora.getMonth()?'selected':''}>${n.substring(0,3)}</option>`); for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==ora.getFullYear()?'selected':''}>${i}</option>`; const target = id === 'modalTurno' ? 'dateT' : 'dateB'; document.getElementById(target).innerHTML = `<select id="${target}D">${d}</select><select id="${target}M">${m}</select><select id="${target}Y">${y}</select>`; document.getElementById(id).style.display = 'flex'; }
-        function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function resetTotale() { if(confirm("RESET TOTALE?")) { dati={turni:[],rifornimenti:[],targets:{},tax:20}; salvaDB(); location.reload(); } }
-        window.onload = () => { mostra(); };
-    </script>
-</body>
-</html>
+        function apriM(id) { const ora = new Date(); let d='', m='', y=''; for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`; mesi.forEach((n, i) => m += `<option value="${i+1}" ${i==ora.getMonth()?'selected':''}>${n.substring(0,3)}</option>`); for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==ora.getFullYear()?'selected':''}>${i}</option>`; const target = id === 'modalTurno' ? 'dateT' : 'dateB'; document.getElementById(target).innerHTML = `<select id="${target}D">${d}</select><select id="${target}M">${m}</select><select id="${target}Y">${y}</select>`; documen
