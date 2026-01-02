@@ -211,7 +211,13 @@
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
+                /* ************************************************************ */
+                /* INIZIO MODIFICA VISUALIZZAZIONE EURO/L IN RIFORNIMENTO       */
+                /* ************************************************************ */
+                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>€${r.prezzo.toFixed(3)}/L</td></tr>`;
+                /* ************************************************************ */
+                /* FINE MODIFICA VISUALIZZAZIONE EURO/L IN RIFORNIMENTO         */
+                /* ************************************************************ */
             });
 
             document.getElementById('corpoReport').innerHTML = h;
@@ -282,11 +288,4 @@
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
             let manca = (dati.target||0) - lordoT;
-            document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
-            let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
-            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
-        }
-
-        function testCambioMese() { eseguiControlloMese(true); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarg
+            document.getElementByI
