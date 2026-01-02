@@ -194,7 +194,7 @@
         }
 
         /* ************************************************************ */
-        /* INIZIO MODIFICA TABELLA DI STAMPA                            */
+        /* ✨ 1. INIZIO MODIFICA TABELLA DI STAMPA ✨                   */
         /* ************************************************************ */
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
@@ -211,13 +211,7 @@
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                /* ************************************************************ */
-                /* INIZIO MODIFICA VISUALIZZAZIONE EURO/L IN RIFORNIMENTO       */
-                /* ************************************************************ */
-                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>€${r.prezzo.toFixed(3)}/L</td></tr>`;
-                /* ************************************************************ */
-                /* FINE MODIFICA VISUALIZZAZIONE EURO/L IN RIFORNIMENTO         */
-                /* ************************************************************ */
+                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
 
             document.getElementById('corpoReport').innerHTML = h;
@@ -227,7 +221,7 @@
             document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
         }
         /* ************************************************************ */
-        /* FINE MODIFICA TABELLA DI STAMPA                              */
+        /* ✨ 1. FINE MODIFICA TABELLA DI STAMPA ✨                     */
         /* ************************************************************ */
 
         function salvaTurno() {
@@ -288,4 +282,11 @@
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
             let manca = (dati.target||0) - lordoT;
-            document.getElementByI
+            document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
+            let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
+            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
+        }
+
+        function testCambioMese() { eseguiControlloMese(true); }
+        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
+        function aggiornaTarget()
