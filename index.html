@@ -37,16 +37,16 @@
         .storico-main { font-size:18px; font-weight:bold; }
         .storico-sub { font-size:10px; color:var(--dim); }
 
-        /* Report PDF Style */
+        /* REPORT - STILE BIANCO E NERO */
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align:left; }
-        .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
-        .report-section { margin-bottom: 25px; }
-        .report-section h3 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 10px; color: #333; }
-        .report-table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom: 10px; }
-        .report-table th, .report-table td { border:1px solid #eee; padding:8px; text-align:left; }
-        .report-table th { background:#f9f9f9; font-weight: bold; color: #555; }
-        .summary-box { background: #f0f0f0; padding: 15px; border-radius: 8px; }
-        .summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ccc; }
+        .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; color: #000; }
+        .report-section { margin-bottom: 25px; color: #000; }
+        .report-section h3 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; color: #000; }
+        .report-table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom: 10px; color: #000; }
+        .report-table th, .report-table td { border:1px solid #000; padding:8px; text-align:left; color: #000; }
+        .report-table th { background:#f0f0f0; font-weight: bold; }
+        .summary-box { border: 1px solid #000; padding: 15px; border-radius: 0; background: #fff; }
+        .summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #000; color: #000; }
         .summary-row.total { font-weight: bold; font-size: 14px; border-bottom: none; padding-top: 10px; border-top: 2px solid #000; margin-top: 5px; }
 
         /* Modali */
@@ -65,14 +65,32 @@
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; }
 
-        @media print { .no-print { display:none!important; } #reportView { display:block!important; position:relative; padding:0; } body { background:#fff; } }
+        /* [STRETTAMENTE BIANCO E NERO PER STAMPA] */
+        @media print { 
+            body * { visibility: hidden; }
+            #reportView, #reportView * { visibility: visible; }
+            #reportView { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                display: block !important; 
+                background: #fff !important; 
+                color: #000 !important;
+                padding: 0;
+                margin: 0;
+            }
+            .no-print { display: none !important; }
+            .report-table th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; }
+            .summary-box { background: #fff !important; border: 1px solid #000 !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V1.0</div>
+    <div class="app-title no-print">RIDER TRACKER PRO V1.0</div>
 
-    <div class="grid">
+    <div class="grid no-print">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
@@ -84,14 +102,14 @@
         <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
     </div>
 
-    <div class="progress-container">
+    <div class="progress-container no-print">
         <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:12px;">
             <span>OBIETTIVO</span><span id="perc">0%</span>
         </div>
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal">
+    <div id="modalTurno" class="modal no-print">
         <div class="modal-content">
             <h3>Nuovo Turno</h3>
             <div id="dateT" class="date-row"></div>
@@ -104,7 +122,7 @@
         </div>
     </div>
 
-    <div id="modalBenza" class="modal">
+    <div id="modalBenza" class="modal no-print">
         <div class="modal-content">
             <h3>Rifornimento</h3>
             <div id="dateB" class="date-row"></div>
@@ -115,7 +133,7 @@
         </div>
     </div>
 
-    <div id="histView" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;">
+    <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;">
         <h2 style="color:var(--primary); text-align:center;">STORICO ATTIVITÀ</h2>
         <div id="listaStorico"></div>
         <button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
@@ -123,28 +141,28 @@
 
     <div id="reportView">
         <div class="report-header">
-            <h1 id="repMonth" style="margin:0; font-size:24px;">Report Mensile</h1>
-            <p id="repPeriod" style="color:#666; margin:5px 0;">Gennaio 2026</p>
+            <h1 id="repMonth" style="margin:0; font-size:22px; text-transform: uppercase;">Report Mensile</h1>
+            <p id="repPeriod" style="margin:5px 0; font-weight: bold;">RIDER TRACKER PRO</p>
         </div>
 
         <div class="report-section">
-            <h3>Dettaglio Turni</h3>
+            <h3>DETTAGLIO TURNI</h3>
             <table class="report-table">
-                <thead><tr><th>Data</th><th>Lordo</th><th>Ore</th><th>KM</th><th>L/100</th><th>Litri</th></tr></thead>
+                <thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead>
                 <tbody id="repTurniBody"></tbody>
             </table>
         </div>
 
         <div class="report-section">
-            <h3>Dettaglio Rifornimenti</h3>
+            <h3>DETTAGLIO RIFORNIMENTI</h3>
             <table class="report-table">
-                <thead><tr><th>Data</th><th>Spesa</th><th>Prezzo/L</th><th>Litri Effettivi</th></tr></thead>
+                <thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead>
                 <tbody id="repBenzaBody"></tbody>
             </table>
         </div>
 
         <div class="report-section">
-            <h3>Riepilogo Economico</h3>
+            <h3>RIEPILOGO FINANZIARIO</h3>
             <div class="summary-box" id="repFinalSummary"></div>
         </div>
 
@@ -162,17 +180,18 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v27')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+        let db = JSON.parse(localStorage.getItem('rider_db_v28')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
-        function salvaDB() { localStorage.setItem('rider_db_v27', JSON.stringify(db)); calcola(); }
+        function salvaDB() { localStorage.setItem('rider_db_v28', JSON.stringify(db)); calcola(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
         function calcola() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             let tM = db.turni.filter(t => t.data.includes(tag)), rM = db.rifornimenti.filter(r => r.data.includes(tag));
             let lordo = tM.reduce((a,b)=>a+b.lordo, 0), ore = tM.reduce((a,b)=>a+b.ore, 0), km = tM.reduce((a,b)=>a+b.km, 0);
-            let litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = rM.reduce((a,b)=>a+b.euro, 0);
+            let litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0);
+            let spesaB = rM.reduce((a,b)=>a+b.euro, 0);
             let ultP = rM.length > 0 ? rM[rM.length-1].prezzo : (db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85);
             let netto = lordo - (lordo * (db.tax/100)) - (litriS * ultP);
             
@@ -220,18 +239,18 @@
                 rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`;
             });
 
-            document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
-            document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+            document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno registrato</td></tr>";
+            document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento registrato</td></tr>";
             
             let taxV = tL * (db.tax/100);
             let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
             let costBS = tLS * ultP;
 
             document.getElementById('repFinalSummary').innerHTML = `
-                <div class="summary-row"><span>Lordo Totale:</span><span>€${tL.toFixed(2)}</span></div>
-                <div class="summary-row"><span>Tasse (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-                <div class="summary-row"><span>Benzina Stimata (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div>
-                <div class="summary-row"><span>Spesa Benzina Reale:</span><span>€${tEB.toFixed(2)}</span></div>
+                <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
+                <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
+                <div class="summary-row"><span>BENZINA STIMATA (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div>
+                <div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div>
                 <div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
             `;
             document.getElementById('reportView').style.display = 'block';
