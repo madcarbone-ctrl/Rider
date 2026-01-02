@@ -22,6 +22,8 @@
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
+        
+        /* MODALI */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
@@ -31,66 +33,60 @@
         .btn-save { background:var(--primary); color:#000; }
         .btn-close-turno { background:var(--orange); color:#000; } 
         .btn-close-benza { background:var(--primary); color:#000; } 
+
+        /* STORICO */
+        #histView { 
+            display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; 
+            flex-direction:column; padding:15px; overflow-y:auto; text-align:left; 
+        }
+        .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; letter-spacing: 1px; }
+        .hist-item { 
+            background:#111; padding:15px; border-radius:12px; margin-bottom:12px; 
+            display:flex; justify-content:space-between; align-items:center; 
+            border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; 
+        }
+        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
+        .btn-chiudi-hist { width: 50%; align-self: center; background: var(--primary); color: #000; margin: 20px 0 40px; }
+
+        /* REPORT BIANCO E NERO */
+        #reportView { 
+            display:none; position:fixed; inset:0; background:#fff; color:#000; 
+            z-index:9000; flex-direction:column; padding:20px; overflow-y:auto; 
+        }
+        #reportView h2 { text-transform: uppercase; font-size: 18px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        
+        table { width:100%; border-collapse:collapse; font-size:10px; margin-top:15px; table-layout: fixed; }
+        th, td { border:1px solid #000; padding:8px 4px; text-align:center; overflow: hidden; word-wrap: break-word; }
+        th { background:#eee; font-weight: bold; text-transform: uppercase; }
+        
+        /* Larghezze Colonne Uniformi */
+        th:nth-child(1), td:nth-child(1) { width: 18%; } /* Data */
+        th:nth-child(2), td:nth-child(2) { width: 12%; } /* Tipo */
+        th:nth-child(3), td:nth-child(3) { width: 14%; } /* Euro */
+        th:nth-child(4), td:nth-child(4) { width: 10%; } /* Ore */
+        th:nth-child(5), td:nth-child(5) { width: 10%; } /* Km */
+        th:nth-child(6), td:nth-child(6) { width: 12%; } /* Litri */
+        th:nth-child(7), td:nth-child(7) { width: 12%; } /* Cons */
+        th:nth-child(8), td:nth-child(8) { width: 12%; } /* KM/L */
+
+        #recapReport { 
+            margin-top:20px; padding:15px; border:2px solid #000; 
+            border-radius:0; color:#000; line-height:1.8; text-align: left; font-size: 12px;
+        }
+
+        /* FOOTER */
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
         .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
-        
-        #histView, #reportView { 
-            display:none; 
-            position:fixed; 
-            inset:0; 
-            background:var(--bg); 
-            z-index:8000; 
-            flex-direction:column; 
-            padding:15px; 
-            overflow-y:auto; 
-            overflow-x:hidden;
-            box-sizing: border-box;
-            text-align:left; 
+
+        @media print { 
+            .no-print { display:none!important; } 
+            body { background: #fff; padding: 0; }
+            #reportView { position: relative; display: block; padding: 0; }
         }
-
-        /* Titolo Storico: Centrato, Maiuscolo, Dimensione ridotta */
-        .hist-title { 
-            color:var(--primary); 
-            text-align: center; 
-            text-transform: uppercase; 
-            font-size: 18px; 
-            margin: 20px 0; 
-            letter-spacing: 1px;
-        }
-
-        .btn-chiudi-hist { 
-            width: 50%; 
-            align-self: center; 
-            background: var(--primary); 
-            color: #000; 
-            margin: 20px 0 40px; 
-        }
-
-        #reportView { background:#fff; color:#000; }
-
-        .hist-item { 
-            background:#111; 
-            padding:15px; 
-            border-radius:12px; 
-            margin-bottom:12px; 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-            border-left-width: 5px;  
-            border-right-width: 5px; 
-        }
-
-        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
-        .hist-info b { font-size:13px; color:#fff; }
-        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
-        th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-        th { background:#f0f0f0; }
-        @media print { .no-print { display:none!important; } }
     </style>
 </head>
 <body>
@@ -148,10 +144,24 @@
 
     <div id="reportView">
         <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
-        <table id="tabellaReport"><thead><tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead><tbody id="corpoReport"></tbody></table>
-        <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000; line-height:1.6;"></div>
-        <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
-        <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+        <table id="tabellaReport">
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Tipo</th>
+                    <th>Euro</th>
+                    <th>Ore</th>
+                    <th>Km</th>
+                    <th>Litri</th>
+                    <th>Cons.</th>
+                    <th>KM/L</th>
+                </tr>
+            </thead>
+            <tbody id="corpoReport"></tbody>
+        </table>
+        <div id="recapReport"></div>
+        <button class="btn-modal no-print" style="background:#000; color:#fff" onclick="window.print()">STAMPA PDF</button>
+        <button class="btn-modal no-print" style="background:#eee; color:#000; border:1px solid #000" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
 
     <div class="sticky-footer">
@@ -175,14 +185,6 @@
             document.querySelectorAll('.modal').forEach(m => m.style.display='none');
             document.querySelectorAll('.modal input').forEach(i => i.value = '');
         }
-
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('focus', function() {
-                setTimeout(() => {
-                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            });
-        });
 
         function autoPunto(el) {
             let v = el.value.replace('.', '');
@@ -220,18 +222,40 @@
 
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0;
-            dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
-                let lT = (t.km * (t.cons/100)); tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
-                let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
-                h += `<tr><td>${t.data} ${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
+            
+            // Unione e ordinamento per data per coerenza visiva
+            let eventi = [
+                ...dati.turni.filter(t => t.data.includes(filter)).map(t => ({...t, tipo:'Turno'})),
+                ...dati.rifornimenti.filter(r => r.data.includes(filter)).map(r => ({...r, tipo:'Benza'}))
+            ].sort((a,b) => a.id - b.id);
+
+            eventi.forEach(e => {
+                if(e.tipo === 'Turno') {
+                    let lT = (e.km * (e.cons/100)); tLordo += e.lordo; tOre += e.ore; tKm += e.km; tLitriC += lT;
+                    let kmL = lT > 0 ? (e.km / lT).toFixed(1) : 0;
+                    h += `<tr><td>${e.data}<br>${e.ora||''}</td><td>T</td><td>€${e.lordo.toFixed(2)}</td><td>${e.ore}h</td><td>${e.km}</td><td>-</td><td>${e.cons}</td><td>${kmL}</td></tr>`;
+                } else {
+                    tEuroB += e.euro; tLitriR += e.litri;
+                    h += `<tr style="background:#f9f9f9"><td>${e.data}<br>${e.ora||''}</td><td>B</td><td>€${e.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${e.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
+                }
             });
-            dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
-                tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data} ${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
-            });
-            document.getElementById('corpoReport').innerHTML = h;
+
+            document.getElementById('corpoReport').innerHTML = h || '<tr><td colspan="8">Nessun dato per questo periodo</td></tr>';
+            
             let tasse = tLordo * (dati.tax/100);
-            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina (Euros spesi): <b>-€${tEuroB.toFixed(2)}</b><hr><b style="color:red; font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM Totali: ${tKm} | Ore Totali: ${tOre.toFixed(1)} | Media Mese: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
+            let nettoFinale = tLordo - tasse - tEuroB;
+
+            document.getElementById('recapReport').innerHTML = `
+                <div style="display:flex; justify-content:space-between"><span>Lordo Totale:</span> <b>€${tLordo.toFixed(2)}</b></div>
+                <div style="display:flex; justify-content:space-between"><span>Tasse (${dati.tax}%):</span> <span>- €${tasse.toFixed(2)}</span></div>
+                <div style="display:flex; justify-content:space-between"><span>Spese Benzina:</span> <span>- €${tEuroB.toFixed(2)}</span></div>
+                <div style="border-top:2px solid #000; margin-top:10px; padding-top:5px; display:flex; justify-content:space-between; font-size:16px;">
+                    <b>NETTO FINALE:</b> <b>€${nettoFinale.toFixed(2)}</b>
+                </div>
+                <br>
+                <div style="font-size:10px; text-transform:uppercase; border-top:1px solid #eee; padding-top:10px;">
+                    KM totali: ${tKm} | Ore totali: ${tOre.toFixed(1)} | Efficienza: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L
+                </div>`;
         }
 
         function salvaTurno() {
@@ -285,25 +309,4 @@
             let spesaS = litriS * ultP, netto = lordoT - (lordoT*(dati.tax/100)) - spesaS;
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
-            document.getElementById('ore').innerText = oreT.toFixed(1);
-            document.getElementById('cons').innerText = litriS.toFixed(1) + 'L';
-            document.getElementById('kml').innerText = litriS > 0 ? (kmT/litriS).toFixed(1) : '0.0';
-            document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
-            document.getElementById('targetIn').value = dati.target || '';
-            document.getElementById('taxIn').value = dati.tax || 20;
-            let manca = (dati.target||0) - lordoT;
-            document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
-            let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
-            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
-        }
-
-        function testCambioMese() { eseguiControlloMese(true); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
-        function resetTotale() { if(confirm("RESET TOTALE?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
-
-        window.onload = () => { mostra(); eseguiControlloMese(); };
-    </script>
-</body>
-</html>
+            document.getElement
