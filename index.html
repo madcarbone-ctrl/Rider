@@ -57,19 +57,15 @@
         th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; word-wrap: break-word; }
         th { background:#f0f0f0; font-weight: bold; }
         
-        /* ************************************************************ */
-        /* ✨ 3. INIZIO RICALIBRAZIONE COLONNE (7 COLONNE TOTALI) ✨     */
-        /* ************************************************************ */
+        /* Larghezze fisse colonne */
         th:nth-child(1) { width: 18%; }
         th:nth-child(2) { width: 12%; }
-        th:nth-child(3) { width: 16%; }
-        th:nth-child(4) { width: 12%; }
-        th:nth-child(5) { width: 12%; }
-        th:nth-child(6) { width: 15%; }
-        th:nth-child(7) { width: 15%; }
-        /* ************************************************************ */
-        /* ✨ 3. FINE RICALIBRAZIONE COLONNE ✨                          */
-        /* ************************************************************ */
+        th:nth-child(3) { width: 15%; }
+        th:nth-child(4) { width: 10%; }
+        th:nth-child(5) { width: 10%; }
+        th:nth-child(6) { width: 12%; }
+        th:nth-child(7) { width: 11%; }
+        th:nth-child(8) { width: 12%; }
 
         #recapReport { margin:20px 0; padding:15px; border:2px solid #000; color:#000; line-height:1.6; font-size: 12px; }
         @media print { .no-print { display:none!important; } }
@@ -132,7 +128,7 @@
         <h2 id="reportTitle">Riepilogo Mensile</h2>
         <table id="tabellaReport">
             <thead>
-                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>KM/L</th></tr>
+                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr>
                 </thead>
             <tbody id="corpoReport"></tbody>
         </table>
@@ -197,9 +193,6 @@
             apriReportMeseSpecifico(oggi.getMonth() + 1, oggi.getFullYear());
         }
 
-        /* ************************************************************ */
-        /* ✨ 3. INIZIO MODIFICA DATI TABELLA REPORT ✨                 */
-        /* ************************************************************ */
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
             let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
@@ -210,14 +203,12 @@
                 tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
                 tSpesaBenzaStimata += costoStimatoTurno;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
-                // Rimossa la cella del consumo L/100km
-                h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${kmL}</td></tr>`;
+                h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
             });
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                // Rimossa la cella vuota extra
-                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td></tr>`;
+                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
 
             document.getElementById('corpoReport').innerHTML = h;
@@ -226,9 +217,6 @@
 
             document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
         }
-        /* ************************************************************ */
-        /* ✨ 3. FINE MODIFICA DATI TABELLA REPORT ✨                   */
-        /* ************************************************************ */
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
@@ -289,4 +277,16 @@
             document.getElementById('taxIn').value = dati.tax || 20;
             let manca = (dati.target||0) - lordoT;
             document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
-            let p = dat
+            let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
+            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
+        }
+
+        function testCambioMese() { eseguiControlloMese(true); }
+        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
+        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
+
+        /* ************************************************************ */
+        /* ✨ 2. INIZIO RESET TOTALE CON TARGET ✨                      */
+        /* ************************************************************ */
+        function r
