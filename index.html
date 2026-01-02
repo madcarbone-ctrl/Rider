@@ -27,7 +27,7 @@
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:380px; border:1px solid #333; margin: auto; }
         .input-group { position:relative; margin-bottom:12px; width:100% }
         .input-group i { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--dim); }
-        .modal input { width:100%; padding:14px 12px 14px 45px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; }
+        .modal input { width:100%; padding:14px 12px 14px 45px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; }
         .date-row { display:flex; gap:5px; margin-bottom:15px; }
         .date-row select { background:#333; color:#fff; border:1px solid #444; padding:10px; border-radius:10px; flex:1; }
         .modal-btns { display: flex; flex-direction: column; gap:10px; }
@@ -78,14 +78,15 @@
     </div>
 
     <div id="mTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateTurno" class="date-row"></div><div class="input-group"><input type="number" id="tLordo" placeholder="Lordo (€)" inputmode="decimal"><i class="fas fa-euro-sign"></i></div><div class="input-group"><input type="number" id="tOre" placeholder="Ore" inputmode="decimal"><i class="fas fa-clock"></i></div><div class="input-group"><input type="number" id="tKm" placeholder="Km" inputmode="decimal"><i class="fas fa-route"></i></div><div class="input-group"><input type="number" id="tCons" placeholder="L/100km" inputmode="decimal"><i class="fas fa-tint"></i></div><div class="modal-btns"><button class="btn-modal btn-save-turno" onclick="addTurno()">SALVA</button><button class="btn-modal btn-cancel" onclick="closeModals()">CHIUDI</button></div></div></div>
+    
     <div id="mBenza" class="modal"><div class="modal-content"><h3>Benzina</h3><div id="dateBenza" class="date-row"></div><div class="input-group"><input type="number" id="bEuro" placeholder="Euro (€)" inputmode="decimal"><i class="fas fa-wallet"></i></div><div class="input-group"><input type="number" id="bP" placeholder="Prezzo (es: 1.855)" inputmode="decimal" oninput="formatFuelPrice(this)"><i class="fas fa-gas-pump"></i></div><div class="modal-btns"><button class="btn-modal btn-save-benza" onclick="addBenza()">SALVA</button><button class="btn-modal btn-cancel" onclick="closeModals()">CHIUDI</button></div></div></div>
 
     <div id="histView"><div class="history-section"><h4>STORICO</h4><div id="historyList"></div><button class="btn-modal btn-cancel" onclick="toggleHist()">CHIUDI</button></div></div>
 
     <div id="reportView">
-        <div class="no-print" style="padding:10px; display:flex; gap:5px;"><select id="repMonth" onchange="renderReport()"></select><select id="repYear" onchange="renderReport()"></select><button onclick="closeReport()">X</button></div>
+        <div class="no-print" style="padding:10px; display:flex; gap:5px;"><select id="repMonth" onchange="renderReport()"></select><select id="repYear" onchange="renderReport()"></select><button onclick="closeReport()" style="padding:10px;">CHIUDI</button></div>
         <div class="report-container">
-            <h2 id="reportTitle" style="text-align:center; color:#333;">Riepilogo Mensile</h2>
+            <h2 style="text-align:center; color:#333;">Report Mensile Dettagliato</h2>
             <table id="tableReport"><thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th></tr></thead><tbody id="bodyReport"></tbody></table>
             <div id="resSummary" style="color:black; padding:15px; background:#f9f9f9; border:1px solid #ddd; border-radius:10px; line-height:1.6;"></div>
             <button onclick="window.print()" class="btn-modal no-print" style="background:#333; color:white; margin-top:10px;">STAMPA PDF</button>
@@ -105,11 +106,27 @@
     </div>
 
     <script>
+        // Caricamento DB con recupero versioni precedenti
         let db = JSON.parse(localStorage.getItem('rider_db_v5_final')) || JSON.parse(localStorage.getItem('rider_db_v5')) || { s: [], r: [], target: 0, tax: 20 };
         const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
         function save() { localStorage.setItem('rider_db_v5_final', JSON.stringify(db)); render(); }
-        function initApp() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); } render(); setTimeout(checkEndOfMonth, 500); }
+        
+        function initApp() { 
+            if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); } 
+            render(); 
+            setTimeout(checkEndOfMonth, 500); 
+        }
+
+        // Funzioni Modali (Fixate)
+        function openM(id) { 
+            createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); 
+            document.getElementById(id).style.display = 'flex'; 
+        }
+
+        function closeModals() { 
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+        }
 
         function formatFuelPrice(input) {
             let val = input.value.replace(/[^0-9]/g, '');
@@ -118,7 +135,7 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        function fullReset() { if(confirm('Svuotare tutto?')) { db = { s: [], r: [], target: 0, tax: 20 }; save(); location.reload(); } }
+        function fullReset() { if(confirm('Svuotare tutto il database?')) { db = { s: [], r: [], target: 0, tax: 20 }; save(); location.reload(); } }
 
         function render() {
             let tL = db.s.reduce((a, b) => a + (parseFloat(b.l) || 0), 0);
@@ -177,13 +194,17 @@
             document.getElementById(id).innerHTML = `<select id="${id}D">${d}</select><select id="${id}M">${m}</select><select id="${id}Y">${y}</select>`;
         }
 
-        function openM(id) { createDateSelectors(id==='mTurno'?'dateTurno':'dateBenza'); document.getElementById(id).style.display='flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
-
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value.replace(',','.')) || 0;
             if(l===0) return;
-            db.s.push({ id:Date.now(), time:`${document.getElementById('dateTurnoD').value.padStart(2,'0')}/${document.getElementById('dateTurnoM').value.padStart(2,'0')}/${document.getElementById('dateTurnoY').value}`, l:l, o:parseFloat(document.getElementById('tOre').value.replace(',','.'))||0, k:parseFloat(document.getElementById('tKm').value.replace(',','.'))||0, c:parseFloat(document.getElementById('tCons').value.replace(',','.'))||0 });
+            db.s.push({ 
+                id:Date.now(), 
+                time:`${document.getElementById('dateTurnoD').value.padStart(2,'0')}/${document.getElementById('dateTurnoM').value.padStart(2,'0')}/${document.getElementById('dateTurnoY').value}`, 
+                l:l, 
+                o:parseFloat(document.getElementById('tOre').value.replace(',','.'))||0, 
+                k:parseFloat(document.getElementById('tKm').value.replace(',','.'))||0, 
+                c:parseFloat(document.getElementById('tCons').value.replace(',','.'))||0 
+            });
             save(); closeModals();
         }
 
@@ -191,7 +212,13 @@
             const e = parseFloat(document.getElementById('bEuro').value.replace(',','.')) || 0;
             const p = parseFloat(document.getElementById('bP').value.replace(',','.')) || 0;
             if(e<=0) return;
-            db.r.push({ id:Date.now(), time:`${document.getElementById('dateBenzaD').value.padStart(2,'0')}/${document.getElementById('dateBenzaM').value.padStart(2,'0')}/${document.getElementById('dateBenzaY').value}`, e:e, p:p, litri:p>0?e/p:0 });
+            db.r.push({ 
+                id:Date.now(), 
+                time:`${document.getElementById('dateBenzaD').value.padStart(2,'0')}/${document.getElementById('dateBenzaM').value.padStart(2,'0')}/${document.getElementById('dateBenzaY').value}`, 
+                e:e, 
+                p:p, 
+                litri:p>0?e/p:0 
+            });
             save(); closeModals();
         }
 
@@ -201,9 +228,12 @@
                 monthNames.forEach((n,i)=>mS.innerHTML+=`<option value="${i+1}">${n}</option>`);
                 for(let i=2025;i<=2030;i++) document.getElementById('repYear').innerHTML+=`<option>${i}</option>`;
             }
-            mS.value = new Date().getMonth()+1; document.getElementById('repYear').value = new Date().getFullYear();
-            document.getElementById('reportView').style.display='block'; renderReport();
+            mS.value = new Date().getMonth()+1; 
+            document.getElementById('repYear').value = new Date().getFullYear();
+            document.getElementById('reportView').style.display='block'; 
+            renderReport();
         }
+
         function closeReport() { document.getElementById('reportView').style.display='none'; }
 
         function renderReport() {
@@ -229,16 +259,8 @@
             const netto = tL - taxTot - tEE;
             document.getElementById('bodyReport').innerHTML = html;
             document.getElementById('resSummary').innerHTML = `
-                <b>Lordo Totale:</b> €${tL.toFixed(2)}<br>
+                <b>Lordo Mensile:</b> €${tL.toFixed(2)}<br>
                 <b>Tasse (${db.tax}%):</b> -€${taxTot.toFixed(2)}<br>
-                <b>Carburante (stimato):</b> -€${tEE.toFixed(2)}<hr>
-                <b style="font-size:16px; color:var(--accent)">NETTO: €${netto.toFixed(2)}</b><br>
-                <small>Ore Totali: ${tO.toFixed(1)} | Km Totali: ${tK.toFixed(0)}</small>`;
-        }
-        function checkEndOfMonth() {
-            const now = new Date(); const m = now.getMonth() + 1;
-            const last = localStorage.getItem('rider_last_month_check');
-            if (last && parseInt(last) !== m) { alert("Fine mese! Controlla il report."); openReport(); }
-            localStorage.setItem('rider_last_month_check', m.toString());
-        }
-        function finalReset() { if(confirm("Resettare i dati del mese?")) { db.s=[]; db.r=[]; save(); closeReport
+                <b>Carburante Stimato:</b> -€${tEE.toFixed(2)}<hr>
+                <b style="font-size:16px; color:var(--accent)">NETTO MENSILE: €${netto.toFixed(2)}</b><br>
+                <small>Totale Ore: ${tO.toFixed(1)} | Totale
