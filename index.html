@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.2.7</title>
+    <title>RIDER TRACKER PRO V5.2.8</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -43,11 +43,12 @@
         table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
         th, td { border:1px solid #ccc; padding:6px; text-align:left; }
         th { background:#f0f0f0; }
+        @media print { .no-print { display:none!important; } }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.2.7</div>
+    <div class="app-title">RIDER TRACKER PRO V5.2.8</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -99,7 +100,7 @@
     </div>
 
     <div id="reportView">
-        <h2 style="text-align:center">Riepilogo Mensile</h2>
+        <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
         <table id="tabellaReport">
             <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead>
             <tbody id="corpoReport"></tbody>
@@ -115,7 +116,7 @@
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
         <div class="btn-row">
-            <button style="background:#0055ff" onclick="testMese()">🧪 TEST</button>
+            <button style="background:#0055ff" onclick="testMese()">🧪 TEST MESE</button>
             <button style="background:#400" onclick="resetTotale()">RESET DB</button>
         </div>
     </div>
@@ -123,14 +124,22 @@
     <script>
         let dati = JSON.parse(localStorage.getItem('rider_db_final')) || { turni: [], rifornimenti: [], target: 0, tax: 20 };
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        let shiftMese = 0; // Per il test
 
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
         function scrollFix(el) {
-            setTimeout(() => {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+            setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+        }
+
+        // AVVISO PRIMO DEL MESE
+        function controllaPrimoDelMese() {
+            const oggi = new Date();
+            if (oggi.getDate() === 1) {
+                const meseScorso = oggi.getMonth() === 0 ? 11 : oggi.getMonth() - 1;
+                alert(`📢 È il 1° di ${mesi[oggi.getMonth()]}!\n\nNon dimenticare di salvare il Report PDF di ${mesi[meseScorso]} prima di iniziare i nuovi turni.`);
+            }
         }
 
         function apriM(id) {
@@ -168,10 +177,14 @@
         }
 
         function mostra() {
-            let lordoT = dati.turni.reduce((a,b) => a + b.lordo, 0);
-            let oreT = dati.turni.reduce((a,b) => a + b.ore, 0);
-            let kmT = dati.turni.reduce((a,b) => a + b.km, 0);
-            let litriS = dati.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
+            const oggi = new Date();
+            const filter = `${(oggi.getMonth() + 1 + shiftMese).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
+            
+            let turniMese = dati.turni.filter(t => t.data.includes(filter));
+            let lordoT = turniMese.reduce((a,b) => a + b.lordo, 0);
+            let oreT = turniMese.reduce((a,b) => a + b.ore, 0);
+            let kmT = turniMese.reduce((a,b) => a + b.km, 0);
+            let litriS = turniMese.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
             let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
             let spesaS = litriS * ultP;
             let netto = lordoT - (lordoT * (dati.tax/100)) - spesaS;
@@ -217,10 +230,13 @@
 
         function apriReport() {
             const oggi = new Date();
-            const filter = `${(oggi.getMonth()+1).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
+            const meseCalcolato = oggi.getMonth() + 1 + shiftMese;
+            const filter = `${meseCalcolato.toString().padStart(2,'0')}/${oggi.getFullYear()}`;
+            document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[meseCalcolato-1]} ${oggi.getFullYear()}`;
+            
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriRiforniti=0, tEuroBenza=0, tLitriConsumati=0;
             
-            dati.turni.filter(t => t.data.includes(filter)).forEach(t => {
+            dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let litriTurno = (t.km * (t.cons/100));
                 let kmLTurno = litriTurno > 0 ? (t.km / litriTurno) : 0;
                 tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriConsumati += litriTurno;
@@ -228,8 +244,7 @@
             });
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
-                tEuroBenza += r.euro;
-                tLitriRiforniti += r.litri;
+                tEuroBenza += r.euro; tLitriRiforniti += r.litri;
                 h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td><td>-</td></tr>`;
             });
             
@@ -239,10 +254,10 @@
             
             document.getElementById('recapReport').innerHTML = `
                 <div style="border-bottom:1px solid #ccc; padding-bottom:10px; margin-bottom:10px;">
-                    <b>RIEPILOGO FINANZIARIO:</b><br>
+                    <b>RIEPILOGO FINANZIARIO (${mesi[meseCalcolato-1]}):</b><br>
                     Lordo Totale Turni: <b>€${tLordo.toFixed(2)}</b><br>
                     Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>
-                    Spesa Benzina Totale: <b>-€${tEuroBenza.toFixed(2)}</b><hr>
+                    Spesa Benzina Effettiva: <b>-€${tEuroBenza.toFixed(2)}</b><hr>
                     <b style="font-size:18px; color:red">NETTO MENSILE: €${(tLordo - tasse - tEuroBenza).toFixed(2)}</b>
                 </div>
                 <div>
@@ -256,10 +271,22 @@
 
         function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value) || 0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value) || 0; salvaDB(); }
-        function testMese() { apriReport(); }
+        
+        // FUNZIONE TEST: simula il cambio mese
+        function testMese() {
+            shiftMese = (shiftMese === 0) ? -1 : 0; // Alterna tra mese corrente e mese scorso
+            const msg = shiftMese === 0 ? "Visualizzazione: Mese Corrente" : "Visualizzazione: Mese Scorso (Simulazione)";
+            alert(msg);
+            mostra();
+            apriReport();
+        }
+
         function resetTotale() { if(confirm("CANCELLARE TUTTO?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
 
-        window.onload = mostra;
+        window.onload = () => {
+            mostra();
+            controllaPrimoDelMese();
+        };
     </script>
 </body>
 </html>
