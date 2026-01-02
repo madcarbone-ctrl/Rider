@@ -1,33 +1,32 @@
 # RIDER TRACKER PRO V5.0
 
-Questa è la versione definitiva (v5.0) ottimizzata per l'uso come Web App o pacchettizzata in APK. Il sistema garantisce un monitoraggio completo della contabilità per rider, con particolare attenzione all'usabilità su smartphone.
+Questa è la versione di riferimento stabile (v5.0). L'applicazione è progettata per funzionare come **Web App** tramite browser mobile, garantendo un monitoraggio completo della contabilità per rider.
 
-## 📦 Struttura File
-Per il corretto funzionamento, i seguenti file devono trovarsi nella stessa cartella:
-- `index.html` (Interfaccia principale e inserimento dati)
-- `report.html` (Generazione report e stampa A4)
+## 📋 Requisiti di Funzionamento
+Per garantire la navigazione e il calcolo dei dati, i due file devono risiedere nella stessa cartella:
+- `index.html` (Dashboard principale e database)
+- `report.html` (Visualizzazione dati e stampa)
 
-## 🚀 Funzionalità Principali
+## 🚀 Funzionalità Ottimizzate
 
-### 1. Dashboard e Calcoli
-- **Netto Reale**: Calcolo automatico sottraendo imposte (%) e costi carburante.
-- **Progress Bar**: Barra colorata dinamica basata sul target impostato.
-- **Mancante Lordo**: Calcolo immediato di quanto bisogna ancora incassare per raggiungere il netto desiderato.
+### 💰 Gestione Economica e Target
+- **Netto Reale**: Calcolo basato sulla sottrazione di imposte (%) e costi carburante effettivi.
+- **Barra di Progresso**: Indicatore visivo (Verde -> Rosso) sul raggiungimento dell'obiettivo.
+- **Mancante Lordo**: Indica quanto lavoro è ancora necessario per toccare il target netto.
 
-### 2. Ottimizzazione Mobile (Anti-Tastiera)
-- **Modali Top-Aligned**: I moduli di inserimento si aprono nella parte alta per non essere coperti dalla tastiera.
-- **Focus Smart**: Scroll automatico sui campi di testo al tocco per una visibilità perfetta durante la digitazione.
-- **Zero Zoom**: Font a 16px per prevenire l'ingrandimento automatico della pagina su iOS e Android.
+### 📱 Esperienza su Smartphone (Browser)
+- **Anti-Tastiera**: I modali di inserimento sono fissati in alto per non essere coperti dalla tastiera di sistema.
+- **Focus Intelligente**: Scroll automatico sui campi di input per mantenere sempre visibile ciò che si scrive.
+- **Interfaccia Fluida**: Design ottimizzato per eliminare lo scorrimento laterale (niente barre orizzontali).
 
-### 3. Storico e Reportistica
-- **Storico Interattivo**: Navigazione semplificata con tasti di scorrimento rapido.
-- **Report Fluido**: Il file `report.html` è progettato per adattarsi allo schermo mobile (niente barre laterali).
-- **Stampa A4**: Layout professionale pronto per essere salvato in PDF o stampato su carta.
+### 📄 Report e Stampa Professionale
+- **Visualizzazione Mobile**: Report pulito e leggibile direttamente dal telefono.
+- **Formato A4 PDF**: Layout pre-impostato per generare documenti A4 perfetti per la stampa o l'archiviazione digitale.
 
 ## ⚙️ Note Tecniche
-- **Database**: `localStorage` (Versione v95).
-- **Offline**: Funziona senza connessione internet una volta caricati i file.
-- **Privacy**: Tutti i dati restano salvati localmente sul dispositivo dell'utente.
+- **Database Locale**: I dati vengono salvati nella cache del browser tramite `localStorage` (v95).
+- **Navigazione**: Il passaggio tra Dashboard e Report avviene tramite link locale diretto.
+- **Privacy**: 100% Offline. Nessun dato viene inviato a server esterni.
 
 ---
-*Versione di riferimento salvata come "OK" il 02/01/2026.*
+* Ottimizzata per l'uso tramite Browser Mobile.*
