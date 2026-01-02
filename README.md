@@ -1,4 +1,4 @@
-# 🛵 Rider Tracker Pro V5.3.3
+# 🛵 Rider Tracker Pro V1.0
 
 ## 🇮🇹 LEGENDA COMPLETA DELLE FUNZIONI
 
