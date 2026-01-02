@@ -8,9 +8,19 @@
     <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:320px; text-align:center; }
+        :root { 
+            --bg:#0f0f0f; 
+            --card:#1a1a1a; 
+            --primary:#00CCBC; /* Verde Acqua per UI */
+            --accent:#ff4d4d; 
+            --text:#e0e0e0; 
+            --dim:#888; 
+            --input-bg:#252525; 
+            --orange:#ffa500; 
+        }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: sans-serif; }
+        body { background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:320px; text-align:center; }
+        
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         
         /* GRID DATI */
@@ -18,18 +28,19 @@
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
-        .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
+        
+        #lordo, #mancante, .card.main .val, #label-obj { color:var(--primary)!important; } 
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
 
-        /* METER BRIDGE AUDIO STYLE */
+        /* METER BRIDGE AUDIO PROFESSIONALE */
         .progress-container { background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-labels { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px; }
-        #label-obj { font-size:16px; font-weight:900; color:var(--primary); letter-spacing:1px; }
-        #perc { font-size:24px; font-weight:900; color:#fff; font-family: 'Courier New', Courier, monospace; }
+        #label-obj { font-size:16px; font-weight:900; letter-spacing:1px; }
+        #perc { font-size:24px; font-weight:900; color:#fff; } 
         
         .meter-bg { 
-            background:#000; 
+            background:#080808; 
             height:45px; 
             border-radius:6px; 
             overflow:hidden; 
@@ -38,30 +49,31 @@
             display:flex;
             align-items:center;
             padding:0 4px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
         #bar { 
-            height:80%; 
+            height:75%; 
             width:0%; 
-            transition:0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transition:0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            /* Gradiente Audio Meter Standard */
             background: linear-gradient(90deg, 
-                #00ff00 0%, 
-                #00ff00 60%, 
-                #ffff00 80%, 
-                #ff0000 100%
+                #00FF00 0%,   /* Verde */
+                #00FF00 60%,  /* Verde */
+                #FFFF00 80%,  /* Giallo */
+                #FF0000 100%  /* Rosso */
             );
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
             border-radius:2px;
             position:relative;
         }
-        /* Overlay effetto LED */
+        /* Effetto segmenti LED mixer */
         .meter-bg::after {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(90deg, 
-                rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 2px, 
-                transparent 2px, transparent 6px);
-            background-size: 6px 100%;
+                rgba(0,0,0,0.5) 0px, rgba(0,0,0,0.5) 2px, 
+                transparent 2px, transparent 7px);
+            background-size: 7px 100%;
             pointer-events: none;
         }
 
@@ -69,27 +81,19 @@
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
-        .date-row { display:flex; gap:5px; margin-bottom:15px; }
-        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
         .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close-turno { background:var(--orange); color:#000; } 
         
-        /* FOOTER STICKY */
+        /* FOOTER */
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
-        .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
+        .foot-btn i { color:var(--primary); font-size:18px; margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
-        .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
-        .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
-
-        /* VISTE SECONDARIE */
-        #histView, #reportView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; text-align:left; }
-        #reportView { background:#fff; color:#000; }
-        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
-        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
+        
+        /* TABELLE E REPORT */
+        #reportView { display:none; position:fixed; inset:0; background:#fff; color:#000; z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; }
+        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; }
         th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-        @media print { .no-print { display:none!important; } }
     </style>
 </head>
 <body>
@@ -121,34 +125,39 @@
     <div id="modalTurno" class="modal">
         <div class="modal-content">
             <h3>Nuovo Turno</h3>
-            <div id="dateT" class="date-row"></div>
+            <div id="dateT" class="date-row" style="display:flex; gap:5px; margin-bottom:15px;"></div>
             <input type="number" id="tL" placeholder="Lordo (€)" step="0.01">
             <input type="number" id="tO" placeholder="Ore lavorate" step="0.1">
             <input type="number" id="tK" placeholder="Chilometri percorsi">
             <input type="number" id="tC" placeholder="Consumo L/100km">
             <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
-            <button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button>
+            <button class="btn-modal" style="background:var(--orange); color:#000;" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
     
     <div id="modalBenza" class="modal">
         <div class="modal-content">
             <h3>Rifornimento</h3>
-            <div id="dateB" class="date-row"></div>
+            <div id="dateB" class="date-row" style="display:flex; gap:5px; margin-bottom:15px;"></div>
             <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01">
             <input type="number" id="bP" placeholder="Prezzo al litro" step="0.001" oninput="autoPunto(this)">
             <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
-            <button class="btn-modal btn-save" style="background:var(--primary); color:#000; margin-top:5px;" onclick="chiudiModali()">CHIUDI</button>
+            <button class="btn-modal btn-save" style="margin-top:5px;" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
 
-    <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal" style="background:#222; color:#fff; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView" style="display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; padding:15px; overflow-y:auto;">
+        <h2 style="color:var(--primary);">Storico</h2>
+        <div id="listaStorico"></div>
+        <button class="btn-modal" style="background:#222; color:#fff;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+    </div>
+
     <div id="reportView">
-        <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
-        <table id="tabellaReport"><thead><tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead><tbody id="corpoReport"></tbody></table>
-        <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000; line-height:1.6;"></div>
-        <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
-        <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+        <h2 style="text-align:center" id="reportTitle">Report</h2>
+        <table id="tabellaReport"><thead><tr><th>Data</th><th>T</th><th>€</th><th>H</th><th>KM</th><th>L</th><th>C</th></tr></thead><tbody id="corpoReport"></tbody></table>
+        <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000;"></div>
+        <button class="btn-modal" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
+        <button class="btn-modal" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
 
     <div class="sticky-footer">
@@ -156,9 +165,9 @@
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
-        <div class="btn-row">
-            <button style="background:#0055ff" onclick="testCambioMese()">🧪 TEST AVVISO</button>
-            <button style="background:#400" onclick="resetTotale()">RESET DB</button>
+        <div style="grid-column:span 3; display:flex; gap:5px; margin-top:5px;">
+            <button style="flex:1; background:#0055ff; border:none; border-radius:10px; padding:8px; color:#fff; font-size:10px; font-weight:bold;" onclick="alert('Cambio mese attivo.')">🧪 TEST</button>
+            <button style="flex:1; background:#400; border:none; border-radius:10px; padding:8px; color:#fff; font-size:10px; font-weight:bold;" onclick="resetTotale()">RESET DB</button>
         </div>
     </div>
 
@@ -167,7 +176,6 @@
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
         
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
-        
         function chiudiModali() { 
             document.querySelectorAll('.modal').forEach(m => m.style.display='none');
             document.querySelectorAll('.modal input').forEach(i => i.value = '');
@@ -176,9 +184,7 @@
         // AUTO-SCROLL
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
-                setTimeout(() => {
-                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
+                setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
             });
         });
 
@@ -187,22 +193,17 @@
             if (v.length > 1) { el.value = v.substring(0, 1) + "." + v.substring(1); }
         }
 
-        function getOraAttuale() {
-            const n = new Date();
-            return n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
-        }
-
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
             const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-            dati.turni.push({id:Date.now(), data, ora:getOraAttuale(), lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
+            dati.turni.push({id:Date.now(), data, lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
             salvaDB(); chiudiModali();
         }
 
         function salvaBenza() {
             const e = parseFloat(document.getElementById('bE').value)||0, p = parseFloat(document.getElementById('bP').value)||0; if(e<=0||p<=0) return;
             const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
-            dati.rifornimenti.push({id:Date.now(), data, ora:getOraAttuale(), euro:e, prezzo:p, litri:e/p});
+            dati.rifornimenti.push({id:Date.now(), data, euro:e, prezzo:p, litri:e/p});
             salvaDB(); chiudiModali();
         }
 
@@ -227,16 +228,15 @@
             
             let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
             document.getElementById('perc').innerText = Math.round(p)+'%'; 
-            const bar = document.getElementById('bar');
-            bar.style.width = p+'%';
+            document.getElementById('bar').style.width = p+'%';
             
-            // Effetto glow in base alla percentuale
-            if(p > 90) bar.style.boxShadow = "0 0 20px #ff0000";
-            else if(p > 70) bar.style.boxShadow = "0 0 20px #ffff00";
-            else bar.style.boxShadow = "0 0 15px rgba(0, 255, 0, 0.3)";
+            // Glow dinamico
+            const bar = document.getElementById('bar');
+            if(p > 85) bar.style.boxShadow = "0 0 15px #FF0000";
+            else if(p > 60) bar.style.boxShadow = "0 0 15px #FFFF00";
+            else bar.style.boxShadow = "0 0 15px rgba(0, 255, 0, 0.4)";
         }
 
-        // Funzioni ausiliarie identiche a V5.4.0
         function apriM(id) {
             const ora = new Date(); let d='', m='', y='';
             for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`;
@@ -250,32 +250,31 @@
         function apriStorico() {
             let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
             tutti.forEach(i => {
-                h += `<div class="hist-item" style="border-left-color:${i.tipo==='T'?'var(--primary)':'var(--orange)'}">
-                    <div style="font-size:11px;"><b>${i.data} - ${i.tipo==='T'?'TURNO':'BENZINA'}</b><br>${i.tipo==='T'?'Lordo: €'+i.lordo.toFixed(2):'Spesa: €'+i.euro.toFixed(2)}</div>
-                    <button onclick="elimina('${i.tipo==='T'?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
+                h += `<div style="background:#111; padding:10px; margin-bottom:5px; border-radius:8px; border-left:4px solid ${i.tipo==='T'?'var(--primary)':'var(--orange)'}; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:11px;"><b>${i.data}</b><br>${i.tipo==='T'?'€'+i.lordo.toFixed(2):'€'+i.euro.toFixed(2)}</div>
+                    <button onclick="elimina('${i.tipo==='T'?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button>
                 </div>`;
             });
-            document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
-            document.getElementById('histView').style.display = 'flex';
+            document.getElementById('listaStorico').innerHTML = h || "Vuoto";
+            document.getElementById('histView').style.display = 'block';
         }
 
         function apriReport() {
             const oggi = new Date();
             const filter = `${(oggi.getMonth()+1).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
-            document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[oggi.getMonth()]} ${oggi.getFullYear()}`;
-            let h = "", tLordo=0, tEuroB=0;
-            dati.turni.filter(t => t.data.includes(filter)).forEach(t => { h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>-</td></tr>`; tLordo+=t.lordo; });
-            dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => { h += `<tr><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td><td>-</td></tr>`; tEuroB+=r.euro; });
+            document.getElementById('reportTitle').innerText = `Report ${mesi[oggi.getMonth()]}`;
+            let h = "", tL=0, tE=0;
+            dati.turni.filter(t => t.data.includes(filter)).forEach(t => { h += `<tr><td>${t.data}</td><td>T</td><td>${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td></tr>`; tL+=t.lordo; });
+            dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => { h += `<tr><td>${r.data}</td><td>B</td><td>${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td></tr>`; tE+=r.euro; });
             document.getElementById('corpoReport').innerHTML = h;
-            document.getElementById('recapReport').innerHTML = `Lordo: €${tLordo.toFixed(2)} | Netto: €${(tLordo - (tLordo*dati.tax/100) - tEuroB).toFixed(2)}`;
+            document.getElementById('recapReport').innerText = `Lordo: €${tL.toFixed(2)} | Netto: €${(tL - (tL*dati.tax/100) - tE).toFixed(2)}`;
             document.getElementById('reportView').style.display = 'flex';
         }
 
         function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function resetTotale() { if(confirm("RESET TOTALE?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
-        function testCambioMese() { alert("Test Avviso: Il sistema controllerà il cambio mese al prossimo avvio."); }
+        function resetTotale() { if(confirm("AZZERARE TUTTO?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
 
         window.onload = () => { mostra(); };
     </script>
