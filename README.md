@@ -1,58 +1,72 @@
 # 🛵 Rider Tracker Pro V5.2.3
 
-## 🇮🇹 VERSIONE ITALIANA
+## 🇮🇹 LEGENDA COMPLETA DELLE FUNZIONI
 
-**Rider Tracker Pro** è un'app privata per rider per gestire guadagni e spese in tempo reale. Questa è la **Versione Finale (Punto di Arrivo)**.
+**Rider Tracker Pro** è strutturato per essere intuitivo. Ecco la spiegazione di ogni schermata e comando:
 
-### 📖 Legenda delle Funzioni (Cosa clicchi e perché)
+### 1. Dashboard Principale (Home)
+* **LORDO**: Guadagno totale accumulato (senza detrazioni).
+* **NETTO**: Guadagno reale al netto di tasse (TAX %) e costi carburante stimati.
+* **ORE**: Somma delle ore lavorate nei turni inseriti.
+* **LITRI STIM.**: Consumo di carburante calcolato in base ai KM percorsi e al consumo medio del tuo mezzo.
+* **KM/L**: Efficienza reale (chilometri percorsi con un litro di benzina).
+* **COSTO STIM.**: Spesa teorica per il carburante, basata sull'ultimo prezzo benzina registrato.
+* **TARGET €**: Il tuo obiettivo mensile. Inserisci la cifra desiderata per attivare la barra di progressione.
+* **TAX %**: Percentuale di tassazione (es. 20%). Influenza direttamente il calcolo del NETTO.
+* **MANCANTE**: Calcolo automatico di quanto manca, in Euro, per raggiungere il tuo TARGET.
 
-#### 📊 Dashboard Principale (Griglia)
-* **LORDO**: Indica il guadagno totale inserito, prima delle tasse e delle spese.
-* **NETTO**: Il tuo guadagno reale dopo aver sottratto la percentuale di tasse e il costo stimato della benzina.
-* **ORE**: Totale delle ore lavorate accumulate.
-* **LITRI STIM.**: Calcola quanti litri di benzina hai consumato in base ai km e al consumo medio inserito.
-* **KM/L**: Mostra l'efficienza del tuo mezzo (quanti chilometri fai con un litro).
-* **COSTO STIM.**: Quanto hai speso in benzina per i turni effettuati (basato sull'ultimo prezzo benzina salvato).
-* **TARGET €**: Inserisci qui quanto vuoi guadagnare nel mese. La barra colorata sotto ti mostrerà la percentuale di completamento.
-* **TAX %**: La tua percentuale di tasse (es. 20 per regime forfettario o ritenuta). Serve a calcolare il Netto.
-* **MANCANTE**: Ti dice esattamente quanti Euro mancano per raggiungere il tuo Obiettivo (Target).
+### 2. Sottomenu di Inserimento (Finestre Pop-up)
 
-#### 🔘 Tasti di Controllo (In basso)
-* **➕ TURNO**: Clicca qui per inserire i dati di fine giornata (Guadagno, Ore, Km percorsi e Consumo del mezzo).
-* **⛽ BENZINA**: Clicca qui quando fai rifornimento. Digita le 4 cifre del prezzo (es. `1855`) e il punto verrà messo in automatico (`1.855`).
-* **📜 STORICO**: Apre l'elenco di tutti i turni e i rifornimenti salvati. Puoi eliminare un errore cliccando la "X".
-* **📄 GENERA REPORT**: Crea un riepilogo professionale del mese pronto per essere stampato o salvato in PDF.
+#### ➕ Nuovo Turno (Tasto TURNO)
+* **Data**: Seleziona il giorno del turno (predefinito su oggi).
+* **Guadagno Lordo**: Inserisci quanto hai incassato nel turno.
+* **Ore Lavorate**: Inserisci la durata della sessione di lavoro.
+* **Kilometri**: Indica i km totali percorsi durante il turno.
+* **Consumo L/100km**: Inserisci il consumo medio del tuo mezzo (es. 2.5). Serve a calcolare la spesa benzina.
 
----
+#### ⛽ Monitor Benzina (Tasto BENZINA)
+* **Euro Spesi**: Quanti soldi hai pagato alla pompa.
+* **Prezzo (es: 1855)**: Inserisci le 4 cifre del prezzo al litro. Il sistema metterà il punto in automatico (es. `1855` diventa `1.855`). Questo dato aggiorna il calcolo del "Costo Stimato" in dashboard.
 
-## 🇺🇸 ENGLISH VERSION
+### 3. Storico e Gestione Dati
+* **Tasto STORICO**: Mostra una lista cronologica di ogni turno e rifornimento.
+    * **Icona X (Rossa)**: Elimina definitivamente quella singola voce in caso di errore di inserimento.
 
-**Rider Tracker Pro** is a private app for riders to manage earnings and fuel expenses in real-time. This is the **Final Version (Arrival Point)**.
-
-### 📖 Functions Legend (What you click and why)
-
-#### 📊 Main Dashboard (Grid)
-* **LORDO (Gross)**: Total earnings entered before taxes and expenses.
-* **NETTO (Net)**: Your actual profit after subtracting tax percentage and estimated fuel costs.
-* **ORE (Hours)**: Total accumulated working hours.
-* **LITRI STIM. (Est. Liters)**: Calculates liters consumed based on mileage and average consumption.
-* **KM/L**: Shows your vehicle's efficiency (kilometers per liter).
-* **COSTO STIM. (Est. Cost)**: Estimated fuel expense for your shifts (based on the last saved fuel price).
-* **TARGET €**: Enter your monthly goal here. The progress bar below will show your completion percentage.
-* **TAX %**: Your tax rate (e.g., 20). Used to calculate the Net income.
-* **MANCANTE (Remaining)**: Shows exactly how many Euros are left to reach your Target.
-
-#### 🔘 Control Buttons (Bottom)
-* **➕ TURNO (Shift)**: Click to enter end-of-day data (Earnings, Hours, KM, and Consumption).
-* **⛽ BENZINA (Fuel)**: Click when refueling. Type 4 digits (e.g., `1855`) and the decimal point is added automatically (`1.855`).
-* **📜 STORICO (History)**: Opens the list of all saved shifts and fuelings. You can delete errors by clicking "X".
-* **📄 GENERA REPORT**: Creates a professional monthly summary ready to be printed or saved as a PDF.
+### 4. Pagina Report Mensile (Tasto GENERA REPORT)
+Questa schermata riassume l'andamento del mese selezionato:
+* **Selettori Mese/Anno**: Permettono di consultare i dati dei mesi passati.
+* **Tabella Dettagliata**: Elenco riga per riga di ogni attività (Turno o Benzina) con data e dettagli.
+* **Riepilogo Risultati Finali**: Un box riassuntivo con Lordo, Tasse dedotte, Spese carburante e Netto finale.
+* **Statistiche Medie**: Calcola automaticamente la tua media oraria lorda e netta (€/h).
+* **Tasto STAMPA PDF**: Formatta la pagina per una stampa pulita o per il salvataggio in PDF.
+* **Tasto RESET MESE**: Appare solo alla fine del mese per permetterti di svuotare i dati e iniziare il mese successivo dopo aver salvato il report.
 
 ---
 
-### 📲 Installazione / Installation
-1.  **Android**: Open the link in Chrome, tap (⋮) -> **"Install App"**.
-2.  **iOS**: Open in Safari, tap **Share** -> **"Add to Home Screen"**.
+## 🇺🇸 COMPLETE FUNCTIONS LEGEND
+
+### 1. Main Dashboard
+* **LORDO**: Total gross earnings.
+* **NETTO**: Net profit after taxes (TAX %) and estimated fuel costs.
+* **ORE**: Total working hours.
+* **LITRI STIM.**: Calculated fuel consumption based on mileage.
+* **TARGET €**: Your monthly goal. Setting this activates the progress bar.
+* **MANCANTE**: Amount remaining to reach your goal.
+
+### 2. Entry Menus (Pop-ups)
+* **TURNO (Shift)**: Enter Date, Earnings, Hours, Kilometers, and Fuel Consumption (L/100km).
+* **BENZINA (Fuel)**: Enter Total Spend and Price per liter. Quick 4-digit input automatically adds the decimal point (e.g., `1855` -> `1.855`).
+
+### 3. History Management
+* **STORICO (History)**: View all entries. Use the **"X"** button to delete incorrect records.
+
+### 4. Monthly Report Page
+* **Month/Year Selectors**: Filter data by date.
+* **Summary Table**: Detailed log of all activities.
+* **Final Results**: Summary of Gross, Taxes, Fuel Costs, and Net profit.
+* **Hourly Stats**: Shows your Gross and Net hourly rate (€/h).
+* **PRINT PDF**: Formats the page for printing or saving as PDF.
+* **RESET MONTH**: Clears data to start a new month (use after saving your report).
 
 ---
-*Developed for Rider daily optimization.*
+*Versione Finale / Final Version - Punto di Arrivo*
