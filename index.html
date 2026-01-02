@@ -226,4 +226,27 @@
                 tEB+=r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`;
             });
             document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
-            document.getElementById('repBenzaBody').innerHTML = rH || "<tr>
+            document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+            let taxV = tL * (db.tax/100); let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85; let costBS = tLS * ultP;
+            document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA STIMATA (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div><div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>`;
+            document.getElementById('reportView').style.display = 'block';
+        }
+
+        function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
+        function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
+        function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
+        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
+        function elimina(c,id) { if(confirm("Elimina?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+        
+        function caricaTest() {
+            const n = new Date(); const d = `${n.getDate().toString().padStart(2,'0')}/${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
+            db.turni.push({id:Date.now(), data:d, ora:"12:00", lordo:50, ore:4, km:45, cons:7.5});
+            db.rifornimenti.push({id:Date.now()+1, data:d, ora:"12:30", euro:20, prezzo:1.750});
+            salvaDB(); alert("Dati di test caricati!");
+        }
+
+        window.onload = calcola;
+    </script>
+</body>
+</html>
