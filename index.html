@@ -23,52 +23,18 @@
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
-        .date-row { display:flex; gap:5px; margin-bottom:15px; }
-        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
-        .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
+        .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close-turno { background:var(--orange); color:#000; } 
-        .btn-close-benza { background:var(--primary); color:#000; } 
-        .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
+        .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
-        .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
-        .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
-        
-        #histView, #reportView { 
-            display:none; position:fixed; inset:0; z-index:8000; 
-            flex-direction:column; padding:15px; overflow-y:auto; 
-            overflow-x:hidden; box-sizing: border-box; text-align:left; 
-        }
-        #histView { background:var(--bg); }
-        .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; }
-        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; }
-        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
-        .btn-chiudi-hist { width: 50%; align-self: center; background: var(--primary); color: #000; margin: 20px 0 40px; }
-
-        /* REPORT STILE PDF BIANCO E NERO */
-        #reportView { background:#fff; color:#000; }
-        #reportView h2 { text-align:center; text-transform:uppercase; margin-bottom:20px; }
-        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; table-layout: fixed; }
-        th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; word-wrap: break-word; }
-        th { background:#f0f0f0; font-weight: bold; }
-        
-        /* Larghezze fisse colonne */
-        th:nth-child(1) { width: 18%; }
-        th:nth-child(2) { width: 12%; }
-        th:nth-child(3) { width: 15%; }
-        th:nth-child(4) { width: 10%; }
-        th:nth-child(5) { width: 10%; }
-        th:nth-child(6) { width: 12%; }
-        th:nth-child(7) { width: 11%; }
-        th:nth-child(8) { width: 12%; }
-
-        #recapReport { margin:20px 0; padding:15px; border:2px solid #000; color:#000; line-height:1.6; font-size: 12px; }
-        @media print { .no-print { display:none!important; } }
+        #histView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; }
+        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #333; }
+        .hist-info { font-size:12px; line-height:1.4; text-align:left; }
     </style>
 </head>
 <body>
@@ -97,176 +63,75 @@
     <div id="modalTurno" class="modal">
         <div class="modal-content">
             <h3>Nuovo Turno</h3>
-            <div id="dateT" class="date-row"></div>
             <input type="number" id="tL" placeholder="Lordo (€)" step="0.01">
             <input type="number" id="tO" placeholder="Ore lavorate" step="0.1">
             <input type="number" id="tK" placeholder="Chilometri percorsi">
             <input type="number" id="tC" placeholder="Consumo L/100km">
             <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
-            <button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button>
+            <button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
-    
+
     <div id="modalBenza" class="modal">
         <div class="modal-content">
             <h3>Rifornimento</h3>
-            <div id="dateB" class="date-row"></div>
             <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01">
-            <input type="number" id="bP" placeholder="Prezzo al litro" step="0.001" oninput="autoPunto(this)">
+            <input type="number" id="bP" placeholder="Prezzo al litro" step="0.001">
             <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
-            <button class="btn-modal btn-close-benza" onclick="chiudiModali()">CHIUDI</button>
+            <button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
 
     <div id="histView">
-        <div class="hist-title">Storico Dettagliato</div>
-        <div id="listaStorico" style="padding:0 15px;"></div>
-        <button class="btn-modal btn-chiudi-hist" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
-    </div>
-
-    <div id="reportView">
-        <h2 id="reportTitle">Riepilogo Mensile</h2>
-        <table id="tabellaReport">
-            <thead>
-                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr>
-                </thead>
-            <tbody id="corpoReport"></tbody>
-        </table>
-        <div id="recapReport"></div>
-        <button class="btn-modal no-print" style="background:#000; color:#fff" onclick="window.print()">STAMPA PDF</button>
-        <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+        <h2 style="color:var(--primary)">STORICO</h2>
+        <div id="listaStorico"></div>
+        <button class="btn-modal" style="background:var(--primary); color:#000" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
     </div>
 
     <div class="sticky-footer">
         <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-        <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
-        <div class="btn-row">
-            <button style="background:#0055ff" onclick="testCambioMese()">🧪 TEST AVVISO</button>
-            <button style="background:#400" onclick="resetTotale()">RESET DB</button>
-        </div>
+        <button class="btn-full" onclick="alert('Funzione Report non ancora implementata nel sorgente base')">REPORT MENSILE</button>
     </div>
 
     <script>
-        let dati = JSON.parse(localStorage.getItem('rider_db_final')) || { turni: [], rifornimenti: [], target: 0, tax: 20 };
-        const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-        
-        function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
-        
-        function chiudiModali() { 
-            document.querySelectorAll('.modal').forEach(m => m.style.display='none');
-            document.querySelectorAll('.modal input').forEach(i => i.value = '');
-        }
+        let dati = JSON.parse(localStorage.getItem('rider_db')) || { turni: [], rifornimenti: [], target: 0, tax: 20 };
 
-        function autoPunto(el) {
-            let v = el.value.replace('.', '');
-            if (v.length > 1) { el.value = v.substring(0, 1) + "." + v.substring(1); }
-        }
-
-        function getOraAttuale() {
-            const n = new Date();
-            return n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
-        }
-
-        function eseguiControlloMese(isTest = false) {
-            const oggi = new Date();
-            if (oggi.getDate() === 1 || isTest) {
-                const mInd = oggi.getMonth();
-                const mScorso = mInd === 0 ? 11 : mInd - 1;
-                const aScorso = mInd === 0 ? oggi.getFullYear() - 1 : oggi.getFullYear();
-                if (confirm(`📢 AVVISO CAMBIO MESE\n\nÈ iniziato ${mesi[mInd]}.\nVuoi stampare il report di ${mesi[mScorso]} ${aScorso}?`)) {
-                    apriReportMeseSpecifico(mScorso + 1, aScorso);
-                }
-            }
-        }
-
-        function apriReportMeseSpecifico(m, y) {
-            const filter = `${m.toString().padStart(2,'0')}/${y}`;
-            document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[m-1]} ${y}`;
-            generaTabellaReport(filter);
-            document.getElementById('reportView').style.display = 'flex';
-        }
-
-        function apriReport() {
-            const oggi = new Date();
-            apriReportMeseSpecifico(oggi.getMonth() + 1, oggi.getFullYear());
-        }
-
-        function generaTabellaReport(filter) {
-            let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
-            let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
-
-            dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
-                let lT = (t.km * (t.cons/100)); 
-                let costoStimatoTurno = lT * ultP; 
-                tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
-                tSpesaBenzaStimata += costoStimatoTurno;
-                let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
-                h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
-            });
-
-            dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
-                tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
-            });
-
-            document.getElementById('corpoReport').innerHTML = h;
-            let tasse = tLordo * (dati.tax/100);
-            let nettoLavorativo = tLordo - tasse - tSpesaBenzaStimata;
-
-            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
-        }
+        function salvaDB() { localStorage.setItem('rider_db', JSON.stringify(dati)); mostra(); }
+        function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+        function apriM(id) { document.getElementById(id).style.display='flex'; }
 
         function salvaTurno() {
-            const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
-            const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-            dati.turni.push({id:Date.now(), data, ora:getOraAttuale(), lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
+            const l = parseFloat(document.getElementById('tL').value)||0;
+            if(l<=0) return;
+            dati.turni.push({
+                id: Date.now(),
+                lordo: l,
+                ore: parseFloat(document.getElementById('tO').value)||0,
+                km: parseFloat(document.getElementById('tK').value)||0,
+                cons: parseFloat(document.getElementById('tC').value)||0,
+                data: new Date().toLocaleDateString()
+            });
             salvaDB(); chiudiModali();
         }
 
         function salvaBenza() {
-            const e = parseFloat(document.getElementById('bE').value)||0, p = parseFloat(document.getElementById('bP').value)||0; if(e<=0||p<=0) return;
-            const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
-            dati.rifornimenti.push({id:Date.now(), data, ora:getOraAttuale(), euro:e, prezzo:p, litri:e/p});
+            const e = parseFloat(document.getElementById('bE').value)||0, p = parseFloat(document.getElementById('bP').value)||0;
+            if(e<=0||p<=0) return;
+            dati.rifornimenti.push({ id: Date.now(), euro: e, prezzo: p, litri: e/p, data: new Date().toLocaleDateString() });
             salvaDB(); chiudiModali();
         }
 
-        function apriStorico() {
-            let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
-            tutti.forEach(i => {
-                if(i.tipo === 'T') {
-                    h += `<div class="hist-item" style="border-left-color:var(--primary); border-right-color:var(--primary);">
-                        <div class="hist-info"><b>${i.data} ${i.ora||''} - TURNO</b><br>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}<br>Km: ${i.km} | Consumo: ${i.cons}L/100km</div>
-                        <button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
-                    </div>`;
-                } else {
-                    h += `<div class="hist-item" style="border-left-color:var(--orange); border-right-color:var(--orange);">
-                        <div class="hist-info"><b>${i.data} ${i.ora||''} - BENZINA</b><br>Spesa: €${i.euro.toFixed(2)} | Litri: ${i.litri.toFixed(2)}<br>Prezzo: €${i.prezzo.toFixed(3)}/L</div>
-                        <button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
-                    </div>`;
-                }
-            });
-            document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
-            document.getElementById('histView').style.display = 'flex';
-        }
-
-        function apriM(id) {
-            const ora = new Date(); let d='', m='', y='';
-            for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`;
-            mesi.forEach((n, i) => m += `<option value="${i+1}" ${i==ora.getMonth()?'selected':''}>${n.substring(0,3)}</option>`);
-            for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==ora.getFullYear()?'selected':''}>${i}</option>`;
-            const target = id === 'modalTurno' ? 'dateT' : 'dateB';
-            document.getElementById(target).innerHTML = `<select id="${target}D">${d}</select><select id="${target}M">${m}</select><select id="${target}Y">${y}</select>`;
-            document.getElementById(id).style.display = 'flex';
-        }
-
         function mostra() {
-            const oggi = new Date(); const filter = `${(oggi.getMonth()+1).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
-            let tM = dati.turni.filter(t => t.data.includes(filter));
-            let lordoT = tM.reduce((a,b)=>a+b.lordo,0), oreT = tM.reduce((a,b)=>a+b.ore,0), kmT = tM.reduce((a,b)=>a+b.km,0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)),0);
+            let lordoT = dati.turni.reduce((a,b)=>a+b.lordo,0);
+            let oreT = dati.turni.reduce((a,b)=>a+b.ore,0);
+            let kmT = dati.turni.reduce((a,b)=>a+b.km,0);
+            let litriS = dati.turni.reduce((a,b)=>a+(b.km*(b.cons/100)),0);
             let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
-            let spesaS = litriS * ultP, netto = lordoT - (lordoT*(dati.tax/100)) - spesaS;
+            let spesaS = litriS * ultP;
+            let netto = lordoT - (lordoT*(dati.tax/100)) - spesaS;
+
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = oreT.toFixed(1);
@@ -275,18 +140,33 @@
             document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
+
             let manca = (dati.target||0) - lordoT;
             document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
             let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
-            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
+            document.getElementById('perc').innerText = Math.round(p)+'%';
+            document.getElementById('bar').style.width = p+'%';
         }
 
-        function testCambioMese() { eseguiControlloMese(true); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
+        function apriStorico() {
+            let h = "";
+            [...dati.turni, ...dati.rifornimenti].sort((a,b)=>b.id-a.id).forEach(i => {
+                h += `<div class="hist-item"><div class="hist-info"><b>${i.data}</b><br>${i.lordo?'Lordo: €'+i.lordo:'Spesa: €'+i.euro}</div><button onclick="elimina(${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button></div>`;
+            });
+            document.getElementById('listaStorico').innerHTML = h;
+            document.getElementById('histView').style.display = 'flex';
+        }
+
+        function elimina(id) {
+            dati.turni = dati.turni.filter(t=>t.id!==id);
+            dati.rifornimenti = dati.rifornimenti.filter(r=>r.id!==id);
+            salvaDB(); apriStorico();
+        }
+
         function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
 
-        /* ************************************************************ */
-        /* ✨ 2. INIZIO RESET TOTALE CON TARGET ✨                      */
-        /* ************************************************************ */
-        function r
+        window.onload = mostra;
+    </script>
+</body>
+</html>
