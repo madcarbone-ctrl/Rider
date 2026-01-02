@@ -57,7 +57,7 @@
         th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; word-wrap: break-word; }
         th { background:#f0f0f0; font-weight: bold; }
         
-        /* Larghezze fisse colonne ricalibrate dopo rimozione Cons. */
+        /* Larghezze fisse colonne ricalibrate */
         th:nth-child(1) { width: 18%; }
         th:nth-child(2) { width: 12%; }
         th:nth-child(3) { width: 15%; }
@@ -193,7 +193,7 @@
         }
 
         /* ************************************************************ */
-        /* ✨ 2. MODIFICA CORREZIONE LITRI (MANTENUTA) ✨                */
+        /* ✨ 4. INIZIO CORREZIONE DATI TABELLA SENZA "CONS." ✨         */
         /* ************************************************************ */
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
@@ -206,13 +206,13 @@
                 tSpesaBenzaStimata += costoStimatoTurno;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
                 
-                // ✨ 3. RIMOZIONE CELLA t.cons ✨
+                // ✨ 4. RIMOZIONE CELLA t.cons DAL CORPO TABELLA ✨
                 h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${lT.toFixed(2)}L</td><td>${kmL}</td></tr>`;
             });
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                // ✨ 3. RIMOZIONE CELLA VUOTA FINALE ✨
+                // ✨ 4. RIMOZIONE CELLA VUOTA FINALE ✨
                 h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td></tr>`;
             });
 
@@ -222,6 +222,9 @@
 
             document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
         }
+        /* ************************************************************ */
+        /* ✨ 4. FINE CORREZIONE DATI TABELLA SENZA "CONS." ✨           */
+        /* ************************************************************ */
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
@@ -287,6 +290,4 @@
         }
 
         function testCambioMese() { eseguiControlloMese(true); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { dati.tax 
+        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat
