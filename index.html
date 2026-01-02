@@ -5,45 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.3.7</title>
+    <title>RIDER TRACKER PRO V5.4.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:280px; text-align:center; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:300px; text-align:center; }
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
-        
-        /* COLORI DATI PRINCIPALI */
         .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
         #netto { color:var(--accent)!important; }
-        
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:50px; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
         .date-row { display:flex; gap:5px; margin-bottom:15px; }
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
         .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        
         .btn-close-turno { background:var(--orange); color:#000; } 
         .btn-close-benza { background:var(--primary); color:#000; } 
-        
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
         .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
-        
         #histView, #reportView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; text-align:left; }
         #reportView { background:#fff; color:#000; }
         .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
@@ -57,7 +50,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.3.7</div>
+    <div class="app-title">RIDER TRACKER PRO V5.4.0</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -78,9 +71,29 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalTurno" class="modal">
+        <div class="modal-content">
+            <h3>Nuovo Turno</h3>
+            <div id="dateT" class="date-row"></div>
+            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01">
+            <input type="number" id="tO" placeholder="Ore lavorate" step="0.1">
+            <input type="number" id="tK" placeholder="Chilometri percorsi">
+            <input type="number" id="tC" placeholder="Consumo L/100km">
+            <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
+            <button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button>
+        </div>
+    </div>
     
-    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo al litro (es. 1.851)" step="0.001" oninput="autoPunto(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close-benza" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalBenza" class="modal">
+        <div class="modal-content">
+            <h3>Rifornimento</h3>
+            <div id="dateB" class="date-row"></div>
+            <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01">
+            <input type="number" id="bP" placeholder="Prezzo al litro" step="0.001" oninput="autoPunto(this)">
+            <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
+            <button class="btn-modal btn-close-benza" onclick="chiudiModali()">CHIUDI</button>
+        </div>
+    </div>
 
     <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal" style="background:#222; color:#fff; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
@@ -108,7 +121,21 @@
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
         
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
-        function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+        
+        function chiudiModali() { 
+            document.querySelectorAll('.modal').forEach(m => m.style.display='none');
+            // Reset campi input dopo la chiusura
+            document.querySelectorAll('.modal input').forEach(i => i.value = '');
+        }
+
+        // AUTO-SCROLL per evitare sovrapposizione tastiera
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+        });
 
         function autoPunto(el) {
             let v = el.value.replace('.', '');
