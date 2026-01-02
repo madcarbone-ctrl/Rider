@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.2.9</title>
+    <title>RIDER TRACKER PRO V5.3.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -24,6 +24,7 @@
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:50px; }
+        .modal h3 { margin-top:0; color:var(--primary); }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
         .date-row { display:flex; gap:5px; margin-bottom:15px; }
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
@@ -39,7 +40,8 @@
         #histView, #reportView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; text-align:left; }
         #reportView { background:#fff; color:#000; }
         .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
-        .hist-info { font-size:11px; line-height:1.5; color:var(--text); }
+        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
+        .hist-info b { font-size:13px; color:#fff; }
         table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
         th, td { border:1px solid #ccc; padding:6px; text-align:left; }
         th { background:#f0f0f0; }
@@ -48,7 +50,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.2.9</div>
+    <div class="app-title">RIDER TRACKER PRO V5.3.0</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -69,15 +71,16 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" onfocus="scrollFix(this)"><input type="number" id="tO" placeholder="Ore" step="0.1" onfocus="scrollFix(this)"><input type="number" id="tK" placeholder="Km totali" onfocus="scrollFix(this)"><input type="number" id="tC" placeholder="Consumo L/100km" onfocus="scrollFix(this)"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
-    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" onfocus="scrollFix(this)"><input type="number" id="bP" placeholder="Prezzo al litro (es. 1.821)" step="0.001" onfocus="scrollFix(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+    
+    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo al litro (es. 1.851)" step="0.001" oninput="autoPunto(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
 
-    <div id="histView"><h2 style="color:var(--primary); padding-left:15px;">Storico</h2><div id="listaStorico" style="padding:15px;"></div><button class="btn-modal btn-close" style="background:#222;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal btn-close" style="background:#222; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
         <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
         <table id="tabellaReport"><thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead><tbody id="corpoReport"></tbody></table>
-        <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000;"></div>
+        <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000; line-height:1.6;"></div>
         <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
         <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
@@ -99,21 +102,23 @@
         
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-        function scrollFix(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
 
-        // LOGICA AVVISO (Usata sia dal sistema che dal tasto TEST)
+        // PUNTO AUTOMATICO PREZZO BENZINA
+        function autoPunto(el) {
+            let v = el.value.replace('.', '');
+            if (v.length > 1) {
+                el.value = v.substring(0, 1) + "." + v.substring(1);
+            }
+        }
+
         function eseguiControlloMese(isTest = false) {
             const oggi = new Date();
-            // Se è il primo del mese O se è un test manuale
             if (oggi.getDate() === 1 || isTest) {
-                const meseCorrenteIndice = oggi.getMonth();
-                const meseScorsoIndice = meseCorrenteIndice === 0 ? 11 : meseCorrenteIndice - 1;
-                const annoScorso = meseCorrenteIndice === 0 ? oggi.getFullYear() - 1 : oggi.getFullYear();
-
-                const conferma = confirm(`📢 AVVISO CAMBIO MESE\n\nÈ iniziato il mese di ${mesi[meseCorrenteIndice]}.\nVuoi visualizzare e stampare il riepilogo di ${mesi[meseScorsoIndice]} ${annoScorso}?`);
-                
-                if (conferma) {
-                    apriReportMeseSpecifico(meseScorsoIndice + 1, annoScorso);
+                const mInd = oggi.getMonth();
+                const mScorso = mInd === 0 ? 11 : mInd - 1;
+                const aScorso = mInd === 0 ? oggi.getFullYear() - 1 : oggi.getFullYear();
+                if (confirm(`📢 AVVISO CAMBIO MESE\n\nÈ iniziato ${mesi[mInd]}.\nVuoi stampare il report di ${mesi[mScorso]} ${aScorso}?`)) {
+                    apriReportMeseSpecifico(mScorso + 1, aScorso);
                 }
             }
         }
@@ -121,7 +126,7 @@
         function apriReportMeseSpecifico(m, y) {
             const filter = `${m.toString().padStart(2,'0')}/${y}`;
             document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[m-1]} ${y}`;
-            generaTabellaReport(filter, m);
+            generaTabellaReport(filter);
             document.getElementById('reportView').style.display = 'flex';
         }
 
@@ -130,40 +135,24 @@
             apriReportMeseSpecifico(oggi.getMonth() + 1, oggi.getFullYear());
         }
 
-        function generaTabellaReport(filter, meseIndice) {
+        function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0;
             dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let lT = (t.km * (t.cons/100)); tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
-                h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${lT>0?(t.km/lT).toFixed(1):0}</td></tr>`;
+                let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
+                h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
             });
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td><td>-</td></tr>`;
+                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
             document.getElementById('corpoReport').innerHTML = h;
             let tasse = tLordo * (dati.tax/100);
-            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo: €${tLordo.toFixed(2)}<br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Spesa Benzinai: -€${tEuroB.toFixed(2)}<hr><b style="color:red; font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>STATISTICHE:</b><br>KM: ${tKm} | Ore: ${tOre} | Media: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
-        }
-
-        // TASTO TEST
-        function testCambioMese() {
-            eseguiControlloMese(true); // Forza l'avviso come se fosse il primo del mese
-        }
-
-        // Funzioni standard (Turno, Benza, Mostra)
-        function apriM(id) {
-            const ora = new Date();
-            let d='', m='', y='';
-            for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`;
-            mesi.forEach((n, i) => m += `<option value="${i+1}" ${i==ora.getMonth()?'selected':''}>${n.substring(0,3)}</option>`);
-            for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==ora.getFullYear()?'selected':''}>${i}</option>`;
-            const target = id === 'modalTurno' ? 'dateT' : 'dateB';
-            document.getElementById(target).innerHTML = `<select id="${target}D">${d}</select><select id="${target}M">${m}</select><select id="${target}Y">${y}</select>`;
-            document.getElementById(id).style.display = 'flex';
+            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina (Euros spesi): <b>-€${tEuroB.toFixed(2)}</b><hr><b style="color:red; font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM: ${tKm} | Ore: ${tOre.toFixed(1)} | Litri Benzina: ${tLitriR.toFixed(1)}L | Media: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
         }
 
         function salvaTurno() {
-            const l = parseFloat(document.getElementById('tL').value) || 0; if(l<=0) return;
+            const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
             const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
             dati.turni.push({id:Date.now(), data, lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
             salvaDB(); chiudiModali();
@@ -174,6 +163,35 @@
             const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
             dati.rifornimenti.push({id:Date.now(), data, euro:e, prezzo:p, litri:e/p});
             salvaDB(); chiudiModali();
+        }
+
+        function apriStorico() {
+            let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
+            tutti.forEach(i => {
+                if(i.tipo === 'T') {
+                    h += `<div class="hist-item" style="border-left-color:var(--primary)">
+                        <div class="hist-info"><b>${i.data} - TURNO</b><br>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}<br>Km: ${i.km} | Consumo: ${i.cons}L/100km</div>
+                        <button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
+                    </div>`;
+                } else {
+                    h += `<div class="hist-item" style="border-left-color:var(--orange)">
+                        <div class="hist-info"><b>${i.data} - BENZINA</b><br>Spesa: €${i.euro.toFixed(2)} | Litri: ${i.litri.toFixed(2)}<br>Prezzo: €${i.prezzo.toFixed(3)}/L</div>
+                        <button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
+                    </div>`;
+                }
+            });
+            document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
+            document.getElementById('histView').style.display = 'flex';
+        }
+
+        function apriM(id) {
+            const ora = new Date(); let d='', m='', y='';
+            for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==ora.getDate()?'selected':''}>${i}</option>`;
+            mesi.forEach((n, i) => m += `<option value="${i+1}" ${i==ora.getMonth()?'selected':''}>${n.substring(0,3)}</option>`);
+            for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==ora.getFullYear()?'selected':''}>${i}</option>`;
+            const target = id === 'modalTurno' ? 'dateT' : 'dateB';
+            document.getElementById(target).innerHTML = `<select id="${target}D">${d}</select><select id="${target}M">${m}</select><select id="${target}Y">${y}</select>`;
+            document.getElementById(id).style.display = 'flex';
         }
 
         function mostra() {
@@ -196,17 +214,7 @@
             document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
         }
 
-        function apriStorico() {
-            let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
-            tutti.forEach(i => {
-                h += `<div class="hist-item" style="border-left-color:${i.tipo==='T'?'var(--primary)':'var(--orange)'}">
-                    <div class="hist-info"><b>${i.data} - ${i.tipo==='T'?'TURNO':'BENZINA'}</b><br>€${(i.lordo||i.euro).toFixed(2)} | ${i.tipo==='T'?i.km+'km':i.litri.toFixed(2)+'L'}</div>
-                    <button onclick="elimina('${i.tipo==='T'?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button>
-                </div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
-        }
-
+        function testCambioMese() { eseguiControlloMese(true); }
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
         function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
