@@ -5,57 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.2.4</title>
-    <link rel="manifest" href="manifest.json">
+    <title>RIDER TRACKER PRO V5.2.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:280px; }
-        .app-title { text-align:center; margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:280px; text-align:center; }
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
-        .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; }
+        .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
         .card.main .val { color:var(--primary); }
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
-        .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; }
+        .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; padding:15px; }
-        .modal-content { background:var(--card); padding:20px; border-radius:20px; width:100%; max-width:400px; border:1px solid #444; }
-        .input-group { position:relative; margin-bottom:10px; }
-        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:10px; font-size:16px; }
-        .date-row { display:flex; gap:5px; margin-bottom:10px; }
-        .date-row select { background:#333; color:#fff; padding:10px; border-radius:8px; flex:1; border:none; }
-        .btn-modal { width:100%; padding:15px; border-radius:10px; border:none; font-weight:bold; margin-top:10px; cursor:pointer; }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:50px; }
+        .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
+        .date-row { display:flex; gap:5px; margin-bottom:15px; }
+        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
+        .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close { background:#444; color:#fff; }
-        .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; }
+        .btn-close { background:transparent; color:var(--dim); border:1px solid #444; }
+        .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
-        .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; }
-        #histView, #reportView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; }
+        .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
+        #histView, #reportView { display:none; position:fixed; inset:0; background:var(--bg); z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; text-align:left; }
         #reportView { background:#fff; color:#000; }
-        .hist-item { background:#1a1a1a; padding:12px; border-radius:10px; margin-bottom:8px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; }
-        table { width:100%; border-collapse:collapse; font-size:10px; margin-top:10px; }
-        th, td { border:1px solid #ddd; padding:6px; text-align:left; }
+        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
+        .hist-info { font-size:11px; line-height:1.5; color:var(--text); }
+        table { width:100%; border-collapse:collapse; font-size:10px; margin-top:15px; color:#000; }
+        th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+        th { background:#f0f0f0; }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.2.4</div>
+    <div class="app-title">RIDER TRACKER PRO V5.2.5</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
         <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI</span><span class="val" id="cons">0.0L</span></div>
+        <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
         <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">SPESA BENZA</span><span class="val" id="spesaB">€0.00</span></div>
+        <div class="card"><span class="label">COSTO STIM.</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
         <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()"></div>
         <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
@@ -72,12 +72,12 @@
         <div class="modal-content">
             <h3>Nuovo Turno</h3>
             <div id="dateT" class="date-row"></div>
-            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01" style="margin-bottom:10px;">
-            <input type="number" id="tO" placeholder="Ore" step="0.1" style="margin-bottom:10px;">
-            <input type="number" id="tK" placeholder="Km" style="margin-bottom:10px;">
-            <input type="number" id="tC" placeholder="L/100km" style="margin-bottom:10px;">
+            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01" onfocus="scrollFix(this)">
+            <input type="number" id="tO" placeholder="Ore" step="0.1" onfocus="scrollFix(this)">
+            <input type="number" id="tK" placeholder="Km totali" onfocus="scrollFix(this)">
+            <input type="number" id="tC" placeholder="Consumo L/100km" onfocus="scrollFix(this)">
             <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
-            <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
+            <button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
 
@@ -85,28 +85,27 @@
         <div class="modal-content">
             <h3>Rifornimento</h3>
             <div id="dateB" class="date-row"></div>
-            <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" style="margin-bottom:10px;">
-            <input type="number" id="bP" placeholder="Prezzo al litro (es. 1.821)" step="0.001" style="margin-bottom:10px;">
+            <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" onfocus="scrollFix(this)">
+            <input type="number" id="bP" placeholder="Prezzo al litro (es. 1.821)" step="0.001" onfocus="scrollFix(this)">
             <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
-            <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
+            <button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button>
         </div>
     </div>
 
     <div id="histView">
-        <h2 style="color:var(--primary)">Storico</h2>
+        <h2 style="color:var(--primary)">Storico Dettagliato</h2>
         <div id="listaStorico"></div>
-        <button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+        <button class="btn-modal btn-close" style="background:#222; margin-top:20px" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
     </div>
 
     <div id="reportView">
-        <h2 style="text-align:center">Report Mensile</h2>
-        <div id="repControlli" class="no-print" style="display:flex; gap:5px; margin-bottom:10px;"></div>
+        <h2 style="text-align:center">Riepilogo Mensile</h2>
         <table id="tabellaReport">
             <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th></tr></thead>
             <tbody id="corpoReport"></tbody>
         </table>
-        <div id="recapReport" style="margin-top:20px; padding:15px; background:#eee; border-radius:10px;"></div>
-        <button class="btn-modal no-print" style="background:#000; color:#fff" onclick="window.print()">STAMPA PDF</button>
+        <div id="recapReport" style="margin-top:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; line-height:1.6; color:#000;"></div>
+        <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
         <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
 
@@ -116,8 +115,8 @@
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
         <div class="btn-row">
-            <button style="background:#0055ff; color:#fff" onclick="testMese()">🧪 TEST</button>
-            <button style="background:#330000; color:var(--accent)" onclick="resetTotale()">RESET DB</button>
+            <button style="background:#0055ff" onclick="testMese()">🧪 TEST</button>
+            <button style="background:#400" onclick="resetTotale()">RESET DB</button>
         </div>
     </div>
 
@@ -126,8 +125,14 @@
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
-
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+
+        // Funzione per non far coprire l'input dalla tastiera
+        function scrollFix(el) {
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
 
         function apriM(id) {
             const ora = new Date();
@@ -142,12 +147,10 @@
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value) || 0;
-            if(l <= 0) return alert("Inserisci il lordo");
+            if(l <= 0) return;
             const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
             dati.turni.push({
-                id: Date.now(),
-                data: data,
-                lordo: l,
+                id: Date.now(), data: data, lordo: l,
                 ore: parseFloat(document.getElementById('tO').value) || 0,
                 km: parseFloat(document.getElementById('tK').value) || 0,
                 cons: parseFloat(document.getElementById('tC').value) || 0
@@ -159,11 +162,10 @@
         function salvaBenza() {
             const e = parseFloat(document.getElementById('bE').value) || 0;
             const p = parseFloat(document.getElementById('bP').value) || 0;
-            if(e <= 0 || p <= 0) return alert("Inserisci euro e prezzo");
+            if(e <= 0 || p <= 0) return;
             const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
             dati.rifornimenti.push({ id: Date.now(), data: data, euro: e, prezzo: p, litri: e/p });
             salvaDB(); chiudiModali();
-            document.getElementById('bE').value=''; document.getElementById('bP').value='';
         }
 
         function mostra() {
@@ -171,16 +173,16 @@
             let oreT = dati.turni.reduce((a,b) => a + b.ore, 0);
             let kmT = dati.turni.reduce((a,b) => a + b.km, 0);
             let litriStim = dati.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
-            let ultPrezzo = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
-            let spesaStim = litriStim * ultPrezzo;
-            let netto = lordoT - (lordoT * (dati.tax/100)) - spesaStim;
+            let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
+            let spesaS = litriStim * ultP;
+            let netto = lordoT - (lordoT * (dati.tax/100)) - spesaS;
             
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = oreT.toFixed(1);
             document.getElementById('cons').innerText = litriStim.toFixed(1) + 'L';
             document.getElementById('kml').innerText = litriStim > 0 ? (kmT / litriStim).toFixed(1) : '0.0';
-            document.getElementById('spesaB').innerText = '€' + spesaStim.toFixed(2);
+            document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
             
@@ -194,53 +196,56 @@
 
         function apriStorico() {
             let h = "";
-            const tutti = [
-                ...dati.turni.map(t => ({...t, tipo:'T'})),
-                ...dati.rifornimenti.map(r => ({...r, tipo:'B'}))
-            ].sort((a,b) => b.id - a.id);
-            
+            const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
             tutti.forEach(i => {
                 if(i.tipo === 'T') {
-                    h += `<div class="hist-item"><div><b>${i.data} - TURNO</b><br>€${i.lordo.toFixed(2)} | ${i.ore}h | ${i.km}km</div><button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button></div>`;
+                    h += `<div class="hist-item">
+                        <div class="hist-info"><b>${i.data} - TURNO</b><br><span style="color:var(--primary)">Lordo: €${i.lordo.toFixed(2)}</span> | ${i.ore}h | ${i.km}km | ${i.cons}L/100</div>
+                        <button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
+                    </div>`;
                 } else {
-                    h += `<div class="hist-item" style="border-left-color:orange"><div><b>${i.data} - BENZINA</b><br>€${i.euro.toFixed(2)} | ${i.litri.toFixed(2)}L</div><button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button></div>`;
+                    h += `<div class="hist-item" style="border-left-color:var(--orange)">
+                        <div class="hist-info"><b>${i.data} - BENZINA</b><br><span style="color:var(--orange)">Spesa: €${i.euro.toFixed(2)}</span> | ${i.litri.toFixed(2)}L | €${i.prezzo.toFixed(3)}/L</div>
+                        <button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
+                    </div>`;
                 }
             });
-            document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
+            document.getElementById('listaStorico').innerHTML = h || "Vuoto";
             document.getElementById('histView').style.display = 'flex';
         }
 
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
 
         function apriReport() {
-            document.getElementById('reportView').style.display = 'flex';
-            renderizzaReport();
-        }
-
-        function renderizzaReport() {
             const oggi = new Date();
-            let h = "", tL=0, tO=0, tK=0, tGas=0;
             const filter = `${(oggi.getMonth()+1).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
+            let h = "", tL=0, tO=0, tK=0, tG=0;
             
             dati.turni.filter(t => t.data.includes(filter)).forEach(t => {
-                let g = (t.km * (t.cons/100)) * (dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85);
-                tL += t.lordo; tO += t.ore; tK += t.km; tGas += g;
+                let gas = (t.km * (t.cons/100)) * (dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85);
+                tL += t.lordo; tO += t.ore; tK += t.km; tG += gas;
                 h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td></tr>`;
             });
-            
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
-                h += `<tr style="background:#f9f9f9"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td></tr>`;
+                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td></tr>`;
             });
-
+            
             document.getElementById('corpoReport').innerHTML = h;
-            let taxV = tL * (dati.tax/100);
-            document.getElementById('recapReport').innerHTML = `<b>Lordo:</b> €${tL.toFixed(2)} | <b>Tasse:</b> €${taxV.toFixed(2)} | <b>Benza:</b> €${tGas.toFixed(2)}<br><b style="font-size:18px; color:red">NETTO: €${(tL - taxV - tGas).toFixed(2)}</b>`;
+            let tasse = tL * (dati.tax/100);
+            document.getElementById('recapReport').innerHTML = `
+                <b>Riepilogo Mensile:</b><br>
+                Lordo Totale: €${tL.toFixed(2)}<br>
+                Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>
+                Costo Carburante: -€${tG.toFixed(2)}<hr>
+                <b style="font-size:18px; color:red">NETTO: €${(tL - tasse - tG).toFixed(2)}</b><br>
+                <small>Ore totali: ${tO.toFixed(1)} | KM totali: ${tK.toFixed(0)}</small>`;
+            document.getElementById('reportView').style.display = 'flex';
         }
 
         function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value) || 0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value) || 0; salvaDB(); }
-        function testMese() { alert("Simulazione report..."); apriReport(); }
-        function resetTotale() { if(confirm("CANCELLARE TUTTO IL DATABASE?")) { dati = { turni: [], rifornimenti: [], target: 0, tax: 20 }; salvaDB(); location.reload(); } }
+        function testMese() { apriReport(); }
+        function resetTotale() { if(confirm("CANCELLARE TUTTO?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
 
         window.onload = mostra;
     </script>
