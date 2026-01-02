@@ -52,26 +52,8 @@
             text-align:left; 
         }
 
-        .hist-title { 
-            color:var(--primary); 
-            text-align: center; 
-            text-transform: uppercase; 
-            font-size: 18px; 
-            margin: 20px 0; 
-            letter-spacing: 1px;
-        }
-
-        .btn-chiudi-hist { 
-            width: 50%; 
-            align-self: center; 
-            background: var(--primary); 
-            color: #000; 
-            margin: 20px 0 40px; 
-        }
-
-        /* STILE REPORT BIANCO E NERO */
         #reportView { background:#fff; color:#000; padding: 20px; }
-        #reportTitle { text-align:center; text-transform: uppercase; font-weight: 900; margin-bottom: 5px; color: #000; }
+        #reportTitle { text-align:center; font-weight: bold; margin-bottom: 5px; color: #000; }
         
         .report-header-section { 
             margin-top: 25px; 
@@ -89,7 +71,7 @@
             font-size:10px; 
             margin-top:10px; 
             color:#000; 
-            table-layout: fixed; /* Rende le colonne larghe uguali o proporzionali */
+            table-layout: fixed; 
         }
         
         .report-table th, .report-table td { 
@@ -107,19 +89,9 @@
             font-size: 8px; 
         }
 
-        .hist-item { 
-            background:#111; 
-            padding:15px; 
-            border-radius:12px; 
-            margin-bottom:12px; 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-            border-left-width: 5px;  
-            border-right-width: 5px; 
-        }
-
+        .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; letter-spacing: 1px; }
+        .btn-chiudi-hist { width: 50%; align-self: center; background: var(--primary); color: #000; margin: 20px 0 40px; }
+        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; }
         .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
         .hist-info b { font-size:13px; color:#fff; }
 
@@ -184,7 +156,7 @@
     </div>
 
     <div id="reportView">
-        <h2 id="reportTitle">REPORT MENSILE</h2>
+        <h2 id="reportTitle">Riepilogo Mensile</h2>
         <div style="text-align:center; font-size:10px; margin-bottom:15px; color:#555; text-transform: uppercase;">Generato da Rider Tracker Pro</div>
         
         <div class="report-header-section">DETTAGLIO ATTIVITÀ</div>
@@ -248,7 +220,7 @@
 
         function apriReportMeseSpecifico(m, y) {
             const filter = `${m.toString().padStart(2,'0')}/${y}`;
-            document.getElementById('reportTitle').innerText = `REPORT MENSILE: ${mesi[m-1].toUpperCase()} ${y}`;
+            document.getElementById('reportTitle').innerText = `Riepilogo ${mesi[m-1]} ${y}`;
             generaTabellaReport(filter);
             document.getElementById('reportView').style.display = 'flex';
             document.getElementById('reportView').scrollTop = 0;
@@ -256,10 +228,6 @@
 
         function apriReport() { const oggi = new Date(); apriReportMeseSpecifico(oggi.getMonth() + 1, oggi.getFullYear()); }
 
-        /**
-         * GENERAZIONE REPORT MODIFICATA PER UNIFORMITÀ E B&W
-         * @modify MODIFICA 1 - 22:53
-         */
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tEuroB=0, tLitriC=0;
             const turniFiltrati = dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id);
@@ -288,7 +256,6 @@
                     <td>GUADAGNO ORARIO</td><td>€${tOre>0?(nettoFinale/tOre).toFixed(2):'0.00'}/h</td>
                 </tr>`;
         }
-        /* FINE MODIFICA 1 */
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
@@ -336,4 +303,11 @@
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = tM.reduce((a,b)=>a+b.ore,0).toFixed(1);
-       
+            document.getElementById('cons').innerText = litriS.toFixed(1) + 'L';
+            document.getElementById('kml').innerText = litriS > 0 ? (kmT/litriS).toFixed(1) : '0.0';
+            document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
+            document.getElementById('targetIn').value = dati.target || '';
+            document.getElementById('taxIn').value = dati.tax || 20;
+            let manca = (dati.target||0) - lordoT;
+            document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
+            let p = dati.target>0 ? Mat
