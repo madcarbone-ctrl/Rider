@@ -27,17 +27,26 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* Storico */
-        .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; }
-        .storico-item::before { content: "["; color: #444; font-size: 28px; margin-right: 10px; }
-        .storico-item::after { content: "]"; color: #444; font-size: 28px; margin-left: 10px; }
-        .storico-info { flex:1; text-align:left; padding-left:10px; }
-        .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1px; }
-        .storico-data { font-size:10px; color:var(--dim); }
-        .storico-main { font-size:18px; font-weight:bold; }
-        .storico-sub { font-size:10px; color:var(--dim); }
+        /* STILE STORICO RICHIESTO */
+        .storico-item {
+            background: #0f0f0f;
+            padding: 15px 5px;
+            margin: 0;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .storico-item::before { content: "["; color: #444; font-size: 28px; margin-right: 10px; font-weight: 100; }
+        .storico-item::after { content: "]"; color: #444; font-size: 28px; margin-left: 10px; font-weight: 100; }
+        .storico-info { flex: 1; text-align: left; padding-left: 10px; }
+        .tipo-label { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
+        .storico-data { font-size: 10px; color: var(--dim); margin-bottom: 4px; }
+        .storico-main { font-size: 18px; font-weight: bold; }
+        .storico-sub { font-size: 10px; color: var(--dim); margin-top: 4px; }
 
-        /* REPORT - STILE BIANCO E NERO */
+        /* REPORT VIEW - BIANCO E NERO */
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align:left; }
         .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; color: #000; }
         .report-section { margin-bottom: 25px; color: #000; }
@@ -45,7 +54,7 @@
         .report-table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom: 10px; color: #000; }
         .report-table th, .report-table td { border:1px solid #000; padding:8px; text-align:left; color: #000; }
         .report-table th { background:#f0f0f0; font-weight: bold; }
-        .summary-box { border: 1px solid #000; padding: 15px; border-radius: 0; background: #fff; }
+        .summary-box { border: 1px solid #000; padding: 15px; background: #fff; }
         .summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #000; color: #000; }
         .summary-row.total { font-weight: bold; font-size: 14px; border-bottom: none; padding-top: 10px; border-top: 2px solid #000; margin-top: 5px; }
 
@@ -65,24 +74,11 @@
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; }
 
-        /* [STRETTAMENTE BIANCO E NERO PER STAMPA] */
         @media print { 
             body * { visibility: hidden; }
             #reportView, #reportView * { visibility: visible; }
-            #reportView { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                display: block !important; 
-                background: #fff !important; 
-                color: #000 !important;
-                padding: 0;
-                margin: 0;
-            }
+            #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: #fff !important; color: #000 !important; padding: 0; margin: 0; }
             .no-print { display: none !important; }
-            .report-table th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; }
-            .summary-box { background: #fff !important; border: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -136,15 +132,14 @@
     <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;">
         <h2 style="color:var(--primary); text-align:center;">STORICO ATTIVITÀ</h2>
         <div id="listaStorico"></div>
-        <button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+        <button class="btn-modal btn-close" style="margin-top:20px" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
     </div>
 
     <div id="reportView">
         <div class="report-header">
-            <h1 id="repMonth" style="margin:0; font-size:22px; text-transform: uppercase;">Report Mensile</h1>
-            <p id="repPeriod" style="margin:5px 0; font-weight: bold;">RIDER TRACKER PRO</p>
+            <h1 id="repMonth">Report Mensile</h1>
+            <p>RIDER TRACKER PRO V1.0</p>
         </div>
-
         <div class="report-section">
             <h3>DETTAGLIO TURNI</h3>
             <table class="report-table">
@@ -152,7 +147,6 @@
                 <tbody id="repTurniBody"></tbody>
             </table>
         </div>
-
         <div class="report-section">
             <h3>DETTAGLIO RIFORNIMENTI</h3>
             <table class="report-table">
@@ -160,15 +154,13 @@
                 <tbody id="repBenzaBody"></tbody>
             </table>
         </div>
-
         <div class="report-section">
             <h3>RIEPILOGO FINANZIARIO</h3>
             <div class="summary-box" id="repFinalSummary"></div>
         </div>
-
         <div class="no-print" style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn-modal btn-save" style="flex:1" onclick="window.print()">STAMPA PDF</button>
-            <button class="btn-modal btn-close" style="flex:1" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+            <button class="btn-modal btn-save" onclick="window.print()">STAMPA PDF</button>
+            <button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
         </div>
     </div>
 
@@ -177,14 +169,24 @@
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
+        <button onclick="if(confirm('AZZERA TUTTO?')) {localStorage.clear(); location.reload();}" style="grid-column:span 3; background:#300; border:none; color:#f66; font-size:9px; padding:5px; border-radius:10px; margin-top:5px;">AZZERA TUTTO</button>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v28')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
-        function salvaDB() { localStorage.setItem('rider_db_v28', JSON.stringify(db)); calcola(); }
+        function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+
+        // [INIZIO MODIFICA: Virgola automatica prezzo benzina]
+        document.addEventListener('input', function (e) {
+            if (e.target.id === 'bP') {
+                let v = e.target.value.replace('.', '');
+                if (v.length > 1) { e.target.value = v.charAt(0) + '.' + v.substring(1); }
+            }
+        });
+        // [FINE MODIFICA: Virgola automatica prezzo benzina]
 
         function calcola() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
@@ -215,10 +217,10 @@
             let h = "";
             const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
             tutti.forEach(i => {
-                const isT = i.tipo==='T'; const color = isT ? 'var(--primary)' : 'var(--orange)';
+                const isT = i.tipo==='T'; const color = isT ? 'var(--primary)' : 'var(--orange)'; const label = isT ? 'TURNO RIDER' : 'RIFORNIMENTO';
                 let det = isT ? 
-                    `<div class="tipo-label" style="color:${color}">TURNO RIDER</div><div class="storico-data">${i.data} | ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.lordo.toFixed(2)}</div><div class="storico-sub">${i.km} KM - ${i.cons} L/100</div>` :
-                    `<div class="tipo-label" style="color:${color}">RIFORNIMENTO</div><div class="storico-data">${i.data} | ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.euro.toFixed(2)}</div><div class="storico-sub">${(i.euro/i.prezzo).toFixed(2)}L - €${i.prezzo.toFixed(3)}/L</div>`;
+                    `<div class="tipo-label" style="color:${color}">${label}</div><div class="storico-data">${i.data} | ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.lordo.toFixed(2)}</div><div class="storico-sub">${i.km} KM - ${i.cons} L/100</div>` :
+                    `<div class="tipo-label" style="color:${color}">${label}</div><div class="storico-data">${i.data} | ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.euro.toFixed(2)}</div><div class="storico-sub">${(i.euro/i.prezzo).toFixed(2)}L - €${i.prezzo.toFixed(3)}/L</div>`;
                 h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info">${det}</div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:22px;"><i class="fas fa-times-circle"></i></button></div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
@@ -228,31 +230,18 @@
         function apriReport() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             document.getElementById('repMonth').innerText = `Report ${mesi[n.getMonth()]} ${n.getFullYear()}`;
-            
             let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB=0;
             db.turni.filter(t=>t.data.includes(tag)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l;
                 tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`;
             });
             db.rifornimenti.filter(r=>r.data.includes(tag)).sort((a,b)=>a.id-b.id).forEach(r => {
-                tEB+=r.euro;
-                rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`;
+                tEB+=r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`;
             });
-
-            document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno registrato</td></tr>";
-            document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento registrato</td></tr>";
-            
-            let taxV = tL * (db.tax/100);
-            let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            let costBS = tLS * ultP;
-
-            document.getElementById('repFinalSummary').innerHTML = `
-                <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
-                <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-                <div class="summary-row"><span>BENZINA STIMATA (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div>
-                <div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div>
-                <div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
-            `;
+            document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
+            document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+            let taxV = tL * (db.tax/100); let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85; let costBS = tLS * ultP;
+            document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA STIMATA (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div><div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>`;
             document.getElementById('reportView').style.display = 'block';
         }
 
