@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.3.1</title>
+    <title>RIDER TRACKER PRO V5.3.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --yellow:#FFD700; --blue-light:#00CCFF; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:280px; text-align:center; }
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
@@ -29,7 +29,10 @@
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
         .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close { background:transparent; color:var(--dim); border:1px solid #444; }
+        /* COLORI TASTI CHIUDI RICHIESTI */
+        .btn-close-turno { background:var(--yellow); color:#000; }
+        .btn-close-benza { background:var(--blue-light); color:#000; }
+        
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
@@ -49,7 +52,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.3.1</div>
+    <div class="app-title">RIDER TRACKER PRO V5.3.2</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -70,11 +73,11 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button></div></div>
     
-    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo al litro (es. 1.851)" step="0.001" oninput="autoPunto(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo al litro (es. 1.851)" step="0.001" oninput="autoPunto(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close-benza" onclick="chiudiModali()">CHIUDI</button></div></div>
 
-    <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal btn-close" style="background:#222; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal" style="background:#222; color:#fff; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
         <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
