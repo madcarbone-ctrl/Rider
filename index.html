@@ -193,21 +193,36 @@
             apriReportMeseSpecifico(oggi.getMonth() + 1, oggi.getFullYear());
         }
 
+        /* ************************************************************ */
+        /* INIZIO MODIFICA TABELLA DI STAMPA                            */
+        /* ************************************************************ */
         function generaTabellaReport(filter) {
-            let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0;
+            let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
+            let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
+
             dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
-                let lT = (t.km * (t.cons/100)); tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
+                let lT = (t.km * (t.cons/100)); 
+                let costoStimatoTurno = lT * ultP; 
+                tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
+                tSpesaBenzaStimata += costoStimatoTurno;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
                 h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
             });
+
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
                 h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
+
             document.getElementById('corpoReport').innerHTML = h;
             let tasse = tLordo * (dati.tax/100);
-            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina: <b>-€${tEuroB.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM: ${tKm} | Ore: ${tOre.toFixed(1)} | Media: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
+            let nettoLavorativo = tLordo - tasse - tSpesaBenzaStimata;
+
+            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
         }
+        /* ************************************************************ */
+        /* FINE MODIFICA TABELLA DI STAMPA                              */
+        /* ************************************************************ */
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
@@ -274,21 +289,4 @@
 
         function testCambioMese() { eseguiControlloMese(true); }
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
-        function resetTotale() { if(confirm("RESET TOTALE?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
-
-        window.onload = () => { mostra(); eseguiControlloMese(); };
-    </script>
-    
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./service-worker.js')
-            .then(reg => console.log('Service Worker registrato!', reg))
-            .catch(err => console.log('Errore SW:', err));
-        });
-      }
-    </script>
-</body>
-</html>
+        function aggiornaTarg
