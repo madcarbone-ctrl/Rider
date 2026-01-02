@@ -62,17 +62,18 @@
 
         #reportView { background:#fff; color:#000; }
 
-        /* Modifica bordi Storico: aggiunti bordi anche a destra */
+        /* NUOVO STILE SCHEDE STORICO: Cornice chiusa ed omogenea */
         .hist-item { 
             background:#111; 
             padding:15px; 
             border-radius:12px; 
-            margin-bottom:10px; 
+            margin-bottom:12px; 
             display:flex; 
             justify-content:space-between; 
             align-items:center; 
-            border-left:4px solid transparent; 
-            border-right:4px solid transparent; 
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Riga fine bianca semi-trasparente sopra e sotto */
+            border-left-width: 5px;  /* Bordo sinistro identificativo più spesso */
+            border-right-width: 5px; /* Bordo destro identificativo più spesso */
         }
 
         .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
