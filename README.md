@@ -13,7 +13,7 @@
 * **COSTO STIM.**: Spesa teorica per il carburante, basata sull'ultimo prezzo benzina registrato.
 * **TARGET €**: Il tuo obiettivo mensile. Inserisci la cifra desiderata per attivare la barra di progressione.
 * **TAX %**: Percentuale di tassazione (es. 20%). Influenza direttamente il calcolo del NETTO.
-* **MANCANTE**: Calcolo automatico di quanto manca, in Euro, per raggiungere il tuo TARGET.
+* **MANCANTE**: Indica la cifra **lorda** che manca per raggiungere il tuo obiettivo (TARGET) prefissato.
 
 ### 2. Sottomenu di Inserimento (Finestre Pop-up)
 
@@ -51,7 +51,7 @@ Questa schermata riassume l'andamento del mese selezionato:
 * **ORE**: Total working hours.
 * **LITRI STIM.**: Calculated fuel consumption based on mileage.
 * **TARGET €**: Your monthly goal. Setting this activates the progress bar.
-* **MANCANTE**: Amount remaining to reach your goal.
+* **MANCANTE**: Indicates the **gross** amount remaining to reach your goal (TARGET).
 
 ### 2. Entry Menus (Pop-ups)
 * **TURNO (Shift)**: Enter Date, Earnings, Hours, Kilometers, and Fuel Consumption (L/100km).
