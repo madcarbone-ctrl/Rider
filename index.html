@@ -6,6 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
     <title id="pageTitle">RIDER TRACKER PRO V5.2.3</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -91,11 +92,8 @@
     </div>
 
     <div id="mTurno" class="modal"><div class="modal-content"><h3 style="color:white; text-align:center;">Nuovo Turno</h3><div id="dateTurno" class="date-row"></div><div class="input-group"><input type="number" id="tLordo" placeholder="Guadagno Lordo (€)" inputmode="decimal"><i class="fas fa-euro-sign"></i></div><div class="input-group"><input type="number" id="tOre" placeholder="Ore Lavorate" inputmode="decimal"><i class="fas fa-clock"></i></div><div class="input-group"><input type="number" id="tKm" placeholder="Kilometri" inputmode="decimal"><i class="fas fa-route"></i></div><div class="input-group"><input type="number" id="tCons" placeholder="Consumo L/100km" inputmode="decimal"><i class="fas fa-tint"></i></div><div class="modal-btns"><button class="btn-modal btn-save-turno" onclick="addTurno()">Salva Turno</button><button class="btn-modal btn-cancel" onclick="closeModals()">Annulla</button></div></div></div>
-    
     <div id="mBenza" class="modal"><div class="modal-content"><h3 style="color:white; text-align:center;">Monitor Benzina</h3><div id="dateBenza" class="date-row"></div><div class="input-group"><input type="number" id="bEuro" placeholder="Euro Spesi (€)" inputmode="decimal"><i class="fas fa-wallet"></i></div><div class="input-group"><input type="number" id="bP" placeholder="Prezzo (es: 1855)" inputmode="decimal" oninput="formatFuelPrice(this)"><i class="fas fa-gas-pump"></i></div><div class="modal-btns"><button class="btn-modal btn-save-benza" onclick="addBenza()">Salva Registro</button><button class="btn-modal btn-cancel" onclick="closeModals()">Annulla</button></div></div></div>
-
     <div id="histView"><div class="history-section"><h4 style="text-align:center; color:var(--primary); text-transform:uppercase;">Cronologia</h4><div id="historyList"></div><button class="btn-modal btn-cancel" style="margin-top:10px;" onclick="toggleHist()">Chiudi</button></div></div>
-
     <div id="reportView">
         <div style="background:#ddd; padding:15px; display:flex; gap:10px; border-radius:15px; margin-bottom:15px" class="no-print">
             <select id="repMonth" onchange="renderReport()"></select><select id="repYear" onchange="renderReport()"></select>
@@ -117,18 +115,25 @@
         <button class="btn-footer-full" onclick="openReport()" style="background:var(--primary); color:#000;">Genera Report Mensile</button>
         <div class="footer-row-split">
             <button class="btn-small" style="background:#0055ff; color:white;" onclick="runTestMese()">🧪 TEST MESE</button>
-            <button class="btn-small" style="background:#200; color:var(--accent); border:1px solid #400;" onclick="if(confirm('Cancellare tutto?')){db={s:[],r:[],target:0,tax:20};save();}">Reset DB</button>
+            <button class="btn-small" style="background:#200; color:var(--accent); border:1px solid #400;" onclick="fullReset()">Reset DB</button>
         </div>
     </div>
 
     <script>
+        // Caricamento Dati
         let db = JSON.parse(localStorage.getItem('rider_db_v5_final')) || { s: [], r: [], target: 0, tax: 20 };
         const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
         function save() { localStorage.setItem('rider_db_v5_final', JSON.stringify(db)); render(); }
         function initApp() { render(); setTimeout(checkEndOfMonth, 500); }
 
-        // FORMATTAZIONE AUTOMATICA PREZZO BENZINA (4 CIFRE -> 1.XXX)
+        // --- REGISTRAZIONE SERVICE WORKER (Per l'installazione) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('Errore SW:', err));
+            });
+        }
+
         function formatFuelPrice(input) {
             let val = input.value.replace(/[^0-9]/g, '');
             if (val.length >= 4) {
@@ -137,40 +142,74 @@
             }
         }
 
-        function runTestMese() {
-            const currentMonth = new Date().getMonth() + 1;
-            let fakeLastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-            localStorage.setItem('rider_last_month_check', fakeLastMonth.toString());
-            alert("NOTIFICA: Nuovo mese simulato! Al ricaricamento si aprirà il report.");
-            location.reload();
-        }
+        function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
+        function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
 
-        function checkEndOfMonth() {
-            const now = new Date(); const m = now.getMonth() + 1;
-            const last = localStorage.getItem('rider_last_month_check');
-            if (!last) { localStorage.setItem('rider_last_month_check', m.toString()); return; }
-            if (parseInt(last) !== m) {
-                alert("🔔 NOTIFICA: Il mese è terminato! Salva il report prima di resettare.");
-                let pM = parseInt(last); let pY = now.getFullYear(); if(m === 1 && pM === 12) pY--;
-                if(db.s.length > 0 || db.r.length > 0) {
-                    openReport();
-                    document.getElementById('repMonth').value = pM;
-                    document.getElementById('repYear').value = pY;
-                    document.getElementById('btnConfirmReset').style.display = 'block';
-                    renderReport();
-                }
-                localStorage.setItem('rider_last_month_check', m.toString());
+        function fullReset() {
+            if(confirm('Cancellare tutto? Il database e il target verranno azzerati.')) {
+                db = { s: [], r: [], target: 0, tax: 20 };
+                save();
+                location.reload();
             }
         }
 
-        function finalReset() { 
-            if(confirm("Dati salvati? Svuoto il mese corrente.")) { 
-                db.s=[]; db.r=[]; save(); 
-                document.getElementById('btnConfirmReset').style.display='none'; 
-                closeReport();
-            } 
+        function render() {
+            let tL = db.s.reduce((a, b) => a + (parseFloat(b.l) || 0), 0);
+            let tO = db.s.reduce((a, b) => a + (parseFloat(b.o) || 0), 0);
+            let tK = db.s.reduce((a, b) => a + (parseFloat(b.k) || 0), 0);
+            
+            // Calcolo Benzina Stimata
+            let tLE = db.s.reduce((acc, curr) => acc + (curr.k * (curr.c / 100)), 0);
+            let pr = db.r.length ? db.r[db.r.length - 1].p : 1.85;
+            let tEE = tLE * pr;
+
+            // Calcolo Netto e Mancante
+            let taxV = parseFloat(db.tax) || 0;
+            let netto = tL - (tL * (taxV / 100)) - tEE;
+            let targetVal = parseFloat(db.target) || 0;
+            let mancanteVal = targetVal - tL;
+
+            // Update UI
+            document.getElementById('lordo').innerText = tL.toFixed(2);
+            document.getElementById('netto').innerText = '€' + netto.toFixed(2);
+            document.getElementById('ore').innerText = tO.toFixed(1);
+            document.getElementById('cons').innerText = tLE.toFixed(1) + 'L';
+            document.getElementById('kml').innerText = tLE > 0 ? (tK / tLE).toFixed(1) : '0.0';
+            document.getElementById('spesaB').innerText = '€' + tEE.toFixed(2);
+            document.getElementById('mancante').innerText = '€' + (mancanteVal > 0 ? mancanteVal.toFixed(2) : '0.00');
+            document.getElementById('targetIn').value = db.target || '';
+            document.getElementById('taxIn').value = db.tax || 20;
+
+            let perc = targetVal > 0 ? Math.min((tL / targetVal) * 100, 100) : 0;
+            document.getElementById('perc').innerText = Math.round(perc) + '%';
+            document.getElementById('bar').style.width = perc + '%';
+            
+            renderHistory();
         }
 
+        function renderHistory() {
+            let html = "";
+            const all = [...db.s.map(x=>({...x,type:'T'})), ...db.r.map(x=>({...x,type:'B'}))].sort((a,b)=>b.id - a.id);
+            all.forEach(i => {
+                if(i.type==='T') {
+                    html += `<div class="hist-item">
+                        <div class="hist-info"><b>${i.time} - Turno</b><br>Lordo: €${i.l.toFixed(2)} | ${i.o}h | ${i.k}km</div>
+                        <button class="del-btn" onclick="del('s',${i.id})">&times;</button>
+                    </div>`;
+                } else {
+                    html += `<div class="hist-item benza">
+                        <div class="hist-info"><b>${i.time} - Benzina</b><br>Spesa: €${i.e.toFixed(2)} | Litri: ${i.litri.toFixed(2)}L</div>
+                        <button class="del-btn" onclick="del('r',${i.id})">&times;</button>
+                    </div>`;
+                }
+            });
+            document.getElementById('historyList').innerHTML = html;
+        }
+
+        function del(type, id) { db[type] = db[type].filter(x => x.id !== id); save(); }
+        function toggleHist() { const v = document.getElementById('histView'); v.style.display = v.style.display==='flex'?'none':'flex'; }
+        
+        // Logica Turno/Benza/Report (Rimanente del tuo codice originale...)
         function createDateSelectors(id) {
             const now = new Date(); let d='', m='', y='';
             for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`;
@@ -178,34 +217,22 @@
             for(let i=2025;i<=2030;i++) y+=`<option ${i===now.getFullYear()?'selected':''}>${i}</option>`;
             document.getElementById(id).innerHTML = `<select id="${id}D">${d}</select><select id="${id}M">${m}</select><select id="${id}Y">${y}</select>`;
         }
-        
         function openM(id) { createDateSelectors(id==='mTurno'?'dateTurno':'dateBenza'); document.getElementById(id).style.display='flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
-
         function addTurno() {
             const l = parseFloat(document.getElementById('tLordo').value.replace(',','.')) || 0;
             if(l===0) return;
-            db.s.push({ 
-                id:Date.now(), 
-                time:`${document.getElementById('dateTurnoD').value.padStart(2,'0')}/${document.getElementById('dateTurnoM').value.padStart(2,'0')}/${document.getElementById('dateTurnoY').value}`, 
-                l:l, o:parseFloat(document.getElementById('tOre').value.replace(',','.'))||0, k:parseFloat(document.getElementById('tKm').value.replace(',','.'))||0, c:parseFloat(document.getElementById('tCons').value.replace(',','.'))||0 
-            });
+            db.s.push({ id:Date.now(), time:`${document.getElementById('dateTurnoD').value.padStart(2,'0')}/${document.getElementById('dateTurnoM').value.padStart(2,'0')}/${document.getElementById('dateTurnoY').value}`, l:l, o:parseFloat(document.getElementById('tOre').value.replace(',','.'))||0, k:parseFloat(document.getElementById('tKm').value.replace(',','.'))||0, c:parseFloat(document.getElementById('tCons').value.replace(',','.'))||0 });
             save(); closeModals();
         }
-        
         function addBenza() {
             const e = parseFloat(document.getElementById('bEuro').value.replace(',','.')) || 0;
             const p = parseFloat(document.getElementById('bP').value.replace(',','.')) || 0;
             if(e<=0) return;
-            db.r.push({ 
-                id:Date.now(), 
-                time:`${document.getElementById('dateBenzaD').value.padStart(2,'0')}/${document.getElementById('dateBenzaM').value.padStart(2,'0')}/${document.getElementById('dateBenzaY').value}`, 
-                e:e, p:p, litri:p>0?e/p:0 
-            });
+            db.r.push({ id:Date.now(), time:`${document.getElementById('dateBenzaD').value.padStart(2,'0')}/${document.getElementById('dateBenzaM').value.padStart(2,'0')}/${document.getElementById('dateBenzaY').value}`, e:e, p:p, litri:p>0?e/p:0 });
             save(); closeModals();
         }
-
-        function openReport() {
+        function openReport() { 
             const mS = document.getElementById('repMonth');
             if(!mS.options.length) {
                 monthNames.forEach((n,i)=>mS.innerHTML+=`<option value="${i+1}">${n}</option>`);
@@ -214,84 +241,17 @@
             mS.value = new Date().getMonth()+1; 
             document.getElementById('repYear').value = new Date().getFullYear();
             document.getElementById('reportView').style.display='block'; 
-            renderReport();
+            renderReport(); 
         }
-        
         function closeReport() { document.getElementById('reportView').style.display='none'; }
-
         function renderReport() {
             const mVal = document.getElementById('repMonth').value;
             const yVal = document.getElementById('repYear').value;
             const filter = `/${mVal.padStart(2,'0')}/${yVal}`;
-            const mIdx = parseInt(mVal) - 1;
-            document.getElementById('reportTitle').innerText = `Riepilogo Mensile: ${monthNames[mIdx]} ${yVal}`;
             const tM = db.s.filter(t=>t.time.includes(filter)); 
             const bM = db.r.filter(b=>b.time.includes(filter));
-            let html="", tL=0, tO=0, tK=0, tLE=0, tEE=0, tLR=0, tER=0;
+            let html="", tL=0, tO=0, tK=0, tEE=0;
             const all = [...tM.map(x=>({...x,type:'T'})), ...bM.map(x=>({...x,type:'B'}))].sort((a,b)=>a.time.split('/').reverse().join('')-b.time.split('/').reverse().join(''));
-            
             all.forEach(i => {
                 if(i.type === 'T') {
-                    tL += i.l; tO += i.o; tK += i.k;
-                    let ltr = i.k*(i.c/100); tLE += ltr;
-                    let pr = db.r.length ? db.r[db.r.length-1].p : 1.85; tEE += ltr*pr;
-                    html += `<tr><td>${i.time}</td><td>Turno</td><td>€${i.l.toFixed(2)}</td><td>${i.o}h | ${i.k}km | ${i.c}L/100</td></tr>`;
-                } else {
-                    tER += i.e; tLR += i.litri;
-                    html += `<tr style="background:#f0f0f0;"><td>${i.time}</td><td>Benza</td><td>€${i.e.toFixed(2)}</td><td>${i.litri.toFixed(2)}L (Pr: €${i.p.toFixed(3)})</td></tr>`;
-                }
-            });
-
-            const netto = tL - (tL * (db.tax/100)) - tEE;
-            document.getElementById('bodyReport').innerHTML = html;
-            document.getElementById('resSummary').innerHTML = `
-                <div style="font-size:16px; border-bottom:2px solid #000; margin-bottom:10px; padding-bottom:5px;"><b>RISULTATI FINALI</b></div>
-                <table style="width:100%; border:none; margin:0;">
-                    <tr><td><b>LORDO:</b></td><td style="text-align:right;"><b>€${tL.toFixed(2)}</b></td></tr>
-                    <tr><td>Tasse (${db.tax}%):</td><td style="text-align:right;">-€${(tL*(db.tax/100)).toFixed(2)}</td></tr>
-                    <tr><td>Spese Carburante (Stim.):</td><td style="text-align:right;">-€${tEE.toFixed(2)}</td></tr>
-                    <tr style="font-size:15px; color:var(--accent);"><td><b>NETTO:</b></td><td style="text-align:right;"><b>€${netto.toFixed(2)}</b></td></tr>
-                </table>
-                <div style="margin-top:10px; border-top:1px dashed #999; padding-top:10px;">
-                    • Ore Totali: ${tO.toFixed(1)}h | Km Totali: ${tK.toFixed(0)}km<br>
-                    • Media Oraria Lorda: €${tO>0?(tL/tO).toFixed(2):'0.00'}/h<br>
-                    • Media Oraria Netta: €${tO>0?(netto/tO).toFixed(2):'0.00'}/h<br>
-                    • Consumo Reale: ${tK>0?((tLE/tK)*100).toFixed(1):'0'} L/100km<br><br>
-                    • Spesa Stimata: €${tEE.toFixed(2)} (${tLE.toFixed(2)}L)<br>
-                    • Spesa Reale monitorata: €${tER.toFixed(2)} (${tLR.toFixed(2)}L)
-                </div>`;
-        }
-
-        function toggleHist() { const h = document.getElementById('histView'); h.style.display = (h.style.display==='flex')?'none':'flex'; }
-        function del(type, id) { if(confirm('Eliminare?')){ if(type==='s')db.s=db.s.filter(x=>x.id!==id); else db.r=db.r.filter(x=>x.id!==id); save(); } }
-        function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value.replace(',','.'))||0; save(); }
-        function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value.replace(',','.'))||0; save(); }
-
-        function render() {
-            let l=0, o=0, k=0, ls=0, sbe=0;
-            db.s.forEach(t => {
-                l+=t.l; o+=t.o; k+=t.k; let ltr = t.k*(t.c/100); ls+=ltr;
-                let pr = db.r.length?db.r[db.r.length-1].p:1.85; sbe+=ltr*pr;
-            });
-            let n = l-(l*(db.tax/100))-sbe;
-            document.getElementById('lordo').innerText = l.toFixed(2); document.getElementById('netto').innerText = `€${n.toFixed(2)}`;
-            document.getElementById('ore').innerText = o.toFixed(1); document.getElementById('cons').innerText = ls.toFixed(1)+'L';
-            document.getElementById('spesaB').innerText = `€${sbe.toFixed(2)}`; document.getElementById('kml').innerText = ls>0?(k/ls).toFixed(1):'0.0';
-            let prc = db.target>0?Math.min(100,(n/db.target)*100):0;
-            document.getElementById('bar').style.width = prc+'%'; document.getElementById('perc').innerText = Math.round(prc)+'%';
-            document.getElementById('mancante').innerText = `€${Math.max(0, db.target-n).toFixed(2)}`;
-            document.getElementById('targetIn').value = db.target || ''; document.getElementById('taxIn').value = db.tax;
-            
-            document.getElementById('historyList').innerHTML = [...db.s.map(x=>({...x,type:'s'})), ...db.r.map(x=>({...x,type:'r'}))].sort((a,b)=>b.id-a.id).map(i => {
-                if(i.type==='s') return `<div class="hist-item"><div class="hist-info"><b>${i.time}</b> (TURNO)<br><span style="color:var(--primary); font-weight:bold;">Guadagno: €${i.l.toFixed(2)}</span><br>Dettagli: ${i.o}h | ${i.k}km | ${i.c}L/100km</div><button class="del-btn" onclick="del('s', ${i.id})">&times;</button></div>`;
-                return `<div class="hist-item benza"><div class="hist-info"><b>${i.time}</b> (BENZINA)<br><span style="color:var(--orange); font-weight:bold;">Spesa: €${i.e.toFixed(2)}</span><br>Dettagli: ${i.litri.toFixed(2)}L (Pr: €${i.p.toFixed(3)}/L)</div><button class="del-btn" onclick="del('r', ${i.id})">&times;</button></div>`;
-            }).join('');
-        }
-    </script>
-    <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-    </script>
-</body>
-</html>
+                    tL += i.l; t
