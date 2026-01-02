@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.4.0</title>
+    <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -50,7 +50,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.4.0</div>
+    <div class="app-title">RIDER TRACKER PRO V1.0</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -124,11 +124,9 @@
         
         function chiudiModali() { 
             document.querySelectorAll('.modal').forEach(m => m.style.display='none');
-            // Reset campi input dopo la chiusura
             document.querySelectorAll('.modal input').forEach(i => i.value = '');
         }
 
-        // AUTO-SCROLL per evitare sovrapposizione tastiera
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
                 setTimeout(() => {
