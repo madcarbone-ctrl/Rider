@@ -3,13 +3,13 @@
   "short_name": "Rider",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#00CCBC",
+  "background_color": "#121212",
+  "theme_color": "#121212",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/1165/1165961.png",
+      "src": "icon.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
