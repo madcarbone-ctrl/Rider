@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.2.5</title>
+    <title>RIDER TRACKER PRO V5.2.7</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -40,14 +40,14 @@
         #reportView { background:#fff; color:#000; }
         .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
         .hist-info { font-size:11px; line-height:1.5; color:var(--text); }
-        table { width:100%; border-collapse:collapse; font-size:10px; margin-top:15px; color:#000; }
-        th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
+        th, td { border:1px solid #ccc; padding:6px; text-align:left; }
         th { background:#f0f0f0; }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.2.5</div>
+    <div class="app-title">RIDER TRACKER PRO V5.2.7</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -101,7 +101,7 @@
     <div id="reportView">
         <h2 style="text-align:center">Riepilogo Mensile</h2>
         <table id="tabellaReport">
-            <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th></tr></thead>
+            <thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead>
             <tbody id="corpoReport"></tbody>
         </table>
         <div id="recapReport" style="margin-top:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; line-height:1.6; color:#000;"></div>
@@ -127,7 +127,6 @@
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        // Funzione per non far coprire l'input dalla tastiera
         function scrollFix(el) {
             setTimeout(() => {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -172,16 +171,16 @@
             let lordoT = dati.turni.reduce((a,b) => a + b.lordo, 0);
             let oreT = dati.turni.reduce((a,b) => a + b.ore, 0);
             let kmT = dati.turni.reduce((a,b) => a + b.km, 0);
-            let litriStim = dati.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
+            let litriS = dati.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
             let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
-            let spesaS = litriStim * ultP;
+            let spesaS = litriS * ultP;
             let netto = lordoT - (lordoT * (dati.tax/100)) - spesaS;
             
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = oreT.toFixed(1);
-            document.getElementById('cons').innerText = litriStim.toFixed(1) + 'L';
-            document.getElementById('kml').innerText = litriStim > 0 ? (kmT / litriStim).toFixed(1) : '0.0';
+            document.getElementById('cons').innerText = litriS.toFixed(1) + 'L';
+            document.getElementById('kml').innerText = litriS > 0 ? (kmT / litriS).toFixed(1) : '0.0';
             document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
@@ -219,26 +218,39 @@
         function apriReport() {
             const oggi = new Date();
             const filter = `${(oggi.getMonth()+1).toString().padStart(2,'0')}/${oggi.getFullYear()}`;
-            let h = "", tL=0, tO=0, tK=0, tG=0;
+            let h = "", tLordo=0, tOre=0, tKm=0, tLitriRiforniti=0, tEuroBenza=0, tLitriConsumati=0;
             
             dati.turni.filter(t => t.data.includes(filter)).forEach(t => {
-                let gas = (t.km * (t.cons/100)) * (dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85);
-                tL += t.lordo; tO += t.ore; tK += t.km; tG += gas;
-                h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td></tr>`;
+                let litriTurno = (t.km * (t.cons/100));
+                let kmLTurno = litriTurno > 0 ? (t.km / litriTurno) : 0;
+                tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriConsumati += litriTurno;
+                h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmLTurno.toFixed(1)}</td></tr>`;
             });
+
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
-                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td></tr>`;
+                tEuroBenza += r.euro;
+                tLitriRiforniti += r.litri;
+                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}</td><td>-</td><td>-</td></tr>`;
             });
             
             document.getElementById('corpoReport').innerHTML = h;
-            let tasse = tL * (dati.tax/100);
+            let tasse = tLordo * (dati.tax/100);
+            let mediaKmLTotale = tLitriConsumati > 0 ? (tKm / tLitriConsumati) : 0;
+            
             document.getElementById('recapReport').innerHTML = `
-                <b>Riepilogo Mensile:</b><br>
-                Lordo Totale: €${tL.toFixed(2)}<br>
-                Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>
-                Costo Carburante: -€${tG.toFixed(2)}<hr>
-                <b style="font-size:18px; color:red">NETTO: €${(tL - tasse - tG).toFixed(2)}</b><br>
-                <small>Ore totali: ${tO.toFixed(1)} | KM totali: ${tK.toFixed(0)}</small>`;
+                <div style="border-bottom:1px solid #ccc; padding-bottom:10px; margin-bottom:10px;">
+                    <b>RIEPILOGO FINANZIARIO:</b><br>
+                    Lordo Totale Turni: <b>€${tLordo.toFixed(2)}</b><br>
+                    Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>
+                    Spesa Benzina Totale: <b>-€${tEuroBenza.toFixed(2)}</b><hr>
+                    <b style="font-size:18px; color:red">NETTO MENSILE: €${(tLordo - tasse - tEuroBenza).toFixed(2)}</b>
+                </div>
+                <div>
+                    <b>STATISTICHE ATTIVITÀ:</b><br>
+                    Kilometri percorsi: <b>${tKm.toFixed(0)} km</b> (Media: <b>${mediaKmLTotale.toFixed(1)} KM/L</b>)<br>
+                    Litri benzina immessi: <b>${tLitriRiforniti.toFixed(1)} L</b><br>
+                    Ore lavorate totali: <b>${tOre.toFixed(1)} h</b>
+                </div>`;
             document.getElementById('reportView').style.display = 'flex';
         }
 
