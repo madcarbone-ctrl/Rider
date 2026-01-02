@@ -23,7 +23,6 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALI */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
@@ -34,7 +33,6 @@
         .btn-save { background:var(--primary); color:#000; }
         .btn-close-turno { background:var(--orange); color:#000; } 
         
-        /* FOOTER */
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
@@ -42,12 +40,10 @@
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
         .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
 
-        /* VIEWS */
         #histView, #reportView { display:none; position:fixed; inset:0; z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; box-sizing: border-box; }
         #histView { background:var(--bg); text-align:left; }
         #reportView { background:#fff; color:#000; text-align:left; }
         
-        /* TABELLE REPORT (B&W) */
         .report-table { width:100%; border-collapse:collapse; font-size:10px; margin-top:10px; color:#000; table-layout: fixed; border:1px solid #000; }
         .report-table th, .report-table td { border:1px solid #000; padding:6px 4px; text-align:left; white-space: nowrap; }
         .report-table th { background:#eee; font-weight: bold; text-transform: uppercase; font-size: 7.5px; letter-spacing: -0.2px; }
@@ -55,7 +51,7 @@
         
         @media print {
             .no-print, .sticky-footer, .grid, .progress-container, .app-title { display:none!important; }
-            #reportView { display:block!important; position:relative; padding:0; }
+            #reportView { display:block!important; position:relative; padding:0; width:100%; }
             body { background:#fff; }
         }
     </style>
@@ -83,8 +79,29 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button></div></div>
-    <div id="modalBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo al litro" step="0.001" oninput="autoPunto(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button></div></div>
+    <div id="modalTurno" class="modal">
+        <div class="modal-content">
+            <h3>Nuovo Turno</h3>
+            <div id="dateT" class="date-row"></div>
+            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01">
+            <input type="number" id="tO" placeholder="Ore lavorate" step="0.1">
+            <input type="number" id="tK" placeholder="Chilometri percorsi">
+            <input type="number" id="tC" placeholder="Consumo L/100km">
+            <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
+            <button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button>
+        </div>
+    </div>
+
+    <div id="modalBenza" class="modal">
+        <div class="modal-content">
+            <h3>Rifornimento</h3>
+            <div id="dateB" class="date-row"></div>
+            <input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01">
+            <input type="number" id="bP" placeholder="Prezzo al litro" step="0.001" oninput="autoPunto(this)">
+            <button class="btn-modal btn-save" onclick="salvaBenza()">SALVA BENZINA</button>
+            <button class="btn-modal btn-close-turno" onclick="chiudiModali()">CHIUDI</button>
+        </div>
+    </div>
 
     <div id="histView">
         <h2 style="color:var(--primary); padding:15px; text-align:center;">Storico</h2>
@@ -132,7 +149,6 @@
         function mostra() {
             const oggi = new Date();
             const filter = `${(oggi.getMonth() + 1).toString().padStart(2, '0')}/${oggi.getFullYear()}`;
-            
             if (!dati.targets) dati.targets = {};
             if (dati.targets[filter] === undefined) {
                 const keys = Object.keys(dati.targets).sort();
@@ -141,7 +157,6 @@
 
             let tM = dati.turni.filter(t => t.data.includes(filter));
             let rM = dati.rifornimenti.filter(r => r.data.includes(filter));
-
             let lordoT = tM.reduce((a, b) => a + b.lordo, 0);
             let oreT = tM.reduce((a, b) => a + b.ore, 0);
             let kmT = tM.reduce((a, b) => a + b.km, 0);
@@ -197,15 +212,16 @@
             else if (dati.rifornimenti.length > 0) ultP = dati.rifornimenti[dati.rifornimenti.length - 1].prezzo;
 
             let costoStimato = tLitriS * ultP;
-            let netto = tLordo - (tLordo * (dati.tax/100)) - costoStimato;
+            let tasseCalc = tLordo * (dati.tax/100);
+            let netto = tLordo - tasseCalc - costoStimato;
 
             document.getElementById('recapTable').innerHTML = `
-                <tr><th style="width:50%">VOCE</th><th style="width:50%">VALORE</th></tr>
+                <tr><th style="width:50%">VOCE RIASSUNTIVA</th><th style="width:50%">VALORE ATTUALE</th></tr>
                 <tr><td>Lordo Totale</td><td>€${tLordo.toFixed(2)}</td></tr>
-                <tr><td>Tasse (${dati.tax}%)</td><td>-€${(tLordo*(dati.tax/100)).toFixed(2)}</td></tr>
+                <tr><td>Tasse (${dati.tax}%)</td><td>-€${tasseCalc.toFixed(2)}</td></tr>
                 <tr><td>Costo Benzina Stimato</td><td>-€${costoStimato.toFixed(2)}</td></tr>
                 <tr style="background:#eee; font-weight:bold;"><td>NETTO ATTIVITÀ</td><td>€${netto.toFixed(2)}</td></tr>
-                <tr style="border-top:1.5px solid #000"><td>TARGET MENSILE</td><td>€${targetMese.toFixed(2)}</td></tr>
+                <tr style="border-top:1.5px solid #000"><td>OBIETTIVO (TARGET)</td><td>€${targetMese.toFixed(2)}</td></tr>
                 <tr style="font-weight:bold;"><td>STATO TARGET</td><td>${tLordo>=targetMese?'RAGGIUNTO':'NON RAGGIUNTO'}</td></tr>
                 <tr><td>Spesa Reale Benzina (Monitoraggio)</td><td>€${tEuroB.toFixed(2)}</td></tr>
             `;
