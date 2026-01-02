@@ -34,9 +34,10 @@
         .hist-info { font-size: 11px; line-height: 1.5; color: #eee; }
         .del-btn { color: var(--accent); font-size: 20px; padding: 10px; cursor: pointer; border: none; background: transparent; }
         
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; text-align: center; }
-        .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; }
+        /* MODALE OTTIMIZZATO PER TASTIERA SMARTPHONE */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1050; padding: 10px; align-items: flex-start; justify-content: center; overflow-y: auto; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 100%; max-width: 350px; border: 1px solid #444; text-align: center; margin-top: 20px; transition: margin-top 0.3s ease; }
+        .modal input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; text-align: center; font-size: 16px; } /* font-size 16px previene lo zoom automatico su iOS */
         
         .sticky-footer { position: fixed; bottom: 40px; left: 10px; right: 10px; background: #111; padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; border-radius: 15px; border: 1px solid #333; z-index: 999; }
         .foot-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; border: 1px solid #444; }
@@ -109,7 +110,7 @@
             if(!container) return;
             const now = new Date(); let days = '', months = '', years = ''; for(let i=1; i<=31; i++) days += `<option value="${i}" ${i===now.getDate()?'selected':''}>${i}</option>`; const mNames = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"]; mNames.forEach((m, i) => months += `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`); for(let i=2025; i<=2030; i++) years += `<option value="${i}" ${i===now.getFullYear()?'selected':''}>${i}</option>`; container.innerHTML = `<select id="${containerId}D" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${days}</select><select id="${containerId}M" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${months}</select><select id="${containerId}Y" style="flex:1; padding:10px; background:#333; color:white; border-radius:5px; border:1px solid #444;">${years}</select>`; 
         }
-        function openM(id) { if(id !== 'mAzzera') createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; }
+        function openM(id) { if(id !== 'mAzzera') createDateSelectors(id === 'mTurno' ? 'dateTurno' : 'dateBenza'); document.getElementById(id).style.display = 'flex'; window.scrollTo(0,0); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); ['tLordo','tOre','tKm','tCons','bEuro','bP'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; }); }
         
         function confermaAzzera() { db = { s: [], r: [], target: 0, tax: 20 }; save(); closeModals(); }
@@ -120,6 +121,17 @@
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
         function del(type, id) { if(type === 's') db.s = db.s.filter(x => x.id !== id); else db.r = db.r.filter(x => x.id !== id); save(); }
+
+        // GESTIONE AUTOMATICA FOCUS PER TASTIERA
+        document.querySelectorAll('.modal input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.closest('.modal-content').style.marginTop = '0px';
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            input.addEventListener('blur', function() {
+                this.closest('.modal-content').style.marginTop = '20px';
+            });
+        });
 
         function render() {
             let lordo = 0, ore = 0, kmTotal = 0, litriTotal = 0, costoBenzaTotal = 0;
