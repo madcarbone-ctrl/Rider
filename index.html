@@ -22,7 +22,6 @@
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:30px; margin-bottom:300px; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
@@ -30,51 +29,44 @@
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
         .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close-turno, .btn-close-benza { background:var(--orange); color:#000; } 
-
-        #histView, #reportView { 
-            display:none; position:fixed; inset:0; z-index:8000; 
-            flex-direction:column; padding:15px; overflow-y:auto; text-align:left; 
-        }
-        #histView { background:var(--bg); }
-        #reportView { background:#fff; color:#000; }
-
-        .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; }
-        .hist-item { 
-            background:#111; padding:15px; border-radius:12px; margin-bottom:12px; 
-            display:flex; justify-content:space-between; align-items:center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; 
-        }
-        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
-        .btn-chiudi-hist { width: 50%; align-self: center; background: var(--primary); color: #000; margin: 20px 0 40px; }
-
-        /* TABELLE REPORT UNIFORMI E BIANCO/NERO */
-        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; table-layout: fixed; }
-        th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; }
-        th { background:#f0f0f0; text-transform: uppercase; font-weight: bold; }
-        
-        /* Definizione larghezze fisse colonne */
-        .col-data { width: 18%; }
-        .col-tipo { width: 12%; }
-        .col-euro { width: 15%; }
-        .col-ore { width: 10%; }
-        .col-km { width: 10%; }
-        .col-litri { width: 12%; }
-        .col-cons { width: 11%; }
-        .col-kml { width: 12%; }
-
-        #recapReport { 
-            margin:20px 0; padding:15px; background:#fff; border:2px solid #000; 
-            color:#000; line-height:1.6; font-size: 12px; 
-        }
-
+        .btn-close-turno { background:var(--orange); color:#000; } 
+        .btn-close-benza { background:var(--primary); color:#000; } 
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
         .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
+        
+        #histView, #reportView { 
+            display:none; position:fixed; inset:0; z-index:8000; 
+            flex-direction:column; padding:15px; overflow-y:auto; 
+            overflow-x:hidden; box-sizing: border-box; text-align:left; 
+        }
+        #histView { background:var(--bg); }
+        .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; }
+        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; }
+        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
+        .btn-chiudi-hist { width: 50%; align-self: center; background: var(--primary); color: #000; margin: 20px 0 40px; }
 
+        /* REPORT STILE PDF BIANCO E NERO */
+        #reportView { background:#fff; color:#000; }
+        #reportView h2 { text-align:center; text-transform:uppercase; margin-bottom:20px; }
+        table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; table-layout: fixed; }
+        th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; word-wrap: break-word; }
+        th { background:#f0f0f0; font-weight: bold; }
+        
+        /* Larghezze fisse colonne */
+        th:nth-child(1) { width: 18%; }
+        th:nth-child(2) { width: 12%; }
+        th:nth-child(3) { width: 15%; }
+        th:nth-child(4) { width: 10%; }
+        th:nth-child(5) { width: 10%; }
+        th:nth-child(6) { width: 12%; }
+        th:nth-child(7) { width: 11%; }
+        th:nth-child(8) { width: 12%; }
+
+        #recapReport { margin:20px 0; padding:15px; border:2px solid #000; color:#000; line-height:1.6; font-size: 12px; }
         @media print { .no-print { display:none!important; } }
     </style>
 </head>
@@ -132,24 +124,15 @@
     </div>
 
     <div id="reportView">
-        <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
+        <h2 id="reportTitle">Riepilogo Mensile</h2>
         <table id="tabellaReport">
             <thead>
-                <tr>
-                    <th class="col-data">Data/Ora</th>
-                    <th class="col-tipo">Tipo</th>
-                    <th class="col-euro">Euro</th>
-                    <th class="col-ore">Ore</th>
-                    <th class="col-km">Km</th>
-                    <th class="col-litri">Litri</th>
-                    <th class="col-cons">Cons.</th>
-                    <th class="col-kml">KM/L</th>
-                </tr>
+                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr>
             </thead>
             <tbody id="corpoReport"></tbody>
         </table>
         <div id="recapReport"></div>
-        <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
+        <button class="btn-modal no-print" style="background:#000; color:#fff" onclick="window.print()">STAMPA PDF</button>
         <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
     </div>
 
@@ -165,7 +148,6 @@
     </div>
 
     <script>
-        // Caricamento dati sicuro
         let dati = JSON.parse(localStorage.getItem('rider_db_final')) || { turni: [], rifornimenti: [], target: 0, tax: 20 };
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
         
@@ -212,34 +194,18 @@
 
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0;
-            
-            // Turni
             dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let lT = (t.km * (t.cons/100)); tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
                 h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
             });
-
-            // Benza
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
                 h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
-
-            document.getElementById('corpoReport').innerHTML = h || '<tr><td colspan="8">Nessun dato</td></tr>';
-            
+            document.getElementById('corpoReport').innerHTML = h;
             let tasse = tLordo * (dati.tax/100);
-            let nettoReport = tLordo - tasse - tEuroB;
-
-            document.getElementById('recapReport').innerHTML = `
-                <div style="display:flex; justify-content:space-between"><b>LORDO TOTALE:</b> <b>€${tLordo.toFixed(2)}</b></div>
-                <div style="display:flex; justify-content:space-between">TASSE (${dati.tax}%): <span>- €${tasse.toFixed(2)}</span></div>
-                <div style="display:flex; justify-content:space-between">BENZINA (SPESA): <span>- €${tEuroB.toFixed(2)}</span></div>
-                <hr style="border:1px solid #000">
-                <div style="display:flex; justify-content:space-between; font-size:16px;"><b>NETTO:</b> <b>€${nettoReport.toFixed(2)}</b></div>
-                <br>
-                <div style="font-size:10px">KM: ${tKm} | ORE: ${tOre.toFixed(1)} | MEDIA: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L</div>
-            `;
+            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina: <b>-€${tEuroB.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM: ${tKm} | Ore: ${tOre.toFixed(1)} | Media: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
         }
 
         function salvaTurno() {
@@ -291,7 +257,6 @@
             let lordoT = tM.reduce((a,b)=>a+b.lordo,0), oreT = tM.reduce((a,b)=>a+b.ore,0), kmT = tM.reduce((a,b)=>a+b.km,0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)),0);
             let ultP = dati.rifornimenti.length ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
             let spesaS = litriS * ultP, netto = lordoT - (lordoT*(dati.tax/100)) - spesaS;
-            
             document.getElementById('lordo').innerText = lordoT.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = oreT.toFixed(1);
@@ -300,7 +265,6 @@
             document.getElementById('spesaB').innerText = '€' + spesaS.toFixed(2);
             document.getElementById('targetIn').value = dati.target || '';
             document.getElementById('taxIn').value = dati.tax || 20;
-            
             let manca = (dati.target||0) - lordoT;
             document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
             let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
@@ -309,4 +273,11 @@
 
         function testCambioMese() { eseguiControlloMese(true); }
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targe
+        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||0; salvaDB(); }
+        function resetTotale() { if(confirm("RESET TOTALE?")) { dati={turni:[],rifornimenti:[],target:0,tax:20}; salvaDB(); location.reload(); } }
+
+        window.onload = () => { mostra(); eseguiControlloMese(); };
+    </script>
+</body>
+</html>
