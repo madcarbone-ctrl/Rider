@@ -24,43 +24,67 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* INIZIO MODIFICA 1 - RIDIMENSIONAMENTO MODALE E INPUT */
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
+        /* INIZIO MODIFICA 3 - FINESTRA ATTACCATA AL BORDO E CAMPI ULTRA-FINI */
+        .modal { 
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            background:rgba(0,0,0,0.9); 
+            z-index:9999; 
+            align-items: flex-start; /* Allinea all'inizio (alto) */
+            justify-content:center; 
+            padding: 0px; /* Tolto padding esterno */
+            overflow-y:auto; 
+        }
         
         .modal-content { 
             background:var(--card); 
-            padding:15px; /* Ridotto padding interno */
-            border-radius:24px; 
-            width: 85%; /* Ridotta larghezza della cornice */
-            max-width:320px; /* Ridotto limite massimo */
+            padding: 10px 15px; /* Ridotto padding verticale */
+            border-radius: 0 0 24px 24px; /* Arrotondato solo il fondo per "attaccarsi" sopra */
+            width: 90%; 
+            max-width:320px; 
             border:1px solid #444; 
-            margin-top:15px; /* Alzata la cornice verso l'alto */
-            margin-bottom:300px; 
+            border-top: none; /* Rimuove il bordo superiore se attaccato */
+            margin-top: 0px; /* Attaccato al bordo superiore */
+            margin-bottom: 200px; 
         }
 
-        .modal h3 { font-size: 18px; margin-top: 5px; margin-bottom: 15px; }
+        .modal h3 { font-size: 15px; margin: 5px 0 10px; color: var(--primary); text-transform: uppercase; }
 
         .modal input { 
-            width: 90%; /* Restretti i campi input */
-            margin-left: auto;
-            margin-right: auto;
-            padding: 10px; /* Ridotto padding input */
+            width: 95%; 
+            margin: 0 auto 6px;
+            padding: 6px; /* Campi input molto stretti in altezza */
             background:var(--input-bg); 
             border:1px solid #444; 
             color:#fff; 
-            border-radius:10px; 
-            font-size:14px; /* Font leggermente più piccolo */
-            margin-bottom:8px; 
+            border-radius:8px; 
+            font-size:13px; 
             display: block;
+            height: 32px; /* Altezza fissa ridotta */
         }
-        /* FINE MODIFICA 1 - RIDIMENSIONAMENTO MODALE E INPUT */
 
-        .date-row { display:flex; gap:5px; margin-bottom:15px; justify-content: center; width: 90%; margin-left: auto; margin-right: auto; }
-        .date-row select { background:#333; color:#fff; padding:8px; border-radius:10px; flex:1; border:none; font-size: 12px; }
-        .btn-modal { width:90%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size:14px; cursor:pointer; display: inline-block; }
+        .btn-modal { 
+            width:95%; 
+            padding: 8px; /* Pulsanti molto fini */
+            border-radius:8px; 
+            border:none; 
+            font-weight:bold; 
+            margin-top: 4px; 
+            font-size:12px; 
+            cursor:pointer; 
+            display: inline-block;
+            height: 35px; /* Altezza fissa ridotta */
+        }
+        /* FINE MODIFICA 3 - FINESTRA ATTACCATA AL BORDO E CAMPI ULTRA-FINI */
+
+        .date-row { display:flex; gap:5px; margin-bottom:8px; justify-content: center; width: 95%; margin-left: auto; margin-right: auto; }
+        .date-row select { background:#333; color:#fff; padding:5px; border-radius:8px; flex:1; border:none; font-size: 11px; height: 30px; }
+        
         .btn-save { background:var(--primary); color:#000; }
         .btn-close-turno { background:var(--orange); color:#000; } 
         .btn-close-benza { background:var(--primary); color:#000; } 
+        
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
@@ -295,10 +319,4 @@
             document.getElementById('taxIn').value = dati.tax || 20;
             let manca = (dati.target||0) - lordoT;
             document.getElementById('mancante').innerText = '€' + (manca>0?manca.toFixed(2):'0.00');
-            let p = dati.target>0 ? Math.min((lordoT/dati.target)*100, 100) : 0;
-            document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
-        }
-
-        function testCambioMese() { eseguiControlloMese(true); }
-        function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { dati.target = parseFloat(document.getElementB
+    
