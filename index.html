@@ -52,7 +52,6 @@
             text-align:left; 
         }
 
-        /* Pulsante Chiudi Storico ridimensionato e colorato */
         .btn-chiudi-hist { 
             width: 50%; 
             align-self: center; 
@@ -62,7 +61,20 @@
         }
 
         #reportView { background:#fff; color:#000; }
-        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
+
+        /* Modifica bordi Storico: aggiunti bordi anche a destra */
+        .hist-item { 
+            background:#111; 
+            padding:15px; 
+            border-radius:12px; 
+            margin-bottom:10px; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            border-left:4px solid transparent; 
+            border-right:4px solid transparent; 
+        }
+
         .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
         .hist-info b { font-size:13px; color:#fff; }
         table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; }
@@ -230,12 +242,12 @@
             let h = ""; const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
             tutti.forEach(i => {
                 if(i.tipo === 'T') {
-                    h += `<div class="hist-item" style="border-left-color:var(--primary)">
+                    h += `<div class="hist-item" style="border-left-color:var(--primary); border-right-color:var(--primary);">
                         <div class="hist-info"><b>${i.data} ${i.ora||''} - TURNO</b><br>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}<br>Km: ${i.km} | Consumo: ${i.cons}L/100km</div>
                         <button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
                     </div>`;
                 } else {
-                    h += `<div class="hist-item" style="border-left-color:var(--orange)">
+                    h += `<div class="hist-item" style="border-left-color:var(--orange); border-right-color:var(--orange);">
                         <div class="hist-info"><b>${i.data} ${i.ora||''} - BENZINA</b><br>Spesa: €${i.euro.toFixed(2)} | Litri: ${i.litri.toFixed(2)}<br>Prezzo: €${i.prezzo.toFixed(3)}/L</div>
                         <button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
                     </div>`;
