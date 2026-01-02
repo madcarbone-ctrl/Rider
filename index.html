@@ -27,7 +27,7 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* STILE STORICO RICHIESTO */
+        /* STILE STORICO */
         .storico-item {
             background: #0f0f0f;
             padding: 15px 5px;
@@ -46,7 +46,7 @@
         .storico-main { font-size: 18px; font-weight: bold; }
         .storico-sub { font-size: 10px; color: var(--dim); margin-top: 4px; }
 
-        /* REPORT VIEW - BIANCO E NERO */
+        /* REPORT VIEW */
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align:left; }
         .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; color: #000; }
         .report-section { margin-bottom: 25px; color: #000; }
@@ -169,24 +169,46 @@
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-        <button onclick="if(confirm('AZZERA TUTTO?')) {localStorage.clear(); location.reload();}" style="grid-column:span 3; background:#300; border:none; color:#f66; font-size:9px; padding:5px; border-radius:10px; margin-top:5px;">AZZERA TUTTO</button>
+        <div style="grid-column:span 3; display:flex; gap:5px; margin-top:5px;">
+            <button onclick="if(confirm('AZZERA TUTTO?')){localStorage.clear();location.reload();}" style="flex:1; background:#300; border:none; color:#f66; font-size:9px; padding:8px; border-radius:10px;">AZZERA TUTTO</button>
+            <button onclick="testFineMese()" style="flex:1; background:#222; border:none; color:#aaa; font-size:9px; padding:8px; border-radius:10px;">TEST FINE MESE</button>
+        </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+        // Database blindato con aggiunta lastCheck
+        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20, lastCheck: "" };
         const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
         function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        // [INIZIO MODIFICA: Virgola automatica prezzo benzina]
         document.addEventListener('input', function (e) {
             if (e.target.id === 'bP') {
                 let v = e.target.value.replace('.', '');
                 if (v.length > 1) { e.target.value = v.charAt(0) + '.' + v.substring(1); }
             }
         });
-        // [FINE MODIFICA: Virgola automatica prezzo benzina]
+
+        // [INIZIO MODIFICA: LOGICA CONTROLLO FINE MESE]
+        function checkNuovoMese() {
+            const ora = new Date();
+            const tagOggi = `${ora.getMonth() + 1}/${ora.getFullYear()}`;
+            // Se esiste un check precedente ed è diverso da oggi E siamo al primo del mese
+            if (db.lastCheck && db.lastCheck !== tagOggi && ora.getDate() === 1) {
+                alert("🔔 ATTENZIONE: È INIZIATO UN NUOVO MESE!\n\nGenera il report PDF del mese scorso prima di azzerare i dati.");
+                apriReport();
+            }
+            db.lastCheck = tagOggi;
+            localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
+        }
+
+        function testFineMese() {
+            db.lastCheck = "12/2025"; // Forzo un mese passato
+            alert("Simulazione: Mese precedente impostato a Dicembre 2025. Rieseguo il controllo...");
+            checkNuovoMese();
+        }
+        // [FINE MODIFICA: LOGICA CONTROLLO FINE MESE]
 
         function calcola() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
@@ -243,16 +265,9 @@
             let taxV = tL * (db.tax/100); let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85; let costBS = tLS * ultP;
             document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA STIMATA (${tLS.toFixed(1)}L):</span><span>-€${costBS.toFixed(2)}</span></div><div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>`;
             document.getElementById('reportView').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
         }
 
         function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
         function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
-        function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
-        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-        function elimina(c,id) { if(confirm("Elimina?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
-        
-        window.onload = calcola;
-    </script>
-</body>
-</html>
+  
