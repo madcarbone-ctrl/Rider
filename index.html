@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.3.0</title>
+    <title>RIDER TRACKER PRO V5.3.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
@@ -24,7 +24,6 @@
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:1px solid #444; margin-top:50px; }
-        .modal h3 { margin-top:0; color:var(--primary); }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; margin-bottom:10px; }
         .date-row { display:flex; gap:5px; margin-bottom:15px; }
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
@@ -50,7 +49,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.3.0</div>
+    <div class="app-title">RIDER TRACKER PRO V5.3.1</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -79,7 +78,7 @@
 
     <div id="reportView">
         <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
-        <table id="tabellaReport"><thead><tr><th>Data</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead><tbody id="corpoReport"></tbody></table>
+        <table id="tabellaReport"><thead><tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr></thead><tbody id="corpoReport"></tbody></table>
         <div id="recapReport" style="margin:20px; padding:20px; background:#f9f9f9; border:1px solid #ccc; border-radius:15px; color:#000; line-height:1.6;"></div>
         <button class="btn-modal no-print" style="background:#333; color:#fff" onclick="window.print()">STAMPA PDF</button>
         <button class="btn-modal no-print" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
@@ -103,12 +102,14 @@
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        // PUNTO AUTOMATICO PREZZO BENZINA
         function autoPunto(el) {
             let v = el.value.replace('.', '');
-            if (v.length > 1) {
-                el.value = v.substring(0, 1) + "." + v.substring(1);
-            }
+            if (v.length > 1) { el.value = v.substring(0, 1) + "." + v.substring(1); }
+        }
+
+        function getOraAttuale() {
+            const n = new Date();
+            return n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
         }
 
         function eseguiControlloMese(isTest = false) {
@@ -140,28 +141,28 @@
             dati.turni.filter(t => t.data.includes(filter)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let lT = (t.km * (t.cons/100)); tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
-                h += `<tr><td>${t.data}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
+                h += `<tr><td>${t.data} ${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
             });
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
+                h += `<tr style="background:#f2f2f2"><td>${r.data} ${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
             });
             document.getElementById('corpoReport').innerHTML = h;
             let tasse = tLordo * (dati.tax/100);
-            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina (Euros spesi): <b>-€${tEuroB.toFixed(2)}</b><hr><b style="color:red; font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM: ${tKm} | Ore: ${tOre.toFixed(1)} | Litri Benzina: ${tLitriR.toFixed(1)}L | Media: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
+            document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO FINANZIARIO:</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina (Euros spesi): <b>-€${tEuroB.toFixed(2)}</b><hr><b style="color:red; font-size:18px;">NETTO: €${(tLordo-tasse-tEuroB).toFixed(2)}</b><br><br><b>ATTIVITÀ:</b><br>KM Totali: ${tKm} | Ore Totali: ${tOre.toFixed(1)} | Media Mese: ${tLitriC>0?(tKm/tLitriC).toFixed(1):0} KM/L`;
         }
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
             const data = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-            dati.turni.push({id:Date.now(), data, lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
+            dati.turni.push({id:Date.now(), data, ora:getOraAttuale(), lordo:l, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
             salvaDB(); chiudiModali();
         }
 
         function salvaBenza() {
             const e = parseFloat(document.getElementById('bE').value)||0, p = parseFloat(document.getElementById('bP').value)||0; if(e<=0||p<=0) return;
             const data = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
-            dati.rifornimenti.push({id:Date.now(), data, euro:e, prezzo:p, litri:e/p});
+            dati.rifornimenti.push({id:Date.now(), data, ora:getOraAttuale(), euro:e, prezzo:p, litri:e/p});
             salvaDB(); chiudiModali();
         }
 
@@ -170,12 +171,12 @@
             tutti.forEach(i => {
                 if(i.tipo === 'T') {
                     h += `<div class="hist-item" style="border-left-color:var(--primary)">
-                        <div class="hist-info"><b>${i.data} - TURNO</b><br>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}<br>Km: ${i.km} | Consumo: ${i.cons}L/100km</div>
+                        <div class="hist-info"><b>${i.data} ${i.ora||''} - TURNO</b><br>Lordo: €${i.lordo.toFixed(2)} | Ore: ${i.ore}<br>Km: ${i.km} | Consumo: ${i.cons}L/100km</div>
                         <button onclick="elimina('turni',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
                     </div>`;
                 } else {
                     h += `<div class="hist-item" style="border-left-color:var(--orange)">
-                        <div class="hist-info"><b>${i.data} - BENZINA</b><br>Spesa: €${i.euro.toFixed(2)} | Litri: ${i.litri.toFixed(2)}<br>Prezzo: €${i.prezzo.toFixed(3)}/L</div>
+                        <div class="hist-info"><b>${i.data} ${i.ora||''} - BENZINA</b><br>Spesa: €${i.euro.toFixed(2)} | Litri: ${i.litri.toFixed(2)}<br>Prezzo: €${i.prezzo.toFixed(3)}/L</div>
                         <button onclick="elimina('rifornimenti',${i.id})" style="color:red; background:none; border:none; font-size:24px;">&times;</button>
                     </div>`;
                 }
