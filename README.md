@@ -1,21 +1,21 @@
 # 🛵 Rider Tracker Pro V5.2.3
 
-[Italiano](#it) | [English](#en)
+[Vai alla versione Italiana](#it) | [Jump to English version](#en)
 
 ---
 
 <a name="it"></a>
 ## 🇮🇹 Versione Italiana
 
-**Rider Tracker Pro** è un'applicazione web leggera e privata progettata per i rider che vogliono gestire guadagni e spese carburante in tempo reale. Questa è la **Versione Finale (Punto di Arrivo)**.
+**Rider Tracker Pro** è un'applicazione web leggera e privata progettata per i rider che vogliono gestire i propri guadagni e le spese del carburante in tempo reale. Questa è la **Versione Finale (Punto di Arrivo)**.
 
-### ✨ Caratteristiche
-* **Gestione Benzina**: Inserimento rapido a 4 cifre (es. `1855` -> `1.855`).
-* **Report Mensile**: Generazione PDF automatica con statistiche dettagliate.
-* **Privacy**: I dati restano solo sul tuo telefono (LocalStorage).
-* **Notifiche**: Avviso automatico al cambio del mese.
+### ✨ Caratteristiche Principali
+* **Gestione Benzina**: Inserimento rapido a 4 cifre (es. digiti `1855` e il sistema scrive automaticamente `1.855`).
+* **Report Mensile**: Generazione di un riepilogo PDF con statistiche dettagliate su ore, km e medie orarie.
+* **Privacy Totale**: I dati sono salvati esclusivamente nella memoria locale del tuo dispositivo (LocalStorage).
+* **Notifiche**: Sistema di avviso automatico al primo giorno del mese per salvare i dati e resettare il contatore.
 
-### 🛠️ Configurazione Tecnica
-Per il corretto funzionamento come App (PWA), assicurati che il tuo `index.html` contenga questo codice nel tag `<head>`:
+### 🛠️ Configurazione PWA
+Per installarla come un'app nativa, assicurati che il file `index.html` contenga questo codice:
 ```html
 <link rel="manifest" href="manifest.json">
