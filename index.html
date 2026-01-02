@@ -53,9 +53,9 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* --- INIZIO TESTO MODIFICA 12: ULTIMO RITOCCO ALTEZZA (+0.5cm) --- */
+        /* --- INIZIO TESTO MODIFICA 13: TESTO CENTRATO NEI CAMPI TURNO --- */
         #modalTurno .modal-content {
-            padding-bottom: 32px; /* Aumentato di altri 7px per quel "mezzo centimetro" richiesto */
+            padding-bottom: 32px; 
             max-height: 420px;    
             display: flex;
             flex-direction: column;
@@ -66,17 +66,18 @@
 
         #modalTurno input { 
             width: 95%; 
-            margin: 0 auto 10px;  /* Margine aumentato per distanziare meglio i campi */
+            margin: 0 auto 10px;  
             padding: 8px 10px; 
-            height: 36px;       /* Altezza campi ottimale per il tocco */
+            height: 36px;       
             font-size: 15px;
+            text-align: center; /* TESTO CENTRATO */
         }
 
         #modalTurno .btn-modal { 
-            height: 42px;       /* Pulsanti ben definiti e facili da premere */
+            height: 42px;       
             margin-top: 10px; 
         }
-        /* --- FINE TESTO MODIFICA 12 --- */
+        /* --- FINE TESTO MODIFICA 13 --- */
 
         .modal h3 { font-size: 14px; margin: 4px 0 8px; color: var(--primary); text-transform: uppercase; }
         .modal input { 
