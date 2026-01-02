@@ -28,18 +28,19 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALI GENERALI */
+        /* MODALE COMPATTATO - MODIFICA 5 */
         .modal { 
             display:none; 
             position:fixed; 
             inset:0; 
             background:rgba(0,0,0,0.92); 
             z-index:9999; 
-            align-items: flex-start !important;
+            align-items: flex-start !important; /* Forza l'allineamento in alto */
             justify-content:center; 
             padding: 0px; 
         }
-
+        
+        /* INIZIO TESTO MODIFICA: FINESTRA RISTRETTA E POSIZIONATA IN ALTO */
         .modal-content { 
             background:var(--card); 
             padding: 8px 12px; 
@@ -52,56 +53,29 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* --- INIZIO TESTO MODIFICA 16: PULIZIA STILI E ALLINEAMENTI --- */
-        
-        /* FINESTRA TURNO: Spaziosa e Testo Centrato */
-        #modalTurno .modal-content {
-            padding-bottom: 32px; 
-            max-height: 420px;    
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-        #modalTurno h3 { font-size: 16px; margin: 12px 0 15px; color: var(--primary); }
-        #modalTurno input { 
-            width: 95%; margin: 0 auto 10px; padding: 8px 10px; 
-            height: 36px; font-size: 15px; text-align: center; 
-        }
-        #modalTurno .btn-modal { height: 42px; margin-top: 10px; }
+        .modal h3 { font-size: 14px; margin: 4px 0 8px; color: var(--primary); text-transform: uppercase; }
 
-        /* FINESTRA BENZINA: Testo Centrato (come richiesto) ma dimensioni originali */
-        #modalBenza .modal-content { padding-bottom: 12px; }
-        #modalBenza h3 { font-size: 14px; margin: 4px 0 8px; }
-        #modalBenza input { 
-            width: 95%; margin: 0 auto 5px; padding: 4px 10px; 
-            height: 30px; font-size: 13px; text-align: center; 
-        }
-        #modalBenza .btn-modal { height: 34px; margin-top: 5px; }
-
-        /* STORICO: Ripristinato allineamento a sinistra totale */
-        .hist-item { 
-            background:#111; padding:15px; border-radius:12px; margin-bottom:12px; 
-            display:flex; justify-content:space-between; align-items:center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; 
-        }
-        .hist-info { font-size:11px; line-height:1.6; color:var(--text); text-align: left; }
-        /* --- FINE TESTO MODIFICA 16 --- */
-
-        .modal h3 { color: var(--primary); text-transform: uppercase; }
         .modal input { 
+            width: 95%; 
+            margin: 0 auto 5px; 
+            padding: 4px 10px; 
             background:var(--input-bg); 
             border:1px solid #444; 
             color:#fff; 
             border-radius:8px; 
+            font-size:13px; 
             display: block;
+            height: 30px; /* Altezza ultra-fine per i campi */
             outline: none;
         }
 
         .btn-modal { 
             width:95%; 
+            height: 34px; /* Altezza ultra-fine per i bottoni */
             border-radius:8px; 
             border:none; 
             font-weight:bold; 
+            margin-top: 5px; 
             font-size:12px; 
             cursor:pointer; 
             display: inline-block;
@@ -110,6 +84,7 @@
 
         .date-row { display:flex; gap:4px; margin-bottom:6px; justify-content: center; width: 95%; margin-left: auto; margin-right: auto; }
         .date-row select { background:#333; color:#fff; padding:0 5px; border-radius:8px; flex:1; border:none; font-size: 11px; height: 28px; }
+        /* FINE TESTO MODIFICA: FINESTRA RISTRETTA E POSIZIONATA IN ALTO */
 
         .btn-save { background:var(--primary); color:#000; }
         .btn-close-turno { background:var(--orange); color:#000; } 
@@ -126,6 +101,8 @@
         /* Storico e Report */
         #histView, #reportView { display:none; position:fixed; inset:0; z-index:8000; flex-direction:column; padding:15px; overflow-y:auto; background:var(--bg); }
         .hist-title { color:var(--primary); text-align: center; text-transform: uppercase; font-size: 18px; margin: 20px 0; }
+        .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255, 255, 255, 0.2); border-left-width: 5px; border-right-width: 5px; }
+        .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
         
         #reportView { background:#fff; color:#000; }
         table { width:100%; border-collapse:collapse; font-size:9px; margin-top:15px; color:#000; table-layout: fixed; }
