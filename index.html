@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V5.3.2</title>
+    <title>RIDER TRACKER PRO V5.3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --yellow:#FFD700; --blue-light:#00CCFF; }
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:280px; text-align:center; }
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
@@ -29,9 +29,10 @@
         .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:none; }
         .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size:16px; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        /* COLORI TASTI CHIUDI RICHIESTI */
-        .btn-close-turno { background:var(--yellow); color:#000; }
-        .btn-close-benza { background:var(--blue-light); color:#000; }
+        
+        /* COLORI TASTI CHIUDI AGGIORNATI */
+        .btn-close-turno { background:var(--orange); color:#000; } /* Come Salva Benzina */
+        .btn-close-benza { background:var(--primary); color:#000; } /* Come Riepilogo Mensile */
         
         .sticky-footer { position:fixed; bottom:20px; left:10px; right:10px; background:#111; padding:10px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:10px; }
@@ -52,7 +53,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V5.3.2</div>
+    <div class="app-title">RIDER TRACKER PRO V5.3.3</div>
 
     <div class="grid">
         <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
