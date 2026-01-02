@@ -45,6 +45,7 @@
         .history-section { background:var(--card); border-radius:20px; border:1px solid var(--primary); padding:15px; display:flex; flex-direction:column; height:100%; }
         #historyList { overflow-y:auto; flex-grow:1; }
         .hist-item { background:#111; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--primary); display:flex; justify-content:space-between; align-items:center; }
+        .hist-info { font-size: 11px; line-height: 1.5; }
         .del-btn { background:none; border:none; color:var(--accent); font-size:24px; cursor:pointer; }
         #reportView { display:none; position:fixed; inset:0; background:#f4f4f4; z-index:6000; overflow:auto; color:#333; padding:15px; }
         .report-container { background:white; padding:15px; border-radius:15px; border: 1px solid #ccc; }
@@ -103,11 +104,11 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_v5_final')) || { s: [], r: [], target: 0, tax: 20 };
+        let db = JSON.parse(localStorage.getItem('rider_db_v5_final')) || JSON.parse(localStorage.getItem('rider_db_v5')) || { s: [], r: [], target: 0, tax: 20 };
         const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
         function save() { localStorage.setItem('rider_db_v5_final', JSON.stringify(db)); render(); }
-        function initApp() { render(); if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); } setTimeout(checkEndOfMonth, 500); }
+        function initApp() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); } render(); setTimeout(checkEndOfMonth, 500); }
 
         function formatFuelPrice(input) {
             let val = input.value.replace(/[^0-9]/g, '');
@@ -116,7 +117,6 @@
 
         function setTarget() { db.target = parseFloat(document.getElementById('targetIn').value) || 0; save(); }
         function setTax() { db.tax = parseFloat(document.getElementById('taxIn').value) || 0; save(); }
-        
         function fullReset() { if(confirm('Svuotare tutto?')) { db = { s: [], r: [], target: 0, tax: 20 }; save(); location.reload(); } }
 
         function render() {
@@ -126,8 +126,7 @@
             let tLE = db.s.reduce((acc, curr) => acc + (curr.k * (curr.c / 100)), 0);
             let pr = db.r.length ? db.r[db.r.length - 1].p : 1.85;
             let tEE = tLE * pr;
-            let taxV = parseFloat(db.tax) || 0;
-            let netto = tL - (tL * (taxV / 100)) - tEE;
+            let netto = tL - (tL * (db.tax / 100)) - tEE;
             let targetVal = parseFloat(db.target) || 0;
             let mancanteVal = targetVal - tL;
 
@@ -151,10 +150,23 @@
             let html = "";
             const all = [...db.s.map(x=>({...x,type:'T'})), ...db.r.map(x=>({...x,type:'B'}))].sort((a,b)=>b.id - a.id);
             all.forEach(i => {
-                html += `<div class="hist-item" style="border-left-color:${i.type==='T'?'var(--primary)':'var(--orange)'}">
-                    <div><b>${i.time}</b><br>${i.type==='T'?'Lordo: €'+i.l.toFixed(2):'Benza: €'+i.e.toFixed(2)}</div>
-                    <button class="del-btn" onclick="del('${i.type==='T'?'s':'r'}',${i.id})">&times;</button>
-                </div>`;
+                if(i.type === 'T') {
+                    html += `<div class="hist-item" style="border-left-color:var(--primary)">
+                        <div class="hist-info">
+                            <b>${i.time} - TURNO</b><br>
+                            <span style="color:var(--primary)">Lordo: €${i.l.toFixed(2)}</span> | ${i.o}h | ${i.k}km | <span style="color:var(--dim)">${i.c}L/100</span>
+                        </div>
+                        <button class="del-btn" onclick="del('s',${i.id})">&times;</button>
+                    </div>`;
+                } else {
+                    html += `<div class="hist-item" style="border-left-color:var(--orange)">
+                        <div class="hist-info">
+                            <b>${i.time} - BENZINA</b><br>
+                            <span style="color:var(--orange)">Spesa: €${i.e.toFixed(2)}</span> | ${i.litri.toFixed(2)}L | <span style="color:var(--dim)">€${i.p.toFixed(3)}/L</span>
+                        </div>
+                        <button class="del-btn" onclick="del('r',${i.id})">&times;</button>
+                    </div>`;
+                }
             });
             document.getElementById('historyList').innerHTML = html;
         }
@@ -177,7 +189,7 @@
             const l = parseFloat(document.getElementById('tLordo').value.replace(',','.')) || 0;
             if(l===0) return;
             db.s.push({ id:Date.now(), time:`${document.getElementById('dateTurnoD').value.padStart(2,'0')}/${document.getElementById('dateTurnoM').value.padStart(2,'0')}/${document.getElementById('dateTurnoY').value}`, l:l, o:parseFloat(document.getElementById('tOre').value.replace(',','.'))||0, k:parseFloat(document.getElementById('tKm').value.replace(',','.'))||0, c:parseFloat(document.getElementById('tCons').value.replace(',','.'))||0 });
-            save(); closeModals();
+            save(); closeModals(); document.getElementById('tLordo').value=''; document.getElementById('tOre').value=''; document.getElementById('tKm').value='';
         }
 
         function addBenza() {
@@ -185,7 +197,7 @@
             const p = parseFloat(document.getElementById('bP').value.replace(',','.')) || 0;
             if(e<=0) return;
             db.r.push({ id:Date.now(), time:`${document.getElementById('dateBenzaD').value.padStart(2,'0')}/${document.getElementById('dateBenzaM').value.padStart(2,'0')}/${document.getElementById('dateBenzaY').value}`, e:e, p:p, litri:p>0?e/p:0 });
-            save(); closeModals();
+            save(); closeModals(); document.getElementById('bEuro').value=''; document.getElementById('bP').value='';
         }
 
         function openReport() {
