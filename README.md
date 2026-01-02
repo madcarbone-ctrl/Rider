@@ -22,7 +22,7 @@
 * **Guadagno Lordo**: Inserisci quanto hai incassato nel turno.
 * **Ore Lavorate**: Inserisci la durata della sessione di lavoro.
 * **Kilometri**: Indica i km totali percorsi durante il turno.
-* **Consumo L/100km**: Inserisci il consumo medio del tuo mezzo (es. 2.5). Serve a calcolare la spesa benzina.
+* **Consumo L/100km**: Inserisci il consumo medio di carburante registrato durante il turno (es. 2.5). **Suggerimento**: Controlla il computer di bordo del tuo mezzo per vedere la cifra esatta dei litri consumati ogni 100km.
 
 #### ⛽ Monitor Benzina (Tasto BENZINA)
 * **Euro Spesi**: Quanti soldi hai pagato alla pompa.
@@ -54,7 +54,7 @@ Questa schermata riassume l'andamento del mese selezionato:
 * **MANCANTE**: Indicates the **gross** amount remaining to reach your goal (TARGET).
 
 ### 2. Entry Menus (Pop-ups)
-* **TURNO (Shift)**: Enter Date, Earnings, Hours, Kilometers, and Fuel Consumption (L/100km).
+* **TURNO (Shift)**: Enter Date, Earnings, Hours, Kilometers, and Fuel Consumption (L/100km). **Tip**: Check your vehicle's on-board computer to see the exact average fuel consumption (liters per 100km) during the shift.
 * **BENZINA (Fuel)**: Enter Total Spend and Price per liter. Quick 4-digit input automatically adds the decimal point (e.g., `1855` -> `1.855`).
 
 ### 3. History Management
