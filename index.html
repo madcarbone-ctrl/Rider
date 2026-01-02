@@ -27,10 +27,11 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* [INIZIO STILE STORICO RICHIESTO] */
+        /* STILE STORICO RICHIESTO */
+        #listaStorico { padding-top: 10px; }
         .storico-item {
             background: #0f0f0f;
-            padding: 15px 10px;
+            padding: 15px 5px;
             margin: 0;
             border-top: 1px solid #333;
             border-bottom: 1px solid #333;
@@ -38,13 +39,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        .storico-item::before { content: "["; color: #444; font-size: 24px; margin-right: 12px; font-weight: 100; }
-        .storico-item::after { content: "]"; color: #444; font-size: 24px; margin-left: 12px; font-weight: 100; }
-        .storico-info { flex: 1; text-align: left; }
-        .storico-data { font-size: 10px; font-weight: bold; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
-        .storico-main { font-size: 18px; font-weight: bold; margin: 2px 0; }
-        .storico-sub { font-size: 10px; color: var(--dim); }
-        /* [FINE STILE STORICO RICHIESTO] */
+        .storico-item::before { content: "["; color: #444; font-size: 28px; margin-right: 10px; font-weight: 100; }
+        .storico-item::after { content: "]"; color: #444; font-size: 28px; margin-left: 10px; font-weight: 100; }
+        .storico-info { flex: 1; text-align: left; padding-left: 10px; }
+        .tipo-label { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
+        .storico-data { font-size: 10px; color: var(--dim); margin-bottom: 4px; }
+        .storico-main { font-size: 18px; font-weight: bold; }
+        .storico-sub { font-size: 10px; color: var(--dim); margin-top: 4px; }
 
         /* Modali */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:flex-start; justify-content:center; padding:15px; overflow-y:auto; }
@@ -69,7 +70,7 @@
         .report-table th, .report-table td { border:1px solid #000; padding:6px 4px; text-align:left; }
         .report-table th { background:#eee; font-weight: bold; text-transform: uppercase; font-size: 7.5px; }
         
-        @media print { .no-print { display:none!important; } #reportView { display:block!important; position:relative; } }
+        @media print { .no-print { display:none!important; } #reportView { display:block!important; position:relative; } body { background:#fff; } }
     </style>
 </head>
 <body>
@@ -122,7 +123,7 @@
     <div id="histView">
         <h2 style="color:var(--primary); text-align:center;">STORICO ATTIVITÀ</h2>
         <div id="listaStorico"></div>
-        <button class="btn-modal btn-close-turno" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+        <button class="btn-modal btn-close-turno" style="margin-top:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
     </div>
 
     <div id="reportView">
@@ -133,7 +134,7 @@
         </table>
         <div id="recapTable" style="margin-top:20px;"></div>
         <div class="no-print" style="margin-top:20px; display:flex; gap:10px;">
-            <button class="btn-modal btn-save" onclick="window.print()">STAMPA</button>
+            <button class="btn-modal btn-save" onclick="window.print()">STAMPA PDF</button>
             <button class="btn-modal btn-close-turno" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
         </div>
     </div>
@@ -143,6 +144,7 @@
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">REPORT MENSILE</button>
+        <button onclick="if(confirm('RESET TOTALE?')) {localStorage.clear(); location.reload();}" style="grid-column:span 3; background:#300; border:none; color:#f66; font-size:9px; padding:5px; border-radius:5px; margin-top:5px;">RESET TOTALE DATABASE</button>
     </div>
 
     <script>
@@ -151,6 +153,7 @@
         
         function salvaDB() { localStorage.setItem('rider_db_final', JSON.stringify(dati)); mostra(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+        
         function mostra() {
             const n = new Date(); const f = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             let tM = dati.turni.filter(t => t.data.includes(f)), rM = dati.rifornimenti.filter(r => r.data.includes(f));
@@ -175,11 +178,11 @@
             let h = "";
             const tutti = [...dati.turni.map(t=>({...t,tipo:'T'})), ...dati.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id - a.id);
             tutti.forEach(i => {
-                const isT = i.tipo === 'T'; const color = isT ? 'var(--primary)' : 'var(--orange)';
+                const isT = i.tipo === 'T'; const color = isT ? 'var(--primary)' : 'var(--orange)'; const label = isT ? 'TURNO RIDER' : 'RIFORNIMENTO';
                 let det = isT ? 
-                    `<div class="storico-data">${i.data} <span style="color:#333">|</span> ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.lordo.toFixed(2)}</div><div class="storico-sub">${i.km} KM - ${i.cons} L/100</div>` :
-                    `<div class="storico-data">${i.data} <span style="color:#333">|</span> ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.euro.toFixed(2)}</div><div class="storico-sub">${(i.euro/i.prezzo).toFixed(2)} LITRI - €${i.prezzo.toFixed(3)}/L</div>`;
-                h += `<div class="storico-item"><div class="storico-info">${det}</div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:var(--accent); font-size:22px;"><i class="fas fa-times-circle"></i></button></div>`;
+                    `<div class="tipo-label" style="color:${color}">${label}</div><div class="storico-data">${i.data} <span style="color:#333">|</span> ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.lordo.toFixed(2)}</div><div class="storico-sub"><i class="fas fa-road"></i> ${i.km} KM &nbsp; <i class="fas fa-tint"></i> ${i.cons} L/100</div>` :
+                    `<div class="tipo-label" style="color:${color}">${label}</div><div class="storico-data">${i.data} <span style="color:#333">|</span> ${i.ora}</div><div class="storico-main" style="color:${color}">€${i.euro.toFixed(2)}</div><div class="storico-sub"><i class="fas fa-gas-pump"></i> ${(i.euro/i.prezzo).toFixed(2)} L &nbsp; <i class="fas fa-tag"></i> €${i.prezzo.toFixed(3)}/L</div>`;
+                h += `<div class="storico-item" style="border-left: 4px solid ${color}; border-right: 4px solid ${color};"><div class="storico-info">${det}</div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:var(--accent); font-size:22px;"><i class="fas fa-times-circle"></i></button></div>`;
             });
             document.getElementById('listaStorico').innerHTML = h || "Vuoto";
             document.getElementById('histView').style.display = 'flex';
@@ -188,6 +191,7 @@
         function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; dati.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
         function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; dati.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
         function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
+        
         function apriReport() { 
             const n = new Date(); const f = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             document.getElementById('repTitle').innerText = `Report ${mesi[n.getMonth()]} ${n.getFullYear()}`;
@@ -198,12 +202,14 @@
             });
             document.getElementById('corpoReport').innerHTML = h;
             let ultP = dati.rifornimenti.length>0 ? dati.rifornimenti[dati.rifornimenti.length-1].prezzo : 1.85;
-            document.getElementById('recapTable').innerHTML = `<table class="report-table"><tr><td>LORDO</td><td>€${tL.toFixed(2)}</td></tr><tr><td>NETTO</td><td>€${(tL-(tL*(dati.tax/100))-(tLS*ultP)).toFixed(2)}</td></tr></table>`;
+            document.getElementById('recapTable').innerHTML = `<table class="report-table"><tr><td>LORDO TOTALE</td><td>€${tL.toFixed(2)}</td></tr><tr><td>NETTO ESTIMATO</td><td>€${(tL-(tL*(dati.tax/100))-(tLS*ultP)).toFixed(2)}</td></tr></table>`;
             document.getElementById('reportView').style.display='flex';
         }
+        
         function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; dati.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
         function aggiornaTax() { dati.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-        function elimina(c,id) { if(confirm("Elimina?")) { dati[c]=dati[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+        function elimina(c,id) { if(confirm("Eliminare questa attività?")) { dati[c]=dati[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+        
         window.onload = mostra;
     </script>
 </body>
