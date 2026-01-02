@@ -52,6 +52,16 @@
             text-align:left; 
         }
 
+        /* Titolo Storico: Centrato, Maiuscolo, Dimensione ridotta */
+        .hist-title { 
+            color:var(--primary); 
+            text-align: center; 
+            text-transform: uppercase; 
+            font-size: 18px; 
+            margin: 20px 0; 
+            letter-spacing: 1px;
+        }
+
         .btn-chiudi-hist { 
             width: 50%; 
             align-self: center; 
@@ -62,7 +72,6 @@
 
         #reportView { background:#fff; color:#000; }
 
-        /* NUOVO STILE SCHEDE STORICO: Cornice chiusa ed omogenea */
         .hist-item { 
             background:#111; 
             padding:15px; 
@@ -71,9 +80,9 @@
             display:flex; 
             justify-content:space-between; 
             align-items:center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); /* Riga fine bianca semi-trasparente sopra e sotto */
-            border-left-width: 5px;  /* Bordo sinistro identificativo più spesso */
-            border-right-width: 5px; /* Bordo destro identificativo più spesso */
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-left-width: 5px;  
+            border-right-width: 5px; 
         }
 
         .hist-info { font-size:11px; line-height:1.6; color:var(--text); }
@@ -132,7 +141,7 @@
     </div>
 
     <div id="histView">
-        <h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2>
+        <div class="hist-title">Storico Dettagliato</div>
         <div id="listaStorico" style="padding:0 15px;"></div>
         <button class="btn-modal btn-chiudi-hist" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
     </div>
