@@ -1,13 +1,13 @@
 {
   "name": "Rider Tracker Pro",
   "short_name": "Rider",
-  "start_url": "/Rider/",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#121212",
+  "background_color": "#0f0f0f",
+  "theme_color": "#00CCBC",
   "icons": [
     {
-      "src": "icona.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/1165/1165961.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
