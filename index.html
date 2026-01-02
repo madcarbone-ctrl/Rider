@@ -57,15 +57,14 @@
         th, td { border:1px solid #000; padding:6px 2px; text-align:center; overflow:hidden; word-wrap: break-word; }
         th { background:#f0f0f0; font-weight: bold; }
         
-        /* Larghezze fisse colonne */
+        /* Larghezze fisse colonne ricalibrate dopo rimozione Cons. */
         th:nth-child(1) { width: 18%; }
         th:nth-child(2) { width: 12%; }
         th:nth-child(3) { width: 15%; }
         th:nth-child(4) { width: 10%; }
-        th:nth-child(5) { width: 10%; }
-        th:nth-child(6) { width: 12%; }
-        th:nth-child(7) { width: 11%; }
-        th:nth-child(8) { width: 12%; }
+        th:nth-child(5) { width: 15%; }
+        th:nth-child(6) { width: 15%; }
+        th:nth-child(7) { width: 15%; }
 
         #recapReport { margin:20px 0; padding:15px; border:2px solid #000; color:#000; line-height:1.6; font-size: 12px; }
         @media print { .no-print { display:none!important; } }
@@ -128,8 +127,8 @@
         <h2 id="reportTitle">Riepilogo Mensile</h2>
         <table id="tabellaReport">
             <thead>
-                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>Cons.</th><th>KM/L</th></tr>
-            </thead>
+                <tr><th>Data/Ora</th><th>Tipo</th><th>Euro</th><th>Ore</th><th>Km</th><th>Litri</th><th>KM/L</th></tr>
+                </thead>
             <tbody id="corpoReport"></tbody>
         </table>
         <div id="recapReport"></div>
@@ -194,7 +193,7 @@
         }
 
         /* ************************************************************ */
-        /* ✨ 1. INIZIO MODIFICA TABELLA DI STAMPA ✨                   */
+        /* ✨ 2. MODIFICA CORREZIONE LITRI (MANTENUTA) ✨                */
         /* ************************************************************ */
         function generaTabellaReport(filter) {
             let h = "", tLordo=0, tOre=0, tKm=0, tLitriR=0, tEuroB=0, tLitriC=0, tSpesaBenzaStimata=0;
@@ -206,12 +205,15 @@
                 tLordo += t.lordo; tOre += t.ore; tKm += t.km; tLitriC += lT;
                 tSpesaBenzaStimata += costoStimatoTurno;
                 let kmL = lT > 0 ? (t.km / lT).toFixed(1) : 0;
-                h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>-</td><td>${t.cons}</td><td>${kmL}</td></tr>`;
+                
+                // ✨ 3. RIMOZIONE CELLA t.cons ✨
+                h += `<tr><td>${t.data}<br>${t.ora||''}</td><td>Turno</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${lT.toFixed(2)}L</td><td>${kmL}</td></tr>`;
             });
 
             dati.rifornimenti.filter(r => r.data.includes(filter)).forEach(r => {
                 tEuroB += r.euro; tLitriR += r.litri;
-                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td><td>-</td></tr>`;
+                // ✨ 3. RIMOZIONE CELLA VUOTA FINALE ✨
+                h += `<tr style="background:#f2f2f2"><td>${r.data}<br>${r.ora||''}</td><td>Benza</td><td>€${r.euro.toFixed(2)}</td><td>-</td><td>-</td><td>${r.litri.toFixed(2)}L</td><td>-</td></tr>`;
             });
 
             document.getElementById('corpoReport').innerHTML = h;
@@ -220,9 +222,6 @@
 
             document.getElementById('recapReport').innerHTML = `<b>RIEPILOGO LAVORATIVO (Solo Turni):</b><br>Lordo Totale: <b>€${tLordo.toFixed(2)}</b><br>Tasse (${dati.tax}%): -€${tasse.toFixed(2)}<br>Benzina Stimata Lavoro: <b>-€${tSpesaBenzaStimata.toFixed(2)}</b><hr style="border:1px solid #000"><b style="font-size:18px;">NETTO LAVORO: €${nettoLavorativo.toFixed(2)}</b><br><br><b>USCITE TOTALI (Privato + Lavoro):</b><br>Benzina Totale Pagata: €${tEuroB.toFixed(2)}<br>KM Totali: ${tKm} | Ore: ${tOre.toFixed(1)}`;
         }
-        /* ************************************************************ */
-        /* ✨ 1. FINE MODIFICA TABELLA DI STAMPA ✨                     */
-        /* ************************************************************ */
 
         function salvaTurno() {
             const l = parseFloat(document.getElementById('tL').value)||0; if(l<=0) return;
@@ -289,4 +288,5 @@
 
         function testCambioMese() { eseguiControlloMese(true); }
         function elimina(cat, id) { if(confirm("Eliminare?")) { dati[cat] = dati[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget()
+        function aggiornaTarget() { dati.target = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaTax() { dati.tax 
