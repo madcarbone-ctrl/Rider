@@ -28,19 +28,19 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALE COMPATTATO - MODIFICA 5 */
+        /* MODALI GENERALI */
         .modal { 
             display:none; 
             position:fixed; 
             inset:0; 
             background:rgba(0,0,0,0.92); 
             z-index:9999; 
-            align-items: flex-start !important; /* Forza l'allineamento in alto */
+            align-items: flex-start !important;
             justify-content:center; 
             padding: 0px; 
         }
-        
-        /* INIZIO TESTO MODIFICA: FINESTRA RISTRETTA E POSIZIONATA IN ALTO */
+
+        /* FINESTRA GENERALE MODALE */
         .modal-content { 
             background:var(--card); 
             padding: 8px 12px; 
@@ -53,8 +53,32 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .modal h3 { font-size: 14px; margin: 4px 0 8px; color: var(--primary); text-transform: uppercase; }
+        /* --- INIZIO TESTO MODIFICA 10: REGOLAZIONE ALTEZZA FINESTRA TURNO (+1cm) --- */
+        #modalTurno .modal-content {
+            padding-bottom: 15px; /* Riaggiunto spazio per abbassare leggermente rispetto a prima */
+            max-height: 320px;    /* Altezza massima aumentata per non comprimere troppo */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
 
+        #modalTurno h3 { font-size: 14px; margin: 6px 0 10px; color: var(--primary); }
+
+        #modalTurno input { 
+            width: 95%; 
+            margin: 0 auto 6px;  /* Margine leggermente più ampio per leggibilità */
+            padding: 4px 10px; 
+            height: 30px;       /* Tornato ad altezza standard */
+            font-size: 13px;
+        }
+
+        #modalTurno .btn-modal { 
+            height: 34px;       /* Pulsanti tornati ad altezza standard */
+            margin-top: 6px; 
+        }
+        /* --- FINE TESTO MODIFICA 10 --- */
+
+        .modal h3 { font-size: 14px; margin: 4px 0 8px; color: var(--primary); text-transform: uppercase; }
         .modal input { 
             width: 95%; 
             margin: 0 auto 5px; 
@@ -65,13 +89,13 @@
             border-radius:8px; 
             font-size:13px; 
             display: block;
-            height: 30px; /* Altezza ultra-fine per i campi */
+            height: 30px;
             outline: none;
         }
 
         .btn-modal { 
             width:95%; 
-            height: 34px; /* Altezza ultra-fine per i bottoni */
+            height: 34px; 
             border-radius:8px; 
             border:none; 
             font-weight:bold; 
@@ -84,7 +108,6 @@
 
         .date-row { display:flex; gap:4px; margin-bottom:6px; justify-content: center; width: 95%; margin-left: auto; margin-right: auto; }
         .date-row select { background:#333; color:#fff; padding:0 5px; border-radius:8px; flex:1; border:none; font-size: 11px; height: 28px; }
-        /* FINE TESTO MODIFICA: FINESTRA RISTRETTA E POSIZIONATA IN ALTO */
 
         .btn-save { background:var(--primary); color:#000; }
         .btn-close-turno { background:var(--orange); color:#000; } 
