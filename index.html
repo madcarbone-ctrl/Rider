@@ -38,7 +38,6 @@
         .btn-row { grid-column:span 3; display:flex; gap:5px; margin-top:5px; }
         .btn-row button { flex:1; padding:10px; border-radius:10px; border:none; font-size:10px; font-weight:bold; color:#fff; }
         
-        /* FIX STORICO: box-sizing e overflow-x aggiunti per evitare scroll laterale */
         #histView, #reportView { 
             display:none; 
             position:fixed; 
@@ -51,6 +50,15 @@
             overflow-x:hidden;
             box-sizing: border-box;
             text-align:left; 
+        }
+
+        /* Pulsante Chiudi Storico ridimensionato e colorato */
+        .btn-chiudi-hist { 
+            width: 50%; 
+            align-self: center; 
+            background: var(--primary); 
+            color: #000; 
+            margin: 20px 0 40px; 
         }
 
         #reportView { background:#fff; color:#000; }
@@ -110,7 +118,11 @@
         </div>
     </div>
 
-    <div id="histView"><h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2><div id="listaStorico" style="padding:0 15px;"></div><button class="btn-modal" style="background:#222; color:#fff; margin:20px;" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView">
+        <h2 style="color:var(--primary); padding:15px;">Storico Dettagliato</h2>
+        <div id="listaStorico" style="padding:0 15px;"></div>
+        <button class="btn-modal btn-chiudi-hist" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+    </div>
 
     <div id="reportView">
         <h2 style="text-align:center" id="reportTitle">Riepilogo Mensile</h2>
