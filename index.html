@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        /* TUA GRAFICA ORIGINALE INALTERATA */
+        /* TUA GRAFICA ORIGINALE INTEGRALE */
         :root { --p-orange: #ff9800; --p-black: #121212; --p-grey: #1e1e1e; --p-white: #e0e0e0; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--p-black); color: var(--p-white); margin: 0; padding: 10px; }
         .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -20,11 +20,15 @@
         .btn-plus { background: var(--p-orange); color: black; }
         .btn-fuel { background: #444; color: white; border: 1px solid var(--p-orange); }
         .btn-reset { background: #b71c1c; color: white; width: 100%; margin-top: 10px; }
+        .history-btn { background: #333; color: var(--p-orange); border: 1px solid var(--p-orange); width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; margin-bottom: 10px; }
         .form-window { position: fixed; bottom: 0; left: 0; width: 100%; background: #222; border-top: 3px solid var(--p-orange); border-radius: 20px 20px 0 0; padding: 20px; box-sizing: border-box; display: none; z-index: 1500; }
-        
-        /* AGGIUNTA SOLO STILE MODALE PROFESSIONALE */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: var(--p-orange); font-size: 0.8rem; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 12px; background: #333; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1rem; box-sizing: border-box; }
+
+        /* NUOVA MODALE PROFESSIONALE (Sostituisce Alert/Confirm) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .modal-content { background: var(--p-grey); border: 2px solid var(--p-orange); border-radius: 20px; padding: 25px; width: 85%; max-width: 380px; text-align: center; }
+        .modal-content { background: var(--p-grey); border: 2px solid var(--p-orange); border-radius: 20px; padding: 25px; width: 85%; max-width: 380px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-buttons { display: flex; gap: 12px; margin-top: 20px; }
         .btn-modal { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         .btn-ok { background: var(--p-orange); color: #000; }
@@ -39,8 +43,8 @@
         <div class="card"><label>Litri Stim.</label><span id="disp-litri">0.0</span></div>
         <div class="card"><label>KM/L</label><span id="disp-kml">0.0</span></div>
         <div class="card"><label>Spesa Benz.</label><span id="disp-benz">0.00</span>€</div>
-        <div class="card"><label>Target Netto</label><input type="number" id="input-target" oninput="salvaDB()"></div>
-        <div class="card"><label>Tax %</label><input type="number" id="input-tax" oninput="salvaDB()"></div>
+        <div class="card"><label>Target Netto</label><input type="number" id="input-target" placeholder="0" oninput="salvaDB()"></div>
+        <div class="card"><label>Tax %</label><input type="number" id="input-tax" value="20" oninput="salvaDB()"></div>
         <div class="card"><label>Mancante</label><span id="disp-mancante">0.00</span>€</div>
     </div>
 
@@ -48,23 +52,48 @@
         <button class="btn btn-plus" onclick="apriForm('turno')">+ TURNO</button>
         <button class="btn btn-fuel" onclick="apriForm('benzina')">⛽ BENZINA</button>
     </div>
+
+    <button class="history-btn" onclick="mostraStorico()">🕒 STORICO E REPORT</button>
     <button class="btn btn-reset" onclick="confermaAzzera()">AZZERA DATABASE</button>
 
     <div id="customModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="modalTitle" style="color:var(--p-orange); margin-top:0">AVVISO</h3>
-            <p id="modalMessage"></p>
+            <h3 id="modalTitle" style="color:var(--p-orange); margin:0 0 15px 0">AVVISO</h3>
+            <p id="modalMessage" style="margin-bottom:20px"></p>
             <div class="modal-buttons">
                 <button id="modalCancelBtn" class="btn-modal btn-cancel">ANNULLA</button>
                 <button id="modalConfirmBtn" class="btn-modal btn-ok">OK</button>
             </div>
         </div>
     </div>
+
+    <div id="form-turno" class="form-window">
+        <h3 style="color:var(--p-orange); margin:0 0 15px 0">Nuovo Turno</h3>
+        <div class="form-group"><label>Data</label><input type="date" id="t-data"></div>
+        <div class="form-group"><label>Lordo (€)</label><input type="number" id="t-lordo" step="0.01"></div>
+        <div class="form-group"><label>Ore lavorate</label><input type="number" id="t-ore" step="0.1"></div>
+        <div class="form-group"><label>KM percorsi</label><input type="number" id="t-km" step="0.1"></div>
+        <div class="form-group"><label>Consumo L/100km</label><input type="number" id="t-cons" step="0.1"></div>
+        <div class="btn-container">
+            <button class="btn btn-fuel" onclick="chiudiForm('turno')">CHIUDI</button>
+            <button class="btn btn-plus" onclick="aggiungiTurno()">SALVA</button>
+        </div>
+    </div>
+
+    <div id="form-benzina" class="form-window">
+        <h3 style="color:var(--p-orange); margin:0 0 15px 0">Rifornimento</h3>
+        <div class="form-group"><label>Euro spesi (€)</label><input type="number" id="b-euro" step="0.01"></div>
+        <div class="form-group"><label>Prezzo al Litro (€/L)</label><input type="number" id="b-prezzo" step="0.001"></div>
+        <div class="btn-container">
+            <button class="btn btn-fuel" onclick="chiudiForm('benzina')">CHIUDI</button>
+            <button class="btn btn-plus" onclick="aggiungiBenzina()">SALVA</button>
+        </div>
+    </div>
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], benzina: [], target: 0, tax: 20 };
         let modalCallback = null;
 
-        // Gestione Nuove Modali Professionali
+        // Gestore Modali Professionale (Sostituisce alert/confirm)
         function mostraModale(titolo, messaggio, callback = null, mostraAnnulla = false) {
             const modal = document.getElementById('customModal');
             document.getElementById('modalTitle').innerText = titolo;
@@ -84,20 +113,44 @@
             modalCallback = null;
         };
 
-        // Funzioni originali di calcolo e salvataggio
+        function apriForm(tipo) { document.getElementById('form-' + tipo).style.display = 'block'; }
+        function chiudiForm(tipo) { document.getElementById('form-' + tipo).style.display = 'none'; }
+
         function salvaDB() {
             db.target = parseFloat(document.getElementById('input-target').value) || 0;
-            db.tax = parseFloat(document.getElementById('input-tax').value) || 20;
+            db.tax = parseFloat(document.getElementById('input-tax').value) || 0;
             localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
             calcola();
         }
 
-        function confermaAzzera() {
-            // Sostituito confirm() con mostraModale()
-            mostraModale("ATTENZIONE", "Vuoi azzerare tutto il database? L'azione non è reversibile.", () => {
-                localStorage.removeItem('rider_db_final_v30');
-                location.reload();
-            }, true);
+        function aggiungiTurno() {
+            const t = {
+                data: document.getElementById('t-data').value || new Date().toISOString().split('T')[0],
+                lordo: parseFloat(document.getElementById('t-lordo').value) || 0,
+                ore: parseFloat(document.getElementById('t-ore').value) || 0,
+                km: parseFloat(document.getElementById('t-km').value) || 0,
+                cons: parseFloat(document.getElementById('t-cons').value) || 0
+            };
+            if(t.lordo > 0) {
+                db.turni.push(t);
+                salvaDB();
+                chiudiForm('turno');
+                mostraModale("SUCCESSO", "Turno salvato con successo!");
+            }
+        }
+
+        function aggiungiBenzina() {
+            const b = {
+                euro: parseFloat(document.getElementById('b-euro').value) || 0,
+                prezzo: parseFloat(document.getElementById('b-prezzo').value) || 0,
+                data: new Date().toLocaleDateString()
+            };
+            if(b.euro > 0 && b.prezzo > 0) {
+                db.benzina.push(b);
+                salvaDB();
+                chiudiForm('benzina');
+                mostraModale("SUCCESSO", "Rifornimento registrato!");
+            }
         }
 
         function calcola() {
@@ -106,8 +159,8 @@
                 lordoTot += t.lordo; oreTot += t.ore; kmTot += t.km;
                 litriStim += (t.km * t.cons) / 100;
             });
-            let spesaB = db.benzina.reduce((a, b) => a + b.euro, 0);
-            let ultimoP = db.benzina.length > 0 ? db.benzina[db.benzina.length-1].prezzo : 1.80;
+            let spesaB = db.benzina.reduce((acc, val) => acc + val.euro, 0);
+            let ultimoP = db.benzina.length > 0 ? db.benzina[db.benzina.length-1].prezzo : 1.85;
             let costoB = litriStim * ultimoP;
             let netto = lordoTot - (lordoTot * db.tax / 100) - costoB;
             let mancanteN = db.target - netto;
@@ -117,23 +170,33 @@
             document.getElementById('disp-netto').innerText = netto.toFixed(2);
             document.getElementById('disp-ore').innerText = oreTot;
             document.getElementById('disp-litri').innerText = litriStim.toFixed(1);
-            document.getElementById('disp-kml').innerText = litriStim > 0 ? (kmTot/litriStim).toFixed(1) : "0.0";
+            document.getElementById('disp-kml').innerText = litriStim > 0 ? (kmTot / litriStim).toFixed(1) : "0.0";
             document.getElementById('disp-benz').innerText = spesaB.toFixed(2);
-            document.getElementById('disp-mancante').innerText = mancanteL.toFixed(2);
+            document.getElementById('disp-mancante').innerText = (mancanteL > 0 ? mancanteL : 0).toFixed(2);
         }
+
+        function confermaAzzera() {
+            mostraModale("ATTENZIONE", "Vuoi davvero azzerare tutto il database? L'azione è irreversibile.", () => {
+                localStorage.removeItem('rider_db_final_v30');
+                location.reload();
+            }, true);
+        }
+
+        // Auto-scroll per input mobile
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focusin', (e) => {
+                setTimeout(() => { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+            });
+        });
 
         window.onload = () => {
             document.getElementById('input-target').value = db.target;
             document.getElementById('input-tax').value = db.tax;
-            
-            // Pop-up allerta fine mese professionale
-            if (new Date().getDate() === 1) {
-                mostraModale("AVVISO FINE MESE", "È il primo del mese! Genera il PDF prima di azzerare i dati.");
+            if(new Date().getDate() === 1) {
+                mostraModale("FINE MESE", "È il primo del mese! Ricordati di generare il PDF prima di azzerare.");
             }
             calcola();
         };
-
-        // ... Inserisci qui le tue restanti funzioni originali (apriForm, aggiungiTurno, ecc.)
     </script>
 </body>
 </html>
