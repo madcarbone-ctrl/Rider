@@ -55,4 +55,4 @@
 3.  **Mobile:** Usa la funzione "Aggiungi a schermata Home" del tuo smartphone per usarla come un'app nativa.
 
 ---
-*Creato per semplificare la vita dei rider. Version 1.0 - 2026.*
+*Creato da Marco Carbone per semplificare la vita dei rider. Version 1.0 - 2026.*
