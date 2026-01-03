@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
     <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         
-        /* INTERFACCIA PRINCIPALE BLOCCATA */
+        * { 
+            box-sizing:border-box; 
+            -webkit-tap-highlight-color:transparent; 
+            touch-action: manipulation; /* Blocca zoom al doppio tocco */
+        }
+        
         body { 
             font-family:sans-serif; 
             background:var(--bg); 
@@ -19,10 +24,11 @@
             margin:0; 
             padding:10px; 
             text-align:center; 
-            overflow: hidden; 
-            height: 100vh; 
+            overflow: hidden !important; /* Forza blocco scroll */
+            height: 100%;
             width: 100vw;
-            position: fixed; /* Blindatura totale contro lo scroll */
+            position: fixed; 
+            left:0; top:0;
         }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
@@ -39,7 +45,7 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALI E STORICO (UNICI CON SCROLL PERMESSO) */
+        /* MODALI OTTIMIZZATI PER PWA */
         .modal, #reportView, #histView { 
             display:none; 
             position:fixed; 
@@ -47,7 +53,7 @@
             z-index:8000; 
             background:var(--bg); 
             padding:15px; 
-            overflow-y:auto; /* Permette lo scroll solo qui dentro */
+            overflow-y:auto; 
             -webkit-overflow-scrolling: touch;
         }
 
@@ -109,7 +115,6 @@
     </div>
 
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-    
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
 
     <div id="histView" class="no-print"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
@@ -136,14 +141,23 @@
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-    
-    // [MODIFICA 27: AUTO-SCROLL/CENTRATURA NEI MODALI]
-    document.querySelectorAll('.modal input').forEach(input => {
-        input.addEventListener('focus', function() {
-            setTimeout(() => {
-                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
-        });
+
+    // [MODIFICA 28: GESTIONE TASTIERA PWA]
+    function scrollIntoFocus(el) {
+        setTimeout(() => {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', function() { scrollIntoFocus(this); });
+    });
+
+    // Forza il ricalcolo dell'altezza se la tastiera distorce il layout
+    window.visualViewport.addEventListener('resize', () => {
+        if (document.activeElement.tagName === 'INPUT') {
+            scrollIntoFocus(document.activeElement);
+        }
     });
 
     document.addEventListener('input', function (e) { if (e.target.id === 'bP') { let v = e.target.value.replace('.', '').replace(',', ''); if (v.length >= 2) { e.target.value = v.charAt(0) + '.' + v.substring(1); } } });
@@ -179,53 +193,26 @@
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>-</td></tr>";
         document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>-</td></tr>";
         let taxV = tL * (db.tax/100), ultP = (db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85); let costBS = tLS * ultP;
-        let hL = tO > 0 ? (tL/tO).toFixed(2) : 0;
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
             <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
-            <div class="summary-row"><span>GUADAGNO ORARIO LORDO:</span><span>€${hL}/ora</span></div>
-            <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
             <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-            <div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div>
             <div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
         `;
         document.getElementById('reportView').style.display = 'block';
     }
 
-    // [MODIFICA 27: SALVATAGGIO CON RESET CAMPI]
     function salvaTurno() { 
         const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; 
-        db.turni.push({
-            id:Date.now(), 
-            data:d, 
-            ora:new Date().toLocaleTimeString().substring(0,5), 
-            lordo:parseFloat(document.getElementById('tL').value)||0, 
-            ore:parseFloat(document.getElementById('tO').value)||0, 
-            km:parseFloat(document.getElementById('tK').value)||0, 
-            cons:parseFloat(document.getElementById('tC').value)||0
-        }); 
-        // Reset campi Turno
-        document.getElementById('tL').value = '';
-        document.getElementById('tO').value = '';
-        document.getElementById('tK').value = '';
-        document.getElementById('tC').value = '';
-        
+        db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); 
+        document.getElementById('tL').value = ''; document.getElementById('tO').value = ''; document.getElementById('tK').value = ''; document.getElementById('tC').value = '';
         salvaDB(); chiudiModali(); 
     }
 
     function salvaBenza() { 
         const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; 
-        db.rifornimenti.push({
-            id:Date.now(), 
-            data:d, 
-            ora:new Date().toLocaleTimeString().substring(0,5), 
-            euro:parseFloat(document.getElementById('bE').value)||0, 
-            prezzo:parseFloat(document.getElementById('bP').value)||0
-        }); 
-        // Reset campi Benzina
-        document.getElementById('bE').value = '';
-        document.getElementById('bP').value = '';
-        
+        db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); 
+        document.getElementById('bE').value = ''; document.getElementById('bP').value = '';
         salvaDB(); chiudiModali(); 
     }
 
