@@ -25,6 +25,7 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
+        /* [RIPRISTINO LAYOUT STORICO BELLO] */
         .storico-item { background: #0f0f0f; padding: 15px 5px; margin: 0; border-top: 1px solid #333; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .storico-item::before { content: "["; color: #444; font-size: 28px; margin-right: 10px; font-weight: 100; }
         .storico-item::after { content: "]"; color: #444; font-size: 28px; margin-left: 10px; font-weight: 100; }
@@ -34,6 +35,7 @@
         .storico-main { font-size: 18px; font-weight: bold; }
         .storico-sub { font-size: 10px; color: var(--dim); margin-top: 4px; }
 
+        /* [RIPRISTINO REPORT PDF] */
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align:left; }
         .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; color: #000; }
         .report-section { margin-bottom: 25px; color: #000; }
@@ -117,19 +119,17 @@
     <div id="reportView">
         <div class="report-header"><h1 id="repMonth">Report Mensile</h1><p>RIDER TRACKER PRO V1.0</p></div>
         <div class="report-section">
-            <h3>DETTAGLIO ATTIVITÀ</h3>
+            <h3>DETTAGLIO TURNI</h3>
             <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>DATA</th>
-                        <th>LORDO</th>
-                        <th>ORE</th>
-                        <th>KM</th>
-                        <th>CONS.</th>
-                        <th>LITRI</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>CONS.</th><th>LITRI</th></tr></thead>
                 <tbody id="repTurniBody"></tbody>
+            </table>
+        </div>
+        <div class="report-section">
+            <h3>DETTAGLIO RIFORNIMENTI</h3>
+            <table class="report-table">
+                <thead><tr><th>DATA</th><th>EURO</th><th>PREZZO (€/L)</th><th>LITRI CALC.</th></tr></thead>
+                <tbody id="repBenzaBody"></tbody>
             </table>
         </div>
         <div class="report-section">
@@ -141,6 +141,7 @@
             <button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
         </div>
     </div>
+
     <div class="sticky-footer no-print">
         <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
@@ -171,7 +172,7 @@
 
         function testFineMese() {
             db.lastCheck = "12/2025";
-            alert("Simulazione: Mese precedente impostato a Dicembre 2025. Rieseguo il controllo...");
+            alert("Simulazione: Mese precedente Dicembre 2025.");
             checkNuovoMese();
         }
 
@@ -198,37 +199,64 @@
             document.getElementById('mancante').innerText = '€' + (manca > 0 ? manca.toFixed(2) : "0.00");
         }
 
-        // [LOGICA REPORT RIPRISTINATA E COMPLETA]
         function apriReport() {
             const n = new Date();
             const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             document.getElementById('repMonth').innerText = `Report ${mesi[n.getMonth()]} ${n.getFullYear()}`;
             
             let tH = "", tL=0, tO=0, tK=0, tLS=0;
-            let filteredTurni = db.turni.filter(t=>t.data.includes(tag)).sort((a,b)=>a.id-b.id);
-            let filteredBenza = db.rifornimenti.filter(r=>r.data.includes(tag));
-            
-            filteredTurni.forEach(t => {
+            db.turni.filter(t=>t.data.includes(tag)).sort((a,b)=>a.id-b.id).forEach(t => {
                 let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l;
                 tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`;
             });
-            
             document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun dato</td></tr>";
             
+            // [LOGICA RIFORNIMENTI NEL REPORT]
+            let bH = "", spesaB_effettiva = 0;
+            db.rifornimenti.filter(r=>r.data.includes(tag)).forEach(r => {
+                let lCalc = r.prezzo > 0 ? r.euro / r.prezzo : 0;
+                spesaB_effettiva += r.euro;
+                bH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${lCalc.toFixed(1)}L</td></tr>`;
+            });
+            document.getElementById('repBenzaBody').innerHTML = bH || "<tr><td colspan='4'>Nessun dato</td></tr>";
+
             let taxV = tL * (db.tax/100);
-            let spesaB = filteredBenza.reduce((a,b)=>a+b.euro, 0);
-            let ultP = filteredBenza.length > 0 ? filteredBenza[filteredBenza.length-1].prezzo : 1.85;
+            let rM = db.rifornimenti.filter(r=>r.data.includes(tag));
+            let ultP = rM.length > 0 ? rM[rM.length-1].prezzo : 1.85;
             let costoCarbStimato = tLS * ultP;
 
             document.getElementById('repFinalSummary').innerHTML = `
                 <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
                 <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
                 <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
-                <div class="summary-row"><span>CARBURANTE STIMATO (${tLS.toFixed(1)}L):</span><span>-€${costoCarbStimato.toFixed(2)}</span></div>
+                <div class="summary-row"><span>CARBURANTE STIMATO:</span><span>-€${costoCarbStimato.toFixed(2)}</span></div>
                 <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
                 <div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL - taxV - costoCarbStimato).toFixed(2)}</span></div>
             `;
             document.getElementById('reportView').style.display = 'block';
+        }
+
+        // [LOGICA STORICO BELLO RIPRISTINATA]
+        function apriStorico() {
+            let h = "";
+            const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
+            tutti.forEach(i => {
+                const isT = i.tipo==='T'; 
+                const color = isT ? 'var(--primary)' : 'var(--orange)';
+                const icon = isT ? 'fa-bicycle' : 'fa-gas-pump';
+                h += `
+                <div class="storico-item" style="border-left:4px solid ${color};">
+                    <div class="storico-info">
+                        <div class="tipo-label" style="color:${color}"><i class="fas ${icon}"></i> ${isT?'TURNO':'BENZINA'}</div>
+                        <div class="storico-data">${i.data} alle ${i.ora || '--:--'}</div>
+                        <div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div>
+                        <div class="storico-sub">${isT ? i.ore+'h | '+i.km+'km | '+i.cons+'L/100' : 'Prezzo: €'+i.prezzo+'/L'}</div>
+                    </div>
+                    <button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:26px; padding:10px;">×</button>
+                </div>`;
+            });
+            document.getElementById('listaStorico').innerHTML = h || "<p style='color:#888; padding:20px;'>Nessuna attività registrata</p>";
+            document.getElementById('histView').style.display = 'block';
         }
 
         function salvaTurno() {
@@ -249,26 +277,4 @@
             mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`);
             for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`;
             const p = id==='modalTurno'?'dateT':'dateB';
-            document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
-            document.getElementById(id).style.display='flex';
-        }
-
-        function apriStorico() {
-            let h = "";
-            const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
-            tutti.forEach(i => {
-                const isT = i.tipo==='T'; const color = isT ? 'var(--primary)' : 'var(--orange)';
-                h += `<div class="storico-item" style="border-left:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div>${i.data} - €${(isT?i.lordo:i.euro).toFixed(2)}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:22px;">×</button></div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "Vuoto";
-            document.getElementById('histView').style.display = 'block';
-        }
-
-        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-        function elimina(c,id) { if(confirm("Elimina?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
-
-        window.onload = () => { calcola(); checkNuovoMese(); };
-    </script>
-</body>
-</html>
+            document.getElementById(p).innerHTML = `<se
