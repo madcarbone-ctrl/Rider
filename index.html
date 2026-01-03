@@ -2,145 +2,144 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V1.0</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rider Tracker Pro V1.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        
-        /* BLOCCA SCROLL VERTICALE */
-        body { 
-            font-family:sans-serif; background:var(--bg); color:var(--text); 
-            margin:0; padding:5px 10px; 
-            overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary-accent: #00ffd5;
+            --secondary-accent: #ff4747;
+            --text-main: #ffffff;
+            --text-dim: #b3b3b3;
         }
 
-        .app-title { margin:5px 0 5px; font-size:18px; font-weight:800; color:var(--primary); text-transform:uppercase; }
-        
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:8px; }
-        
-        /* CARD COMPATTATE */
-        .card { background:var(--card); height:62px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:10px; border:1px solid #333; }
-        .label { font-size:7px; color:var(--dim); text-transform:uppercase; margin-bottom:2px; font-weight:bold; }
-        .val { font-size:12px; font-weight:bold; }
-        
-        .card.datetime { grid-column: span 3; height: 48px; border-color: var(--primary); background: #121212; margin-bottom: 2px; }
-        #current-date-text { color: var(--primary); font-size: 9px; font-weight: 900; text-transform: uppercase; }
-        #current-time-text { color: #fff; font-size: 18px; font-weight: bold; font-family: monospace; }
-
-        .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
-        #netto { color:var(--accent)!important; }
-        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:12px; outline:none; }
-        
-        .progress-container { background:var(--card); padding:8px 12px; border-radius:12px; margin-bottom:8px; border:1px solid #333; }
-        .progress-bar { background:#222; height:16px; border-radius:6px; overflow:hidden; margin-top:4px; border:1px solid #444; }
-        #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-
-        /* FOOTER ADATTATO */
-        .sticky-footer { 
-            margin-top: auto; padding: 12px 12px 20px; background:#161616; 
-            display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; 
-            border-radius:20px 20px 0 0; border:1px solid #333;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:10px 2px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:9px; font-weight: bold; }
-        .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:900; border:none; font-size: 12px; text-transform: uppercase; }
-        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:8px; border-radius:8px; font-weight:bold; font-size:9px; margin-top: 4px; }
 
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; padding: 15px; }
-        .modal-content { background:var(--card); padding:20px; border-radius:20px; border:2px solid var(--primary); margin: 10px auto; width: 100%; max-width: 350px; }
-        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:10px; margin-bottom:10px; outline:none; font-size: 14px; }
-        .date-row { display:flex; gap:5px; margin-bottom:10px; }
-        .date-row select { background:#333; color:#fff; padding:10px; border-radius:8px; flex:1; border:1px solid #444; font-size: 12px; }
+        .clock-container {
+            width: 100%; max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 12px; padding: 10px; margin-bottom: 20px;
+            border: 1px solid var(--primary-accent); text-align: center;
+        }
+
+        #currentDate { color: var(--primary-accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        #currentTime { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; margin-top: 5px; }
+
+        .dashboard {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; width: 100%; max-width: 500px; margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg); padding: 15px 5px;
+            border-radius: 12px; text-align: center; border: 1px solid #333;
+        }
+
+        .card-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: bold; display: block; }
+        .card-value { font-size: 1.1rem; font-weight: bold; color: var(--primary-accent); margin-top: 5px; }
         
-        #histView, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:10px; overflow-y:auto; }
-        #reportView { background: #fff; color: #000; }
-        @media print { body { overflow: visible; height: auto; } }
+        input {
+            background: transparent; border: none; border-bottom: 2px solid #444;
+            color: white; width: 80%; text-align: center; font-size: 1.1rem; outline: none;
+        }
+
+        .goal-container {
+            width: 100%; max-width: 500px; background: var(--card-bg);
+            padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333;
+        }
+
+        .progress-bg { background: #333; height: 20px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { background: linear-gradient(90deg, #00ffd5, #008f7a); height: 100%; width: 0%; transition: width 0.5s; }
+
+        .actions-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; width: 100%; max-width: 500px;
+            background: #1a1a1a; padding: 15px; border-radius: 20px; border: 1px solid #333;
+        }
+
+        .btn-action {
+            background: var(--card-bg); border: 1px solid #444; border-radius: 15px;
+            padding: 15px 5px; color: white; font-weight: bold; font-size: 0.7rem;
+        }
+
+        .btn-main { grid-column: span 3; padding: 15px; border-radius: 12px; border: none; font-weight: bold; text-transform: uppercase; }
+        .btn-report { background: var(--primary-accent); color: #000; }
+        .btn-reset { background: #8b0000; color: white; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="app-title no-print">RIDER TRACKER PRO V1.0</div>
-    
-    <div class="grid no-print">
-        <div class="card datetime">
-            <span id="current-date-text">Caricamento...</span>
-            <span id="current-time-text">00:00:00</span>
+    <h1>RIDER TRACKER PRO V1.0</h1>
+    <div class="clock-container">
+        <span id="currentDate">-- -- --</span>
+        <div id="currentTime">00:00:00</div>
+    </div>
+    <div class="dashboard">
+        <div class="card"><span class="card-label">Lordo</span><div class="card-value" id="lordo">€0.00</div></div>
+        <div class="card"><span class="card-label">Netto</span><div class="card-value" style="color:var(--secondary-accent)" id="netto">€0.00</div></div>
+        <div class="card"><span class="card-label">Ore</span><div class="card-value" id="ore">0.0</div></div>
+        <div class="card"><span class="card-label">Litri Stim.</span><div class="card-value" id="litri">0.0L</div></div>
+        <div class="card"><span class="card-label">Km/L</span><div class="card-value" id="kml">0.0</div></div>
+        <div class="card"><span class="card-label">Spesa Benz.</span><div class="card-value" id="spesaBenz">€0.00</div></div>
+        <div class="card"><span class="card-label">Target €</span><input type="number" id="targetInput" oninput="updateUI()"></div>
+        <div class="card"><span class="card-label">Tax %</span><input type="number" id="taxInput" value="20" oninput="updateUI()"></div>
+        <div class="card"><span class="card-label">Mancante</span><div class="card-value" id="mancante">€0.00</div></div>
+    </div>
+    <div class="goal-container">
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--primary-accent)">
+            <span>OBIETTIVO</span><span id="percText">0%</span>
         </div>
-        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET €</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
-        <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()"></div>
-        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
+        <div class="progress-bg"><div class="progress-fill" id="progressBar"></div></div>
     </div>
-
-    <div class="progress-container no-print">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:10px;"><span>OBIETTIVO</span><span id="perc">0%</span></div>
-        <div class="progress-bar"><div id="bar"></div></div>
-    </div>
-
-    <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="Consumo L/100"><button class="btn-modal btn-save" style="background:var(--primary)" onclick="salvaTurno()">SALVA</button><button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">X</button></div></div>
-    <div id="modalBenza" class="modal no-print"><div class="modal-content"><h3>Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo L"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA</button><button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">X</button></div></div>
-    
-    <div class="sticky-footer no-print">
-        <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
-        <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-        <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-        <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-        <button class="btn-reset-soft" onclick="if(confirm('AZZERARE?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
+    <div class="actions-grid">
+        <button class="btn-action">TURNO</button>
+        <button class="btn-action">BENZINA</button>
+        <button class="btn-action">STORICO</button>
+        <button class="btn-main btn-report" onclick="generatePDF()">Genera Report PDF</button>
+        <button class="btn-main btn-reset" onclick="resetAll()">Azzera Database</button>
     </div>
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
-        const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-        
-        function updateClock() {
-            const n = new Date();
-            const dOpt = { weekday: 'long', day: 'numeric', month: 'long' };
-            document.getElementById('current-date-text').textContent = n.toLocaleDateString('it-IT', dOpt);
-            document.getElementById('current-time-text').textContent = n.toLocaleTimeString('it-IT', { hour12: false });
-        }
-        setInterval(updateClock, 1000);
+    function updateClock() {
+        const now = new Date();
+        const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+        document.getElementById('currentDate').innerText = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}`;
+        document.getElementById('currentTime').innerText = now.toLocaleTimeString('it-IT', { hour12: false });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-        function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-        function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-        
-        function calcola() {
-            const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
-            let tM = db.turni.filter(t => t.data.includes(tag)), rM = db.rifornimenti.filter(r => r.data.includes(tag));
-            let lordo = tM.reduce((a,b)=>a+b.lordo, 0), ore = tM.reduce((a,b)=>a+b.ore, 0), km = tM.reduce((a,b)=>a+b.km, 0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = rM.reduce((a,b)=>a+b.euro, 0);
-            let ultP = rM.length > 0 ? rM[rM.length-1].prezzo : 1.85;
-            let netto = lordo - (lordo * (db.tax/100)) - (litriS * ultP);
-            document.getElementById('lordo').innerText = lordo.toFixed(2); document.getElementById('netto').innerText = '€' + netto.toFixed(2); document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB.toFixed(2);
-            let target = db.targets[tag] || 0; document.getElementById('targetIn').value = target || ""; document.getElementById('taxIn').value = db.tax;
-            let manca = target - lordo; document.getElementById('mancante').innerText = '€' + (manca > 0 ? manca.toFixed(2) : "0.00");
-            let p = target > 0 ? Math.min((lordo/target)*100, 100) : 0; document.getElementById('perc').innerText = Math.round(p) + '%'; document.getElementById('bar').style.width = p + '%';
-        }
+    function updateUI() {
+        const target = parseFloat(document.getElementById('targetInput').value) || 0;
+        const lordo = 0; 
+        const mancante = Math.max(0, target - lordo);
+        document.getElementById('mancante').innerText = `€${mancante.toFixed(2)}`;
+        const perc = target > 0 ? Math.min(100, (lordo / target) * 100) : 0;
+        document.getElementById('progressBar').style.width = perc + '%';
+        document.getElementById('percText').innerText = Math.round(perc) + '%';
+    }
 
-        function apriM(id) { 
-            const n = new Date(); let d='', m='', y=''; 
-            for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; 
-            mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); 
-            for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; 
-            const p = id==='modalTurno'?'dateT':'dateB'; 
-            document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; 
-            document.getElementById(id).style.display='flex'; 
+    function resetAll() {
+        if(confirm("Vuoi azzerare tutto?")) {
+            document.getElementById('targetInput').value = '';
+            updateUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    }
 
-        function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
-        function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
-        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-        
-        function apriStorico() { alert("Storico in sviluppo nella versione compattata"); }
-        function apriReport() { alert("Report in sviluppo nella versione compattata"); }
-        
-        window.onload = () => { calcola(); updateClock(); };
-    </script>
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Rider Tracker Report", 10, 10);
+        doc.save("Report.pdf");
+    }
+</script>
 </body>
 </html>
