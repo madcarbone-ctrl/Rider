@@ -38,8 +38,8 @@
         .report-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; color: #000; }
         .report-section { margin-bottom: 25px; color: #000; }
         .report-section h3 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px; color: #000; }
-        .report-table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom: 10px; color: #000; }
-        .report-table th, .report-table td { border:1px solid #000; padding:8px; text-align:left; color: #000; }
+        .report-table { width:100%; border-collapse:collapse; font-size:10px; margin-bottom: 10px; color: #000; }
+        .report-table th, .report-table td { border:1px solid #000; padding:6px; text-align:center; color: #000; }
         .report-table th { background:#f0f0f0; font-weight: bold; }
         .summary-box { border: 1px solid #000; padding: 15px; background: #fff; }
         .summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #000; color: #000; }
@@ -116,14 +116,31 @@
 
     <div id="reportView">
         <div class="report-header"><h1 id="repMonth">Report Mensile</h1><p>RIDER TRACKER PRO V1.0</p></div>
-        <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-        <div class="report-section"><h3>RIEPILOGO FINANZIARIO</h3><div class="summary-box" id="repFinalSummary"></div></div>
+        <div class="report-section">
+            <h3>DETTAGLIO ATTIVITÀ</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>DATA</th>
+                        <th>LORDO</th>
+                        <th>ORE</th>
+                        <th>KM</th>
+                        <th>CONS.</th>
+                        <th>LITRI</th>
+                    </tr>
+                </thead>
+                <tbody id="repTurniBody"></tbody>
+            </table>
+        </div>
+        <div class="report-section">
+            <h3>RIEPILOGO FINANZIARIO</h3>
+            <div class="summary-box" id="repFinalSummary"></div>
+        </div>
         <div class="no-print" style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn-modal btn-save" onclick="window.print()">STAMPA PDF</button>
             <button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
         </div>
     </div>
-
     <div class="sticky-footer no-print">
         <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
@@ -142,34 +159,21 @@
         function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
         function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        // [INIZIO MODIFICA: SOLO AVVISO NUOVO MESE]
         function checkNuovoMese() {
             const ora = new Date();
             const tagOggi = (ora.getMonth() + 1) + "/" + ora.getFullYear();
-
-            if (!db.lastCheck) {
-                db.lastCheck = tagOggi;
-                localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-                return;
-            }
-
-            // Se il mese è cambiato
+            if (!db.lastCheck) { db.lastCheck = tagOggi; salvaDB(); return; }
             if (db.lastCheck !== tagOggi) {
-                // POP-UP DI AVVISO
                 alert("📢 AVVISO FINE MESE!\n\nIl mese è terminato. Ricordati di:\n1. Generare il Report PDF del mese scorso.\n2. Cliccare su 'AZZERA TUTTO' per ricominciare il nuovo mese pulito.");
-                
-                // Aggiorna l'ultimo controllo così l'avviso non riappare fino al prossimo mese
-                db.lastCheck = tagOggi;
-                localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
+                db.lastCheck = tagOggi; salvaDB();
             }
         }
 
         function testFineMese() {
             db.lastCheck = "12/2025";
-            alert("Simulazione attivata. Chiudi e riapri l'app o clicca OK per vedere il pop-up.");
+            alert("Simulazione: Mese precedente impostato a Dicembre 2025. Rieseguo il controllo...");
             checkNuovoMese();
         }
-        // [FINE MODIFICA]
 
         function calcola() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
@@ -194,18 +198,36 @@
             document.getElementById('mancante').innerText = '€' + (manca > 0 ? manca.toFixed(2) : "0.00");
         }
 
+        // [LOGICA REPORT RIPRISTINATA E COMPLETA]
         function apriReport() {
             const n = new Date();
             const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             document.getElementById('repMonth').innerText = `Report ${mesi[n.getMonth()]} ${n.getFullYear()}`;
+            
             let tH = "", tL=0, tO=0, tK=0, tLS=0;
-            db.turni.filter(t=>t.data.includes(tag)).sort((a,b)=>a.id-b.id).forEach(t => {
+            let filteredTurni = db.turni.filter(t=>t.data.includes(tag)).sort((a,b)=>a.id-b.id);
+            let filteredBenza = db.rifornimenti.filter(r=>r.data.includes(tag));
+            
+            filteredTurni.forEach(t => {
                 let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l;
                 tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`;
             });
+            
             document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun dato</td></tr>";
+            
             let taxV = tL * (db.tax/100);
-            document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL-taxV).toFixed(2)}</span></div>`;
+            let spesaB = filteredBenza.reduce((a,b)=>a+b.euro, 0);
+            let ultP = filteredBenza.length > 0 ? filteredBenza[filteredBenza.length-1].prezzo : 1.85;
+            let costoCarbStimato = tLS * ultP;
+
+            document.getElementById('repFinalSummary').innerHTML = `
+                <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
+                <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
+                <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
+                <div class="summary-row"><span>CARBURANTE STIMATO (${tLS.toFixed(1)}L):</span><span>-€${costoCarbStimato.toFixed(2)}</span></div>
+                <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
+                <div class="summary-row total"><span>NETTO ESTIMATO:</span><span>€${(tL - taxV - costoCarbStimato).toFixed(2)}</span></div>
+            `;
             document.getElementById('reportView').style.display = 'block';
         }
 
