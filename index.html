@@ -16,7 +16,6 @@
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
-        /* TITOLO CLICCABILE */
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; transition: opacity 0.2s; }
         .app-title:active { opacity: 0.6; }
 
@@ -78,7 +77,7 @@
         .storico-date-row { display: flex; align-items: baseline; gap: 8px; font-weight: bold; font-size: 14px; margin-top: 2px; }
         .storico-hour { color: var(--dim); font-size: 11px; font-weight: normal; }
         .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
-        .storico-sub { font-size:10px; color:var(--dim); }
+        .storico-sub { font-size:10px; color:var(--dim); line-height: 1.4; }
 
         .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-confirm-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; }
@@ -111,50 +110,19 @@
 
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         
-        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off">
-            <input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off">
-            <button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
         
-        <div id="modalConfirm" class="modal no-print">
-            <div class="modal-content" style="border-color: var(--accent);">
-                <h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3>
-                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p>
-                <div class="confirm-buttons">
-                    <button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button>
-                    <button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="modalFineMese" class="modal no-print">
-            <div class="modal-content" style="border-color: var(--primary);">
-                <h3 style="font-size: 16px;">🔔 FINE MESE</h3>
-                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p>
-                <div class="confirm-buttons">
-                    <button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button>
-                    <button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="modalElimina" class="modal no-print">
-            <div class="modal-content" style="border-color: var(--accent);">
-                <h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3>
-                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p>
-                <div class="confirm-buttons">
-                    <button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button>
-                    <button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button>
-                </div>
-            </div>
-        </div>
+        <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
+        <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
+        <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
 
         <div id="reportView">
-            <div class="report-header-mini"><h2 id="repMonthTitle">REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
+            <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
             <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-            <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI (MONITOR)</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
-            <div class="report-section"><h3>ANALISI E RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
+            <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
+            <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
             <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
         </div>
 
@@ -174,23 +142,13 @@
     let catElimina = '';
     let idElimina = null;
 
-    // TITOLO MODIFICA: FUNZIONE FORMATTAZIONE PUNTO AUTOMATICO
     function formattaPrezzo(input) {
         let val = input.value.replace(/[^\d]/g, ''); 
-        if (val.length > 1) {
-            input.value = val.substring(0, 1) + '.' + val.substring(1, 4);
-        } else {
-            input.value = val;
-        }
+        if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; }
     }
-    // FINE MODIFICA: FUNZIONE FORMATTAZIONE PUNTO AUTOMATICO
 
-    function scrollIntoFocus(el) { 
-        setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); 
-    }
-    document.addEventListener('focusin', function(e) { 
-        if (e.target.tagName === 'INPUT' && e.target.closest('.modal')) { scrollIntoFocus(e.target); }
-    });
+    function scrollIntoFocus(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
+    document.addEventListener('focusin', function(e) { if (e.target.tagName === 'INPUT' && e.target.closest('.modal')) { scrollIntoFocus(e.target); } });
 
     function startClock() {
         const update = () => {
@@ -200,40 +158,17 @@
         update(); setInterval(update, 1000);
     }
 
-    function checkFineMese() {
-        if (new Date().getDate() === 1) {
-            setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000);
-        }
-    }
-
-    function stampaDirettaDaAlert() {
-        chiudiModali();
-        apriReport();
-        window.print();
-    }
-
+    function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
+    function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-    
-    function chiudiModali() { 
-        document.querySelectorAll('.modal').forEach(m => { 
-            m.style.display='none'; 
-            m.querySelectorAll('input').forEach(i => i.value=""); 
-        }); 
-    }
-
-    function confermaReset() {
-        localStorage.clear();
-        location.reload();
-    }
+    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
+    function confermaReset() { localStorage.clear(); location.reload(); }
     
     function elimina(categoria, id) {
-        catElimina = categoria;
-        idElimina = id;
+        catElimina = categoria; idElimina = id;
         document.getElementById('btnConfermaElimina').onclick = function() {
             db[catElimina] = db[catElimina].filter(x => x.id !== idElimina);
-            salvaDB();
-            apriStorico();
-            chiudiModali();
+            salvaDB(); apriStorico(); chiudiModali();
         };
         document.getElementById('modalElimina').style.display = 'flex';
     }
@@ -261,17 +196,26 @@
         document.getElementById('bar').style.width = p + '%';
     }
 
+    // TITOLO MODIFICA: DETTAGLIO LITRI E KM/L NELLO STORICO
     function apriStorico() {
         let h = ""; 
         const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
             const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
-            let sub = isT ? `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100` : `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
+            let sub = "";
+            if (isT) {
+                let litriTurno = (i.km * (i.cons/100));
+                let kmLitro = i.cons > 0 ? (100 / i.cons).toFixed(1) : "0.0";
+                sub = `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${litriTurno.toFixed(2)}L consumati | Media: ${kmLitro} km/l`;
+            } else {
+                sub = `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
+            }
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora}</span></div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto";
         document.getElementById('histView').style.display = 'flex';
     }
+    // FINE MODIFICA: DETTAGLIO LITRI E KM/L NELLO STORICO
 
     function apriReport() {
         let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
@@ -289,25 +233,9 @@
 
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
-    
-    // TITOLO MODIFICA: SALVATAGGIO PREZZO COME FLOAT
-    function salvaBenza() { 
-        const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; 
-        db.rifornimenti.push({
-            id:Date.now(), 
-            data:d, 
-            ora:new Date().toLocaleTimeString().substring(0,5), 
-            euro:parseFloat(document.getElementById('bE').value)||0, 
-            prezzo:parseFloat(document.getElementById('bP').value)||0
-        }); 
-        salvaDB(); 
-        chiudiModali(); 
-    }
-    // FINE MODIFICA: SALVATAGGIO PREZZO COME FLOAT
-
+    function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    
     window.onload = function() { calcola(); startClock(); checkFineMese(); };
 </script>
 </body>
