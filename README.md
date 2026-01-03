@@ -16,15 +16,15 @@ Rider Tracker Pro non è un semplice database, ma un **motore di calcolo dinamic
 ---
 
 ### 📊 Legenda delle Voci (Dashboard)
-* **LORDO (€):** Somma dei compensi di tutti i turni del mese.
-* **NETTO (€):** Guadagno reale stimato (`Lordo - Tasse - Costo Benzina Stimato`).
-* **ORE (h):** Tempo totale trascorso in consegna.
-* **LITRI STIM. (L):** Consumo teorico calcolato (`KM * (Consumo/100)`).
-* **KM/L:** Rapporto di efficienza reale del veicolo (Chilometri per litro).
+* **LORDO (€):** Somma dei compensi di tutti i turni del mese corrente.
+* **NETTO (€):** Guadagno reale stimato sottraendo tasse e costi del carburante (`Lordo - Tasse - Costo Benzina Stimato`).
+* **ORE (h):** Tempo totale trascorso in consegna (accetta decimali).
+* **LITRI STIM. (L):** Consumo teorico di carburante calcolato per ogni turno in base ai chilometri.
+* **KM/L:** Rapporto di efficienza reale del veicolo (Chilometri percorsi per ogni litro).
 * **SPESA BENZ. (€):** Somma reale degli euro pagati per i rifornimenti registrati.
-* **TARGET (€):** Obiettivo finanziario impostato per il mese.
+* **TARGET (€):** Obiettivo finanziario di incasso lordo impostato per il mese.
 * **TAX (%):** Aliquota fiscale applicata per scorporare le tasse dal lordo.
-* **MANCANTE (€):** Euro mancanti al raggiungimento del Target.
+* **MANCANTE (€):** **Indica il MANCANTE LORDO**. Ovvero la cifra esatta di incasso lordo che ancora ti separa dal raggiungimento del Target impostato.
 
 ---
 
@@ -57,13 +57,13 @@ Rider Tracker Pro is not just a simple database; it is a **dynamic calculation e
 ### 📊 Glossary (Dashboard)
 * **GROSS (€):** Sum of earnings from all monthly shifts.
 * **NET (€):** Estimated real earnings (`Gross - Taxes - Estimated Fuel Cost`).
-* **HOURS (h):** Total time spent on delivery.
+* **HOURS (h):** Total time spent on delivery (decimal support).
 * **EST. LITERS (L):** Theoretical consumption calculated as (`KM * (Consumption/100)`).
 * **KM/L:** Real efficiency ratio of the vehicle (Kilometers per liter).
 * **FUEL SPENT (€):** Real sum of euros paid for recorded refueling.
-* **TARGET (€):** Financial goal set for the month.
+* **TARGET (€):** Gross earnings financial goal set for the month.
 * **TAX (%):** Tax rate applied to separate taxes from gross earnings.
-* **REMAINING (€):** Euros missing to reach the Target.
+* **REMAINING (€):** **Indicates the GROSS REMAINING**. The exact amount of gross income still needed to reach your set Target.
 
 ---
 
