@@ -11,7 +11,7 @@
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         
-        /* [INIZIO MODIFICA 26: BLOCCO SCROLL] */
+        /* INTERFACCIA PRINCIPALE BLOCCATA */
         body { 
             font-family:sans-serif; 
             background:var(--bg); 
@@ -19,11 +19,11 @@
             margin:0; 
             padding:10px; 
             text-align:center; 
-            overflow: hidden; /* Impedisce qualsiasi scorrimento */
-            height: 100vh;    /* Forza l'altezza alla dimensione dello schermo */
+            overflow: hidden; 
+            height: 100vh; 
             width: 100vw;
+            position: fixed; /* Blindatura totale contro lo scroll */
         }
-        /* [FINE MODIFICA 26: BLOCCO SCROLL] */
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
         
@@ -39,23 +39,16 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; }
-        .storico-item::before { content: "["; color: #444; font-size: 35px; font-weight: 100; margin-right: 5px; }
-        .storico-item::after { content: "]"; color: #444; font-size: 35px; font-weight: 100; margin-left: 5px; }
-        .storico-info { flex:1; text-align:left; padding: 0 10px; }
-        .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; }
-        .storico-main { font-size:18px; font-weight:bold; }
-        .storico-sub { font-size:10px; color:var(--dim); }
-
-        /* Permettiamo lo scroll solo dentro i modali e le visualizzazioni report/storico */
-        #reportView, #histView, .modal { 
+        /* MODALI E STORICO (UNICI CON SCROLL PERMESSO) */
+        .modal, #reportView, #histView { 
             display:none; 
             position:fixed; 
             inset:0; 
             z-index:8000; 
             background:var(--bg); 
             padding:15px; 
-            overflow-y:auto; 
+            overflow-y:auto; /* Permette lo scroll solo qui dentro */
+            -webkit-overflow-scrolling: touch;
         }
 
         #reportView { background:#fff; color:#000; text-align:left; }
@@ -84,6 +77,14 @@
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; margin-top: 5px; }
         .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
+        .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; }
+        .storico-item::before { content: "["; color: #444; font-size: 35px; font-weight: 100; margin-right: 5px; }
+        .storico-item::after { content: "]"; color: #444; font-size: 35px; font-weight: 100; margin-left: 5px; }
+        .storico-info { flex:1; text-align:left; padding: 0 10px; }
+        .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; }
+        .storico-main { font-size:18px; font-weight:bold; }
+        .storico-sub { font-size:10px; color:var(--dim); }
+
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
@@ -108,9 +109,10 @@
     </div>
 
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+    
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
 
-    <div id="histView" class="no-print" style="display:none;"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView" class="no-print"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
         <div class="report-header-mini"><h2 id="repMonthTitle">REPORT</h2><span>RIDER TRACKER PRO V1.0</span></div>
@@ -135,6 +137,15 @@
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     
+    // [MODIFICA 27: AUTO-SCROLL/CENTRATURA NEI MODALI]
+    document.querySelectorAll('.modal input').forEach(input => {
+        input.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    });
+
     document.addEventListener('input', function (e) { if (e.target.id === 'bP') { let v = e.target.value.replace('.', '').replace(',', ''); if (v.length >= 2) { e.target.value = v.charAt(0) + '.' + v.substring(1); } } });
     
     function calcola() {
@@ -176,15 +187,48 @@
             <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
             <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
             <div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div>
-            <div class="summary-row"><span>CARBURANTE STIMATO (Turni):</span><span>-€${costBS.toFixed(2)}</span></div>
-            <div class="summary-row"><span>LITRI CONSUMATI (Stimati):</span><span>${tLS.toFixed(2)} L</span></div>
             <div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
         `;
         document.getElementById('reportView').style.display = 'block';
     }
 
-    function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
-    function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
+    // [MODIFICA 27: SALVATAGGIO CON RESET CAMPI]
+    function salvaTurno() { 
+        const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; 
+        db.turni.push({
+            id:Date.now(), 
+            data:d, 
+            ora:new Date().toLocaleTimeString().substring(0,5), 
+            lordo:parseFloat(document.getElementById('tL').value)||0, 
+            ore:parseFloat(document.getElementById('tO').value)||0, 
+            km:parseFloat(document.getElementById('tK').value)||0, 
+            cons:parseFloat(document.getElementById('tC').value)||0
+        }); 
+        // Reset campi Turno
+        document.getElementById('tL').value = '';
+        document.getElementById('tO').value = '';
+        document.getElementById('tK').value = '';
+        document.getElementById('tC').value = '';
+        
+        salvaDB(); chiudiModali(); 
+    }
+
+    function salvaBenza() { 
+        const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; 
+        db.rifornimenti.push({
+            id:Date.now(), 
+            data:d, 
+            ora:new Date().toLocaleTimeString().substring(0,5), 
+            euro:parseFloat(document.getElementById('bE').value)||0, 
+            prezzo:parseFloat(document.getElementById('bP').value)||0
+        }); 
+        // Reset campi Benzina
+        document.getElementById('bE').value = '';
+        document.getElementById('bP').value = '';
+        
+        salvaDB(); chiudiModali(); 
+    }
+
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
