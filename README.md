@@ -1,4 +1,4 @@
-# ***RIDER TRACKER PRO V1.0: IL MANUALE INTEGRALE (GOLD EDITION)***
+# ***RIDER TRACKER PRO 1.0: IL MANUALE INTEGRALE***
 **Versione: 1.0.0 (Ufficiale)**
 
 ---
@@ -6,7 +6,7 @@
 ## 🇮🇹 SEZIONE ITALIANO
 
 ### **1. FILOSOFIA E SCOPO DEL PROGETTO**
-**Rider Tracker Pro** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno.
+**Rider Tracker Pro 1.0** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno.
 
 * **Perché è stato ideato:** Nel delivery, il "Lordo" è ingannevole. Questa app elimina l'incertezza calcolando il **Netto Reale** sottraendo tasse e costi carburante in tempo reale.
 * **Privacy:** Nessun dato viene inviato a server esterni. Tutto risiede nella memoria locale del tuo smartphone.
@@ -28,12 +28,12 @@
 * **Pulsante BENZINA (⛽):** Inserisci Euro spesi e Prezzo al Litro. L'ultimo prezzo inserito aggiorna il valore economico dei consumi di tutti i turni.
 
 #### **C. STORICO E REPORT**
-* **STORICO (🕒):** Visualizza, controlla ed elimina inserimenti errati ricalcolando tutto istantaneamente.
+* **STORICO (🕒):** Visualizza, controlla ed elimina inserimenti errati ricalcolando tutto istantaneamente. **Calcola inoltre per ogni singolo turno i litri effettivi consumati e la media km/l specifica della sessione.**
 * **GENERA REPORT PDF:** Crea tabelle fiscali e calcola il "Netto Reale Lavoro" per la stampa.
 * **ALERT FINE MESE:** Promemoria automatico il 1° di ogni mese per il backup dei dati.
 
 ### **⚠️ AVVERTENZE TECNICHE IMPORTANTI**
-1.  **DECIMALI:** Usa sempre il **PUNTO (.)** e non la virgola (es. `3.5` ore e non `3,5`).
+1.  **DECIMALI:** Usa sempre il **PUNTO (.)** e non la virgola (es. **3.5** ore e non **3,5**).
 2.  **MEMORIA:** I dati sono salvati nel browser. **Non cancellare la cache del browser** o i dati del sito se non vuoi perdere lo storico.
 
 ---
@@ -41,7 +41,7 @@
 ## 🇺🇸 ENGLISH SECTION
 
 ### **1. PHILOSOPHY AND SCOPE**
-**Rider Tracker Pro** gives professional Riders total control over their real earnings.
+**Rider Tracker Pro 1.0** gives professional Riders total control over their real earnings.
 
 * **Why it was created:** "Gross" income is misleading. This app calculates **Real Net** by subtracting taxes and fuel costs in real-time.
 * **Privacy:** No data is sent to external servers. Everything is stored locally on your device.
@@ -63,12 +63,12 @@
 * **FUEL Button (⛽):** Enter Euro spent and Price per Liter. The last price entered updates the cost of fuel for all shifts.
 
 #### **C. HISTORY AND REPORTS**
-* **HISTORY (🕒):** View, check, and delete entries with instant recalculation.
+* **HISTORY (🕒):** View, check, and delete entries with instant recalculation. **Now displays specific fuel consumption and km/l average for every shift.**
 * **PDF REPORT:** Creates printable fiscal tables and calculates "Real Net Work Profit."
 * **MONTH-END ALERT:** Automatic reminder on the 1st of each month to back up data.
 
 ### **⚠️ CRITICAL TECHNICAL NOTES**
-1.  **DECIMALS:** Always use a **DOT (.)** instead of a comma (e.g., `3.5` hours, not `3,5`).
+1.  **DECIMALS:** Always use a **DOT (.)** instead of a comma (e.g., **3.5** hours, not **3,5**).
 2.  **STORAGE:** Data is saved in the browser. **Do not clear browser cache** or site data if you want to keep your history.
 
 ---
