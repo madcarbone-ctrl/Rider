@@ -50,7 +50,6 @@
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
         .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; }
 
-        /* Stili Backup - Con Classe no-print per escluderlo dal PDF */
         .backup-section { margin-top: 25px; border-top: 2px dashed #ccc; padding-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 10px; }
         .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 10px; color: #000; text-transform: uppercase; font-size: 12px; cursor: pointer; }
         .btn-save-backup { background: var(--primary); }
@@ -92,7 +91,7 @@
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
-<body>
+    <body>
     <div id="mainContainer">
         <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
         
@@ -142,11 +141,11 @@
             <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-            <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
+            <button class="btn-full" onclick="apriReport()">REPORT / BACKUP / STAMPA</button>
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
-    <script>
+<script>
     const APP_VER = "1.0.0";
     const BACKUP_KEY = "rider_backup_history";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
@@ -155,7 +154,6 @@
     let catElimina = '';
     let idElimina = null;
 
-    // --- FUNZIONI BACKUP ---
     function salvaBackup() {
         const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.0", db: db };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -206,14 +204,10 @@
         });
     }
 
-    // --- FUNZIONI CORE MATRICE ---
     function formattaPrezzo(input) {
         let val = input.value.replace(/[^\d]/g, ''); 
         if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; }
     }
-
-    function scrollIntoFocus(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
-    document.addEventListener('focusin', function(e) { if (e.target.tagName === 'INPUT' && e.target.closest('.modal')) { scrollIntoFocus(e.target); } });
 
     function startClock() {
         const update = () => {
@@ -266,14 +260,7 @@
         const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
             const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
-            let sub = "";
-            if (isT) {
-                let litriTurno = (i.km * (i.cons/100));
-                let kmLitro = i.cons > 0 ? (100 / i.cons).toFixed(1) : "0.0";
-                sub = `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${litriTurno.toFixed(2)}L | ${kmLitro} km/l`;
-            } else {
-                sub = `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
-            }
+            let sub = isT ? `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${(i.km*(i.cons/100)).toFixed(2)}L | ${(i.cons > 0 ? (100/i.cons).toFixed(1) : "0.0")} km/l` : `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora}</span></div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto";
