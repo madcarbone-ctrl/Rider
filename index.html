@@ -9,15 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
-        
-        /* FIX OVERFLOW: margin 0 e box-sizing globale */
-        * { box-sizing: border-box; -webkit-tap-highlight-color:transparent; margin: 0; padding: 0; }
-        
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); padding: 10px; padding-bottom:380px; text-align:center; overflow-x: hidden; width: 100vw; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:380px; text-align:center; overflow-x:hidden; }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
         
-        /* Griglia adattiva senza width 100% per evitare push laterale */
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
@@ -30,11 +26,6 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* [MODIFICA 23: OROLOGIO COMPATTO] */
-        .clock-box { margin: 8px 0; padding: 5px 0; border-radius: 12px; }
-        #displayDate { color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
-        #displayTime { color: #fff; font-size: 22px; font-weight: bold; font-family: monospace; letter-spacing: 1px; }
-
         .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; }
         .storico-item::before { content: "["; color: #444; font-size: 35px; font-weight: 100; margin-right: 5px; }
         .storico-item::after { content: "]"; color: #444; font-size: 35px; font-weight: 100; margin-left: 5px; }
@@ -92,13 +83,9 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div class="clock-box no-print">
-        <div id="displayDate">-- -- --</div>
-        <div id="displayTime">00:00:00</div>
-    </div>
-
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+
     <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
@@ -119,24 +106,16 @@
     <script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
-
-    function updateClock() {
-        const now = new Date();
-        const d = document.getElementById('displayDate');
-        const t = document.getElementById('displayTime');
-        if(d) d.innerText = `${giorni[now.getDay()]} ${now.getDate()} ${mesi[now.getMonth()]}`;
-        if(t) t.innerText = now.toLocaleTimeString('it-IT', { hour12: false });
-    }
-    setInterval(updateClock, 1000);
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     
     document.addEventListener('input', function (e) { if (e.target.id === 'bP') { let v = e.target.value.replace('.', '').replace(',', ''); if (v.length >= 2) { e.target.value = v.charAt(0) + '.' + v.substring(1); } } });
+    document.querySelectorAll('input').forEach(input => { input.addEventListener('focus', function() { setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }); });
     
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
+        if(n.getDate() === 1 && !sessionStorage.getItem('alertDone')) { alert("⚠️ Mese terminato! Ricordati il report."); sessionStorage.setItem('alertDone', 'true'); }
         let tM = db.turni.filter(t => t.data.includes(tag)), rM = db.rifornimenti.filter(r => r.data.includes(tag));
         let lordo = tM.reduce((a,b)=>a+b.lordo, 0), ore = tM.reduce((a,b)=>a+b.ore, 0), km = tM.reduce((a,b)=>a+b.km, 0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = rM.reduce((a,b)=>a+b.euro, 0);
         let ultP = rM.length > 0 ? rM[rM.length-1].prezzo : 1.85;
@@ -166,8 +145,19 @@
         document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>-</td></tr>";
         let taxV = tL * (db.tax/100), ultP = (db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85); let costBS = tLS * ultP;
         let hL = tO > 0 ? (tL/tO).toFixed(2) : 0;
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>GUADAGNO ORARIO LORDO:</span><span>€${hL}/ora</span></div><div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div><div class="summary-row"><span>CARBURANTE STIMATO:</span><span>-€${costBS.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>`;
+        document.getElementById('repFinalSummary').innerHTML = `
+            <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
+            <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
+            <div class="summary-row"><span>GUADAGNO ORARIO LORDO:</span><span>€${hL}/ora</span></div>
+            <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
+            <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
+            <div class="summary-row"><span>SPESA BENZINA REALE:</span><span>€${tEB.toFixed(2)}</span></div>
+            <div class="summary-row"><span>CARBURANTE STIMATO (Turni):</span><span>-€${costBS.toFixed(2)}</span></div>
+            <div class="summary-row"><span>LITRI CONSUMATI (Stimati):</span><span>${tLS.toFixed(2)} L</span></div>
+            <div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
+        `;
         document.getElementById('reportView').style.display = 'block';
+        setTimeout(() => { document.getElementById('reportView').scrollTop = document.getElementById('reportView').scrollHeight; }, 100);
     }
 
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
@@ -177,7 +167,7 @@
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
     function elimina(c,id) { if(confirm("Eliminare?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
     
-    window.onload = () => { calcola(); updateClock(); };
+    window.onload = calcola;
 </script>
 </body>
 </html>
