@@ -102,7 +102,6 @@
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
     <script>
-    // Versione logica per forzare aggiornamento
     const APP_VER = "1.1.2";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
@@ -126,9 +125,7 @@
     function chiudiModali() { 
         document.querySelectorAll('.modal').forEach(m => {
             m.style.display='none';
-            // Forza lo svuotamento di ogni input al momento della chiusura
-            const inputs = m.querySelectorAll('input');
-            inputs.forEach(i => { i.value = ""; });
+            m.querySelectorAll('input').forEach(i => { i.value = ""; });
         });
     }
 
@@ -193,7 +190,7 @@
             <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
             <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
             <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-            <div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
+            <div class="summary-row total"><span>NETTO STIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
         `;
         document.getElementById('reportView').style.display = 'block';
     }
@@ -227,7 +224,6 @@
     window.onload = function() {
         calcola();
         startClock();
-        console.log("Rider Tracker Version: " + APP_VER);
     };
 </script>
 </body>
