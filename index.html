@@ -10,7 +10,20 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:380px; text-align:center; overflow-x:hidden; }
+        
+        /* [INIZIO MODIFICA 26: BLOCCO SCROLL] */
+        body { 
+            font-family:sans-serif; 
+            background:var(--bg); 
+            color:var(--text); 
+            margin:0; 
+            padding:10px; 
+            text-align:center; 
+            overflow: hidden; /* Impedisce qualsiasi scorrimento */
+            height: 100vh;    /* Forza l'altezza alla dimensione dello schermo */
+            width: 100vw;
+        }
+        /* [FINE MODIFICA 26: BLOCCO SCROLL] */
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
         
@@ -34,7 +47,18 @@
         .storico-main { font-size:18px; font-weight:bold; }
         .storico-sub { font-size:10px; color:var(--dim); }
 
-        #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align:left; }
+        /* Permettiamo lo scroll solo dentro i modali e le visualizzazioni report/storico */
+        #reportView, #histView, .modal { 
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            z-index:8000; 
+            background:var(--bg); 
+            padding:15px; 
+            overflow-y:auto; 
+        }
+
+        #reportView { background:#fff; color:#000; text-align:left; }
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
         .report-header-mini h2 { font-size:14px; margin:0; text-transform:uppercase; }
         .report-header-mini span { font-size:10px; font-weight:bold; }
@@ -45,7 +69,7 @@
         .summary-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #000; font-size:11px; }
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
 
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; overflow-y:auto; padding: 20px; }
+        .modal { background:rgba(0,0,0,0.95); z-index:9999; }
         .modal-content { background:var(--card); padding:25px; border-radius:24px; width:100%; max-width:400px; border:2px solid var(--primary); margin: 30px auto; }
         .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:12px; outline:none; font-size: 16px; }
         .date-row { display:flex; gap:8px; margin-bottom:15px; }
@@ -86,7 +110,7 @@
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
 
-    <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView" class="no-print" style="display:none;"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
         <div class="report-header-mini"><h2 id="repMonthTitle">REPORT</h2><span>RIDER TRACKER PRO V1.0</span></div>
@@ -103,7 +127,8 @@
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
-    <script>
+
+<script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -111,7 +136,6 @@
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     
     document.addEventListener('input', function (e) { if (e.target.id === 'bP') { let v = e.target.value.replace('.', '').replace(',', ''); if (v.length >= 2) { e.target.value = v.charAt(0) + '.' + v.substring(1); } } });
-    document.querySelectorAll('input').forEach(input => { input.addEventListener('focus', function() { setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }); });
     
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
@@ -157,7 +181,6 @@
             <div class="summary-row total"><span>NETTO ESTIMATO MENSILE:</span><span>€${(tL-taxV-costBS).toFixed(2)}</span></div>
         `;
         document.getElementById('reportView').style.display = 'block';
-        setTimeout(() => { document.getElementById('reportView').scrollTop = document.getElementById('reportView').scrollHeight; }, 100);
     }
 
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
