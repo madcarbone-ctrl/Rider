@@ -15,7 +15,11 @@
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
-        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
+        
+        /* MODIFICA 6: STILE TITOLO CLICCABILE */
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; transition: opacity 0.2s; }
+        .app-title:active { opacity: 0.6; }
+        
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
@@ -75,7 +79,8 @@
 </head>
 <body>
     <div id="mainContainer">
-        <div class="app-title no-print">RIDER TRACKER PRO V1.0</div>
+        <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
+        
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -114,6 +119,7 @@
                 <button class="btn-modal btn-save" onclick="chiudiModali()">HO CAPITO</button>
             </div>
         </div>
+
         <div id="reportView">
             <div class="report-header-mini"><h2 id="repMonthTitle">REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
             <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
@@ -153,7 +159,6 @@
         update(); setInterval(update, 1000);
     }
 
-    // INIZIO MODIFICA 4: CAMBIATO ALERT NATIVO CON MODALE GRAFICA
     function checkFineMese() {
         if (new Date().getDate() === 1) {
             setTimeout(() => { 
@@ -161,7 +166,6 @@
             }, 2000);
         }
     }
-    // FINE MODIFICA 4
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     
