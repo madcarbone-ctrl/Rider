@@ -106,9 +106,22 @@
         </div>
     </div>
     <script>
-    const APP_VER = "1.2.7";
+    const APP_VER = "1.2.8";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+    // --- FUNZIONE AUTO-SCROLL RIPRISTINATA ---
+    function scrollIntoFocus(el) { 
+        setTimeout(() => { 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+        }, 300); 
+    }
+    document.addEventListener('focusin', function(e) { 
+        if (e.target.tagName === 'INPUT' && e.target.closest('.modal')) {
+            scrollIntoFocus(e.target);
+        }
+    });
+    // ----------------------------------------
 
     function startClock() {
         const update = () => {
