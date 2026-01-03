@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>RIDER TRACKER PRO V1.1</title>
+    <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
@@ -70,7 +70,7 @@
 </head>
 <body>
     <div id="mainContainer">
-        <div class="app-title no-print">RIDER TRACKER PRO V1.1</div>
+        <div class="app-title no-print">RIDER TRACKER PRO V1.0</div>
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -91,7 +91,7 @@
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
         <div id="reportView">
-            <div class="report-header-mini"><h2 id="repMonthTitle">REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.1</span></div>
+            <div class="report-header-mini"><h2 id="repMonthTitle">REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
             <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
             <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI (MONITOR)</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
             <div class="report-section"><h3>ANALISI E RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
@@ -105,12 +105,11 @@
             <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
         </div>
     </div>
-    <script>
-    const APP_VER = "1.2.8";
+<script>
+    const APP_VER = "1.0.0";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
-    // --- FUNZIONE AUTO-SCROLL RIPRISTINATA ---
     function scrollIntoFocus(el) { 
         setTimeout(() => { 
             el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
@@ -121,7 +120,6 @@
             scrollIntoFocus(e.target);
         }
     });
-    // ----------------------------------------
 
     function startClock() {
         const update = () => {
