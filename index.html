@@ -66,17 +66,9 @@
         .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
         .storico-sub { font-size:10px; color:var(--dim); }
 
-        /* INIZIO MODIFICA 3: STILI MODALE ALERT CENTRALE */
-        #modalConfirm { display: none; align-items: center; justify-content: center; }
-        #modalConfirm .modal-content { 
-            border: 1px solid #444; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 280px; /* Più piccolino */
-        }
         .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-confirm-ok { background: var(--accent); color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
-        /* FINE MODIFICA 3 */
 
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
@@ -112,6 +104,14 @@
                     <button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button>
                     <button class="btn-confirm-ok" onclick="confermaReset()">OK</button>
                 </div>
+            </div>
+        </div>
+
+        <div id="modalFineMese" class="modal no-print">
+            <div class="modal-content" style="border-color: var(--primary);">
+                <h3 style="font-size: 16px;">🔔 FINE MESE</h3>
+                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Ricordati di stampare il Report PDF.</p>
+                <button class="btn-modal btn-save" onclick="chiudiModali()">HO CAPITO</button>
             </div>
         </div>
         <div id="reportView">
@@ -153,15 +153,18 @@
         update(); setInterval(update, 1000);
     }
 
+    // INIZIO MODIFICA 4: CAMBIATO ALERT NATIVO CON MODALE GRAFICA
     function checkFineMese() {
         if (new Date().getDate() === 1) {
-            setTimeout(() => { alert("🔔 AVVISO FINE MESE!\n\nIl mese è terminato. Ricordati di stampare il Report PDF."); }, 2000);
+            setTimeout(() => { 
+                document.getElementById('modalFineMese').style.display = 'flex';
+            }, 2000);
         }
     }
+    // FINE MODIFICA 4
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     
-    // INIZIO MODIFICA 3: CHIUSURA MODALI UNIFICATA CON DISPLAY FLEX
     function chiudiModali() { 
         document.querySelectorAll('.modal').forEach(m => { 
             m.style.display='none'; 
@@ -173,7 +176,6 @@
         localStorage.clear();
         location.reload();
     }
-    // FINE MODIFICA 3
     
     function calcola() {
         const n = new Date(); 
