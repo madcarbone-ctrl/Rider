@@ -25,13 +25,12 @@
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #333; }
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-
-        /* --- NUOVO ELEMENTO OROLOGIO SOTTO PERCENTUALE --- */
-        .clock-box { margin: 5px 0 15px; padding: 10px; background: var(--card); border-radius: 15px; border: 1px solid #333; }
-        #displayDate { color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        #displayTime { color: #fff; font-size: 24px; font-weight: bold; margin-top: 2px; font-family: monospace; }
-        /* ------------------------------------------------ */
         
+        /* CSS OROLOGIO OTTIMIZZATO */
+        .clock-space { margin: 5px 0; padding: 5px; }
+        #displayDate { color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        #displayTime { color: #fff; font-size: 20px; font-weight: bold; font-family: monospace; margin-top: 2px; }
+
         .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; }
         .storico-item::before { content: "["; color: #444; font-size: 35px; font-weight: 100; margin-right: 5px; }
         .storico-item::after { content: "]"; color: #444; font-size: 35px; font-weight: 100; margin-left: 5px; }
@@ -89,14 +88,13 @@
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div class="clock-box no-print">
-        <div id="displayDate">CARICAMENTO...</div>
+    <div class="clock-space no-print">
+        <div id="displayDate">-- -- --</div>
         <div id="displayTime">00:00:00</div>
     </div>
 
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-
     <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
 
     <div id="reportView">
@@ -114,20 +112,18 @@
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
-    <script>
+<script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
 
+    // FUNZIONE OROLOGIO
     function updateClock() {
         const now = new Date();
-        const dStr = `${giorni[now.getDay()]} ${now.getDate()} ${mesi[now.getMonth()]}`;
-        const tStr = now.toLocaleTimeString('it-IT', { hour12: false });
-        document.getElementById('displayDate').innerText = dStr;
-        document.getElementById('displayTime').innerText = tStr;
+        document.getElementById('displayDate').innerText = `${giorni[now.getDay()]} ${now.getDate()} ${mesi[now.getMonth()]}`;
+        document.getElementById('displayTime').innerText = now.toLocaleTimeString('it-IT', { hour12: false });
     }
     setInterval(updateClock, 1000);
-    updateClock();
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
@@ -187,7 +183,9 @@
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
     function elimina(c,id) { if(confirm("Eliminare?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
-    window.onload = () => { calcola(); };
+    
+    window.onload = () => { calcola(); updateClock(); };
 </script>
 </body>
 </html>
+
