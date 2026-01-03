@@ -11,24 +11,11 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         
-        * { 
-            box-sizing:border-box; 
-            -webkit-tap-highlight-color:transparent; 
-            touch-action: manipulation; /* Blocca zoom al doppio tocco */
-        }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         
         body { 
-            font-family:sans-serif; 
-            background:var(--bg); 
-            color:var(--text); 
-            margin:0; 
-            padding:10px; 
-            text-align:center; 
-            overflow: hidden !important; /* Forza blocco scroll */
-            height: 100%;
-            width: 100vw;
-            position: fixed; 
-            left:0; top:0;
+            font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; 
+            text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0;
         }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
@@ -45,17 +32,24 @@
         .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALI OTTIMIZZATI PER PWA */
-        .modal, #reportView, #histView { 
-            display:none; 
-            position:fixed; 
-            inset:0; 
-            z-index:8000; 
-            background:var(--bg); 
-            padding:15px; 
-            overflow-y:auto; 
+        /* MODALI E REPORT */
+        .modal, #reportView { 
+            display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch;
+        }
+
+        /* [INIZIO MODIFICA 29: STRUTTURA STORICO FISSA] */
+        #histView { 
+            display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); 
+            flex-direction: column; padding: 15px;
+        }
+        .hist-header { flex-shrink: 0; padding-bottom: 10px; }
+        #listaStorico { 
+            flex-grow: 1; overflow-y: auto; margin-bottom: 15px; 
+            border-top: 1px solid #333; border-bottom: 1px solid #333;
             -webkit-overflow-scrolling: touch;
         }
+        .hist-footer { flex-shrink: 0; }
+        /* [FINE MODIFICA 29] */
 
         #reportView { background:#fff; color:#000; text-align:left; }
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
@@ -117,7 +111,11 @@
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
     <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
 
-    <div id="histView" class="no-print"><h2 style="color:var(--primary); text-align:center;">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="histView" class="no-print">
+        <div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div>
+        <div id="listaStorico"></div>
+        <div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    </div>
 
     <div id="reportView">
         <div class="report-header-mini"><h2 id="repMonthTitle">REPORT</h2><span>RIDER TRACKER PRO V1.0</span></div>
@@ -142,23 +140,9 @@
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-    // [MODIFICA 28: GESTIONE TASTIERA PWA]
-    function scrollIntoFocus(el) {
-        setTimeout(() => {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-    }
-
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', function() { scrollIntoFocus(this); });
-    });
-
-    // Forza il ricalcolo dell'altezza se la tastiera distorce il layout
-    window.visualViewport.addEventListener('resize', () => {
-        if (document.activeElement.tagName === 'INPUT') {
-            scrollIntoFocus(document.activeElement);
-        }
-    });
+    function scrollIntoFocus(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
+    document.querySelectorAll('input').forEach(input => { input.addEventListener('focus', function() { scrollIntoFocus(this); }); });
+    window.visualViewport.addEventListener('resize', () => { if (document.activeElement.tagName === 'INPUT') { scrollIntoFocus(document.activeElement); } });
 
     document.addEventListener('input', function (e) { if (e.target.id === 'bP') { let v = e.target.value.replace('.', '').replace(',', ''); if (v.length >= 2) { e.target.value = v.charAt(0) + '.' + v.substring(1); } } });
     
@@ -181,7 +165,8 @@
             const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-data">${i.data} alle ${i.ora||'--:--'}</div><div class="storico-main" style="color:${color}">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${isT ? (i.km+'km | '+i.ore+'h | '+i.cons+'L/100') : (i.prezzo+'€/L | '+(i.euro/i.prezzo).toFixed(2)+'L')}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;"><i class="fas fa-times-circle"></i></button></div>`;
         });
-        document.getElementById('listaStorico').innerHTML = h || "Database vuoto"; document.getElementById('histView').style.display = 'block';
+        document.getElementById('listaStorico').innerHTML = h || "<p style='text-align:center;'>Database vuoto</p>"; 
+        document.getElementById('histView').style.display = 'flex'; // Usiamo flex per gestire la struttura fissa
     }
 
     function apriReport() {
