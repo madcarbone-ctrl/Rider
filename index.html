@@ -15,11 +15,8 @@
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
-        
-        /* MODIFICA 6: STILE TITOLO CLICCABILE */
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; transition: opacity 0.2s; }
         .app-title:active { opacity: 0.6; }
-        
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
@@ -69,18 +66,15 @@
         .storico-hour { color: var(--dim); font-size: 11px; font-weight: normal; }
         .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
         .storico-sub { font-size:10px; color:var(--dim); }
-
         .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-confirm-ok { background: var(--accent); color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
-
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
 <body>
     <div id="mainContainer">
         <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
-        
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -115,8 +109,11 @@
         <div id="modalFineMese" class="modal no-print">
             <div class="modal-content" style="border-color: var(--primary);">
                 <h3 style="font-size: 16px;">🔔 FINE MESE</h3>
-                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Ricordati di stampare il Report PDF.</p>
-                <button class="btn-modal btn-save" onclick="chiudiModali()">HO CAPITO</button>
+                <p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p>
+                <div class="confirm-buttons">
+                    <button class="btn-confirm-cancel" style="background: #333; color: white;" onclick="chiudiModali()">CHIUDI</button>
+                    <button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button>
+                </div>
             </div>
         </div>
 
@@ -165,6 +162,12 @@
                 document.getElementById('modalFineMese').style.display = 'flex';
             }, 2000);
         }
+    }
+
+    function stampaDirettaDaAlert() {
+        chiudiModali();
+        apriReport();
+        window.print();
     }
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
