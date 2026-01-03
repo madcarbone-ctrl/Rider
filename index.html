@@ -35,7 +35,6 @@
         
         .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
         
-        /* STILE REPORT MATRICE ORIGINALE */
         #reportView { background:#fff; color:#000; text-align:left; font-family: 'Courier New', Courier, monospace; padding: 20px; }
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
         .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 15px; }
@@ -200,7 +199,6 @@
             <div class="summary-row"><span>BENZINA (STIMA):</span><span>-€${costoB.toFixed(2)}</span></div>
             <div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-costoB).toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display='block';
-        window.scrollTo(0, 0);
     }
 
     function apriM(id) { const n=new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; document.getElementById(id==='modalTurno'?'dateT':'dateB').innerHTML=`<select id="${id==='modalTurno'?'dateTD':'dateBD'}">${d}</select><select id="${id==='modalTurno'?'dateTM':'dateBM'}">${m}</select><select id="${id==='modalTurno'?'dateTY':'dateBY'}">${y}</select>`; document.getElementById(id).style.display='flex'; }
