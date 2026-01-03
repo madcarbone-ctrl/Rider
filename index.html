@@ -6,7 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO 1.0</title>
+    <title>GOLDEN CORE V1.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
@@ -35,7 +35,18 @@
         .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
         #reportView { background:#fff; color:#000; text-align:left; }
         
+        .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
+        .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 15px; }
+        .report-table th, .report-table td { border:1px solid #000; padding:4px; text-align: center; }
+        
+        .summary-box { border:2px solid #000; padding:10px; background:#fff; }
+        .summary-row { display:flex; justify-content:space-between; padding:3px 0; font-size:11px; border-bottom:1px dashed #ccc; }
+        .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; border-bottom:none; }
+
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
+        .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
+        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; font-size: 16px; outline:none; }
+        
         .date-row { display:flex; gap:8px; margin-bottom:10px; }
         .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; }
         
@@ -49,23 +60,23 @@
         
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:16px; border-radius:15px; font-weight:900; border:none; font-size: 13px; text-transform: uppercase; margin-top: 5px; }
         
-        .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; display:flex; justify-content:space-between; align-items:center; }
+        .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; display:flex; justify-content:space-between; align-items:center; position: relative; }
         .storico-info { flex:1; text-align:left; padding: 0 10px; }
         .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; }
-        .storico-main { font-size:18px; font-weight:bold; }
+        .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
         .storico-sub { font-size:10px; color:var(--dim); line-height: 1.4; }
 
         .backup-section { margin-top: 15px; border-top: 1px solid #444; padding-top: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .btn-backup { background: #444; color: white; padding: 10px; border-radius: 10px; border: none; font-size: 12px; font-weight: bold; }
-        
+        .btn-backup { background: #444; color: white; padding: 10px; border-radius: 10px; border: none; font-size: 12px; font-weight: bold; width: 100%; }
+
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
 <body>
     <div id="mainContainer">
-        <div class="app-title">RIDER TRACKER PRO <span class="version-badge">V1.1 MATRICE</span></div>
+        <div class="app-title no-print">GOLDEN CORE <span class="version-badge">V1.1 MATRICE</span></div>
         
-        <div class="grid">
+        <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
             <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
@@ -77,17 +88,18 @@
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
 
-        <div class="progress-container">
+        <div class="progress-container no-print">
             <div class="progress-bar"><div id="bar"></div></div>
             <div id="liveClock">--/--/-- 00:00:00</div>
         </div>
 
-        <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
-        <div id="modalBenza" class="modal"><div class="modal-content" style="border-color:var(--orange)"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
-        <div id="histView"><h2 style="color:var(--primary)">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+        <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color:var(--orange)"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
         
-        <div id="modalConfirm" class="modal"><div class="modal-content" style="border-color:var(--accent)"><h3>Gestione Dati</h3>
-            <button class="btn-modal" style="background:var(--red-soft);color:#fff" onclick="confermaReset()">AZZERA TUTTO</button>
+        <div id="histView" class="no-print"><h2 style="color:var(--primary)">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+        
+        <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color:var(--accent)"><h3>Gestione Dati</h3>
+            <button class="btn-modal" style="background:var(--red-soft);color:#fff" onclick="confermaReset()">AZZERA DATABASE</button>
             <div class="backup-section">
                 <button class="btn-backup" onclick="exportData()"><i class="fas fa-download"></i> SCARICA BACKUP (.JSON)</button>
                 <button class="btn-backup" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> RIPRISTINA BACKUP</button>
@@ -96,7 +108,7 @@
             <button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button>
         </div></div>
 
-        <div id="modalFineMese" class="modal"><div class="modal-content"><h3>🔔 FINE MESE</h3><p>Genera il report ora?</p><button class="btn-modal btn-save" onclick="stampaDiretta()">STAMPA REPORT</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
+        <div id="modalFineMese" class="modal no-print"><div class="modal-content"><h3>🔔 FINE MESE</h3><p>Genera il report ora?</p><button class="btn-modal btn-save" onclick="stampaDiretta()">STAMPA REPORT</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
 
         <div id="reportView">
             <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>PRO 1.0</span></div>
@@ -113,8 +125,7 @@
             <button class="btn-modal" style="grid-column:span 3; background:var(--red-soft); font-size:10px; margin:0" onclick="document.getElementById('modalConfirm').style.display='flex'">GESTIONE DATI / BACKUP</button>
         </div>
     </div>
-
-    <script>
+<script>
     let db = JSON.parse(localStorage.getItem('rider_db_golden_v1')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     
@@ -145,10 +156,10 @@
                 if (importedDb.turni && importedDb.rifornimenti) {
                     db = importedDb;
                     salvaDB();
-                    alert("Backup ripristinato con successo!");
+                    alert("Backup ripristinato!");
                     location.reload();
                 } else { alert("File non valido."); }
-            } catch (err) { alert("Errore nel caricamento del file."); }
+            } catch (err) { alert("Errore nel caricamento."); }
         };
         reader.readAsText(file);
     }
