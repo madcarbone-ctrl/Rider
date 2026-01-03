@@ -103,9 +103,8 @@
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
-
-<script>
-    const APP_VER = "1.1.7";
+    <script>
+    const APP_VER = "1.1.8";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -166,10 +165,10 @@
             const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
             let sub = "";
             if(isT) {
-                sub = `${i.km}km | ${i.ore}h`;
+                sub = `${i.ora} | ${i.km}km | ${i.ore}h | Cons. ${i.cons}/100`;
             } else {
                 let litriEffettivi = (i.euro / i.prezzo).toFixed(2);
-                sub = `${i.prezzo.toFixed(3)}€/L | ${litriEffettivi} Litri`;
+                sub = `${i.ora} | ${i.prezzo.toFixed(3)}€/L | ${litriEffettivi}L`;
             }
             h += `<div class="storico-item" style="border-left:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div>${i.data}</div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px;">×</button></div>`;
         });
