@@ -65,6 +65,13 @@
         .storico-hour { color: var(--dim); font-size: 11px; font-weight: normal; }
         .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
         .storico-sub { font-size:10px; color:var(--dim); }
+
+        /* INIZIO MODIFICA 1: STILI PER MODALE CONFERMA PERSONALIZZATA */
+        .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-confirm-ok { background: var(--accent); color: white; flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: bold; }
+        .btn-confirm-cancel { background: #444; color: white; flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: bold; }
+        /* FINE MODIFICA 1 */
+
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
@@ -90,6 +97,17 @@
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
+        
+        <div id="modalConfirm" class="modal no-print">
+            <div class="modal-content" style="border-color: var(--accent);">
+                <h3>AZZERARE TUTTO?</h3>
+                <p style="font-size: 12px; color: var(--dim);">Questa azione cancellerà definitivamente tutti i dati e il target.</p>
+                <div class="confirm-buttons">
+                    <button class="btn-confirm-cancel" onclick="chiudiModali()">Annulla</button>
+                    <button class="btn-confirm-ok" onclick="confermaReset()">Ok</button>
+                </div>
+            </div>
+        </div>
         <div id="reportView">
             <div class="report-header-mini"><h2 id="repMonthTitle">REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
             <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
@@ -102,7 +120,7 @@
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
             <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-            <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
+            <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
     <script>
@@ -137,6 +155,11 @@
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
+
+    function confermaReset() {
+        localStorage.clear();
+        location.reload();
+    }
     
     function calcola() {
         const n = new Date(); 
