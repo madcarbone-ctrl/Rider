@@ -10,37 +10,55 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; padding-bottom:350px; text-align:center; }
-        .app-title { margin:10px 0 15px; font-size:20px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         
-        /* GRIGLIA UNIFICATA */
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
-        .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; overflow:hidden; }
-        .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
-        .val { font-size:13px; font-weight:bold; }
+        /* BLOCCA SCROLL VERTICALE */
+        body { 
+            font-family:sans-serif; background:var(--bg); color:var(--text); 
+            margin:0; padding:5px 10px; 
+            overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+        }
+
+        .app-title { margin:5px 0 5px; font-size:18px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         
-        /* CARD DATA/ORA SPECIALE */
-        .card.datetime { grid-column: span 3; height: 60px; border-color: var(--primary); background: #121212; margin-bottom: 5px; }
-        #current-date-text { color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        #current-time-text { color: #fff; font-size: 20px; font-weight: bold; font-family: monospace; }
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:8px; }
+        
+        /* CARD COMPATTATE */
+        .card { background:var(--card); height:62px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:10px; border:1px solid #333; }
+        .label { font-size:7px; color:var(--dim); text-transform:uppercase; margin-bottom:2px; font-weight:bold; }
+        .val { font-size:12px; font-weight:bold; }
+        
+        .card.datetime { grid-column: span 3; height: 48px; border-color: var(--primary); background: #121212; margin-bottom: 2px; }
+        #current-date-text { color: var(--primary); font-size: 9px; font-weight: 900; text-transform: uppercase; }
+        #current-time-text { color: #fff; font-size: 18px; font-weight: bold; font-family: monospace; }
 
         .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
         #netto { color:var(--accent)!important; }
-        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
+        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:12px; outline:none; }
         
-        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #333; }
-        .progress-bar { background:#222; height:22px; border-radius:8px; overflow:hidden; margin-top:8px; border:1px solid #444; }
+        .progress-container { background:var(--card); padding:8px 12px; border-radius:12px; margin-bottom:8px; border:1px solid #333; }
+        .progress-bar { background:#222; height:16px; border-radius:6px; overflow:hidden; margin-top:4px; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
 
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:18px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:14px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:10px; font-weight: bold; }
-        .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:16px; border-radius:15px; font-weight:900; border:none; font-size: 13px; text-transform: uppercase; }
-        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:10px; border-radius:10px; font-weight:bold; font-size:10px; margin-top: 5px; }
+        /* FOOTER ADATTATO */
+        .sticky-footer { 
+            margin-top: auto; padding: 12px 12px 20px; background:#161616; 
+            display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; 
+            border-radius:20px 20px 0 0; border:1px solid #333;
+        }
+        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:10px 2px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:9px; font-weight: bold; }
+        .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
+        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:900; border:none; font-size: 12px; text-transform: uppercase; }
+        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:8px; border-radius:8px; font-weight:bold; font-size:9px; margin-top: 4px; }
 
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; padding: 20px; }
-        .modal-content { background:var(--card); padding:25px; border-radius:24px; border:2px solid var(--primary); margin: 20px auto; }
-        @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } }
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; padding: 15px; }
+        .modal-content { background:var(--card); padding:20px; border-radius:20px; border:2px solid var(--primary); margin: 10px auto; width: 100%; max-width: 350px; }
+        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:10px; margin-bottom:10px; outline:none; font-size: 14px; }
+        .date-row { display:flex; gap:5px; margin-bottom:10px; }
+        .date-row select { background:#333; color:#fff; padding:10px; border-radius:8px; flex:1; border:1px solid #444; font-size: 12px; }
+        
+        #histView, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:10px; overflow-y:auto; }
+        #reportView { background: #fff; color: #000; }
+        @media print { body { overflow: visible; height: auto; } }
     </style>
 </head>
 <body>
@@ -63,25 +81,19 @@
     </div>
 
     <div class="progress-container no-print">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:12px;"><span>OBIETTIVO</span><span id="perc">0%</span></div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:10px;"><span>OBIETTIVO</span><span id="perc">0%</span></div>
         <div class="progress-bar"><div id="bar"></div></div>
     </div>
 
-    <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="Consumo L/100"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">X</button></div></div>
-    <div id="modalBenza" class="modal no-print"><div class="modal-content"><h3>Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo L"><button class="btn-modal btn-save" onclick="salvaBenza()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">X</button></div></div>
-    <div id="histView" class="no-print" style="display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto;"><h2>STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="Consumo L/100"><button class="btn-modal btn-save" style="background:var(--primary)" onclick="salvaTurno()">SALVA</button><button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">X</button></div></div>
+    <div id="modalBenza" class="modal no-print"><div class="modal-content"><h3>Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo L"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA</button><button class="btn-modal" style="background:#333; color:#fff" onclick="chiudiModali()">X</button></div></div>
     
-    <div id="reportView" style="display:none; background:#fff; color:#000; padding:20px;">
-        <h2 id="repMonthTitle"></h2><div id="repTurniBody"></div><div id="repBenzaBody"></div><div id="repFinalSummary"></div>
-        <button onclick="window.print()">STAMPA</button><button onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
-    </div>
-
     <div class="sticky-footer no-print">
         <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
         <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-        <button class="btn-reset-soft" onclick="if(confirm('AZZERARE?')) {localStorage.clear(); location.reload();}">AZZERA</button>
+        <button class="btn-reset-soft" onclick="if(confirm('AZZERARE?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
     <script>
         let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
@@ -110,22 +122,23 @@
             let p = target > 0 ? Math.min((lordo/target)*100, 100) : 0; document.getElementById('perc').innerText = Math.round(p) + '%'; document.getElementById('bar').style.width = p + '%';
         }
 
-        function apriStorico() {
-            let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
-            tutti.forEach(i => {
-                const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
-                h += `<div class="storico-item" style="border-left:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-data">${i.data}</div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="color:red; background:none; border:none; font-size:20px;">&times;</button></div>`;
-            });
-            document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'block';
+        function apriM(id) { 
+            const n = new Date(); let d='', m='', y=''; 
+            for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; 
+            mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); 
+            for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; 
+            const p = id==='modalTurno'?'dateT':'dateB'; 
+            document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; 
+            document.getElementById(id).style.display='flex'; 
         }
 
-        function apriReport() { alert("Generazione report..."); }
         function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
         function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
-        function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
         function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
         function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-        function elimina(c,id) { if(confirm("Eliminare?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+        
+        function apriStorico() { alert("Storico in sviluppo nella versione compattata"); }
+        function apriReport() { alert("Report in sviluppo nella versione compattata"); }
         
         window.onload = () => { calcola(); updateClock(); };
     </script>
