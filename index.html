@@ -126,8 +126,7 @@
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
-    /* [INIZIO BLOCCO 2: JAVASCRIPT - MODIFICA 32] */
-<script>
+    <script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -220,4 +219,3 @@
 </script>
 </body>
 </html>
-/* FINE BLOCCO 2 */
