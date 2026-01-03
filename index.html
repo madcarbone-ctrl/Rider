@@ -6,7 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>GOLDEN CORE V1.1</title>
+    <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
@@ -34,16 +34,14 @@
         #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; padding: 5px; }
         
         .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
-        #reportView { background:#fff; color:#000; text-align:left; padding: 20px; }
         
-        .report-header { border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
-        .report-table { width:100%; border-collapse:collapse; font-size:10px; margin-bottom: 20px; }
-        .report-table th, .report-table td { border:1px solid #000; padding:6px; text-align: center; }
-        .report-table th { background: #f0f0f0; }
-
-        .summary-box { border:2px solid #000; padding:15px; background:#fff; margin-top: 20px; }
-        .summary-row { display:flex; justify-content:space-between; padding:5px 0; font-size:12px; border-bottom:1px dashed #ccc; }
-        .summary-row.total { font-weight:bold; font-size:16px; border-top:2px solid #000; border-bottom:none; color: #000; margin-top: 5px; }
+        #reportView { background:#fff; color:#000; text-align:left; font-family: 'Courier New', Courier, monospace; }
+        .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
+        .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 15px; }
+        .report-table th, .report-table td { border:1px solid #000; padding:4px; text-align: center; }
+        .summary-box { border:2px solid #000; padding:10px; background:#fff; }
+        .summary-row { display:flex; justify-content:space-between; padding:3px 0; font-size:11px; border-bottom:1px dashed #ccc; }
+        .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; border-bottom:none; color:#000; }
 
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; font-size: 16px; outline:none; }
@@ -74,8 +72,7 @@
 </head>
 <body>
     <div id="mainContainer">
-        <div class="app-title no-print">GOLDEN CORE <span class="version-badge">V1.1 MATRICE</span></div>
-        
+        <div class="app-title no-print">RIDER TRACKER PRO <span class="version-badge">V1.0</span></div>
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -109,8 +106,8 @@
         </div></div>
 
         <div id="reportView">
-            <div class="report-header"><h2>REPORT RIDER PRO</h2><span>V1.1 MATRICE</span></div>
-            <table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>LITRI</th><th>KM/L</th></tr></thead><tbody id="repTurniBody"></tbody></table>
+            <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>MATRICE V1.0</span></div>
+            <table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table>
             <div id="repFinalSummary" class="summary-box"></div>
             <div class="no-print" style="margin-top:20px; display:flex; gap:10px;"><button class="btn-modal btn-save" onclick="window.print()">STAMPA PDF</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
         </div>
@@ -132,19 +129,20 @@
     function scrollIn(el) { setTimeout(() => { el.scrollIntoView({behavior:'smooth', block:'center'}); }, 300); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function salvaDB() { localStorage.setItem('rider_db_golden_v1', JSON.stringify(db)); calcola(); }
-    function confermaReset() { if(confirm("Sei sicuro? Perderai tutto!")) { localStorage.clear(); location.reload(); } }
+    
+    function confermaReset() { if(confirm("⚠ ATTENZIONE: Vuoi davvero azzerare tutto il database?")) { localStorage.clear(); location.reload(); } }
 
     function exportData() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const a = document.createElement('a'); a.setAttribute("href", dataStr);
-        a.setAttribute("download", "Backup_Rider_" + new Date().toLocaleDateString() + ".json");
+        a.setAttribute("download", "RiderTracker_Backup_" + new Date().toLocaleDateString() + ".json");
         document.body.appendChild(a); a.click(); a.remove();
     }
 
     function importData(e) {
         const file = e.target.files[0]; if (!file) return;
         const r = new FileReader(); r.onload = function(ex) {
-            try { const data = JSON.parse(ex.target.result); if (data.turni) { db = data; salvaDB(); location.reload(); } } catch(err) { alert("File errato"); }
+            try { const data = JSON.parse(ex.target.result); if (data.turni) { db = data; salvaDB(); location.reload(); } } catch(err) { alert("File non valido"); }
         }; r.readAsText(file);
     }
 
@@ -184,25 +182,27 @@
         document.getElementById('histView').style.display='flex';
     }
 
-    function eliminaItem(cat, id) { if(confirm("Eliminare?")) { db[cat]=db[cat].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+    function eliminaItem(cat, id) {
+        if(confirm("Vuoi eliminare definitivamente questa voce dallo storico?")) {
+            db[cat] = db[cat].filter(x => x.id !== id);
+            salvaDB();
+            apriStorico();
+        }
+    }
 
     function apriReport() {
         let tH = "", tL=0, tO=0, tK=0, tLS=0;
         db.turni.sort((a,b)=>a.id-b.id).forEach(t => { 
-            let l=(t.km*(t.cons/100)), mediaK = l > 0 ? (t.km/l).toFixed(1) : '0';
-            tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; 
-            tH+=`<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${l.toFixed(1)}L</td><td>${mediaK}</td></tr>`; 
+            let l=(t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; 
+            tH+=`<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; 
         });
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun dato</td></tr>";
         let taxV = tL*(db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB=tLS*ultP;
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
-            <div class="summary-row"><span>ORE TOTALI:</span><span>${tO.toFixed(1)}h</span></div>
-            <div class="summary-row"><span>KM TOTALI:</span><span>${tK} km</span></div>
-            <div class="summary-row"><span>CONSUMO TOTALE:</span><span>${tLS.toFixed(1)} L</span></div>
             <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-            <div class="summary-row"><span>COSTO CARBURANTE STIM.:</span><span>-€${costoB.toFixed(2)}</span></div>
-            <div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB).toFixed(2)}</span></div>`;
+            <div class="summary-row"><span>STIMA BENZINA:</span><span>-€${costoB.toFixed(2)}</span></div>
+            <div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-costoB).toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display='block';
     }
 
