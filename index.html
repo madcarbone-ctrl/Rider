@@ -28,29 +28,22 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #333; }
-        .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; margin-top:10px; border:1px solid #444; }
+        .progress-container { 
+            background:var(--card); padding:15px; border-radius:15px; margin-top: 15px; margin-bottom:10px; border:1px solid #333;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .progress-header { display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:12px; text-transform: uppercase; }
+        .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* MODALI E REPORT */
-        .modal, #reportView { 
-            display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch;
-        }
-
-        /* [INIZIO MODIFICA 29: STRUTTURA STORICO FISSA] */
-        #histView { 
-            display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); 
-            flex-direction: column; padding: 15px;
-        }
+        #liveClock { font-weight:bold; color:var(--primary); font-size:12px; text-transform: uppercase; text-align: right; margin-top: 2px; }
+        
+        #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         .hist-header { flex-shrink: 0; padding-bottom: 10px; }
-        #listaStorico { 
-            flex-grow: 1; overflow-y: auto; margin-bottom: 15px; 
-            border-top: 1px solid #333; border-bottom: 1px solid #333;
-            -webkit-overflow-scrolling: touch;
-        }
+        #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #333; border-bottom: 1px solid #333; -webkit-overflow-scrolling: touch; }
         .hist-footer { flex-shrink: 0; }
-        /* [FINE MODIFICA 29] */
 
+        .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
         #reportView { background:#fff; color:#000; text-align:left; }
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
         .report-header-mini h2 { font-size:14px; margin:0; text-transform:uppercase; }
@@ -104,8 +97,9 @@
     </div>
 
     <div class="progress-container no-print">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:12px;"><span>OBIETTIVO</span><span id="perc">0%</span></div>
+        <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
         <div class="progress-bar"><div id="bar"></div></div>
+        <div id="liveClock">--/--/-- 00:00</div>
     </div>
 
     <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1"><input type="number" id="tK" placeholder="Chilometri percorsi"><input type="number" id="tC" placeholder="Consumo L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
@@ -132,10 +126,23 @@
         <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
         <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
     </div>
-
+    /* [INIZIO BLOCCO 2: JAVASCRIPT - MODIFICA 32] */
 <script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+    function startClock() {
+        const update = () => {
+            const now = new Date();
+            const d = now.getDate().toString().padStart(2,'0');
+            const m = (now.getMonth()+1).toString().padStart(2,'0');
+            const y = now.getFullYear().toString().substring(2);
+            const hh = now.getHours().toString().padStart(2,'0');
+            const mm = now.getMinutes().toString().padStart(2,'0');
+            document.getElementById('liveClock').innerText = `${d}/${m}/${y} ${hh}:${mm}`;
+        };
+        update(); setInterval(update, 60000);
+    }
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
@@ -166,7 +173,7 @@
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-data">${i.data} alle ${i.ora||'--:--'}</div><div class="storico-main" style="color:${color}">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${isT ? (i.km+'km | '+i.ore+'h | '+i.cons+'L/100') : (i.prezzo+'€/L | '+(i.euro/i.prezzo).toFixed(2)+'L')}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;"><i class="fas fa-times-circle"></i></button></div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "<p style='text-align:center;'>Database vuoto</p>"; 
-        document.getElementById('histView').style.display = 'flex'; // Usiamo flex per gestire la struttura fissa
+        document.getElementById('histView').style.display = 'flex';
     }
 
     function apriReport() {
@@ -206,7 +213,11 @@
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
     function elimina(c,id) { if(confirm("Eliminare?")) { db[c]=db[c].filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
     
-    window.onload = calcola;
+    window.onload = function() {
+        calcola();
+        startClock();
+    };
 </script>
 </body>
 </html>
+/* FINE BLOCCO 2 */
