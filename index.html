@@ -145,7 +145,13 @@
     }
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+    
+    // [MODIFICA 34: Reset campi alla chiusura]
+    function chiudiModali() { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display='none');
+        // Svuota tutti gli input dentro i modali
+        document.querySelectorAll('.modal input').forEach(input => input.value = '');
+    }
 
     function scrollIntoFocus(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
     document.querySelectorAll('input').forEach(input => { input.addEventListener('focus', function() { scrollIntoFocus(this); }); });
@@ -197,15 +203,15 @@
     function salvaTurno() { 
         const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; 
         db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); 
-        document.getElementById('tL').value = ''; document.getElementById('tO').value = ''; document.getElementById('tK').value = ''; document.getElementById('tC').value = '';
-        salvaDB(); chiudiModali(); 
+        chiudiModali();
+        salvaDB(); 
     }
 
     function salvaBenza() { 
         const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; 
         db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); 
-        document.getElementById('bE').value = ''; document.getElementById('bP').value = '';
-        salvaDB(); chiudiModali(); 
+        chiudiModali();
+        salvaDB(); 
     }
 
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
