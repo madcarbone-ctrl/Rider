@@ -44,11 +44,12 @@
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
         .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; }
         .modal { background:rgba(0,0,0,0.95); z-index:9999; }
-        .modal-content { background:var(--card); padding:25px; border-radius:24px; width:100%; max-width:400px; border:2px solid var(--primary); margin: 30px auto; }
-        .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:12px; outline:none; font-size: 16px; }
-        .date-row { display:flex; gap:8px; margin-bottom:15px; }
-        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:1px solid #444; }
-        .btn-modal { width:100%; padding:16px; border-radius:12px; border:none; font-weight:bold; margin-top:10px; font-size: 16px; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:400px; border:2px solid var(--primary); margin: 10px auto; }
+        .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
+        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
+        .date-row { display:flex; gap:8px; margin-bottom:10px; }
+        .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; font-size: 14px; }
+        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size: 15px; }
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
         .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
@@ -66,21 +67,8 @@
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
-<body>
-    <div class="app-title no-print">RIDER TRACKER PRO V1.1</div>
-    <div class="grid no-print">
-        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-        <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
-        <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-        <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" autocomplete="off"></div>
-        <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
-        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
-    </div>
     <script>
-    const APP_VER = "1.2.0";
+    const APP_VER = "1.2.1";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -94,6 +82,19 @@
 
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
+
+    // LOGICA AUTO-SCROLL MIGLIORATA
+    function scrollIntoFocus(el) { 
+        setTimeout(() => { 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+        }, 300); 
+    }
+
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            scrollIntoFocus(e.target);
+        }
+    });
 
     function calcola() {
         const n = new Date(); 
@@ -150,11 +151,9 @@
         });
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
         document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Monitoraggio vuoto</td></tr>";
-        
         let taxV = tL * (db.tax/100);
         let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
         let costoB_Stimata = tLS * ultP;
-
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
             <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
@@ -162,7 +161,6 @@
             <div class="summary-row total"><span>NETTO REALE TURNI:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div>
             <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
             <div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>
-            <div style="font-size:8px; color:gray; margin-top:5px;">*Il monitoraggio rifornimenti indica la spesa manuale inserita e non influisce sul netto dei turni.</div>
         `;
         document.getElementById('reportView').style.display = 'block';
     }
