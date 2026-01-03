@@ -77,32 +77,15 @@
         <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
         <div class="card"><span class="label">TARGET NETTO €</span><input type="number" id="targetIn" oninput="aggiornaTarget()" autocomplete="off"></div>
         <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
-        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
+        <div class="card"><span class="label">MANCANTE LORDO</span><span class="val" id="mancante">€0.00</span></div>
     </div>
     <div class="progress-container no-print">
         <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
         <div class="progress-bar"><div id="bar"></div></div>
         <div id="liveClock">--/--/-- 00:00:00</div>
     </div>
-    <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-    <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-    <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
-    <div id="reportView">
-        <div class="report-header-mini"><h2 id="repMonthTitle">REPORT</h2><span>RIDER TRACKER PRO V1.1</span></div>
-        <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-        <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
-        <div class="report-section"><h3>ANALISI E RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
-        <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
-    </div>
-    <div class="sticky-footer no-print">
-        <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
-        <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-        <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-        <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-        <button class="btn-reset-soft" onclick="if(confirm('AZZERARE TUTTO?')) {localStorage.clear(); location.reload();}">AZZERA DATABASE</button>
-    </div>
     <script>
-    const APP_VER = "1.1.4";
+    const APP_VER = "1.1.5";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -142,28 +125,35 @@
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
         let tM = db.turni.filter(t => t.data.includes(tag)), rM = db.rifornimenti.filter(r => r.data.includes(tag));
-        let lordo = tM.reduce((a,b)=>a+b.lordo, 0), ore = tM.reduce((a,b)=>a+b.ore, 0), km = tM.reduce((a,b)=>a+b.km, 0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = rM.reduce((a,b)=>a+b.euro, 0);
+        let lordoAttuale = tM.reduce((a,b)=>a+b.lordo, 0), ore = tM.reduce((a,b)=>a+b.ore, 0), km = tM.reduce((a,b)=>a+b.km, 0), litriS = tM.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = rM.reduce((a,b)=>a+b.euro, 0);
         let ultP = rM.length > 0 ? rM[rM.length-1].prezzo : 1.85;
         
-        // CALCOLO NETTO REALE
-        let netto = lordo - (lordo * (db.tax/100)) - (litriS * ultP);
+        // CALCOLO NETTO REALE (Basato solo su benzina consumata nei turni)
+        let costoBenzinaTurni = litriS * ultP;
+        let nettoAttuale = lordoAttuale - (lordoAttuale * (db.tax/100)) - costoBenzinaTurni;
         
-        document.getElementById('lordo').innerText = lordo.toFixed(2); 
-        document.getElementById('netto').innerText = '€' + netto.toFixed(2); 
+        document.getElementById('lordo').innerText = lordoAttuale.toFixed(2); 
+        document.getElementById('netto').innerText = '€' + nettoAttuale.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); 
         document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
         document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
         document.getElementById('spesaB').innerText = '€' + spesaB.toFixed(2);
         
-        // LOGICA TARGET BASATA SUL NETTO
+        // LOGICA TARGET NETTO -> MANCANTE LORDO
         let targetNetto = db.targets[tag] || 0; 
         document.getElementById('targetIn').value = targetNetto || ""; 
         document.getElementById('taxIn').value = db.tax;
         
-        let mancaNetto = targetNetto - netto; 
-        document.getElementById('mancante').innerText = '€' + (mancaNetto > 0 ? mancaNetto.toFixed(2) : "0.00");
+        // Per avere 'targetNetto' pulito, devo incassare 'Lordo Necessario'
+        // Formula: Lordo = (Netto Desiderato + Costo Benzina) / (1 - Tax/100)
+        let aliquotaNetta = 1 - (db.tax / 100);
+        let lordoNecessario = (targetNetto + costoBenzinaTurni) / aliquotaNetta;
         
-        let p = targetNetto > 0 ? Math.min((netto/targetNetto)*100, 100) : 0; 
+        let mancaLordo = lordoNecessario - lordoAttuale; 
+        document.getElementById('mancante').innerText = '€' + (mancaLordo > 0 ? mancaLordo.toFixed(2) : "0.00");
+        
+        // Progresso basato sul Netto
+        let p = targetNetto > 0 ? Math.min((nettoAttuale/targetNetto)*100, 100) : 0; 
         document.getElementById('perc').innerText = Math.round(p) + '%'; 
         document.getElementById('bar').style.width = p + '%';
     }
