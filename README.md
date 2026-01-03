@@ -1,80 +1,78 @@
-# 🛵 Rider Tracker Pro V1.1 - Documentazione Ufficiale
-
-Benvenuto in **Rider Tracker Pro**, una soluzione avanzata per il monitoraggio delle attività di delivery. Questa documentazione spiega nel dettaglio la struttura, la logica di calcolo e le funzionalità del software.
-
----
-
-## 🇮🇹 VERSIONE ITALIANA
-
-### 🧠 Logica e Filosofia di Funzionamento
-Rider Tracker Pro non è un semplice database, ma un **motore di calcolo dinamico** pensato per il lavoratore autonomo. L'app è stata progettata seguendo tre pilastri fondamentali:
-
-1.  **Monitoraggio del Guadagno Reale (Netto):** A differenza di altre app che mostrano solo il lordo, questa applicazione incrocia i dati dei chilometri percorsi con i consumi medi del veicolo e le tasse. Questo permette al rider di sapere esattamente quanto gli rimarrà in tasca dopo aver pagato benzina e imposte.
-2.  **Stima Predittiva del Carburante:** L'app non si limita a registrare quanto spendi al distributore, ma calcola quanto carburante *stai consumando* turno dopo turno. Se un giorno percorri molti chilometri, l'app ridurrà il tuo "Netto" in tempo reale, prevedendo l'usura e il costo del carburante anche prima che tu vada a fare rifornimento.
-3.  **Gestione Target Mensile:** L'app agisce come un coach finanziario. Impostando un obiettivo, il sistema calcola il "Mancante" e la percentuale di completamento, aiutando l'utente a gestire meglio i propri ritmi di lavoro.
+# ***RIDER TRACKER PRO V1.0: IL MANUALE INTEGRALE (GOLD EDITION)***
+**Versione: 1.0.0 (Ufficiale)**
 
 ---
 
-### 📊 Legenda delle Voci (Dashboard)
-* **LORDO (€):** Somma dei compensi di tutti i turni del mese corrente.
-* **NETTO (€):** Guadagno reale stimato sottraendo tasse e costi del carburante (`Lordo - Tasse - Costo Benzina Stimato`).
-* **ORE (h):** Tempo totale trascorso in consegna (accetta decimali).
-* **LITRI STIM. (L):** Consumo teorico di carburante calcolato per ogni turno in base ai chilometri.
-* **KM/L:** Rapporto di efficienza reale del veicolo (Chilometri percorsi per ogni litro).
-* **SPESA BENZ. (€):** Somma reale degli euro pagati per i rifornimenti registrati.
-* **TARGET (€):** Obiettivo finanziario di incasso lordo impostato per il mese.
-* **TAX (%):** Aliquota fiscale applicata per scorporare le tasse dal lordo.
-* **MANCANTE (€):** **Indica il MANCANTE LORDO**. Ovvero la cifra esatta di incasso lordo che ancora ti separa dal raggiungimento del Target impostato.
+## 🇮🇹 SEZIONE ITALIANO
+
+### **1. FILOSOFIA E SCOPO DEL PROGETTO**
+**Rider Tracker Pro** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno.
+
+* **Perché è stato ideato:** Nel delivery, il "Lordo" è ingannevole. Questa app elimina l'incertezza calcolando il **Netto Reale** sottraendo tasse e costi carburante in tempo reale.
+* **Privacy:** Nessun dato viene inviato a server esterni. Tutto risiede nella memoria locale del tuo smartphone.
+
+### **2. GUIDA OPERATIVA E FUNZIONI (STEP-BY-STEP)**
+
+#### **A. DASHBOARD (Schermata Principale)**
+* **LORDO:** Totale guadagnato dalle app.
+* **NETTO:** Guadagno pulito (Lordo - Tasse - Benzina Stimata).
+* **ORE:** Tempo totale in strada.
+* **LITRI STIM.:** Carburante consumato calcolato sui KM e il consumo medio del mezzo.
+* **KM/L:** Efficienza del veicolo (Kilometri per litro).
+* **SPESA BENZ.:** Totale euro pagati realmente ai distributori (Monitoraggio cassa).
+* **TARGET & TAX %:** Campi dove inserire l'obiettivo netto e l'aliquota fiscale.
+* **MANCANTE:** Calcola il **Lordo Necessario** per raggiungere il target netto desiderato.
+
+#### **B. MODULI DI INSERIMENTO (Turno & Benzina)**
+* **Pulsante TURNO (+):** Inserisci Lordo, Ore, KM e Consumo. Include l'**Auto-Scroll** che centra i campi sopra la tastiera.
+* **Pulsante BENZINA (⛽):** Inserisci Euro spesi e Prezzo al Litro. L'ultimo prezzo inserito aggiorna il valore economico dei consumi di tutti i turni.
+
+#### **C. STORICO E REPORT**
+* **STORICO (🕒):** Visualizza, controlla ed elimina inserimenti errati ricalcolando tutto istantaneamente.
+* **GENERA REPORT PDF:** Crea tabelle fiscali e calcola il "Netto Reale Lavoro" per la stampa.
+* **ALERT FINE MESE:** Promemoria automatico il 1° di ogni mese per il backup dei dati.
+
+### **⚠️ AVVERTENZE TECNICHE IMPORTANTI**
+1.  **DECIMALI:** Usa sempre il **PUNTO (.)** e non la virgola (es. `3.5` ore e non `3,5`).
+2.  **MEMORIA:** I dati sono salvati nel browser. **Non cancellare la cache del browser** o i dati del sito se non vuoi perdere lo storico.
 
 ---
 
-### 🛠️ Dettaglio Moduli e Finestre
-* **Modulo TURNO:** Permette l'inserimento di data, guadagno, ore, km e consumo medio. È il cuore dei dati statistici.
-* **Modulo BENZINA:** Registra le spese vive. Include un automatismo che gestisce il punto decimale per il prezzo al litro (es: 1.854).
-* **Storico Avanzato:** Archivio cronologico che calcola per ogni singolo turno l'efficienza specifica in km/L, permettendo di capire in quali giorni il veicolo ha consumato di più.
-* **Report PDF:** Genera un riepilogo contabile pronto per essere inviato o stampato, con tabelle separate per lavoro e spese.
+## 🇺🇸 ENGLISH SECTION
+
+### **1. PHILOSOPHY AND SCOPE**
+**Rider Tracker Pro** gives professional Riders total control over their real earnings.
+
+* **Why it was created:** "Gross" income is misleading. This app calculates **Real Net** by subtracting taxes and fuel costs in real-time.
+* **Privacy:** No data is sent to external servers. Everything is stored locally on your device.
+
+### **2. OPERATIONAL GUIDE (STEP-BY-STEP)**
+
+#### **A. DASHBOARD (Main Screen)**
+* **LORDO (GROSS):** Total income from apps.
+* **NETTO (NET):** Clean earnings (Gross - Taxes - Estimated Fuel).
+* **ORE (HOURS):** Total time on the road.
+* **LITRI STIM. (EST. LITERS):** Fuel burned based on KM and vehicle consumption.
+* **KM/L:** Vehicle efficiency (Kilometers per liter).
+* **SPESA BENZ. (FUEL SPENT):** Total actual cash paid at gas stations.
+* **TARGET & TAX %:** Boxes to set your goals and tax rates.
+* **MANCANTE (MISSING):** Calculates the **Required Gross** to hit your net goal.
+
+#### **B. ENTRY MODULES (Shift & Fuel)**
+* **SHIFT Button (+):** Enter Gross, Hours, KM, and Consumption. Features **Auto-Scroll** to keep inputs visible.
+* **FUEL Button (⛽):** Enter Euro spent and Price per Liter. The last price entered updates the cost of fuel for all shifts.
+
+#### **C. HISTORY AND REPORTS**
+* **HISTORY (🕒):** View, check, and delete entries with instant recalculation.
+* **PDF REPORT:** Creates printable fiscal tables and calculates "Real Net Work Profit."
+* **MONTH-END ALERT:** Automatic reminder on the 1st of each month to back up data.
+
+### **⚠️ CRITICAL TECHNICAL NOTES**
+1.  **DECIMALS:** Always use a **DOT (.)** instead of a comma (e.g., `3.5` hours, not `3,5`).
+2.  **STORAGE:** Data is saved in the browser. **Do not clear browser cache** or site data if you want to keep your history.
 
 ---
 
-### 👤 Credits
-Sviluppato con passione da **Marco Carbone**.
-🔗 **Contatto:** [facebook.com/madmaddj](https://www.facebook.com/madmaddj)
+**PROGETTATO E PENSATO DA: [MARCO CARBONE](https://facebook.com/madmaddj)**
 
----
----
-
-## 🇺🇸 ENGLISH VERSION
-
-### 🧠 Operating Logic and Philosophy
-Rider Tracker Pro is not just a simple database; it is a **dynamic calculation engine** designed for freelance delivery riders. The app was built on three fundamental pillars:
-
-1.  **Real Earnings Tracking (Net):** Unlike other apps that only show gross earnings, this application cross-references mileage data with average vehicle consumption and taxes. This allows the rider to know exactly how much will remain in their pocket after paying for fuel and taxes.
-2.  **Predictive Fuel Estimation:** The app doesn't just record what you spend at the pump; it calculates how much fuel you *are consuming* shift after shift. If you drive many kilometers one day, the app will reduce your "Net" in real-time, predicting the fuel cost even before you refuel.
-3.  **Monthly Target Management:** The app acts as a financial coach. By setting a goal, the system calculates the "Remaining" amount and the completion percentage, helping the user better manage their work pace.
-
----
-
-### 📊 Glossary (Dashboard)
-* **GROSS (€):** Sum of earnings from all monthly shifts.
-* **NET (€):** Estimated real earnings (`Gross - Taxes - Estimated Fuel Cost`).
-* **HOURS (h):** Total time spent on delivery (decimal support).
-* **EST. LITERS (L):** Theoretical consumption calculated as (`KM * (Consumption/100)`).
-* **KM/L:** Real efficiency ratio of the vehicle (Kilometers per liter).
-* **FUEL SPENT (€):** Real sum of euros paid for recorded refueling.
-* **TARGET (€):** Gross earnings financial goal set for the month.
-* **TAX (%):** Tax rate applied to separate taxes from gross earnings.
-* **REMAINING (€):** **Indicates the GROSS REMAINING**. The exact amount of gross income still needed to reach your set Target.
-
----
-
-### 🛠️ Modules and Windows Detail
-* **SHIFT Module:** Allows entry of date, earnings, hours, km, and average consumption. It is the core of the statistical data.
-* **FUEL Module:** Records actual expenses. Includes an automation that handles the decimal point for the price per liter (e.g., 1.854).
-* **Advanced History:** Chronological archive that calculates specific efficiency in km/L for each individual shift, helping to understand which days the vehicle consumed more.
-* **PDF Report:** Generates an accounting summary ready to be sent or printed, with separate tables for work and expenses.
-
----
-
-### 👤 Credits
-Developed with passion by **Marco Carbone**.
-🔗 **Contact:** [facebook.com/madmaddj](https://www.facebook.com/madmaddj)
+**P.S. LALLA INFAME**
