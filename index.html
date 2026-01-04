@@ -29,7 +29,6 @@
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         #liveClock { font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; }
 
-        /* MODALI */
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); padding:15px; overflow-y:auto; align-items: flex-start; justify-content: center; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:95%; max-width:320px; border:2px solid var(--primary); margin: 40px auto 200px auto; }
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); text-transform: uppercase; }
@@ -42,7 +41,7 @@
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
 
-        /* STORICO CON CORNICE E DOPPIA BARRA */
+        /* STORICO CON DATA ESTESA E CORNICE */
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin-top: 10px; -webkit-overflow-scrolling: touch; padding: 5px; }
         .storico-item { 
@@ -58,12 +57,11 @@
         }
         .storico-info { flex-grow: 1; padding: 0 12px; }
         .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; margin-bottom: 2px; }
-        .storico-date { font-weight: bold; font-size: 13px; color: #fff; }
+        .storico-date { font-weight: bold; font-size: 13px; color: #fff; text-transform: capitalize; }
         .storico-hour { font-size: 11px; color: var(--dim); margin-left: 8px; font-weight: normal; }
         .storico-main { font-size:22px; font-weight:900; margin: 2px 0; }
         .storico-sub { font-size:10px; color:var(--dim); line-height: 1.2; }
 
-        /* FOOTER */
         .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:10px; font-weight: bold; }
         .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
@@ -128,13 +126,11 @@
         </div>
     </div>
     <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v42')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
-    const mesi = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+    let db = JSON.parse(localStorage.getItem('rider_db_v45')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+    const mesiEstesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
-    // AUTO-SCROLL TASTIERA
     function autoScroll(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 350); }
-
-    function salvaDB() { localStorage.setItem('rider_db_v42', JSON.stringify(db)); calcola(); }
+    function salvaDB() { localStorage.setItem('rider_db_v45', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function formattaPrezzo(i) { let v = i.value.replace(/[^\d]/g, ''); if(v.length>1) i.value = v.substring(0,1)+'.'+v.substring(1,4); }
 
@@ -173,10 +169,14 @@
             const color = isT ? 'var(--primary)' : 'var(--orange)';
             const sub = isT ? `${i.km}km | ${i.ore}h | ${i.cons}L/100` : `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
             
+            // Format data estesa: "4 Gennaio 2026"
+            const dataPezzi = i.data.split('/');
+            const dataEstesa = `${dataPezzi[0]} ${mesiEstesi[parseInt(dataPezzi[1])-1]} ${dataPezzi[2]}`;
+
             h += `<div class="storico-item" style="border-left: 6px solid ${color}; border-right: 6px solid ${color};">
                 <div class="storico-info">
                     <div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div>
-                    <div class="storico-date">${i.data}<span class="storico-hour">${i.ora || '--:--'}</span></div>
+                    <div class="storico-date">${dataEstesa}<span class="storico-hour">${i.ora || '--:--'}</span></div>
                     <div class="storico-main" style="color:${color}">€${(isT?i.lordo:i.euro).toFixed(2)}</div>
                     <div class="storico-sub">${sub}</div>
                 </div>
@@ -190,7 +190,7 @@
     function apriM(id) { 
         const n=new Date(); let d='', m='', y=''; 
         for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`;
-        mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm}</option>`);
+        mesiEstesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm}</option>`);
         for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`;
         const p = id==='modalTurno'?'dateT':'dateB'; 
         document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
@@ -199,13 +199,15 @@
 
     function salvaTurno() { 
         const ora = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        db.turni.push({id:Date.now(),data:`${document.getElementById('dateTD').value}/${document.getElementById('dateTM').value}`, ora: ora, lordo:parseFloat(document.getElementById('tL').value)||0,ore:parseFloat(document.getElementById('tO').value)||0,km:parseFloat(document.getElementById('tK').value)||0,cons:parseFloat(document.getElementById('tC').value)||0}); 
+        const dataSalva = `${document.getElementById('dateTD').value}/${document.getElementById('dateTM').value}/${document.getElementById('dateTY').value}`;
+        db.turni.push({id:Date.now(), data: dataSalva, ora: ora, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); 
         salvaDB(); chiudiModali(); 
     }
 
     function salvaBenza() { 
         const ora = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        db.rifornimenti.push({id:Date.now(),data:`${document.getElementById('dateBD').value}/${document.getElementById('dateBM').value}`, ora: ora, euro:parseFloat(document.getElementById('bE').value)||0,prezzo:parseFloat(document.getElementById('bP').value)||0}); 
+        const dataSalva = `${document.getElementById('dateBD').value}/${document.getElementById('dateBM').value}/${document.getElementById('dateBY').value}`;
+        db.rifornimenti.push({id:Date.now(), data: dataSalva, ora: ora, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); 
         salvaDB(); chiudiModali(); 
     }
 
