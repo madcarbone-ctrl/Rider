@@ -60,7 +60,7 @@
         .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: center; justify-content: center; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
         
-        /* Modifica: Abbassata di ulteriori 10px (da -175px a -165px) */
+        /* Casella benzina a -165px */
         #modalBenza .modal-content { transform: translateY(-165px); }
 
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
@@ -136,7 +136,7 @@
                 <input type="file" id="fileBackup" accept=".json" hidden>
                 <div class="backup-list" id="backupList"></div>
             </div>
-            <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
+            <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="chiudiReport()">CHIUDI</button></div>
         </div>
 
         <div class="sticky-footer no-print">
@@ -218,6 +218,11 @@
         let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
         document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'block'; renderBackupList();
+    }
+    // NUOVA FUNZIONE: Chiude il report e resetta lo scroll della pagina a zero
+    function chiudiReport() {
+        document.getElementById('reportView').style.display = 'none';
+        window.scrollTo(0, 0); 
     }
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
