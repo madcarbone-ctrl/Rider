@@ -50,17 +50,15 @@
         .summary-row.total { font-weight:bold; font-size:13px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
         .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; font-size: 10px; }
 
-        /* --- STILI PULSANTI AFFIANCATI REPORT --- */
         .report-btn-row { display: flex; gap: 8px; margin-top: 10px; }
         .btn-rep-small { flex: 1; padding: 12px 5px; border-radius: 10px; font-weight: bold; border: none; text-transform: uppercase; font-size: 10px; cursor: pointer; text-align: center; }
         .btn-rep-db { background: #444; color: #fff; }
         .btn-rep-save { background: var(--primary); color: #000; }
         .btn-rep-print { background: #000; color: #fff; }
         .btn-rep-close { background: #ddd; color: #000; }
-        /* ---------------------------------------- */
 
-        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: center; justify-content: center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
+        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: flex-start; justify-content: center; overflow-y: auto !important; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:95%; max-width:320px; border:2px solid var(--primary); margin: 20px auto; }
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
         
@@ -108,6 +106,7 @@
             <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
+
         <div class="progress-container no-print">
             <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
@@ -115,7 +114,9 @@
         </div>
 
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
         <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
         <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
@@ -148,20 +149,29 @@
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
+
 <script>
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    let catElimina = '', idElimina = null;
+    
+    // Funzione auto-scroll per modali
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            setTimeout(() => {
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+    });
 
     function salvaBackup() {
-        const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.0", db: db };
+        const data = { timestamp: Date.now(), db: db };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`;
         a.click(); URL.revokeObjectURL(url);
-        alert("Database esportato correttamente!");
     }
+
     document.getElementById("fileBackup").addEventListener("change", function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
@@ -170,7 +180,7 @@
                 const json = JSON.parse(evt.target.result);
                 if (!json.db) throw "Err"; db = json.db;
                 localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-                alert("Importato!"); location.reload();
+                location.reload();
             } catch(err) { alert("File non valido."); }
         }; reader.readAsText(file);
     });
@@ -179,22 +189,16 @@
         let val = input.value.replace(/[^\d]/g, ''); 
         if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; }
     }
+
     function startClock() { setInterval(() => {
         const now = new Date();
         document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
     }, 1000); }
-    function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
-    function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
+
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
+    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; }); }
     function confermaReset() { localStorage.clear(); location.reload(); }
-    function elimina(cat, id) {
-        catElimina = cat; idElimina = id;
-        document.getElementById('btnConfermaElimina').onclick = function() {
-            db[catElimina] = db[catElimina].filter(x => x.id !== idElimina);
-            salvaDB(); apriStorico(); chiudiModali();
-        }; document.getElementById('modalElimina').style.display = 'flex';
-    }
+
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
         let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0), ore = db.turni.reduce((a,b)=>a+b.ore, 0), km = db.turni.reduce((a,b)=>a+b.km, 0);
@@ -215,6 +219,7 @@
         document.getElementById('perc').innerText = Math.round(p) + '%'; 
         document.getElementById('bar').style.width = p + '%';
     }
+
     function apriStorico() {
         let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
@@ -225,6 +230,7 @@
         document.getElementById('listaStorico').innerHTML = h || "Vuoto";
         document.getElementById('histView').style.display = 'flex';
     }
+
     function apriReport() {
         let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_R=0;
         db.turni.sort((a,b)=>a.id-b.id).forEach(t => { 
@@ -235,15 +241,16 @@
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>No dati</td></tr>";
         document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>No dati</td></tr>";
         let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_S = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE: ${tO.toFixed(1)}h</span><span>KM: ${tK}</span><span>KM/L: ${mediaKML}</span></div><div class="summary-row"><span>LORDO:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA STIMA:</span><span>-€${costoB_S.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-costoB_S).toFixed(2)}</span></div><div class="summary-row monitor"><span>MONITOR SPESA VERA: €${tEB_R.toFixed(2)}</span></div>`;
+        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE: ${tO.toFixed(1)}h</span><span>KM: ${tK}</span><span>KM/L: ${mediaKML}</span></div><div class="summary-row"><span>LORDO:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-costoB_S).toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'block';
     }
+
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = function() { calcola(); startClock(); checkFineMese(); };
+    window.onload = function() { calcola(); startClock(); };
 </script>
 </body>
 </html>
