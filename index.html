@@ -54,13 +54,10 @@
         .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 10px; color: #000; text-transform: uppercase; font-size: 12px; cursor: pointer; }
         .btn-save-backup { background: var(--primary); }
         .btn-load-backup { background: #444; color: #fff; }
-        .backup-list { font-size: 11px; color: #666; margin-top: 10px; }
-        .backup-item { border-bottom: 1px solid #eee; padding: 6px 0; display: flex; justify-content: space-between; }
 
         .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: center; justify-content: center; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
         
-        /* Modifica: Abbassata di ulteriori 10px (da -175px a -165px) */
         #modalBenza .modal-content { transform: translateY(-165px); }
 
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
@@ -134,7 +131,6 @@
                 <button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
                 <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
                 <input type="file" id="fileBackup" accept=".json" hidden>
-                <div class="backup-list" id="backupList"></div>
             </div>
             <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
         </div>
@@ -149,7 +145,6 @@
     </div>
     <script>
     const APP_VER = "1.0.0";
-    const BACKUP_KEY = "rider_backup_history";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     let catElimina = ''; let idElimina = null;
@@ -159,7 +154,7 @@
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a"); a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click();
-        URL.revokeObjectURL(url); salvaCronologiaBackup(data.timestamp); renderBackupList();
+        URL.revokeObjectURL(url);
     }
     document.getElementById("fileBackup").addEventListener("change", function(e) {
         const file = e.target.files[0]; if (!file) return;
@@ -171,14 +166,7 @@
             } catch(err) { alert("File di backup non valido."); }
         }; reader.readAsText(file);
     });
-    function salvaCronologiaBackup(ts) {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || []; list.unshift(ts); localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(0,5)));
-    }
-    function renderBackupList() {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || []; const box = document.getElementById("backupList"); if(!box) return;
-        box.innerHTML = list.length ? "<strong>Ultimi Backup Locali:</strong>" : "Nessun backup salvato in questa sessione";
-        list.forEach(ts => { const d = new Date(ts); const div = document.createElement("div"); div.className = "backup-item"; div.innerHTML = `<span>${d.toLocaleString()}</span>`; box.appendChild(div); });
-    }
+
     function formattaPrezzo(input) { let val = input.value.replace(/[^\d]/g, ''); if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; } }
     function startClock() { const update = () => { const now = new Date(); document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`; }; update(); setInterval(update, 1000); }
     function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
@@ -217,14 +205,14 @@
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>"; document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
         let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
         document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
-        document.getElementById('reportView').style.display = 'block'; renderBackupList();
+        document.getElementById('reportView').style.display = 'block';
     }
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = function() { calcola(); startClock(); checkFineMese(); renderBackupList(); };
+    window.onload = function() { calcola(); startClock(); checkFineMese(); };
 </script>
 </body>
 </html>
