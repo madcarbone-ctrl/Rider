@@ -36,20 +36,65 @@
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #333; border-bottom: 1px solid #333; -webkit-overflow-scrolling: touch; }
         
-        .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
-        #reportView { background:#fff; color:#000; text-align:left; }
-
-        /* INIZIO MODIFICA 21: POSIZIONAMENTO MODALE ALZATO */
-        .modal { 
-            background:rgba(0,0,0,0.85); 
-            z-index:9999; 
-            display:none; 
-            align-items: flex-start; /* Allinea all'inizio invece che al centro */
-            justify-content: center; 
-            padding-top: 15vh; /* Alza la finestra di circa un centimetro/due a seconda dello schermo */
+        /* MODIFICA 22: RELEASING NEW PROFESSIONAL REPORT VIEW */
+        #reportView { 
+            display:none; position:fixed; inset:0; z-index:9999; 
+            background:#fff; color:#000; padding:20px; 
+            overflow-y:auto; -webkit-overflow-scrolling: touch;
+            text-align: left;
         }
-        /* FINE MODIFICA 21 */
+        
+        .report-container { max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
 
+        .report-header-mini { 
+            border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:25px; 
+            display:flex; justify-content:space-between; align-items:center; 
+        }
+        .report-header-mini h2 { font-size:18px; margin:0; font-weight: 900; letter-spacing: 1px; }
+        .report-header-mini span { font-size:11px; font-weight:bold; background: #000; color: #fff; padding: 4px 8px; }
+
+        .report-section { margin-bottom: 30px; }
+        .report-section h3 { 
+            font-size: 13px; text-transform: uppercase; border-left: 5px solid #000; 
+            padding-left: 10px; margin-bottom: 12px; letter-spacing: 0.5px;
+        }
+
+        /* TABELLE REPORT PROFESSIONALI */
+        .report-table { 
+            width:100%; border-collapse:collapse; font-size:11px; 
+            margin-bottom: 10px; border: 2px solid #000; 
+        }
+        .report-table th { 
+            background: #f0f0f0; border: 1px solid #000; padding: 8px; 
+            text-align: center; font-weight: 900; text-transform: uppercase;
+        }
+        .report-table td { 
+            border: 1px solid #000; padding: 8px; text-align: center; 
+        }
+        
+        /* BOX RIEPILOGO FINALE */
+        .summary-box { border: 3px solid #000; padding: 15px; background: #fff; margin-top: 10px; }
+        .summary-row { 
+            display:flex; justify-content:space-between; padding:6px 0; 
+            border-bottom:1px solid #eee; font-size:12px; 
+        }
+        .summary-row.total { 
+            font-weight:900; font-size:16px; border-top:2px solid #000; 
+            margin-top:8px; padding-top: 10px; border-bottom:none; 
+        }
+        .summary-row.monitor { 
+            color: #666; font-size: 11px; border-top: 1px dashed #ccc; 
+            margin-top: 10px; font-style: italic; 
+        }
+
+        /* SEZIONE BACKUP NEL REPORT */
+        .backup-section-report { 
+            margin-top: 40px; padding: 20px; background: #f4f4f4; 
+            border: 2px dashed #999; border-radius: 10px; 
+        }
+        /* FINE MODIFICA 22 */
+
+        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: flex-start; justify-content: center; padding-top: 15vh; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
@@ -80,7 +125,7 @@
         .btn-confirm-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-        @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
+        @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; } .report-container { padding-bottom: 0; } }
     </style>
 </head>
 <body>
@@ -113,20 +158,64 @@
         <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
 
         <div id="reportView">
-            <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
-            <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-            <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
-            <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
-            
-            <div class="backup-section no-print">
-                <h3>AREA BACKUP & SICUREZZA</h3>
-                <button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
-                <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
-                <input type="file" id="fileBackup" accept=".json" hidden>
-                <div class="backup-list" id="backupList"></div>
-            </div>
+            <div class="report-container">
+                <div class="report-header-mini">
+                    <h2>REPORT ATTIVITÀ</h2>
+                    <span>RIDER TRACKER V1.0</span>
+                </div>
+                
+                <div class="report-section">
+                    <h3>DETTAGLIO TURNI</h3>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>DATA</th>
+                                <th>LORDO</th>
+                                <th>ORE</th>
+                                <th>KM</th>
+                                <th>L/100</th>
+                                <th>LITRI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repTurniBody"></tbody>
+                    </table>
+                </div>
+                
+                <div class="report-section">
+                    <h3>DETTAGLIO RIFORNIMENTI</h3>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>DATA</th>
+                                <th>SPESA</th>
+                                <th>PREZZO/L</th>
+                                <th>LITRI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repBenzaBody"></tbody>
+                    </table>
+                </div>
+                
+                <div class="report-section">
+                    <h3>RIEPILOGO FINALE</h3>
+                    <div class="summary-box" id="repFinalSummary"></div>
+                </div>
+                
+                <div class="backup-section-report no-print">
+                    <h3 style="border:none; padding:0; margin-bottom:15px;">AREA BACKUP & SICUREZZA</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA (.JSON)</button>
+                        <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA (.JSON)</button>
+                    </div>
+                    <input type="file" id="fileBackup" accept=".json" hidden>
+                    <div class="backup-list" id="backupList" style="margin-top:15px;"></div>
+                </div>
 
-            <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
+                <div class="no-print" style="display:flex; gap:10px; margin-top:30px;">
+                    <button class="btn-modal btn-save" style="background:#000; color:#fff; flex:2;" onclick="window.print()">STAMPA PDF ORA</button>
+                    <button class="btn-modal btn-close" style="flex:1;" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+                </div>
+            </div>
         </div>
 
         <div class="sticky-footer no-print">
@@ -191,6 +280,7 @@
             const d = new Date(ts);
             const div = document.createElement("div");
             div.className = "backup-item";
+            div.style.cssText = "display:flex; justify-content:space-between; font-size:11px; padding:4px 0; border-bottom:1px solid #ccc; color:#666;";
             div.innerHTML = `<span>${d.toLocaleString()}</span>`;
             box.appendChild(div);
         });
@@ -266,10 +356,10 @@
             tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; 
         });
         db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
-        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno registrato</td></tr>";
+        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento registrato</td></tr>";
         let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI PERCORSI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO EFFETTIVA:</span><span>${mediaKML} km/l</span></div><div class="summary-row" style="border-top:1px solid #000; margin-top:10px;"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE CALCOLATE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>COSTO BENZINA STIMATO:</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE DISPONIBILE:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI EFFETTUATI: €${tEB_Reale.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'block';
         renderBackupList();
     }
