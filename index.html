@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER V3.9 - BACKUP & REPORT ORIGINALE</title>
+    <title>RIDER TRACKER V3.9 - FINAL BLINDATA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; }
@@ -25,36 +25,38 @@
         #bar { background: linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.5s; }
         #liveClock { font-size:14px; color:var(--primary); margin-top: 12px; text-align: center; font-weight: bold; }
 
-        /* FOOTER E TASTI BACKUP */
+        /* FOOTER, BACKUP E AZIONI */
         .sticky-footer { background:#161616; padding:12px; border-radius:20px; border:2px solid #333; margin-top: auto; margin-bottom: 70px; display: flex; flex-direction: column; gap: 10px; }
         .btn-group-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .foot-btn { background:#222; color:#fff; padding:12px 5px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; cursor:pointer; }
         .foot-btn i { font-size:20px; color:var(--primary); margin-bottom:4px; }
         
-        .backup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .btn-backup { background:#333; color:#fff; padding:10px; border-radius:10px; border:1px solid #555; font-size:10px; font-weight:bold; cursor:pointer; text-align:center; }
+        .backup-container { display: flex; gap: 8px; margin-bottom: 4px; }
+        .btn-backup { flex: 1; background:#2a2a2a; color:var(--dim); padding:10px; border-radius:10px; border:1px solid #444; font-size:9px; font-weight:bold; cursor:pointer; text-align:center; text-transform:uppercase; }
         
         .btn-full { width: 100%; padding:16px; border-radius:12px; font-weight:900; border:none; text-transform: uppercase; font-size: 12px; cursor:pointer; }
         .btn-report { background:var(--primary); color:#000; }
         .btn-danger { background:var(--danger); color:#fff; }
 
         /* MODALI E STORICO (BLINDATI) */
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items: center; justify-content:center; padding: 20px; }
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); align-items: center; justify-content:center; padding: 20px; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:100%; max-width:340px; border:2px solid var(--primary); }
         .modal input { width:100%; padding:14px; background:#252525; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:12px; font-size:16px; outline:none; }
         
-        .storico-scroll { max-height: 50vh; overflow-y: auto; margin: 15px 0; border: 1px solid #333; border-radius: 10px; }
+        .storico-scroll { max-height: 45vh; overflow-y: auto; margin: 15px 0; border: 1px solid #333; border-radius: 10px; }
         .storico-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .storico-table th { background: #222; padding: 10px; text-align: left; color: var(--dim); position: sticky; top:0; }
         .storico-table td { padding: 12px 10px; border-bottom: 1px solid #222; }
         .riga-T { border-left: 4px solid var(--primary); }
         .riga-B { border-left: 4px solid var(--accent); }
 
-        /* REPORT PDF (ORIGINALE) */
+        /* SCHERMATA REPORT (REPLICA ESATTA ORIGINALE) */
         #winReport { display:none; position:fixed; inset:0; z-index:10000; background:#fff; color:#000; flex-direction:column; padding:20px; overflow-y:auto; }
-        .rep-table { width:100%; border-collapse:collapse; margin-top:15px; font-size:12px; }
-        .rep-table th, .rep-table td { border:1px solid #000; padding:8px; text-align:center; }
-        @media print { .no-print { display:none; } }
+        .rep-header { border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
+        .rep-table { width:100%; border-collapse:collapse; margin-bottom: 20px; }
+        .rep-table th, .rep-table td { border:1px solid #000; padding:8px; text-align:center; font-size:12px; }
+        .rep-summary { font-size:16px; font-weight:bold; border-top: 2px solid #000; padding-top: 10px; }
+        @media print { .no-print { display:none; } #winReport { position:relative; inset:auto; padding:0; } }
     </style>
 </head>
 <body>
@@ -85,9 +87,9 @@
             <div class="foot-btn" onclick="toggleWin('winBenza', true)"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="toggleWin('winStorico', true)"><i class="fas fa-history"></i>STORICO</div>
         </div>
-        <div class="backup-row">
-            <div class="btn-backup" onclick="exportBackup()"><i class="fas fa-download"></i> DOWNLOAD BACKUP</div>
-            <div class="btn-backup" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> CARICA BACKUP</div>
+        <div class="backup-container">
+            <button class="btn-backup" onclick="exportBackup()"><i class="fas fa-download"></i> SALVA BACKUP</button>
+            <button class="btn-backup" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> CARICA BACKUP</button>
             <input type="file" id="fileInput" style="display:none" onchange="importBackup(event)">
         </div>
         <button class="btn-full btn-report" onclick="apriReport()">GENERA REPORT PDF</button>
@@ -101,15 +103,18 @@
     <div id="winStorico" class="modal"><div class="modal-content"><h3>STORICO ATTIVITÀ</h3><div class="storico-scroll"><table class="storico-table"><thead><tr><th>DATA</th><th>TIPO</th><th>EURO</th><th>INFO</th></tr></thead><tbody id="corpoStorico"></tbody></table></div><button class="btn-full" style="background:#444; color:#fff;" onclick="toggleWin('winStorico', false)">CHIUDI</button></div></div>
 
     <div id="winReport">
-        <h2 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">REPORT RIDER TRACKER</h2>
+        <div class="rep-header">
+            <h1 style="text-align:center; margin:0; font-size:22px;">REPORT RIDER TRACKER</h1>
+            <p style="text-align:center; margin:5px 0 0 0; font-size:12px;">Dettaglio completo prestazioni e costi</p>
+        </div>
         <table class="rep-table">
-            <thead><tr style="background:#eee;"><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>LITRI</th></tr></thead>
+            <thead><tr style="background:#f2f2f2;"><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>LITRI</th></tr></thead>
             <tbody id="repBody"></tbody>
         </table>
-        <div id="repSummary" style="margin-top:20px; font-weight:bold; font-size:16px;"></div>
+        <div id="repSummary" class="rep-summary"></div>
         <div class="no-print" style="margin-top:30px; display:flex; gap:10px;">
             <button class="btn-full" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF</button>
-            <button class="btn-full" style="background:#666; color:#fff;" onclick="document.getElementById('winReport').style.display='none'">CHIUDI</button>
+            <button class="btn-full" style="background:#666; color:#fff;" onclick="document.getElementById('winReport').style.display='none'">TORNA ALL'APP</button>
         </div>
     </div>
 
@@ -151,6 +156,7 @@
             let litriT = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0);
             let spesaB = db.benza.reduce((a,b)=>a+b.euro, 0);
             let netto = lordo - (lordo*(db.tax/100)) - (litriT * 1.85);
+
             document.getElementById('lordo').innerText = lordo.toFixed(2);
             document.getElementById('netto').innerText = '€' + netto.toFixed(2);
             document.getElementById('ore').innerText = ore.toFixed(1);
@@ -168,19 +174,19 @@
             let h = ""; let lTot = 0;
             db.turni.forEach(t => {
                 let li = (t.km*(t.cons/100)).toFixed(1); lTot += t.lordo;
-                h += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>${li} L</td></tr>`;
+                h += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore} h</td><td>${t.km} km</td><td>${li} L</td></tr>`;
             });
-            document.getElementById('repBody').innerHTML = h || "<tr><td colspan='5'>No dati</td></tr>";
+            document.getElementById('repBody').innerHTML = h || "<tr><td colspan='5'>Nessun turno registrato</td></tr>";
             document.getElementById('repSummary').innerText = "TOTALE LORDO: €" + lTot.toFixed(2);
             document.getElementById('winReport').style.display = 'flex';
         }
 
         function exportBackup() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "rider_tracker_backup.json");
-            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "RiderTracker_Backup.json");
+            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
         }
 
         function importBackup(e) {
@@ -193,7 +199,7 @@
             reader.readAsText(e.target.files[0]);
         }
 
-        function resetTotale() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
+        function resetTotale() { if(confirm("Sei sicuro? Questo cancellerà tutti i dati definitivamente.")) { localStorage.clear(); location.reload(); } }
         setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
         window.onload = () => { document.getElementById('taxIn').value=db.tax; document.getElementById('targetIn').value=db.target; aggiornaDati(); };
     </script>
