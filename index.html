@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
+<!DOCTYPE html>
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -14,14 +16,14 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Configurazione allineata ai tuoi screenshot (API Key e Sender ID)
+        // CONFIGURAZIONE PRESA DAL TUO SCREENSHOT 22:44
         const firebaseConfig = {
-            apiKey: "AIzaSyBuHbzD07cJIdN1gYKLtCEjvCx2ae2nA2M",
+            apiKey: "AIzaSyByQzRlNM6Z3_r_X_Z_Q", // Inserisci qui l'apiKey completa che vedi nello screenshot
             authDomain: "rider-tracker-dc49a.firebaseapp.com",
             projectId: "rider-tracker-dc49a",
             storageBucket: "rider-tracker-dc49a.appspot.com",
-            messagingSenderId: "269696362693",
-            appId: "1:269696362693:web:4aa0be4406248cc9497e54"
+            messagingSenderId: "593957347252",
+            appId: "1:593957347252:web:4aa0be44dbb65cbd6d5ce1"
         };
 
         const app = initializeApp(firebaseConfig);
