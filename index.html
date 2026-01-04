@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER V2.5</title>
+    <title>RIDER TRACKER V2.6</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; --input-bg:#252525; }
@@ -23,16 +23,12 @@
         .val { font-size:13px; font-weight:bold; color: #fff; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid var(--primary); color:#fff; text-align:center; font-size:14px; outline:none; }
 
-        /* --- BLOCCO PROGRESSO --- */
         .progress-section { background: var(--card); padding: 12px; border-radius: 18px; border: 1px solid #333; margin-bottom: 5px; }
         .progress-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-bottom: 8px; color: var(--primary); }
         .progress-bar { background:#222; height:24px; border-radius:12px; overflow:hidden; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        
         #liveClock { font-size:14px; color:var(--primary); margin-top: 10px; text-align: center; font-weight: bold; letter-spacing: 1px; }
-        .clock-sep { margin: 0 8px; opacity: 0.5; }
 
-        /* --- FOOTER CON TASTI STESSA ALTEZZA --- */
         .sticky-footer { 
             background:#161616; padding:12px; border-radius:20px; border:2px solid #333;
             display: flex; flex-direction: column; gap: 10px;
@@ -43,17 +39,22 @@
         .foot-btn { background:#222; color:#fff; padding:12px 5px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; }
         .foot-btn i { font-size:20px; color:var(--primary); margin-bottom:4px; }
         
-        /* Pareggio altezza Report e Reset */
         .btn-full-action { width: 100%; padding:16px; border-radius:12px; font-weight:900; border:none; text-transform: uppercase; font-size: 12px; height: 50px; }
         .btn-report { background:var(--primary); color:#000; }
         .btn-reset-danger { background:var(--danger); color:#fff; }
 
-        /* --- MODALI E INPUT (STILE ORIGINALE) --- */
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); }
+        /* --- MODALI OTTIMIZZATI PER TASTIERA --- */
+        .modal { 
+            display:none; position:fixed; inset:0; z-index:9999; 
+            background:rgba(0,0,0,0.9); align-items: flex-start; /* Allinea in alto */
+            justify-content:center; overflow-y: auto; padding-top: 20px;
+        }
+        .modal-content { 
+            background:var(--card); padding:20px; border-radius:24px; 
+            width:90%; max-width:320px; border:2px solid var(--primary);
+            transition: transform 0.3s ease; /* Effetto scroll fluido */
+        }
         .modal h3 { margin-bottom: 15px; font-size: 18px; color: var(--primary); text-align: center; }
-        
-        /* Caselle di input scure e grandi come richiesto */
         .modal input { 
             width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; 
             color:#fff; border-radius:12px; margin-bottom:12px; outline:none; font-size: 16px; 
@@ -63,7 +64,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER V2.5</div>
+    <div class="app-title">RIDER TRACKER V2.6</div>
 
     <div class="grid">
         <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -104,9 +105,29 @@
     <div id="winReport" class="modal"><div class="modal-content"><h3>Report</h3><button class="btn-modal-save" style="background:var(--primary); color:#000;" onclick="window.print()">STAMPA PDF</button><button class="btn-modal-save" style="background:#333; color:#fff;" onclick="toggleWin('winReport', false)">ESCI</button></div></div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v2.5')) || { turni: [], benza: [], tax: 20, target: 0 };
-    function toggleWin(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
-    function salvaDB() { localStorage.setItem('rider_db_v2.5', JSON.stringify(db)); aggiornaDati(); }
+    let db = JSON.parse(localStorage.getItem('rider_db_v2.6')) || { turni: [], benza: [], tax: 20, target: 0 };
+    
+    function toggleWin(id, show) { 
+        const win = document.getElementById(id);
+        win.style.display = show ? 'flex' : 'none';
+        if(!show) {
+            win.querySelector('.modal-content').style.transform = 'translateY(0)';
+        }
+    }
+
+    // GESTIONE AUTO-SCROLL TASTIERA
+    document.querySelectorAll('.modal input').forEach(input => {
+        input.addEventListener('focus', function() {
+            // Quando l'input ha il focus, alza il modale di 80px per liberare spazio sotto
+            this.closest('.modal-content').style.transform = 'translateY(-60px)';
+        });
+        input.addEventListener('blur', function() {
+            // Quando perdi il focus, riporta il modale in posizione
+            this.closest('.modal-content').style.transform = 'translateY(0)';
+        });
+    });
+
+    function salvaDB() { localStorage.setItem('rider_db_v2.6', JSON.stringify(db)); aggiornaDati(); }
 
     function salvaAzione(tipo) {
         const d = new Date().toLocaleDateString('it-IT');
