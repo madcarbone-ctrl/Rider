@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER V3.2</title>
+    <title>RIDER TRACKER V3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; --input-bg:#252525; }
@@ -15,7 +15,19 @@
             padding: 8px; overflow: hidden; position: fixed;
         }
         
-        .app-title { font-size:16px; font-weight:800; color:var(--primary); text-transform:uppercase; text-align:center; padding: 5px 0; }
+        /* TITOLO INGRANDITO */
+        .app-title { 
+            font-size: 28px; 
+            font-weight: 900; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            text-align: center; 
+            padding: 15px 0; 
+            letter-spacing: 2px;
+            text-shadow: 0px 4px 10px rgba(0, 204, 188, 0.3);
+            border-bottom: 2px solid #333;
+            margin-bottom: 10px;
+        }
 
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom: 5px; }
         .card { background:var(--card); border-radius:12px; border:1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 65px; }
@@ -43,7 +55,7 @@
         .btn-report { background:var(--primary); color:#000; }
         .btn-reset-danger { background:var(--danger); color:#fff; }
 
-        /* --- MODALI (V3.2 - MASSIMA ALTEZZA 210px) --- */
+        /* MODALI ALTI */
         .modal { 
             display:none; position:fixed; inset:0; z-index:9999; 
             background:rgba(0,0,0,0.9); 
@@ -54,7 +66,7 @@
             background:var(--card); padding:20px; border-radius:24px; 
             width:90%; max-width:320px; border:2px solid var(--primary);
             transition: transform 0.2s ease-out;
-            margin-bottom: 210px; /* ALZATO DI ULTERIORI 20px */
+            margin-bottom: 210px; 
         }
         .modal h3 { margin-bottom: 15px; font-size: 18px; color: var(--primary); text-align: center; }
         .modal input { 
@@ -66,7 +78,7 @@
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER V3.2</div>
+    <div class="app-title">RIDER TRACKER</div>
 
     <div class="grid">
         <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -107,7 +119,7 @@
     <div id="winReport" class="modal"><div class="modal-content"><h3>Report</h3><button class="btn-modal-save" style="background:var(--primary); color:#000;" onclick="window.print()">STAMPA PDF</button><button class="btn-modal-save" style="background:#333; color:#fff;" onclick="toggleWin('winReport', false)">ESCI</button></div></div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v3.2')) || { turni: [], benza: [], tax: 20, target: 0 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v3.3')) || { turni: [], benza: [], tax: 20, target: 0 };
     
     function toggleWin(id, show) { 
         const win = document.getElementById(id);
@@ -115,7 +127,7 @@
         if(!show) { win.querySelector('.modal-content').style.transform = 'translateY(0)'; }
     }
 
-    function salvaDB() { localStorage.setItem('rider_db_v3.2', JSON.stringify(db)); aggiornaDati(); }
+    function salvaDB() { localStorage.setItem('rider_db_v3.3', JSON.stringify(db)); aggiornaDati(); }
 
     function salvaAzione(tipo) {
         const d = new Date().toLocaleDateString('it-IT');
