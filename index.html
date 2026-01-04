@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER V3.9</title>
+    <title>RIDER TRACKER V4.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; --input-bg:#252525; }
@@ -24,6 +24,7 @@
         }
         .app-title span { font-size: 12px; color: var(--dim); vertical-align: middle; margin-left: 8px; letter-spacing: 0; }
 
+        /* GRID E CARDS BLINDATE */
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom: 5px; }
         .card { background:var(--card); border-radius:12px; border:1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 65px; }
         .label { font-size:7px; color:var(--dim); font-weight:bold; text-transform:uppercase; }
@@ -49,41 +50,45 @@
         .btn-reset-danger { background:var(--danger); color:#fff; }
 
         /* MODALI */
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items: center; justify-content:center; overflow: hidden; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin-bottom: 210px; }
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items: center; justify-content:center; }
         
-        /* AREA REPORT PROFESSIONALE */
-        #reportPage { display: none; background: white; color: black; padding: 20px; font-size: 12px; }
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .report-table th, .report-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .report-table th { background: #f2f2f2; }
+        /* RIPRISTINO ESTETICA REPORT ORIGINALE */
+        .modal-content-report { 
+            background:#fff; color:#333; padding:20px; border-radius:15px; 
+            width:95%; max-width:600px; height:80vh; overflow-y:auto;
+        }
+        .report-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .report-header h2 { color: var(--primary); margin: 0; font-size: 20px; }
+        
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+        .report-table th { background: #f4f4f4; color: #333; padding: 8px; border: 1px solid #ddd; text-align: left; }
+        .report-table td { padding: 8px; border: 1px solid #ddd; color: #555; }
+        
+        .stats-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #eee; }
+        .stat-item { font-size: 12px; color: #333; }
+        .stat-item strong { color: var(--primary); font-size: 14px; }
+
+        .report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: sticky; bottom: 0; background: #fff; padding: 10px 0; border-top: 1px solid #eee; }
+        .btn-rep { padding: 12px; border-radius: 8px; border: none; font-weight: bold; text-transform: uppercase; font-size: 11px; cursor: pointer; }
+
+        /* Altri Modali Standard */
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin-bottom: 210px; }
+        .modal h3 { margin-bottom: 10px; font-size: 18px; color: var(--primary); text-align: center; }
+        .modal input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:12px; outline:none; font-size: 16px; }
+        .btn-modal-save { width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; font-size: 13px; text-transform: uppercase; margin-top: 5px; }
 
         @media print {
-            body * { display: none !important; }
-            #reportPage { display: block !important; position: absolute; top:0; left:0; width: 100%; height: auto; }
-            @page { size: A4; margin: 2cm; }
+            body * { visibility: hidden; }
+            #reportPrintArea, #reportPrintArea * { visibility: visible; }
+            #reportPrintArea { position: absolute; left: 0; top: 0; width: 100%; }
+            .report-actions { display: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="app-title-container">
-        <h1 class="app-title">RIDER TRACKER <span>V3.9</span></h1>
-    </div>
-
-    <div id="reportPage">
-        <h1 style="text-align:center; color:#00CCBC">REPORT ATTIVITÀ RIDER</h1>
-        <div id="reportStats"></div>
-        <h3>Dettaglio Turni</h3>
-        <table class="report-table" id="reportTableTurni">
-            <thead><tr><th>Data</th><th>Lordo</th><th>Ore</th><th>Km</th><th>Consumo</th></tr></thead>
-            <tbody></tbody>
-        </table>
-        <h3>Rifornimenti</h3>
-        <table class="report-table" id="reportTableBenza">
-            <thead><tr><th>Data</th><th>Euro</th><th>Prezzo/L</th></tr></thead>
-            <tbody></tbody>
-        </table>
+        <h1 class="app-title">RIDER TRACKER <span>V4.0</span></h1>
     </div>
 
     <div class="grid">
@@ -117,15 +122,31 @@
     </div>
 
     <div id="winReport" class="modal">
-        <div class="modal-content">
-            <h3>Gestione Dati</h3>
-            <p style="text-align:center; font-size:11px; color:#aaa; margin-bottom:15px;">Scarica il backup o genera il PDF A4 professionale.</p>
-            <button class="btn-modal-save" style="background:var(--primary); color:#000;" onclick="window.print()">STAMPA REPORT A4</button>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button class="btn-modal-save" style="background:#444; color:#fff;" onclick="exportJSON()">BACKUP</button>
-                <button class="btn-modal-save" style="background:#444; color:#fff;" onclick="importJSON()">CARICA</button>
+        <div class="modal-content-report" id="reportPrintArea">
+            <div class="report-header">
+                <h2>RIDER REPORT</h2>
+                <div style="text-align:right; font-size:10px; color:#666;">Generato il: <span id="repDate"></span></div>
             </div>
-            <button class="btn-modal-save" style="background:#333; color:#fff;" onclick="toggleWin('winReport', false)">CHIUDI</button>
+
+            <div class="stats-box">
+                <div class="stat-item">LORDO TOTALE<br><strong id="repLordo">€0.00</strong></div>
+                <div class="stat-item">NETTO STIMATO<br><strong id="repNetto" style="color:var(--accent)">€0.00</strong></div>
+                <div class="stat-item">ORE TOTALI<br><strong id="repOre">0.0</strong></div>
+                <div class="stat-item">KM TOTALI<br><strong id="repKm">0</strong></div>
+            </div>
+
+            <h3 style="font-size:14px; margin-bottom:10px; color:#333;">Dettaglio Turni</h3>
+            <table class="report-table">
+                <thead><tr><th>Data</th><th>Lordo</th><th>Ore</th><th>Km</th><th>Media €/h</th></tr></thead>
+                <tbody id="repTableBody"></tbody>
+            </table>
+
+            <div class="report-actions">
+                <button class="btn-rep" style="background:var(--primary); color:#fff;" onclick="window.print()">STAMPA PDF</button>
+                <button class="btn-rep" style="background:#444; color:#fff;" onclick="exportJSON()">BACKUP JSON</button>
+                <button class="btn-rep" style="background:#666; color:#fff;" onclick="importJSON()">CARICA BACKUP</button>
+                <button class="btn-rep" style="background:#333; color:#fff;" onclick="toggleWin('winReport', false)">CHIUDI</button>
+            </div>
         </div>
     </div>
 
@@ -134,15 +155,30 @@
     <div id="winStorico" class="modal"><div class="modal-content" style="margin-bottom:0px;"><h3>Storico</h3><div id="listaStorico" style="max-height:45vh; overflow-y:auto; margin-bottom:15px;"></div><button class="btn-modal-save" style="background:#333; color:#fff;" onclick="toggleWin('winStorico', false)">CHIUDI</button></div></div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v3.9')) || { turni: [], benza: [], tax: 20, target: 0 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v4.0')) || { turni: [], benza: [], tax: 20, target: 0 };
     
     function toggleWin(id, show) { 
         const win = document.getElementById(id);
         if (win) win.style.display = show ? 'flex' : 'none';
-        if (show && id === 'winReport') preparaReport();
+        if (show && id === 'winReport') preparaReportOriginale();
     }
 
-    function salvaDB() { localStorage.setItem('rider_db_v3.9', JSON.stringify(db)); aggiornaDati(); }
+    function salvaDB() { localStorage.setItem('rider_db_v4.0', JSON.stringify(db)); aggiornaDati(); }
+
+    function preparaReportOriginale() {
+        document.getElementById('repDate').innerText = new Date().toLocaleDateString('it-IT');
+        document.getElementById('repLordo').innerText = '€' + document.getElementById('lordo').innerText;
+        document.getElementById('repNetto').innerText = document.getElementById('netto').innerText;
+        document.getElementById('repOre').innerText = document.getElementById('ore').innerText;
+        document.getElementById('repKm').innerText = db.turni.reduce((a,b) => a + b.km, 0);
+
+        let html = "";
+        db.turni.forEach(t => {
+            let media = t.ore > 0 ? (t.lordo / t.ore).toFixed(2) : "0.00";
+            html += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}km</td><td>€${media}/h</td></tr>`;
+        });
+        document.getElementById('repTableBody').innerHTML = html || "<tr><td colspan='5' style='text-align:center'>Nessun dato</td></tr>";
+    }
 
     function salvaAzione(tipo) {
         const d = new Date().toLocaleDateString('it-IT');
@@ -179,31 +215,6 @@
         renderStorico();
     }
 
-    function preparaReport() {
-        // Riempimento tabella turni
-        let tHtml = "";
-        db.turni.forEach(t => {
-            tHtml += `<tr><td>${t.data}</td><td>€${t.lordo}</td><td>${t.ore}</td><td>${t.km}</td><td>${t.cons}</td></tr>`;
-        });
-        document.querySelector("#reportTableTurni tbody").innerHTML = tHtml;
-
-        // Riempimento tabella benza
-        let bHtml = "";
-        db.benza.forEach(b => {
-            bHtml += `<tr><td>${b.data}</td><td>€${b.euro}</td><td>€${b.prezzo}</td></tr>`;
-        });
-        document.querySelector("#reportTableBenza tbody").innerHTML = bHtml;
-
-        // Statistiche Generali
-        const lordoTot = document.getElementById('lordo').innerText;
-        const nettoTot = document.getElementById('netto').innerText;
-        document.getElementById('reportStats').innerHTML = `
-            <p><strong>Periodo:</strong> ${new Date().toLocaleDateString()}</p>
-            <p><strong>Lordo Totale:</strong> €${lordoTot} | <strong>Netto Stimato:</strong> ${nettoTot}</p>
-            <hr>`;
-    }
-
-    // BACKUP E IMPORT BLINDATI
     function exportJSON() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "rider_backup.json");
@@ -214,7 +225,7 @@
         const input = document.createElement('input'); input.type = 'file';
         input.onchange = e => {
             const f = e.target.files[0]; const r = new FileReader();
-            r.onload = ev => { try { db = JSON.parse(ev.target.result); salvaDB(); location.reload(); } catch(e) { alert("Errore!"); } }
+            r.onload = ev => { try { db = JSON.parse(ev.target.result); salvaDB(); location.reload(); } catch(e) { alert("File non valido!"); } }
             r.readAsText(f);
         }
         input.click();
