@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RIDER TRACKER PRO V1.4</title>
+    <title>RIDER TRACKER PRO V1.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --orange:#ffa500; }
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --orange:#ffa500; --red:#ff3333; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; height: 100vh; overflow: hidden; position: fixed; width: 100%; }
         
+        /* DASHBOARD */
         .app-title { margin:5px 0; font-size:18px; font-weight:800; color:var(--primary); text-transform:uppercase; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:10px; }
         .card { background:var(--card); padding:8px 2px; border-radius:10px; border:1px solid #333; }
         .label { font-size:8px; color:#888; font-weight:bold; display:block; }
-        .val { font-size:12px; font-weight:bold; color:var(--text); }
+        .val { font-size:12px; font-weight:bold; }
         .card input { width:85%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:12px; outline:none; }
 
         .progress-container { background:var(--card); padding:10px; border-radius:12px; border:1px solid #333; margin-bottom:5px; }
         .progress-bar { background:#222; height:12px; border-radius:10px; overflow:hidden; margin:5px 0; }
         #bar { background:var(--primary); height:100%; width:0%; transition:0.5s; }
 
-        /* FINESTRE */
+        /* MODALI (FINESTRE) */
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
         .modal-content { background:#1a1a1a; padding:20px; border-radius:20px; width:90%; border:2px solid var(--primary); max-height: 85vh; overflow-y: auto; }
         .modal input { width:100%; padding:12px; margin:8px 0; background:#252525; border:1px solid #444; color:#fff; border-radius:10px; font-size:16px; }
@@ -29,44 +30,46 @@
         .btn-modal { width:100%; padding:15px; border-radius:10px; border:none; font-weight:bold; margin-top:10px; }
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#444; color:#fff; }
-        .btn-reset-danger { background:#8b0000; color:white; width:100%; padding:12px; border-radius:10px; border:none; margin-top:15px; font-size:11px; font-weight:bold; }
 
-        /* FOOTER */
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#111; padding:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:20px; border:1px solid #333; }
+        /* FOOTER DINAMICO */
+        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#111; padding:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:25px; border:1px solid #333; }
         .foot-btn { background:#222; color:#fff; padding:10px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #333; }
         .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
-        .btn-report { grid-column:span 3; background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:bold; border:none; margin-top:5px; }
+        
+        /* GRUPPO REPORT + RESET */
+        .footer-admin-group { grid-column: span 3; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+        .btn-report { background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:bold; border:none; text-transform: uppercase; font-size: 11px; }
+        .btn-reset-footer { background:#440000; color:#ff9999; padding:8px; border-radius:10px; font-weight:bold; border:1px solid #660000; font-size: 9px; text-transform: uppercase; }
 
-        /* STILE REPORT STAMPA */
-        #winReport { background: white; color: black; text-align: left; }
+        /* REPORT STAMPA */
+        #winReport { background: white; color: black; }
         #winReport .modal-content { background: white; color: black; border: none; width: 100%; max-width: 100%; height: 100%; border-radius: 0; }
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
-        .report-table th, .report-table td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
+        .report-table th, .report-table td { border: 1px solid #000; padding: 5px; text-align: center; }
         
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V1.4</div>
+    <div class="app-title">RIDER TRACKER PRO V1.5</div>
 
     <div class="grid">
-        <div class="card"><span class="label">LORDO</span><span class="val" id="lordo">0.00</span></div>
-        <div class="card"><span class="label">NETTO</span><span class="val" id="netto" style="color:var(--accent)">0.00</span></div>
+        <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+        <div class="card"><span class="label">NETTO</span><span class="val" id="netto" style="color:var(--accent)">€0.00</span></div>
         <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
         <div class="card"><span class="label">LITRI</span><span class="val" id="cons">0.0</span></div>
         <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-        <div class="card"><span class="label">SPESA B.</span><span class="val" id="spesaB">0.00</span></div>
+        <div class="card"><span class="label">SPESA B.</span><span class="val">€<span id="spesaB">0.00</span></span></div>
         <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaDati()"></div>
         <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaDati()"></div>
-        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante" style="color:var(--primary)">0.00</span></div>
+        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante" style="color:var(--primary)">€0.00</span></div>
     </div>
 
     <div class="progress-container">
-        <div style="font-size:11px;">OBIETTIVO: <span id="perc">0%</span></div>
+        <div style="font-size:11px; font-weight: bold;">OBIETTIVO: <span id="perc">0%</span></div>
         <div class="progress-bar"><div id="bar"></div></div>
         <div id="liveClock" style="font-size:10px; color:var(--primary);">00:00:00</div>
-        <button class="btn-reset-danger" onclick="resetTotale()">CANCELLA TUTTI I DATI</button>
     </div>
 
     <div id="winTurno" class="modal">
@@ -76,7 +79,7 @@
             <input type="number" id="tO" placeholder="Ore lavorate">
             <input type="number" id="tK" placeholder="KM percorsi">
             <input type="number" id="tC" placeholder="Consumo L/100km">
-            <button class="btn-modal btn-save" onclick="salvaAzione('T')">SALVA TURNO</button>
+            <button class="btn-modal btn-save" onclick="salvaAzione('T')">SALVA</button>
             <button class="btn-modal btn-close" onclick="toggleWin('winTurno', false)">ANNULLA</button>
         </div>
     </div>
@@ -86,31 +89,30 @@
             <h3>Rifornimento</h3>
             <input type="number" id="bE" placeholder="Euro spesi">
             <input type="number" id="bP" placeholder="Prezzo (€/L)" step="0.001">
-            <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaAzione('B')">SALVA BENZINA</button>
+            <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaAzione('B')">SALVA</button>
             <button class="btn-modal btn-close" onclick="toggleWin('winBenza', false)">ANNULLA</button>
         </div>
     </div>
 
     <div id="winStorico" class="modal">
         <div class="modal-content" style="width:95%">
-            <h3>Storico</h3>
+            <h3>Storico Attività</h3>
             <div id="listaStorico" style="max-height:60vh; overflow-y:auto; text-align:left;"></div>
-            <button class="btn-modal btn-close" onclick="toggleWin('winStorico', false)">CHIUDI</button>
+            <button class="btn-modal btn-close" onclick="toggleWin('winStorico', false)">TORNA INDIETRO</button>
         </div>
     </div>
 
     <div id="winReport" class="modal">
         <div class="modal-content">
-            <h2 style="border-bottom: 2px solid #000;">REPORT ATTIVITÀ</h2>
-            <div id="reportDettaglio"></div>
+            <h2 style="border-bottom: 2px solid #000;">REPORT RIDER TRACKER</h2>
             <table class="report-table">
-                <thead><tr><th>DATA</th><th>LORDO</th><th>KM</th><th>BENZINA</th></tr></thead>
+                <thead><tr><th>DATA</th><th>LORDO</th><th>KM</th><th>CARBURANTE</th></tr></thead>
                 <tbody id="reportCorpo"></tbody>
             </table>
-            <div id="reportFine" style="margin-top:20px; font-weight:bold; border-top:1px solid #000; padding-top:10px;"></div>
-            <div class="no-print" style="margin-top:20px;">
-                <button class="btn-modal btn-save" onclick="window.print()">STAMPA O SALVA PDF</button>
-                <button class="btn-modal btn-close" onclick="toggleWin('winReport', false)">ESCI</button>
+            <div id="reportFine" style="margin-top:20px; font-weight:bold; border-top:1px solid #000; padding-top:10px; font-size: 14px;"></div>
+            <div class="no-print" style="margin-top:30px; display: flex; gap: 10px;">
+                <button class="btn-modal btn-save" onclick="window.print()">STAMPA PDF</button>
+                <button class="btn-modal btn-close" onclick="toggleWin('winReport', false)">CHIUDI</button>
             </div>
         </div>
     </div>
@@ -119,24 +121,28 @@
         <div class="foot-btn" onclick="toggleWin('winTurno', true)"><i class="fas fa-plus-circle"></i>TURNO</div>
         <div class="foot-btn" onclick="toggleWin('winBenza', true)"><i class="fas fa-gas-pump"></i>BENZINA</div>
         <div class="foot-btn" onclick="toggleWin('winStorico', true)"><i class="fas fa-history"></i>STORICO</div>
-        <button class="btn-report" onclick="generaReport()">GENERA REPORT STAMPABILE</button>
+        
+        <div class="footer-admin-group">
+            <button class="btn-report" onclick="generaReport()">GENERA REPORT STAMPABILE</button>
+            <button class="btn-reset-footer" onclick="resetTotale()">CANCELLA TUTTI I DATI</button>
+        </div>
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v1.4')) || { turni: [], benza: [], tax: 20, target: 0 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v1.5')) || { turni: [], benza: [], tax: 20, target: 0 };
 
     function toggleWin(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
 
     function salvaAzione(tipo) {
         const data = new Date().toLocaleDateString('it-IT');
         if (tipo === 'T') {
-            db.turni.push({ id: Date.now(), data: data, lordo: parseFloat(document.getElementById('tL').value)||0, ore: parseFloat(document.getElementById('tO').value)||0, km: parseFloat(document.getElementById('tK').value)||0, cons: parseFloat(document.getElementById('tC').value)||0 });
+            db.turni.push({ id: Date.now(), data, lordo: parseFloat(document.getElementById('tL').value)||0, ore: parseFloat(document.getElementById('tO').value)||0, km: parseFloat(document.getElementById('tK').value)||0, cons: parseFloat(document.getElementById('tC').value)||0 });
             toggleWin('winTurno', false);
         } else {
-            db.benza.push({ id: Date.now(), data: data, euro: parseFloat(document.getElementById('bE').value)||0, prezzo: parseFloat(document.getElementById('bP').value)||0 });
+            db.benza.push({ id: Date.now(), data, euro: parseFloat(document.getElementById('bE').value)||0, prezzo: parseFloat(document.getElementById('bP').value)||0 });
             toggleWin('winBenza', false);
         }
-        localStorage.setItem('rider_db_v1.4', JSON.stringify(db));
+        localStorage.setItem('rider_db_v1.5', JSON.stringify(db));
         document.querySelectorAll('.modal input').forEach(i => i.value = "");
         aggiornaDati();
     }
@@ -153,7 +159,7 @@
         let netto = lordo - (lordo * (db.tax/100)) - (litri * ultP);
 
         document.getElementById('lordo').innerText = lordo.toFixed(2);
-        document.getElementById('netto').innerText = netto.toFixed(2);
+        document.getElementById('netto').innerText = '€' + netto.toFixed(2);
         document.getElementById('ore').innerText = ore.toFixed(1);
         document.getElementById('cons').innerText = litri.toFixed(1);
         document.getElementById('kml').innerText = litri > 0 ? (km/litri).toFixed(1) : '0.0';
@@ -162,19 +168,20 @@
         let perc = db.target > 0 ? Math.min((netto/db.target)*100, 100) : 0;
         document.getElementById('bar').style.width = perc + '%';
         document.getElementById('perc').innerText = Math.round(perc) + '%';
-        document.getElementById('mancante').innerText = (db.target - netto > 0) ? (db.target - netto).toFixed(2) : '0.00';
+        let manca = db.target - netto;
+        document.getElementById('mancante').innerText = '€' + (manca > 0 ? manca.toFixed(2) : '0.00');
         renderStorico();
     }
 
     function renderStorico() {
         let h = "";
         [...db.turni.map(x=>({...x, t:'T'})), ...db.benza.map(x=>({...x, t:'B'}))].sort((a,b)=>b.id-a.id).forEach(i => {
-            h += `<div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
-                <span>${i.data} - ${i.t=='T'?'TURNO':'BENZ'}: €${(i.t=='T'?i.lordo:i.euro).toFixed(2)}</span>
-                <button onclick="elimina(${i.id}, '${i.t}')" style="color:red; background:none; border:none;">X</button>
+            h += `<div style="padding:12px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:13px;">${i.data} - <b>${i.t=='T'?'TURNO':'BENZ'}</b><br>€${(i.t=='T'?i.lordo:i.euro).toFixed(2)}</span>
+                <button onclick="elimina(${i.id}, '${i.t}')" style="color:var(--accent); background:none; border:none; font-size:20px;">&times;</button>
             </div>`;
         });
-        document.getElementById('listaStorico').innerHTML = h || "Vuoto";
+        document.getElementById('listaStorico').innerHTML = h || "Nessun dato registrato.";
     }
 
     function generaReport() {
@@ -182,22 +189,22 @@
         db.turni.forEach(t => {
             h += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.km} km</td><td>${(t.km*(t.cons/100)).toFixed(1)} L</td></tr>`;
         });
-        document.getElementById('reportCorpo').innerHTML = h;
-        document.getElementById('reportFine').innerHTML = `TOTALE NETTO: €${document.getElementById('netto').innerText}<br>KM TOTALI: ${document.getElementById('km').innerText || 0}`;
+        document.getElementById('reportCorpo').innerHTML = h || "<tr><td colspan='4'>Nessun turno registrato</td></tr>";
+        document.getElementById('reportFine').innerHTML = `TOTALE NETTO: ${document.getElementById('netto').innerText}<br>SPESA CARBURANTE: €${document.getElementById('spesaB').innerText}`;
         toggleWin('winReport', true);
     }
 
     function elimina(id, tipo) {
-        if(confirm("Eliminare?")) {
+        if(confirm("Eliminare questa voce dallo storico?")) {
             if(tipo=='T') db.turni = db.turni.filter(x=>x.id!==id);
             else db.benza = db.benza.filter(x=>x.id!==id);
-            localStorage.setItem('rider_db_v1.4', JSON.stringify(db));
+            localStorage.setItem('rider_db_v1.5', JSON.stringify(db));
             aggiornaDati();
         }
     }
 
     function resetTotale() {
-        if(confirm("⚠ ATTENZIONE ⚠\nVuoi cancellare TUTTI i dati caricati?")) {
+        if(confirm("ATTENZIONE!\nStai per cancellare definitivamente tutti i dati dell'applicazione.\nVuoi procedere?")) {
             localStorage.clear();
             location.reload();
         }
@@ -205,8 +212,8 @@
 
     setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
     window.onload = () => {
-        document.getElementById('taxIn').value = db.tax;
-        document.getElementById('targetIn').value = db.target;
+        document.getElementById('targetIn').value = db.target || "";
+        document.getElementById('taxIn').value = db.tax || 20;
         aggiornaDati();
     };
 </script>
