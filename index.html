@@ -91,7 +91,7 @@
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } }
     </style>
 </head>
-    <body>
+<body>
     <div id="mainContainer">
         <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
         
@@ -145,7 +145,7 @@
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
-<script>
+    <script>
     const APP_VER = "1.0.0";
     const BACKUP_KEY = "rider_backup_history";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
@@ -282,7 +282,31 @@
         renderBackupList();
     }
 
-    function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
+    // --- INIZIO MODIFICA 2: UNIFORMAZIONE AUTO-SCROLL ANDROID ---
+    function apriM(id) { 
+        const n = new Date(); 
+        let d='', m='', y=''; 
+        for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; 
+        mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); 
+        for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; 
+        
+        const p = id==='modalTurno'?'dateT':'dateB'; 
+        document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; 
+        
+        const modal = document.getElementById(id);
+        modal.style.display='flex'; 
+
+        const primoInput = id === 'modalTurno' ? document.getElementById('tL') : document.getElementById('bE');
+
+        setTimeout(() => {
+            if (primoInput) {
+                primoInput.focus();
+                primoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 400); // Leggero aumento del delay per garantire la tastiera su Android
+    }
+    // --- FINE MODIFICA 2: UNIFORMAZIONE AUTO-SCROLL ANDROID ---
+
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
@@ -291,4 +315,3 @@
 </script>
 </body>
 </html>
-    
