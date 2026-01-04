@@ -2,65 +2,144 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RIDER TRACKER PRO V1.7</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RIDER TRACKER PRO V1.8</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --orange:#ffa500; --blue:#3498db; }
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --orange:#ffa500; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; height: 100vh; overflow: hidden; position: fixed; width: 100%; }
         
-        /* DASHBOARD */
-        .app-title { margin:5px 0; font-size:18px; font-weight:800; color:var(--primary); text-transform:uppercase; }
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:10px; }
-        .card { background:var(--card); padding:8px 2px; border-radius:10px; border:1px solid #333; }
-        .label { font-size:8px; color:#888; font-weight:bold; display:block; }
-        .val { font-size:12px; font-weight:bold; }
-        .card input { width:85%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:12px; outline:none; }
+        body { 
+            font-family:sans-serif; 
+            background:var(--bg); 
+            color:var(--text); 
+            margin:0; 
+            padding:15px; 
+            display: flex;
+            flex-direction: column;
+            height: 100vh; 
+            width: 100%;
+            position: fixed;
+            overflow: hidden;
+        }
+        
+        .app-title { 
+            font-size:22px; 
+            font-weight:800; 
+            color:var(--primary); 
+            text-transform:uppercase; 
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
 
-        .progress-container { background:var(--card); padding:10px; border-radius:12px; border:1px solid #333; margin-bottom:5px; }
-        .progress-bar { background:#222; height:12px; border-radius:10px; overflow:hidden; margin:5px 0; }
-        #bar { background:var(--primary); height:100%; width:0%; transition:0.5s; }
+        /* GRIGLIA DASHBOARD - Occupa lo spazio centrale */
+        .grid { 
+            display:grid; 
+            grid-template-columns:repeat(3, 1fr); 
+            gap:10px; 
+            flex-grow: 1; /* Spinge il contenuto a riempire lo schermo */
+            align-content: stretch;
+        }
+
+        .card { 
+            background:var(--card); 
+            padding: 15px 5px;
+            border-radius:15px; 
+            border:1px solid #333; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s;
+        }
+
+        .label { font-size:9px; color:var(--dim); font-weight:bold; text-transform:uppercase; margin-bottom:6px; }
+        .val { font-size:16px; font-weight:bold; color: #fff; }
+        
+        .card input { 
+            width:90%; 
+            background:rgba(255,255,255,0.05); 
+            border:none; 
+            border-bottom:2px solid var(--primary); 
+            color:#fff; 
+            text-align:center; 
+            font-size:16px; 
+            outline:none;
+            padding: 4px 0;
+        }
+
+        /* BARRA PROGRESSO - Più grande e d'impatto */
+        .progress-section {
+            margin: 20px 0;
+            background: var(--card);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+
+        .progress-header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin-bottom: 10px;
+        }
+
+        .progress-bar { 
+            background:#222; 
+            height:22px; 
+            border-radius:12px; 
+            overflow:hidden; 
+            border: 1px solid #444;
+        }
+        #bar { background: linear-gradient(90deg, var(--primary), #00ffea); height:100%; width:0%; transition:0.8s ease-in-out; }
+
+        #liveClock { font-size:12px; color:var(--primary); margin-top: 10px; font-weight: bold; letter-spacing: 1px; }
 
         /* MODALI */
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
-        .modal-content { background:#1a1a1a; padding:20px; border-radius:20px; width:90%; border:2px solid var(--primary); max-height: 85vh; overflow-y: auto; }
-        .modal input { width:100%; padding:12px; margin:8px 0; background:#252525; border:1px solid #444; color:#fff; border-radius:10px; font-size:16px; }
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.96); align-items:center; justify-content:center; }
+        .modal-content { background:#1a1a1a; padding:25px; border-radius:25px; width:90%; border:2px solid var(--primary); max-height: 85vh; overflow-y: auto; }
+        .modal h3 { color: var(--primary); margin-top: 0; }
+        .modal input { width:100%; padding:15px; margin:10px 0; background:#252525; border:1px solid #444; color:#fff; border-radius:12px; font-size:18px; }
         
-        .btn-modal { width:100%; padding:15px; border-radius:10px; border:none; font-weight:bold; margin-top:10px; }
+        .btn-modal { width:100%; padding:16px; border-radius:15px; border:none; font-weight:bold; margin-top:10px; font-size: 16px; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close { background:#444; color:#fff; }
+        .btn-close { background:#333; color:#fff; }
 
-        /* FOOTER */
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#111; padding:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; border-radius:25px; border:1px solid #333; }
-        .foot-btn { background:#222; color:#fff; padding:10px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #333; }
-        .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
+        /* FOOTER FISSO - Nessun vuoto sotto */
+        .sticky-footer { 
+            background:#111; 
+            padding:15px; 
+            display:grid; 
+            grid-template-columns:1fr 1fr 1fr; 
+            gap:10px; 
+            border-radius:25px 25px 0 0; 
+            border:1px solid #333; 
+            margin: 0 -15px -15px -15px; /* Si attacca ai bordi dello schermo */
+        }
         
-        .footer-admin-group { grid-column: span 3; display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
-        .btn-report { background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:bold; border:none; text-transform: uppercase; font-size: 11px; }
-        .btn-reset-footer { background:#440000; color:#ff9999; padding:8px; border-radius:10px; font-weight:bold; border:1px solid #660000; font-size: 9px; text-transform: uppercase; }
+        .foot-btn { background:#222; color:#fff; padding:12px; border-radius:15px; font-size:11px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; }
+        .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:5px; }
+        
+        .footer-admin-group { grid-column: span 3; display: flex; flex-direction: column; gap: 8px; }
+        .btn-report { background:var(--primary); color:#000; padding:15px; border-radius:15px; font-weight:900; border:none; text-transform: uppercase; font-size: 13px; }
+        .btn-reset-footer { background:#330000; color:#ff6666; padding:10px; border-radius:12px; font-weight:bold; border:none; font-size: 10px; text-transform: uppercase; }
 
-        /* REPORT STAMPA & BACKUP (Stile della tua Matrice) */
+        /* REPORT E BACKUP STILE MATRICE */
         #winReport { background: white; color: black; }
-        #winReport .modal-content { background: white; color: black; border: none; width: 100%; max-width: 100%; height: 100%; border-radius: 0; padding: 15px; }
-        .report-header-mini { border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: baseline; }
-        .report-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 15px; }
-        .report-table th, .report-table td { border: 1px solid #000; padding: 5px; text-align: center; }
-        .summary-box { border: 2px solid #000; padding: 10px; font-size: 12px; font-weight: bold; background: #f0f0f0; }
-
-        /* AREA BACKUP DENTRO IL REPORT */
-        .backup-section { margin-top: 25px; border-top: 2px dashed #ccc; padding-top: 15px; background: #f9f9f9; color: #333; padding: 10px; border-radius: 10px; text-align: center; }
-        .backup-section h3 { font-size: 14px; margin-top: 0; }
-        .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; cursor: pointer; }
-        .btn-save-backup { background: var(--primary); color: #000; }
-        .btn-load-backup { background: #444; color: #fff; }
+        #winReport .modal-content { background: white; color: black; border: none; width: 100%; max-width: 100%; height: 100%; border-radius: 0; padding: 20px; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+        .report-table th, .report-table td { border: 1px solid #000; padding: 8px; text-align: center; }
+        .summary-box { border: 2px solid #000; padding: 15px; margin-top: 15px; background: #f9f9f9; font-weight: bold; }
+        .backup-section { margin-top: 30px; border-top: 2px dashed #bbb; padding: 15px; background: #eee; border-radius: 15px; }
+        .btn-backup { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; }
 
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER PRO V1.7</div>
+    <div class="app-title">RIDER TRACKER PRO V1.8</div>
 
     <div class="grid">
         <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -74,19 +153,22 @@
         <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante" style="color:var(--primary)">€0.00</span></div>
     </div>
 
-    <div class="progress-container">
-        <div style="font-size:11px; font-weight: bold;">OBIETTIVO: <span id="perc">0%</span></div>
+    <div class="progress-section">
+        <div class="progress-header">
+            <span>OBIETTIVO MENSILE</span>
+            <span id="perc">0%</span>
+        </div>
         <div class="progress-bar"><div id="bar"></div></div>
-        <div id="liveClock" style="font-size:10px; color:var(--primary);">00:00:00</div>
+        <div id="liveClock">CARICAMENTO...</div>
     </div>
 
-    <div id="winTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="L/100km"><button class="btn-modal btn-save" onclick="salvaAzione('T')">SALVA</button><button class="btn-modal btn-close" onclick="toggleWin('winTurno', false)">ANNULLA</button></div></div>
-    <div id="winBenza" class="modal"><div class="modal-content" style="border-color:var(--orange)"><h3>Benzina</h3><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo €/L"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaAzione('B')">SALVA</button><button class="btn-modal btn-close" onclick="toggleWin('winBenza', false)">ANNULLA</button></div></div>
-    <div id="winStorico" class="modal"><div class="modal-content" style="width:95%"><h3>Storico</h3><div id="listaStorico" style="max-height:60vh; overflow-y:auto; text-align:left;"></div><button class="btn-modal btn-close" onclick="toggleWin('winStorico', false)">CHIUDI</button></div></div>
+    <div id="winTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="L/100km"><button class="btn-modal btn-save" onclick="salvaAzione('T')">SALVA TURNO</button><button class="btn-modal btn-close" onclick="toggleWin('winTurno', false)">ANNULLA</button></div></div>
+    <div id="winBenza" class="modal"><div class="modal-content" style="border-color:var(--orange)"><h3>Rifornimento</h3><input type="number" id="bE" placeholder="Euro spesi"><input type="number" id="bP" placeholder="Prezzo €/L"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaAzione('B')">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="toggleWin('winBenza', false)">ANNULLA</button></div></div>
+    <div id="winStorico" class="modal"><div class="modal-content" style="width:95%"><h3>Storico Attività</h3><div id="listaStorico" style="max-height:60vh; overflow-y:auto; text-align:left;"></div><button class="btn-modal btn-close" onclick="toggleWin('winStorico', false)">CHIUDI</button></div></div>
 
     <div id="winReport" class="modal">
         <div class="modal-content">
-            <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>V1.7</span></div>
+            <h2 style="border-bottom: 2px solid #000; padding-bottom: 10px;">REPORT ATTIVITÀ</h2>
             <table class="report-table">
                 <thead><tr><th>DATA</th><th>LORDO</th><th>KM</th><th>LITRI</th></tr></thead>
                 <tbody id="reportCorpo"></tbody>
@@ -94,15 +176,15 @@
             <div id="reportFine" class="summary-box"></div>
 
             <div class="backup-section no-print">
-                <h3>AREA BACKUP & SICUREZZA</h3>
-                <button class="btn-backup btn-save-backup" onclick="esportaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
-                <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
+                <h3 style="color: #000;">AREA BACKUP</h3>
+                <button class="btn-backup" style="background: var(--primary); color: #000;" onclick="esportaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
+                <button class="btn-backup" style="background: #444; color: #fff;" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
                 <input type="file" id="fileBackup" accept=".json" hidden onchange="importaBackup(event)">
             </div>
 
             <div class="no-print" style="margin-top:20px; display: flex; gap: 10px;">
-                <button class="btn-modal btn-save" onclick="window.print()" style="background:#000; color:#fff;">STAMPA PDF</button>
-                <button class="btn-modal btn-close" onclick="toggleWin('winReport', false)">CHIUDI</button>
+                <button class="btn-modal btn-save" onclick="window.print()" style="background:#000; color:#fff; flex:1;">STAMPA</button>
+                <button class="btn-modal btn-close" onclick="toggleWin('winReport', false)" style="flex:1;">ESCI</button>
             </div>
         </div>
     </div>
@@ -118,7 +200,7 @@
     </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v1.7')) || { turni: [], benza: [], tax: 20, target: 0 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v1.8')) || { turni: [], benza: [], tax: 20, target: 0 };
 
     function toggleWin(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
 
@@ -134,7 +216,7 @@
         document.querySelectorAll('.modal input').forEach(i => i.value = "");
     }
 
-    function salvaDB() { localStorage.setItem('rider_db_v1.7', JSON.stringify(db)); aggiornaDati(); }
+    function salvaDB() { localStorage.setItem('rider_db_v1.8', JSON.stringify(db)); aggiornaDati(); }
 
     function aggiornaDati() {
         db.tax = parseFloat(document.getElementById('taxIn').value) || 20;
@@ -164,9 +246,9 @@
     function renderStorico() {
         let h = "";
         [...db.turni.map(x=>({...x, t:'T'})), ...db.benza.map(x=>({...x, t:'B'}))].sort((a,b)=>b.id-a.id).forEach(i => {
-            h += `<div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px;">${i.data} - <b>${i.t=='T'?'TURNO':'BENZ'}</b>: €${(i.t=='T'?i.lordo:i.euro).toFixed(2)}</span>
-                <button onclick="elimina(${i.id}, '${i.t}')" style="color:var(--accent); background:none; border:none; font-size:18px;">&times;</button>
+            h += `<div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:14px;">${i.data} - <b>${i.t=='T'?'TURNO':'BENZ'}</b><br>€${(i.t=='T'?i.lordo:i.euro).toFixed(2)}</span>
+                <button onclick="elimina(${i.id}, '${i.t}')" style="color:var(--accent); background:none; border:none; font-size:24px;">&times;</button>
             </div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "Nessun dato.";
@@ -180,7 +262,6 @@
         toggleWin('winReport', true);
     }
 
-    // FUNZIONI BACKUP (RIPRISTINATE DALLA TUA MATRICE)
     function esportaBackup() {
         const data = { db: db, timestamp: Date.now() };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -195,9 +276,9 @@
                 const json = JSON.parse(e.target.result);
                 if (json.db) {
                     db = json.db; salvaDB();
-                    alert("Database importato con successo!"); location.reload();
+                    alert("Importato!"); location.reload();
                 }
-            } catch(err) { alert("File non valido."); }
+            } catch(err) { alert("Errore file!"); }
         };
         reader.readAsText(event.target.files[0]);
     }
@@ -214,8 +295,12 @@
         if(confirm("CANCELLARE TUTTO?")) { localStorage.clear(); location.reload(); }
     }
 
-    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
-    window.onload = () => { aggiornaDati(); };
+    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
+    window.onload = () => { 
+        document.getElementById('targetIn').value = db.target || "";
+        document.getElementById('taxIn').value = db.tax || 20;
+        aggiornaDati(); 
+    };
 </script>
 </body>
 </html>
