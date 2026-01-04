@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
-        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
 
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
@@ -23,20 +23,33 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #333; }
-        .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; }
-        .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; margin: 10px 0; }
+        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 15px; margin-bottom:10px; border:1px solid #333; display: flex; flex-direction: column; gap: 12px; }
+        .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; letter-spacing: 1px; }
+        .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        #liveClock { font-weight:bold; color:var(--primary); font-size:14px; margin-top: 5px; }
+        #liveClock { font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; text-align: center; margin-top: 2px; letter-spacing: 1px; }
         
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); align-items: flex-start; justify-content: center; padding-top: 15vh; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); }
-        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; }
+        #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
+        #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #333; border-bottom: 1px solid #333; -webkit-overflow-scrolling: touch; }
         
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; }
+        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: flex-start; justify-content: center; padding-top: 15vh; position: fixed; inset: 0; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
+        .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
+        .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
+        
+        .date-row { display:flex; gap:8px; margin-bottom:10px; }
+        .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; font-size: 14px; }
+        
+        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size: 15px; }
+        .btn-save { background:var(--primary); color:#000; }
+        .btn-close { background:#333; color:#fff; }
+        
+        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
         .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; text-transform: uppercase; }
+        
+        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; margin-top: 5px; }
+        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -50,8 +63,8 @@
             <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
             <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
             <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
-            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()"></div>
+            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" autocomplete="off"></div>
+            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
 
@@ -64,23 +77,21 @@
         <div class="sticky-footer">
             <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-            <div class="foot-btn" onclick="alert('Storico Matrice')"><i class="fas fa-history"></i>STORICO</div>
-            <button class="btn-full" onclick="alert('Report Matrice')">GENERA REPORT</button>
+            <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
+            <button class="btn-full" onclick="alert('Generazione Report...')">REPORT E BACKUP</button>
+            <button class="btn-reset-soft" onclick="if(confirm('Azzera tutto?')){localStorage.clear();location.reload();}">AZZERA DATABASE</button>
         </div>
     </div>
-    <script>
-    // Inizializzazione Database Matrice
-    let db = JSON.parse(localStorage.getItem('rider_db_matrice')) || { 
-        turni: [], 
-        rifornimenti: [], 
-        targets: {}, 
-        tax: 20 
-    };
 
-    function salvaDB() { 
-        localStorage.setItem('rider_db_matrice', JSON.stringify(db)); 
-        calcola(); 
-    }
+    <div id="modalTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01"><input type="number" id="tO" placeholder="Ore" step="0.1"><input type="number" id="tK" placeholder="Km"><input type="number" id="tC" placeholder="L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+    <div id="modalBenza" class="modal"><div class="modal-content" style="border-color:var(--orange)"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo/L" step="0.001"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+    <div id="histView"><h2 style="color:var(--primary)">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <script>
+    let db = JSON.parse(localStorage.getItem('rider_db_v10')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+    const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+    function salvaDB() { localStorage.setItem('rider_db_v10', JSON.stringify(db)); calcola(); }
+    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
     function startClock() {
         setInterval(() => {
@@ -99,8 +110,9 @@
         let litriS = db.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
         let spesaB = db.rifornimenti.reduce((a,b) => a + b.euro, 0);
         
-        let taxV = lordoA * (db.tax/100);
-        let nettoA = lordoA - taxV - spesaB;
+        let ultPrezzo = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+        let costoBenzinaStimato = litriS * ultPrezzo;
+        let nettoA = lordoA - (lordoA * (db.tax/100)) - costoBenzinaStimato;
         
         document.getElementById('lordo').innerText = lordoA.toFixed(2);
         document.getElementById('netto').innerText = '€' + nettoA.toFixed(2);
@@ -117,26 +129,57 @@
         document.getElementById('perc').innerText = Math.round(p) + '%';
         document.getElementById('bar').style.width = p + '%';
         
-        let lordoNecessario = (tNetto + spesaB) / (1 - (db.tax/100));
+        let lordoNecessario = (tNetto + costoBenzinaStimato) / (1 - (db.tax/100));
         let mancaL = lordoNecessario - lordoA;
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
     }
 
-    function aggiornaTarget() {
-        const tag = `${new Date().getMonth()+1}/${new Date().getFullYear()}`;
-        db.targets[tag] = parseFloat(document.getElementById('targetIn').value) || 0;
-        salvaDB();
+    function apriM(id) {
+        const n = new Date();
+        let d='', m='', y='';
+        for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`;
+        mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`);
+        for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`;
+        const p = id==='modalTurno'?'dateT':'dateB';
+        document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
+        document.getElementById(id).style.display='flex';
     }
 
-    function aggiornaTax() {
-        db.tax = parseFloat(document.getElementById('taxIn').value) || 0;
-        salvaDB();
+    function salvaTurno() {
+        db.turni.push({
+            id: Date.now(),
+            data: `${document.getElementById('dateTD').value}/${document.getElementById('dateTM').value}`,
+            lordo: parseFloat(document.getElementById('tL').value)||0,
+            ore: parseFloat(document.getElementById('tO').value)||0,
+            km: parseFloat(document.getElementById('tK').value)||0,
+            cons: parseFloat(document.getElementById('tC').value)||0
+        });
+        salvaDB(); chiudiModali();
     }
 
-    window.onload = () => {
-        startClock();
-        calcola();
-    };
+    function salvaBenza() {
+        db.rifornimenti.push({
+            id: Date.now(),
+            data: `${document.getElementById('dateBD').value}/${document.getElementById('dateBM').value}`,
+            euro: parseFloat(document.getElementById('bE').value)||0,
+            prezzo: parseFloat(document.getElementById('bP').value)||0
+        });
+        salvaDB(); chiudiModali();
+    }
+
+    function apriStorico() {
+        let h = "";
+        [...db.turni, ...db.rifornimenti].sort((a,b)=>b.id-a.id).forEach(i => {
+            h += `<div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between;"><span>${i.data} - €${(i.lordo||i.euro).toFixed(2)}</span></div>`;
+        });
+        document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
+        document.getElementById('histView').style.display = 'flex';
+    }
+
+    function aggiornaTarget() { const tag = `${new Date().getMonth()+1}/${new Date().getFullYear()}`; db.targets[tag] = parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+    function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
+    
+    window.onload = () => { startClock(); calcola(); };
 </script>
 </body>
 </html>
