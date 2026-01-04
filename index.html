@@ -57,8 +57,8 @@
         .backup-list { font-size: 11px; color: #666; margin-top: 10px; }
         .backup-item { border-bottom: 1px solid #eee; padding: 6px 0; display: flex; justify-content: space-between; }
 
-        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: center; justify-content: center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
+        .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: flex-start; justify-content: center; padding-top: 10vh; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: 0 auto; }
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
         
@@ -145,7 +145,9 @@
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
-    <script>
+</body>
+</html>
+<script>
     const APP_VER = "1.0.0";
     const BACKUP_KEY = "rider_backup_history";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
@@ -220,7 +222,13 @@
     function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
     function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
+    
+    function chiudiModali() { 
+        document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); 
+        // Ripristina scroll body quando chiudi
+        document.body.style.position = 'fixed';
+    }
+
     function confermaReset() { localStorage.clear(); location.reload(); }
     
     function elimina(categoria, id) {
@@ -282,7 +290,7 @@
         renderBackupList();
     }
 
-    // --- INIZIO MODIFICA 2: UNIFORMAZIONE AUTO-SCROLL ANDROID ---
+    // --- INIZIO MODIFICA 3: FORCE SCROLL ANDROID ---
     function apriM(id) { 
         const n = new Date(); 
         let d='', m='', y=''; 
@@ -296,16 +304,18 @@
         const modal = document.getElementById(id);
         modal.style.display='flex'; 
 
-        const primoInput = id === 'modalTurno' ? document.getElementById('tL') : document.getElementById('bE');
+        const input = id === 'modalTurno' ? document.getElementById('tL') : document.getElementById('bE');
 
+        // Android fix: usiamo scrollIntoView con timeout più lungo e focus forzato
         setTimeout(() => {
-            if (primoInput) {
-                primoInput.focus();
-                primoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (input) {
+                input.focus();
+                // Questo comando dice ad Android di centrare l'input sopra la tastiera
+                input.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
             }
-        }, 400); // Leggero aumento del delay per garantire la tastiera su Android
+        }, 500); 
     }
-    // --- FINE MODIFICA 2: UNIFORMAZIONE AUTO-SCROLL ANDROID ---
+    // --- FINE MODIFICA 3: FORCE SCROLL ANDROID ---
 
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
