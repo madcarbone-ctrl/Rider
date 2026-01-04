@@ -143,83 +143,187 @@
         </div>
     </div>
 <script>
-    const APP_VER = "1.0.0";
+<script>
+    const APP_VER = "1.1.0"; // Versione aggiornata
     const BACKUP_KEY = "rider_backup_history";
-    let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
-    const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    let catElimina = ''; let idElimina = null;
+    
+    // Database caricato all'avvio
+    let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { 
+        turni: [], 
+        rifornimenti: [], 
+        targets: {}, 
+        tax: 20 
+    };
 
-    function salvaBackup() {
-        const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.0", db: db };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click();
-        URL.revokeObjectURL(url); salvaCronologiaBackup(data.timestamp); renderBackupList();
+    const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+    let catElimina = ''; 
+    let idElimina = null;
+
+    // --- GESTIONE FINESTRE (MODULARE) ---
+    
+    // Apre una modale specifica senza resettare le altre
+    function apriM(id) { 
+        const n = new Date(); 
+        let d='', m='', y=''; 
+        
+        // Genera i selettori data solo se non sono già stati popolati
+        const p = id === 'modalTurno' ? 'dateT' : 'dateB';
+        const dateContainer = document.getElementById(p);
+        
+        if (dateContainer && dateContainer.innerHTML === "") {
+            for(let i=1; i<=31; i++) d += `<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; 
+            mesi.forEach((nm,i) => m += `<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); 
+            for(let i=2025; i<=2030; i++) y += `<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; 
+            dateContainer.innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
+        }
+        
+        document.getElementById(id).style.display = 'flex'; 
     }
-    document.getElementById("fileBackup").addEventListener("change", function(e) {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            try {
-                const json = JSON.parse(evt.target.result); if (!json.db) throw "Errore";
-                db = json.db; localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); alert("Database importato con successo!"); location.reload();
-            } catch(err) { alert("File di backup non valido."); }
-        }; reader.readAsText(file);
-    });
-    function salvaCronologiaBackup(ts) {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || []; list.unshift(ts); localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(0,5)));
+
+    // Chiude SOLO la finestra specificata
+    function chiudiModali(idSpecifico) {
+        if (idSpecifico) {
+            document.getElementById(idSpecifico).style.display = 'none';
+        } else {
+            // Fallback: chiude tutte se non specificato (usato per i tasti "Annulla" generali)
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
     }
-    function renderBackupList() {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || []; const box = document.getElementById("backupList"); if(!box) return;
-        box.innerHTML = list.length ? "<strong>Ultimi Backup Locali:</strong>" : "Nessun backup salvato in questa sessione";
-        list.forEach(ts => { const d = new Date(ts); const div = document.createElement("div"); div.className = "backup-item"; div.innerHTML = `<span>${d.toLocaleString()}</span>`; box.appendChild(div); });
+
+    // --- LOGICA DI SALVATAGGIO ISOLATA ---
+
+    function salvaTurno() { 
+        const container = document.getElementById('modalTurno');
+        const lordo = parseFloat(document.getElementById('tL').value) || 0;
+        const ore = parseFloat(document.getElementById('tO').value) || 0;
+        
+        if (lordo === 0 || ore === 0) {
+            alert("Inserisci almeno Lordo e Ore!");
+            return;
+        }
+
+        const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; 
+        
+        db.turni.push({
+            id: Date.now(), 
+            data: d, 
+            ora: new Date().toLocaleTimeString().substring(0,5), 
+            lordo: lordo, 
+            ore: ore, 
+            km: parseFloat(document.getElementById('tK').value) || 0, 
+            cons: parseFloat(document.getElementById('tC').value) || 0
+        }); 
+
+        // Resetta solo gli input di questa finestra dopo il successo
+        container.querySelectorAll('input').forEach(i => i.value = "");
+        salvaDB(); 
+        chiudiModali('modalTurno'); 
     }
-    function formattaPrezzo(input) { let val = input.value.replace(/[^\d]/g, ''); if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; } }
-    function startClock() { const update = () => { const now = new Date(); document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`; }; update(); setInterval(update, 1000); }
-    function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
-    function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
-    function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
-    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
-    function confermaReset() { localStorage.clear(); location.reload(); }
-    function elimina(categoria, id) { catElimina = categoria; idElimina = id; document.getElementById('btnConfermaElimina').onclick = function() { db[catElimina] = db[catElimina].filter(x => x.id !== idElimina); salvaDB(); apriStorico(); chiudiModali(); }; document.getElementById('modalElimina').style.display = 'flex'; }
+
+    function salvaBenza() { 
+        const container = document.getElementById('modalBenza');
+        const euro = parseFloat(document.getElementById('bE').value) || 0;
+        const prezzo = parseFloat(document.getElementById('bP').value) || 0;
+
+        if (euro === 0 || prezzo === 0) {
+            alert("Inserisci Euro e Prezzo al litro!");
+            return;
+        }
+
+        const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; 
+        
+        db.rifornimenti.push({
+            id: Date.now(), 
+            data: d, 
+            ora: new Date().toLocaleTimeString().substring(0,5), 
+            euro: euro, 
+            prezzo: prezzo
+        }); 
+
+        container.querySelectorAll('input').forEach(i => i.value = "");
+        salvaDB(); 
+        chiudiModali('modalBenza'); 
+    }
+
+    // --- CALCOLI E CORE ---
+
+    function salvaDB() { 
+        localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); 
+        calcola(); 
+    }
+
     function calcola() {
-        const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
-        let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0), ore = db.turni.reduce((a,b)=>a+b.ore, 0), km = db.turni.reduce((a,b)=>a+b.km, 0);
-        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
+        const n = new Date(); 
+        const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
+        
+        let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0);
+        let ore = db.turni.reduce((a,b)=>a+b.ore, 0);
+        let km = db.turni.reduce((a,b)=>a+b.km, 0);
+        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0);
+        let spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
+        
         let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-        let costoB_Turni = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
-        document.getElementById('lordo').innerText = lordoA.toFixed(2); document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
-        document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
-        document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
-        let tNetto = db.targets[tag] || 0; document.getElementById('targetIn').value = tNetto || ""; document.getElementById('taxIn').value = db.tax;
-        let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
+        let costoB_Turni = litriS * ultP;
+        let nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
+        
+        // Update UI
+        document.getElementById('lordo').innerText = lordoA.toFixed(2); 
+        document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
+        document.getElementById('ore').innerText = ore.toFixed(1); 
+        document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
+        document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
+        document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
+        
+        let tNetto = db.targets[tag] || 0; 
+        document.getElementById('targetIn').value = tNetto || ""; 
+        document.getElementById('taxIn').value = db.tax;
+        
+        let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100));
+        let mancaL = lordoNecessario - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
-        let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; document.getElementById('perc').innerText = Math.round(p) + '%'; document.getElementById('bar').style.width = p + '%';
+        
+        let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; 
+        document.getElementById('perc').innerText = Math.round(p) + '%'; 
+        document.getElementById('bar').style.width = p + '%';
     }
-    function apriStorico() {
-        let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
-        tutti.forEach(i => {
-            const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
-            let sub = isT ? `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${(i.km*(i.cons/100)).toFixed(2)}L | ${(i.cons > 0 ? (100/i.cons).toFixed(1) : "0.0")} km/l` : `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
-            h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora}</span></div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
-        });
-        document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
+
+    // --- UTILITIES ---
+
+    function startClock() { 
+        const update = () => { 
+            const now = new Date(); 
+            document.getElementById('liveClock').innerText = now.toLocaleString('it-IT'); 
+        }; 
+        update(); setInterval(update, 1000); 
     }
-    function apriReport() {
-        let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
-        db.turni.sort((a,b)=>a.id-b.id).forEach(t => { let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; });
-        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>"; document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
-        document.getElementById('reportView').style.display = 'block'; renderBackupList();
+
+    function formattaPrezzo(input) { 
+        let val = input.value.replace(/[^\d]/g, ''); 
+        if (val.length > 1) { 
+            input.value = val.substring(0, 1) + '.' + val.substring(1, 4); 
+        } else { 
+            input.value = val; 
+        } 
     }
-    function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
-    function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
-    function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
-    function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-    function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = function() { calcola(); startClock(); checkFineMese(); renderBackupList(); };
+
+    function aggiornaTarget() { 
+        const f = `${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; 
+        db.targets[f] = parseFloat(document.getElementById('targetIn').value) || 0; 
+        salvaDB(); 
+    }
+
+    function aggiornaTax() { 
+        db.tax = parseFloat(document.getElementById('taxIn').value) || 20; 
+        salvaDB(); 
+    }
+
+    // Inizializzazione
+    window.onload = function() { 
+        calcola(); 
+        startClock(); 
+        renderBackupList(); 
+        console.log("Rider Tracker Pro Ready on Samsung A34");
+    };
 </script>
 </body>
 </html>
