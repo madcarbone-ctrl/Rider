@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER V2.3</title>
+    <title>RIDER TRACKER V2.4</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; }
@@ -17,61 +17,61 @@
         
         .app-title { font-size:16px; font-weight:800; color:var(--primary); text-transform:uppercase; text-align:center; padding: 5px 0; }
 
-        /* GRIGLIA SUPER COMPATTA */
-        .grid { 
-            display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; 
-            margin-bottom: 5px;
-        }
-
-        .card { 
-            background:var(--card); border-radius:12px; border:1px solid #333; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 65px;
-        }
-
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom: 5px; }
+        .card { background:var(--card); border-radius:12px; border:1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 65px; }
         .label { font-size:7px; color:var(--dim); font-weight:bold; text-transform:uppercase; }
         .val { font-size:13px; font-weight:bold; color: #fff; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid var(--primary); color:#fff; text-align:center; font-size:14px; outline:none; }
 
-        /* PROGRESSO */
+        /* --- BLOCCO PROGRESSO INGRANDITO --- */
         .progress-section {
-            background: var(--card); padding: 8px; border-radius: 15px; border: 1px solid #333; 
+            background: var(--card); padding: 12px; border-radius: 18px; border: 1px solid #333; 
             margin-bottom: 5px;
         }
-        .progress-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
-        .progress-bar { background:#222; height:12px; border-radius:6px; overflow:hidden; border: 1px solid #444; }
+        .progress-header { 
+            display: flex; justify-content: space-between; 
+            font-size: 13px; /* Ingrandito */
+            font-weight: 900; margin-bottom: 8px; color: var(--primary);
+        }
+        .progress-bar { 
+            background:#222; 
+            height:24px; /* Altezza raddoppiata */
+            border-radius:12px; overflow:hidden; border: 1px solid #444; 
+        }
         #bar { background: linear-gradient(90deg, var(--primary), #00ffea); height:100%; width:0%; transition:0.3s; }
-        #liveClock { font-size:10px; color:var(--primary); margin-top: 4px; text-align: center; font-weight: bold; }
+        
+        /* Data e Ora staccate e più grandi */
+        #liveClock { 
+            font-size:14px; /* Ingrandito */
+            color:var(--primary); 
+            margin-top: 10px; 
+            text-align: center; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+        }
+        .clock-sep { margin: 0 8px; opacity: 0.5; } /* Spazio tra data e ora */
 
-        /* IL FOOTER È STATO ALZATO DI 60PX PER EVITARE I TASTI DI SISTEMA */
+        /* FOOTER ALZATO PER VISIBILITÀ TASTO ROSSO */
         .sticky-footer { 
             background:#161616; padding:12px; border-radius:20px; border:2px solid #333;
             display: flex; flex-direction: column; gap: 8px;
             margin-top: 10px;
-            margin-bottom: 70px; /* ALZATO DRASTICAMENTE */
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+            margin-bottom: 75px; 
         }
         
         .btn-group-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .foot-btn { background:#222; color:#fff; padding:12px 5px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; }
         .foot-btn i { font-size:20px; color:var(--primary); margin-bottom:4px; }
-        
         .btn-report { width: 100%; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:900; border:none; text-transform: uppercase; font-size: 12px; }
-        
-        /* TASTO ROSSO ORA ALZATO E BEN DISTANTE DAL BORDO */
-        .btn-reset-danger { 
-            width: 100%; background:var(--danger); color:#fff; padding:10px; border-radius:12px; 
-            font-weight:bold; border:none; font-size: 10px; text-transform: uppercase;
-        }
+        .btn-reset-danger { width: 100%; background:var(--danger); color:#fff; padding:10px; border-radius:12px; font-weight:bold; border:none; font-size: 10px; text-transform: uppercase; }
 
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
         .modal-content { background:#1a1a1a; padding:20px; border-radius:25px; width:90%; border:2px solid var(--primary); }
-        .modal input { width:100%; padding:15px; margin:10px 0; background:#252525; border:1px solid #444; color:#fff; border-radius:12px; font-size:18px; }
     </style>
 </head>
 <body>
 
-    <div class="app-title">RIDER TRACKER V2.3</div>
+    <div class="app-title">RIDER TRACKER V2.4</div>
 
     <div class="grid">
         <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -86,9 +86,9 @@
     </div>
 
     <div class="progress-section">
-        <div class="progress-header"><span>OBIETTIVO MESE</span><span id="perc">0%</span></div>
+        <div class="progress-header"><span>TARGET MENSILE</span><span id="perc">0%</span></div>
         <div class="progress-bar"><div id="bar"></div></div>
-        <div id="liveClock">--:--:--</div>
+        <div id="liveClock">--/--/-- <span class="clock-sep">|</span> --:--:--</div>
     </div>
 
     <div style="flex-grow: 1;"></div>
@@ -104,14 +104,14 @@
     </div>
 
     <div id="winTurno" class="modal"><div class="modal-content"><h3>Nuovo Turno</h3><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="KM"><input type="number" id="tC" placeholder="L/100km"><button class="btn-report" onclick="salvaAzione('T')">SALVA</button><button class="btn-reset-danger" style="margin-top:10px" onclick="toggleWin('winTurno', false)">ANNULLA</button></div></div>
-    <div id="winBenza" class="modal"><div class="modal-content"><h3>Rifornimento</h3><input type="number" id="bE" placeholder="Euro (€)"><input type="number" id="bP" placeholder="Prezzo €/L"><button class="btn-report" style="background:orange" onclick="salvaAzione('B')">SALVA</button><button class="btn-reset-danger" style="margin-top:10px" onclick="toggleWin('winBenza', false)">ANNULLA</button></div></div>
+    <div id="winBenza" class="modal"><div class="modal-content"><h3>Benzina</h3><input type="number" id="bE" placeholder="Euro (€)"><input type="number" id="bP" placeholder="Prezzo €/L"><button class="btn-report" style="background:orange" onclick="salvaAzione('B')">SALVA</button><button class="btn-reset-danger" style="margin-top:10px" onclick="toggleWin('winBenza', false)">ANNULLA</button></div></div>
     <div id="winStorico" class="modal"><div class="modal-content"><h3>Storico</h3><div id="listaStorico" style="max-height:40vh; overflow-y:auto;"></div><button class="btn-report" style="margin-top:10px" onclick="toggleWin('winStorico', false)">CHIUDI</button></div></div>
     <div id="winReport" class="modal"><div class="modal-content"><h3>Report</h3><button class="btn-report" onclick="window.print()">STAMPA PDF</button><button class="btn-reset-danger" style="margin-top:10px" onclick="toggleWin('winReport', false)">ESCI</button></div></div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v2.3')) || { turni: [], benza: [], tax: 20, target: 0 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v2.4')) || { turni: [], benza: [], tax: 20, target: 0 };
     function toggleWin(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
-    function salvaDB() { localStorage.setItem('rider_db_v2.3', JSON.stringify(db)); aggiornaDati(); }
+    function salvaDB() { localStorage.setItem('rider_db_v2.4', JSON.stringify(db)); aggiornaDati(); }
 
     function salvaAzione(tipo) {
         const d = new Date().toLocaleDateString('it-IT');
@@ -131,7 +131,6 @@
         let ore = db.turni.reduce((a,b) => a + b.ore, 0);
         let km = db.turni.reduce((a,b) => a + b.km, 0);
         let litri = db.turni.reduce((a,b) => a + (b.km * (b.cons/100)), 0);
-        let spesaB = db.benza.reduce((a,b) => a + b.euro, 0);
         let netto = lordo - (lordo * (db.tax/100)) - (litri * 1.85);
 
         document.getElementById('lordo').innerText = lordo.toFixed(2);
@@ -139,7 +138,7 @@
         document.getElementById('ore').innerText = ore.toFixed(1);
         document.getElementById('cons').innerText = litri.toFixed(1);
         document.getElementById('kml').innerText = litri > 0 ? (km/litri).toFixed(1) : '0.0';
-        document.getElementById('spesaB').innerText = '€' + spesaB.toFixed(2);
+        document.getElementById('spesaB').innerText = '€' + db.benza.reduce((a,b) => a + b.euro, 0).toFixed(2);
         
         let p = db.target > 0 ? Math.min((netto/db.target)*100, 100) : 0;
         document.getElementById('bar').style.width = p + '%';
@@ -169,12 +168,14 @@
     }
 
     function resetTotale() {
-        if(confirm("⚠ ATTENZIONE: CANCELLARE TUTTI I DATI?")) { localStorage.clear(); location.reload(); }
+        if(confirm("⚠ CANCELLARE TUTTO?")) { localStorage.clear(); location.reload(); }
     }
 
     setInterval(() => { 
         const n = new Date();
-        document.getElementById('liveClock').innerText = n.toLocaleDateString() + " " + n.toLocaleTimeString(); 
+        const dStr = n.toLocaleDateString('it-IT');
+        const tStr = n.toLocaleTimeString('it-IT');
+        document.getElementById('liveClock').innerHTML = `${dStr} <span class="clock-sep">|</span> ${tStr}`; 
     }, 1000);
 
     window.onload = () => { 
