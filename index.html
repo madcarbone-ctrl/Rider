@@ -6,7 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <title>RIDER TRACKER PRO V1.0</title>
+    <title>RIDER TRACKER PRO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script type="module">
@@ -20,7 +20,7 @@
             projectId: "rider-tracker-dc49a",
             storageBucket: "rider-tracker-dc49a.firebasestorage.app",
             messagingSenderId: "593957347252",
-            appId: "1:593957347252:web:4aa0be44ddd685ce1",
+            appId: "1:593957347252:web:4aa0be44dbb65ddd685ce1",
             measurementId: "G-MTYPWK8KQJ"
         };
 
@@ -31,188 +31,176 @@
         window.eseguiLogin = () => {
             const e = document.getElementById('emailLogin').value;
             const p = document.getElementById('passLogin').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Errore Accesso: " + err.message));
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Errore: " + err.message));
         };
 
         window.eseguiRegistrazione = () => {
             const e = document.getElementById('emailLogin').value;
             const p = document.getElementById('passLogin').value;
-            if(!e || !p) { alert("Inserisci email e password!"); return; }
-            createUserWithEmailAndPassword(auth, e, p)
-                .then(() => alert("Profilo creato! Ora puoi entrare."))
-                .catch(err => alert("Errore: " + err.message));
+            createUserWithEmailAndPassword(auth, e, p).then(() => alert("Registrato!")).catch(err => alert(err.message));
         };
 
         window.logout = () => signOut(auth).then(() => { localStorage.clear(); location.reload(); });
 
-        window.sincronizzaConCloud = async (dati) => {
-            if (!auth.currentUser) return;
-            try { await setDoc(doc(dbCloud, "utenti", auth.currentUser.uid), dati); } 
-            catch (e) { console.error("Errore Cloud:", e); }
+        window.salvaSuCloud = async (dati) => {
+            if (auth.currentUser) await setDoc(doc(dbCloud, "utenti", auth.currentUser.uid), dati);
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
                 const snap = await getDoc(doc(dbCloud, "utenti", user.uid));
                 if (snap.exists()) {
                     db = snap.data();
-                    localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-                    if (typeof calcola === "function") calcola();
+                    if (!db.storico) db.storico = [];
+                    localStorage.setItem('rider_db_v1', JSON.stringify(db));
+                    render();
                 }
             } else {
-                document.getElementById('authContainer').style.display = 'flex';
-                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('appScreen').style.display = 'none';
             }
         });
     </script>
 
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
-        #authContainer { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .auth-card { background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--primary); width: 90%; max-width: 350px; }
-        .auth-card input { width: 100%; padding: 14px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; border-radius: 12px; font-size: 16px; outline: none; }
-        .auth-card button { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; cursor: pointer; color: #000; }
-        .app-title { margin:10px 0 15px; font-size:18px; font-weight:800; color:var(--primary); text-transform:uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
-        .card { background:var(--card); height:70px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
-        .label { font-size:8px; color:var(--dim); text-transform:uppercase; font-weight:bold; }
-        .val { font-size:14px; font-weight:bold; }
-        #lordo, #mancante { color:var(--primary); } 
-        #netto { color:var(--accent); }
-        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
-        .progress-container { background:var(--card); padding:12px; border-radius:15px; margin-top: 12px; border:1px solid #333; }
-        .progress-bar { background:#222; height:20px; border-radius:8px; overflow:hidden; border:1px solid #444; margin: 8px 0; }
-        #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; border-radius:20px; border:1px solid #333; }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:10px 5px; border-radius:12px; display:flex; flex-direction:column; align-items:center; font-size:9px; cursor: pointer; }
-        .foot-btn i { font-size:18px; color:var(--primary); margin-bottom:4px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:12px; border-radius:12px; font-weight:900; border:none; margin-bottom: 5px; }
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; border:2px solid var(--primary); }
+        :root { --main:#00CCBC; --bg:#0f0f0f; --card:#1a1a1a; --text:#e0e0e0; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; overflow: hidden; height: 100vh; }
+        
+        /* Grafica Originale */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: var(--main); font-weight: 800; font-size: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #333; text-align: center; }
+        .card i { color: var(--main); margin-bottom: 8px; font-size: 20px; }
+        .card .label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .card .value { font-size: 18px; font-weight: bold; margin-top: 5px; }
+
+        .btn-main { background: var(--main); color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 16px; margin-top: 10px; }
+        .footer-nav { position: fixed; bottom: 20px; left: 15px; right: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .nav-item { background: var(--card); border: 1px solid #333; padding: 12px; border-radius: 15px; text-align: center; font-size: 10px; }
+        .nav-item i { font-size: 18px; color: var(--main); display: block; margin-bottom: 5px; }
+
+        /* Login */
+        #authScreen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-box { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; border: 1px solid var(--main); }
+        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #222; color: white; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card); width: 90%; padding: 25px; border-radius: 20px; border: 1px solid var(--main); }
+        #listaStorico { max-height: 300px; overflow-y: auto; text-align: left; margin-top: 10px; }
+        .storico-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 13px; }
     </style>
 </head>
-    <body>
-    <div id="authContainer">
-        <div class="app-title"><i class="fas fa-bicycle"></i> RIDER TRACKER PRO</div>
-        <div class="auth-card">
+<body>
+    <div id="authScreen">
+        <div class="header" style="font-size: 24px;">RIDER TRACKER</div>
+        <div class="login-box">
             <input type="email" id="emailLogin" placeholder="Email">
             <input type="password" id="passLogin" placeholder="Password">
-            <button onclick="eseguiLogin()">ACCEDI</button>
-            <button onclick="eseguiRegistrazione()" style="background:transparent; color:var(--dim); border:1px solid #444; margin-top:15px;">REGISTRATI</button>
+            <button class="btn-main" onclick="eseguiLogin()">ACCEDI</button>
+            <p onclick="eseguiRegistrazione()" style="text-align:center; font-size:12px; margin-top:15px; color:#888;">Non hai un account? Registrati</p>
         </div>
     </div>
 
-    <div id="mainContainer" style="display:none;">
-        <div class="app-title">
-            <i class="fas fa-chart-line"></i> DASHBOARD
-            <i class="fas fa-sign-out-alt" onclick="logout()" style="margin-left:auto; font-size:16px; color:var(--dim);"></i>
+    <div id="appScreen" style="display:none;">
+        <div class="header">
+            <span><i class="fas fa-motorcycle"></i> DASHBOARD</span>
+            <i class="fas fa-power-off" onclick="logout()"></i>
         </div>
+
         <div class="grid">
-            <div class="card"><div class="label">Lordo</div><div class="val" id="lordo">€ 0.00</div></div>
-            <div class="card"><div class="label">Netto (60%)</div><div class="val" id="netto">€ 0.00</div></div>
-            <div class="card"><div class="label">Ore Totali</div><div class="val" id="ore">0.0</div></div>
-            <div class="card"><div class="label">Benzina</div><div class="val" id="benzinaTot">€ 0.00</div></div>
-            <div class="card"><div class="label">Media €/h</div><div class="val" id="media">0.00</div></div>
-            <div class="card"><div class="label">Obiettivo</div><input type="number" id="target" value="1200" oninput="calcola()"></div>
+            <div class="card"><i class="fas fa-euro-sign"></i><div class="label">Lordo</div><div class="value" id="v-lordo">€ 0.00</div></div>
+            <div class="card"><i class="fas fa-wallet"></i><div class="label">Netto (60%)</div><div class="value" id="v-netto">€ 0.00</div></div>
+            <div class="card"><i class="fas fa-clock"></i><div class="label">Ore</div><div class="value" id="v-ore">0.0</div></div>
+            <div class="card"><i class="fas fa-gas-pump"></i><div class="label">Benzina</div><div class="value" id="v-benzina">€ 0.00</div></div>
         </div>
-        <div class="progress-container">
-            <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold;">
-                <span>PROGRESSO MESE</span>
-                <span id="percent">0%</span>
-            </div>
-            <div class="progress-bar"><div id="bar"></div></div>
-            <div style="font-size:11px; color:var(--dim);">Mancano <span id="mancante">€ 0.00</span> al target</div>
-        </div>
-        <div class="sticky-footer">
-            <button class="btn-full" onclick="apriModal('modalTurno')">+ AGGIUNGI TURNO</button>
-            <div class="foot-btn" onclick="apriModal('modalBenzina')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-            <div class="foot-btn" onclick="resetDati()"><i class="fas fa-trash"></i>RESET</div>
-            <div class="foot-btn" onclick="alert('Salvataggio Cloud Attivo!')"><i class="fas fa-cloud-upload-alt"></i>CLOUD</div>
+
+        <button class="btn-main" onclick="openMod('modTurno')">+ AGGIUNGI TURNO</button>
+
+        <div class="footer-nav">
+            <div class="nav-item" onclick="openMod('modBenzina')"><i class="fas fa-gas-pump"></i>Benzina</div>
+            <div class="nav-item" onclick="openMod('modStorico')"><i class="fas fa-history"></i>Storico</div>
+            <div class="nav-item" onclick="resetDati()"><i class="fas fa-trash"></i>Reset</div>
+            <div class="nav-item" onclick="alert('Dati sincronizzati!')"><i class="fas fa-cloud"></i>Cloud</div>
         </div>
     </div>
 
-    <div id="modalTurno" class="modal">
+    <div id="modTurno" class="modal">
         <div class="modal-content">
-            <h3 style="color:var(--primary)">NUOVO TURNO</h3>
-            <input type="number" id="guadagno" placeholder="Guadagno Lordo €" style="width:100%; padding:15px; margin:10px 0; border-radius:10px; border:none; background:#222; color:white;">
-            <input type="number" id="oreTurno" placeholder="Ore Lavorate" style="width:100%; padding:15px; margin:10px 0; border-radius:10px; border:none; background:#222; color:white;">
-            <button onclick="salvaTurno()" class="btn-full">SALVA</button>
-            <button onclick="chiudiModal()" style="background:none; border:none; color:var(--dim); margin-top:10px;">ANNULLA</button>
+            <h3 style="color:var(--main)">Nuovo Turno</h3>
+            <input type="number" id="in-lordo" placeholder="Guadagno €">
+            <input type="number" id="in-ore" placeholder="Ore lavorate">
+            <button class="btn-main" onclick="addTurno()">SALVA</button>
+            <button onclick="closeMod()" style="background:none; border:none; color:#888; width:100%; margin-top:15px;">Chiudi</button>
         </div>
     </div>
 
-    <div id="modalBenzina" class="modal">
+    <div id="modStorico" class="modal">
         <div class="modal-content">
-            <h3 style="color:var(--orange)">SPESA BENZINA</h3>
-            <input type="number" id="spesaBenzina" placeholder="Importo €" style="width:100%; padding:15px; margin:10px 0; border-radius:10px; border:none; background:#222; color:white;">
-            <button onclick="salvaBenzina()" class="btn-full" style="background:var(--orange)">AGGIUNGI</button>
-            <button onclick="chiudiModal()" style="background:none; border:none; color:var(--dim); margin-top:10px;">ANNULLA</button>
+            <h3 style="color:var(--main)">Storico Turni</h3>
+            <div id="listaStorico"></div>
+            <button class="btn-main" onclick="closeMod()">CHIUDI</button>
+        </div>
+    </div>
+
+    <div id="modBenzina" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--main)">Spesa Benzina</h3>
+            <input type="number" id="in-benz" placeholder="Importo €">
+            <button class="btn-main" onclick="addBenzina()">AGGIUNGI</button>
+            <button onclick="closeMod()" style="background:none; border:none; color:#888; width:100%; margin-top:15px;">Chiudi</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { lordo: 0, ore: 0, benzina: 0 };
+        let db = JSON.parse(localStorage.getItem('rider_db_v1')) || { lordo:0, ore:0, benzina:0, storico:[] };
 
-        function apriModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function chiudiModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        function openMod(id) { 
+            document.getElementById(id).style.display = 'flex'; 
+            if(id === 'modStorico') updateStorico();
+        }
+        function closeMod() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        function salvaTurno() {
-            const g = parseFloat(document.getElementById('guadagno').value) || 0;
-            const o = parseFloat(document.getElementById('oreTurno').value) || 0;
-            if(g > 0) {
-                db.lordo += g;
-                db.ore += o;
-                aggiorna();
-                chiudiModal();
-                document.getElementById('guadagno').value = '';
-                document.getElementById('oreTurno').value = '';
+        function addTurno() {
+            const l = parseFloat(document.getElementById('in-lordo').value) || 0;
+            const o = parseFloat(document.getElementById('in-ore').value) || 0;
+            if(l > 0) {
+                db.lordo += l; db.ore += o;
+                db.storico.unshift({ data: new Date().toLocaleDateString(), importo: l, ore: o });
+                sync(); closeMod();
             }
         }
 
-        function salvaBenzina() {
-            const b = parseFloat(document.getElementById('spesaBenzina').value) || 0;
-            if(b > 0) {
-                db.benzina += b;
-                aggiorna();
-                chiudiModal();
-                document.getElementById('spesaBenzina').value = '';
-            }
+        function addBenzina() {
+            const b = parseFloat(document.getElementById('in-benz').value) || 0;
+            if(b > 0) { db.benzina += b; sync(); closeMod(); }
         }
 
-        function aggiorna() {
-            localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-            if(window.sincronizzaConCloud) window.sincronizzaConCloud(db);
-            calcola();
+        function updateStorico() {
+            const div = document.getElementById('listaStorico');
+            div.innerHTML = db.storico.length ? '' : '<p style="text-align:center">Nessun turno salvato</p>';
+            db.storico.forEach(t => {
+                div.innerHTML += `<div class="storico-item"><span>${t.data}</span> <b>€ ${t.importo.toFixed(2)}</b> <span>${t.ore}h</span></div>`;
+            });
         }
 
-        function calcola() {
-            const target = parseFloat(document.getElementById('target').value) || 1;
-            const netto = (db.lordo * 0.60) - db.benzina;
-            const media = db.ore > 0 ? (db.lordo / db.ore) : 0;
-            const perc = Math.min((db.lordo / target) * 100, 100);
-            const mancante = Math.max(target - db.lordo, 0);
-
-            document.getElementById('lordo').innerText = `€ ${db.lordo.toFixed(2)}`;
-            document.getElementById('netto').innerText = `€ ${netto.toFixed(2)}`;
-            document.getElementById('ore').innerText = db.ore.toFixed(1);
-            document.getElementById('benzinaTot').innerText = `€ ${db.benzina.toFixed(2)}`;
-            document.getElementById('media').innerText = media.toFixed(2);
-            document.getElementById('percent').innerText = `${Math.round(perc)}%`;
-            document.getElementById('bar').style.width = `${perc}%`;
-            document.getElementById('mancante').innerText = `€ ${mancante.toFixed(2)}`;
+        function sync() {
+            localStorage.setItem('rider_db_v1', JSON.stringify(db));
+            if(window.salvaSuCloud) window.salvaSuCloud(db);
+            render();
         }
 
-        function resetDati() {
-            if(confirm("Cancellare tutto?")) {
-                db = { lordo: 0, ore: 0, benzina: 0 };
-                aggiorna();
-            }
+        function render() {
+            document.getElementById('v-lordo').innerText = `€ ${db.lordo.toFixed(2)}`;
+            document.getElementById('v-netto').innerText = `€ ${(db.lordo * 0.6 - db.benzina).toFixed(2)}`;
+            document.getElementById('v-ore').innerText = db.ore.toFixed(1);
+            document.getElementById('v-benzina').innerText = `€ ${db.benzina.toFixed(2)}`;
         }
-        window.onload = calcola;
+
+        function resetDati() { if(confirm("Resettare tutto?")) { db = {lordo:0, ore:0, benzina:0, storico:[]}; sync(); } }
+        
+        window.onload = render;
     </script>
 </body>
 </html>
