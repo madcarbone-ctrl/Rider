@@ -1,149 +1,93 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, 
-    initial-scale=1.0, maximum-scale=1.0, 
-    user-scalable=no, viewport-fit=cover">
-  <title>RIDER TRACKER PRO</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
-  <style>
-    :root { 
-      --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; 
-      --accent:#ff4d4d; --text:#e0e0e0; --red-soft:#8b0000; 
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-      overflow: hidden;
-    }
-
-    /* Griglia superiore compatta */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .card {
-      background: var(--card);
-      height: 65px;
-      border-radius: 12px;
-      border: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Centro pagina centrato */
-    .middle-section {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .progress-container {
-      background: var(--card);
-      padding: 20px;
-      border-radius: 20px;
-      border: 1px solid #333;
-      width: 100%;
-    }
-
-    /* Footer rialzato e visibile */
-    .sticky-footer {
-      background: #161616;
-      padding: 12px;
-      border-radius: 24px;
-      border: 1px solid #333;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 5px;
-    }
-
-    .btn-full {
-      grid-column: span 3;
-      background: var(--primary);
-      color: #000;
-      padding: 15px;
-      border-radius: 15px;
-      font-weight: 900;
-      border: none;
-    }
-
-    .btn-reset-soft {
-      grid-column: span 3;
-      background: var(--red-soft);
-      color: #fff;
-      padding: 8px;
-      border-radius: 10px;
-      font-size: 10px;
-      border: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f0f0f">
+    <title>RIDER TRACKER PRO V1.0</title>
+    <style>
+        body { font-family: sans-serif; margin:0; padding:15px; }
+        .btn-backup { padding:12px; border-radius:12px; font-weight:bold; border:none; margin:5px 0; width:100%; }
+        .btn-save-backup { background:#00CCBC; }
+        .btn-load-backup { background:#444; color:#fff; }
+        .backup-list { font-size:12px; margin-top:10px; }
+        .backup-item { border-bottom:1px solid #ccc; padding:6px 0; display:flex; justify-content:space-between; }
+    </style>
 </head>
 <body>
-  <div class="app-title" style="text-align:center; 
-    color:var(--primary); font-weight:800; padding:5px;">
-    RIDER TRACKER PRO V1.0
-  </div>
 
-  <div class="grid">
-    <div class="card"><span id="lordo">€0.00</span></div>
-    <div class="card"><span id="netto">€0.00</span></div>
-    <div class="card"><span id="ore">0.0</span></div>
-    <div class="card"><input type="number" placeholder="Target"></div>
-    <div class="card"><input type="number" placeholder="Tax"></div>
-    <div class="card"><span id="mancante">€0.00</span></div>
-  </div>
+<h2>REPORT ATTIVITÀ</h2>
+<div id="repTurniBody"></div>
+<div id="repBenzaBody"></div>
+<div id="repFinalSummary"></div>
 
-  <div class="middle-section">
-    <div class="progress-container">
-      <div id="perc" style="color:var(--primary); font-weight:bold;">0%</div>
-      <div style="background:#222; height:25px; border-radius:5px; margin:10px 0;">
-        <div id="bar" style="background:var(--primary); height:100%; width:0%;"></div>
-      </div>
-      <div id="liveClock">00:00:00</div>
-    </div>
-  </div>
+<hr>
+<h3>Backup dati</h3>
 
-  <div class="sticky-footer">
-    <button class="btn-full">REPORT & BACKUP</button>
-    <button class="btn-reset-soft">RESET DATABASE COMPLETO</button>
-  </div>
-  <script>
-    // Funzione orologio breve
-    function avviaOrologio() {
-      setInterval(() => {
-        const ora = new Date().toLocaleTimeString();
-        document.getElementById('liveClock').innerText = ora;
-      }, 1000);
-    }
+<button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 Salva backup</button>
+<button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 Carica backup</button>
+<input type="file" id="fileBackup" accept=".json" hidden>
 
-    // Calcolo omogeneo
-    function calcola() {
-      // Logica di calcolo qui
-      console.log("Sistema pronto");
-    }
+<div class="backup-list" id="backupList"></div>
+<script>
+let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+const BACKUP_KEY = "rider_backup_history";
 
-    // Avvio al caricamento
-    window.onload = () => {
-      avviaOrologio();
-      calcola();
+function salvaBackup() {
+    const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.0", db: db };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    salvaCronologiaBackup(data.timestamp);
+    renderBackupList();
+}
+
+document.getElementById("fileBackup").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            const json = JSON.parse(evt.target.result);
+            if (!json.db) throw "Formato non valido";
+            db = json.db;
+            localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
+            alert("Backup caricato correttamente");
+            location.reload();
+        } catch {
+            alert("File backup non valido");
+        }
     };
-  </script>
+    reader.readAsText(file);
+});
+
+function salvaCronologiaBackup(ts) {
+    const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || [];
+    list.unshift(ts);
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(0,10)));
+}
+
+function renderBackupList() {
+    const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || [];
+    const box = document.getElementById("backupList");
+    box.innerHTML = list.length ? "" : "Nessun backup salvato";
+    list.forEach(ts => {
+        const d = new Date(ts);
+        const div = document.createElement("div");
+        div.className = "backup-item";
+        div.innerHTML = `<span>${d.toLocaleString()}</span>`;
+        box.appendChild(div);
+    });
+}
+
+renderBackupList();
+</script>
+
 </body>
 </html>
