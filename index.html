@@ -38,24 +38,26 @@
         .modal, #reportView { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
         #reportView { background:#fff; color:#000; text-align:left; }
         
-        .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; }
+        .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:baseline; }
         .report-header-mini h2 { font-size:14px; margin:0; text-transform:uppercase; }
         .report-header-mini span { font-size:10px; font-weight:bold; }
-        .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 15px; }
+        .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 10px; }
         .report-table th, .report-table td { border:1px solid #000; padding:4px; text-align: center; }
         .report-table th { background: #eee; }
         
-        .summary-box { border:2px solid #000; padding:10px; background:#fff; }
-        .summary-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #000; font-size:11px; }
-        .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
-        .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; }
+        .summary-box { border:2px solid #000; padding:8px; background:#fff; }
+        .summary-row { display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px dashed #000; font-size:11px; }
+        .summary-row.total { font-weight:bold; font-size:13px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
+        .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; font-size: 10px; }
 
-        .backup-section { margin-top: 25px; border-top: 2px dashed #ccc; padding-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 10px; }
-        .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 10px; color: #000; text-transform: uppercase; font-size: 12px; cursor: pointer; }
-        .btn-save-backup { background: var(--primary); }
-        .btn-load-backup { background: #444; color: #fff; }
-        .backup-list { font-size: 11px; color: #666; margin-top: 10px; }
-        .backup-item { border-bottom: 1px solid #eee; padding: 6px 0; display: flex; justify-content: space-between; }
+        /* --- STILI PULSANTI AFFIANCATI REPORT --- */
+        .report-btn-row { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-rep-small { flex: 1; padding: 12px 5px; border-radius: 10px; font-weight: bold; border: none; text-transform: uppercase; font-size: 10px; cursor: pointer; text-align: center; }
+        .btn-rep-db { background: #444; color: #fff; }
+        .btn-rep-save { background: var(--primary); color: #000; }
+        .btn-rep-print { background: #000; color: #fff; }
+        .btn-rep-close { background: #ddd; color: #000; }
+        /* ---------------------------------------- */
 
         .modal { background:rgba(0,0,0,0.85); z-index:9999; display:none; align-items: center; justify-content: center; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; }
@@ -106,7 +108,6 @@
             <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
-
         <div class="progress-container no-print">
             <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
@@ -126,15 +127,17 @@
             <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
             <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
             
-            <div class="backup-section no-print">
-                <h3>AREA BACKUP & SICUREZZA</h3>
-                <button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
-                <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
-                <input type="file" id="fileBackup" accept=".json" hidden>
-                <div class="backup-list" id="backupList"></div>
+            <div class="no-print">
+                <div class="report-btn-row">
+                    <button class="btn-rep-small btn-rep-db" onclick="document.getElementById('fileBackup').click()"><i class="fas fa-file-import"></i> IMPORTA</button>
+                    <button class="btn-rep-small btn-rep-save" onclick="salvaBackup()"><i class="fas fa-file-export"></i> ESPORTA DB</button>
+                    <input type="file" id="fileBackup" accept=".json" hidden>
+                </div>
+                <div class="report-btn-row">
+                    <button class="btn-rep-small btn-rep-print" onclick="window.print()"><i class="fas fa-print"></i> STAMPA PDF</button>
+                    <button class="btn-rep-small btn-rep-close" onclick="document.getElementById('reportView').style.display='none'"><i class="fas fa-times"></i> CHIUDI</button>
+                </div>
             </div>
-
-            <div class="no-print" style="display:flex; gap:10px; margin-top:20px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
         </div>
 
         <div class="sticky-footer no-print">
@@ -146,158 +149,101 @@
         </div>
     </div>
 <script>
-    const APP_VER = "1.0.0";
-    const BACKUP_KEY = "rider_backup_history";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    
-    let catElimina = '';
-    let idElimina = null;
+    let catElimina = '', idElimina = null;
 
     function salvaBackup() {
         const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.0", db: db };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url;
-        a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        salvaCronologiaBackup(data.timestamp);
-        renderBackupList();
+        a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`;
+        a.click(); URL.revokeObjectURL(url);
+        alert("Database esportato correttamente!");
     }
-
     document.getElementById("fileBackup").addEventListener("change", function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(evt) {
             try {
                 const json = JSON.parse(evt.target.result);
-                if (!json.db) throw "Errore";
-                db = json.db;
+                if (!json.db) throw "Err"; db = json.db;
                 localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-                alert("Database importato con successo!");
-                location.reload();
-            } catch(err) { alert("File di backup non valido."); }
-        };
-        reader.readAsText(file);
+                alert("Importato!"); location.reload();
+            } catch(err) { alert("File non valido."); }
+        }; reader.readAsText(file);
     });
-
-    function salvaCronologiaBackup(ts) {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || [];
-        list.unshift(ts);
-        localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(0,5)));
-    }
-
-    function renderBackupList() {
-        const list = JSON.parse(localStorage.getItem(BACKUP_KEY)) || [];
-        const box = document.getElementById("backupList");
-        if(!box) return;
-        box.innerHTML = list.length ? "<strong>Ultimi Backup Locali:</strong>" : "Nessun backup salvato in questa sessione";
-        list.forEach(ts => {
-            const d = new Date(ts);
-            const div = document.createElement("div");
-            div.className = "backup-item";
-            div.innerHTML = `<span>${d.toLocaleString()}</span>`;
-            box.appendChild(div);
-        });
-    }
 
     function formattaPrezzo(input) {
         let val = input.value.replace(/[^\d]/g, ''); 
         if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; }
     }
-
-    function scrollIntoFocus(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); }
-    document.addEventListener('focusin', function(e) { if (e.target.tagName === 'INPUT' && e.target.closest('.modal')) { scrollIntoFocus(e.target); } });
-
-    function startClock() {
-        const update = () => {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-        };
-        update(); setInterval(update, 1000);
-    }
-
+    function startClock() { setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    }, 1000); }
     function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
     function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('input').forEach(i => i.value=""); }); }
     function confermaReset() { localStorage.clear(); location.reload(); }
-    
-    function elimina(categoria, id) {
-        catElimina = categoria; idElimina = id;
+    function elimina(cat, id) {
+        catElimina = cat; idElimina = id;
         document.getElementById('btnConfermaElimina').onclick = function() {
             db[catElimina] = db[catElimina].filter(x => x.id !== idElimina);
             salvaDB(); apriStorico(); chiudiModali();
-        };
-        document.getElementById('modalElimina').style.display = 'flex';
+        }; document.getElementById('modalElimina').style.display = 'flex';
     }
-
     function calcola() {
-        const n = new Date(); 
-        const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
+        const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
         let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0), ore = db.turni.reduce((a,b)=>a+b.ore, 0), km = db.turni.reduce((a,b)=>a+b.km, 0);
-        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
+        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB_R = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
         let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-        let costoB_Turni = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
+        let costoB_T = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_T;
         document.getElementById('lordo').innerText = lordoA.toFixed(2); 
         document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); 
         document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
         document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
-        document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
-        let tNetto = db.targets[tag] || 0; 
-        document.getElementById('targetIn').value = tNetto || ""; 
+        document.getElementById('spesaB').innerText = '€' + spesaB_R.toFixed(2);
+        let tN = db.targets[tag] || 0; document.getElementById('targetIn').value = tN || ""; 
         document.getElementById('taxIn').value = db.tax;
-        let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
+        let lordoN = (tN + costoB_T) / (1 - (db.tax/100)), mancaL = lordoN - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
-        let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; 
+        let p = tN > 0 ? Math.min((nettoA/tN)*100, 100) : 0; 
         document.getElementById('perc').innerText = Math.round(p) + '%'; 
         document.getElementById('bar').style.width = p + '%';
     }
-
     function apriStorico() {
-        let h = ""; 
-        const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
+        let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
             const isT = i.tipo==='T', color = isT ? 'var(--primary)' : 'var(--orange)';
-            let sub = "";
-            if (isT) {
-                let litriTurno = (i.km * (i.cons/100));
-                let kmLitro = i.cons > 0 ? (100 / i.cons).toFixed(1) : "0.0";
-                sub = `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${litriTurno.toFixed(2)}L | ${kmLitro} km/l`;
-            } else {
-                sub = `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
-            }
+            let sub = isT ? `${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${(i.km*(i.cons/100)).toFixed(2)}L | ${(i.cons>0?(100/i.cons):0).toFixed(1)}km/l` : `${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`;
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}">${isT?'TURNO':'BENZINA'}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora}</span></div><div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto";
         document.getElementById('histView').style.display = 'flex';
     }
-
     function apriReport() {
-        let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
+        let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_R=0;
         db.turni.sort((a,b)=>a.id-b.id).forEach(t => { 
             let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; 
             tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; 
         });
-        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
-        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_R += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
+        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>No dati</td></tr>";
+        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>No dati</td></tr>";
+        let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_S = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE: ${tO.toFixed(1)}h</span><span>KM: ${tK}</span><span>KM/L: ${mediaKML}</span></div><div class="summary-row"><span>LORDO:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA STIMA:</span><span>-€${costoB_S.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-costoB_S).toFixed(2)}</span></div><div class="summary-row monitor"><span>MONITOR SPESA VERA: €${tEB_R.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'block';
-        renderBackupList();
     }
-
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = function() { calcola(); startClock(); checkFineMese(); renderBackupList(); };
+    window.onload = function() { calcola(); startClock(); checkFineMese(); };
 </script>
 </body>
 </html>
