@@ -11,12 +11,19 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
-        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; }
+        /* Impostazione Flex per distribuire i pesi */
+        body { 
+            font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; 
+            text-align:center; overflow: hidden !important; height: 100vh; width: 100vw; 
+            position: fixed; left:0; top:0; 
+            display: flex; flex-direction: column; 
+        }
+        
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; flex-shrink: 0; }
 
-        /* GRIGLIA DATI */
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom: 20px; }
+        /* GRIGLIA DATI - FISSA IN ALTO */
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; flex-shrink: 0; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
@@ -24,26 +31,30 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        /* BARRA PROGRESSO - ALZATA RISPETTO AL FOOTER */
+        /* AREA CENTRALE DI MANOVRA */
+        .middle-section {
+            flex-grow: 1;
+            display: flex;
+            align-items: center; /* Centra l'obiettivo verticalmente in questo spazio */
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* BARRA PROGRESSO */
         .progress-container { 
             background:var(--card); 
-            padding:18px; 
+            padding:20px; 
             border-radius:18px; 
             border:1px solid #333;
-            margin: 0 auto 120px auto; /* Aumentato margine bottom per spingerla in alto lontano dal footer */
             width: 100%;
         }
         .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; }
-        .progress-bar { background:#222; height:30px; border-radius:8px; overflow:hidden; border:1px solid #444; margin: 12px 0; }
+        .progress-bar { background:#222; height:32px; border-radius:8px; overflow:hidden; border:1px solid #444; margin: 12px 0; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         #liveClock { font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; }
 
-        /* FOOTER */
+        /* FOOTER - FISSO IN BASSO */
         .sticky-footer { 
-            position:fixed; 
-            bottom:15px; 
-            left:10px; 
-            right:10px; 
             background:#161616; 
             padding:12px; 
             display:grid; 
@@ -51,16 +62,17 @@
             gap:10px; 
             border-radius:24px; 
             border:1px solid #333; 
-            z-index:1000; 
+            margin-bottom: 10px;
+            flex-shrink: 0;
         }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:20px 5px; border-radius:18px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: 800; text-transform: uppercase; }
+        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:18px 5px; border-radius:18px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: 800; text-transform: uppercase; }
         .foot-btn i { font-size:26px; color:var(--primary); margin-bottom:8px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:20px; border-radius:15px; font-weight:bold; font-size: 14px; text-transform: uppercase; border:none; margin-top: 2px; }
-        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#fff; border:none; padding:18px; border-radius:12px; font-size:12px; text-transform: uppercase; font-weight: 900; opacity: 0.8; margin-top: 5px; }
+        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:20px; border-radius:15px; font-weight:bold; font-size: 14px; text-transform: uppercase; border:none; }
+        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#fff; border:none; padding:16px; border-radius:12px; font-size:11px; text-transform: uppercase; font-weight: 900; opacity: 0.8; margin-top: 5px; }
 
         /* MODALI E STORICO */
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); padding:15px; overflow-y:auto; align-items: flex-start; justify-content: center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:95%; max-width:320px; border:2px solid var(--primary); margin: 40px auto 200px auto; }
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); padding:15px; overflow-y:auto; align-items: center; justify-content: center; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:95%; max-width:320px; border:2px solid var(--primary); }
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin-top: 10px; padding: 5px; }
         .storico-item { background:var(--card); padding:12px; margin-bottom:15px; display:flex; border-top: 1px solid #555; border-bottom: 1px solid #555; align-items:center; }
@@ -74,21 +86,21 @@
     </style>
 </head>
 <body>
-    <div id="mainContainer">
-        <div class="app-title">RIDER TRACKER PRO V1.0</div>
-        
-        <div class="grid">
-            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-            <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
-            <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-            <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" onfocus="autoScroll(this)"></div>
-            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" onfocus="autoScroll(this)"></div>
-            <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
-        </div>
+    <div class="app-title">RIDER TRACKER PRO V1.0</div>
+    
+    <div class="grid">
+        <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+        <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
+        <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
+        <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
+        <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
+        <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
+        <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" onfocus="autoScroll(this)"></div>
+        <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" onfocus="autoScroll(this)"></div>
+        <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
+    </div>
 
+    <div class="middle-section">
         <div class="progress-container">
             <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
@@ -108,11 +120,11 @@
     <div id="modalBenza" class="modal"><div class="modal-content" style="border-color:var(--orange);"><h3 style="color:var(--orange);">Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi" onfocus="autoScroll(this)"><input type="text" id="bP" placeholder="Prezzo (€/L)" oninput="formattaPrezzo(this)" onfocus="autoScroll(this)"><button class="btn-modal btn-save" style="background:var(--orange);" onclick="salvaBenza()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">CHIUDI</button></div></div>
     <div id="histView"><h2 style="color:var(--primary);">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
     <script>
-    let db = JSON.parse(localStorage.getItem('rider_db_v61')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
+    let db = JSON.parse(localStorage.getItem('rider_db_v62')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesiEstesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
     function autoScroll(el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 350); }
-    function salvaDB() { localStorage.setItem('rider_db_v61', JSON.stringify(db)); calcola(); }
+    function salvaDB() { localStorage.setItem('rider_db_v62', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function formattaPrezzo(i) { let v = i.value.replace(/[^\d]/g, ''); if(v.length>1) i.value = v.substring(0,1)+'.'+v.substring(1,4); }
 
