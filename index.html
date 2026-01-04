@@ -6,9 +6,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f0f0f">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>RIDER TRACKER PRO V1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -45,7 +42,6 @@
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
 
-        #reportView { display:none; position:fixed; inset:0; z-index:10000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align: left; }
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin: 15px 0; border-top: 1px solid #333; }
         .storico-item { background:var(--card); padding:12px; border:1px solid #333; margin-bottom:8px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; }
@@ -55,10 +51,6 @@
         .foot-btn i { font-size:20px; color:var(--primary); margin-bottom:5px; }
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:15px; border-radius:12px; font-weight:900; border:none; margin-top:5px; text-transform: uppercase; }
         .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#fff; border:none; padding:8px; border-radius:8px; font-size:9px; margin-top:8px; opacity: 0.7; }
-        
-        .report-section { margin-bottom: 25px; }
-        .report-table { width:100%; border-collapse:collapse; font-size:10px; margin-top:10px; }
-        .report-table th, .report-table td { border:1px solid #000; padding:6px; text-align:center; }
     </style>
 </head>
 <body>
@@ -96,6 +88,12 @@
     <div id="modalBenza" class="modal"><div class="modal-content" style="border-color:var(--orange)"><h3>Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro"><input type="number" id="bP" placeholder="Prezzo al litro" step="0.001"><button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
 
     <div id="histView"><h2 style="color:var(--primary)">STORICO</h2><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <style>
+        #reportView { display:none; position:fixed; inset:0; z-index:10000; background:#fff; color:#000; padding:20px; overflow-y:auto; text-align: left; }
+        .report-section { margin-bottom: 25px; }
+        .report-table { width:100%; border-collapse:collapse; font-size:10px; margin-top:10px; }
+        .report-table th, .report-table td { border:1px solid #000; padding:6px; text-align:center; }
+    </style>
 
     <div id="reportView">
         <div style="max-width: 600px; margin: 0 auto;">
@@ -112,7 +110,8 @@
             </div>
         </div>
     </div>
-    <script>
+
+<script>
     let db = JSON.parse(localStorage.getItem('rider_db_v45')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 
@@ -191,7 +190,7 @@
     function apriReport() {
         let th="", bh="", tl=0, to=0, tk=0, tls=0, eb=0;
         db.turni.forEach(t=>{ let l=(t.km*(t.cons/100)); tl+=t.lordo; to+=t.ore; tk+=t.km; tls+=l; th+=`<tr><td>${t.data}</td><td>${t.ora}</td><td>${t.lordo}</td><td>${t.ore}</td><td>${t.km}</td><td>${l.toFixed(1)}</td></tr>`; });
-        db.rifornimenti.forEach(r=>{ bh+=`<tr><td>${r.data}</td><td>${r.euro}</td><td>${r.prezzo}</td><td>${(r.euro/r.prezzo).toFixed(1)}</td></tr>`; });
+        db.rifornimenti.forEach(r=>{ eb+=r.euro; bh+=`<tr><td>${r.data}</td><td>${r.euro}</td><td>${r.prezzo}</td><td>${(r.euro/r.prezzo).toFixed(1)}</td></tr>`; });
         document.getElementById('repTurniBody').innerHTML=th;
         document.getElementById('repBenzaBody').innerHTML=bh;
         let taxV = tl*(db.tax/100);
