@@ -13,7 +13,7 @@
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
-        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
@@ -28,8 +28,10 @@
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         #liveClock { font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; text-align: center; }
         
+        /* Liste e Modali */
         #histView, #reportView, .modal { display:none; position:fixed; inset:0; z-index:8000; background:var(--bg); padding:15px; overflow-y:auto; -webkit-overflow-scrolling: touch; }
         #reportView { background:#fff; color:#000; text-align:left; }
+        #listaStorico { margin-top: 20px; }
         
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:baseline; }
         .report-header-mini h2 { font-size:14px; margin:0; text-transform:uppercase; }
@@ -53,17 +55,20 @@
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
         
-        .date-row { display:flex; gap:8px; margin-bottom:10px; }
-        .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; }
-        
         .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size: 15px; }
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
+
+        .storico-item { background:var(--card); padding:12px; border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid #333; }
+        .storico-info { text-align:left; }
+        .tipo-label { font-size:9px; font-weight:bold; text-transform:uppercase; }
+        .storico-date { font-size:12px; font-weight:bold; }
+        .storico-main { font-size:16px; font-weight:bold; color:#fff; }
+        .storico-sub { font-size:10px; color:var(--dim); }
         
         .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
         .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
-        
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; }
         .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; margin-top: 10px; text-transform: uppercase; }
 
@@ -92,34 +97,33 @@
             <div id="liveClock">--/--/-- 00:00:00</div>
         </div>
 
-        <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        
+        <div id="histView" class="no-print">
+            <h2 style="color:var(--primary);">STORICO ATTIVITÀ</h2>
+            <div id="listaStorico"></div>
+            <button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button>
+        </div>
+
         <div id="reportView">
-            <div class="report-header-mini"><h2>REPORT ATTIVITÀ</h2><span>RIDER TRACKER PRO V1.0</span></div>
-            <div class="report-section"><h3>TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-            <div class="report-section"><h3>RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>€/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
-            <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
-            
+            <div class="report-header-mini"><h2>REPORT</h2><span>V1.0</span></div>
+            <div class="report-section"><h3>TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>€</th><th>H</th><th>KM</th><th>L/100</th><th>L</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
+            <div class="report-section"><h3>BENZINA</h3><table class="report-table"><thead><tr><th>DATA</th><th>€</th><th>€/L</th><th>L</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
+            <div class="report-section"><h3>RIEPILOGO</h3><div class="summary-box" id="repFinalSummary"></div></div>
             <div class="no-print">
-                <div class="report-btn-row">
-                    <button class="btn-rep-small btn-rep-db" onclick="document.getElementById('fileBackup').click()">IMPORTA</button>
-                    <button class="btn-rep-small btn-rep-save" onclick="salvaBackup()">ESPORTA</button>
-                    <input type="file" id="fileBackup" accept=".json" hidden>
-                </div>
-                <div class="report-btn-row">
-                    <button class="btn-rep-small btn-rep-print" onclick="window.print()">STAMPA PDF</button>
-                    <button class="btn-rep-small btn-rep-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
-                </div>
+                <div class="report-btn-row"><button class="btn-rep-small btn-rep-db" onclick="document.getElementById('fileBackup').click()">IMPORTA</button><button class="btn-rep-small btn-rep-save" onclick="salvaBackup()">ESPORTA</button></div>
+                <div class="report-btn-row"><button class="btn-rep-small btn-rep-print" onclick="window.print()">STAMPA PDF</button><button class="btn-rep-small btn-rep-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
+                <input type="file" id="fileBackup" accept=".json" hidden>
             </div>
         </div>
+
+        <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore lavorate"><input type="number" id="tK" placeholder="KM percorsi"><input type="number" id="tC" placeholder="L/100km"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">X</button></div></div>
+        <div id="modalBenza" class="modal no-print"><div class="modal-content"><h3>Benzina</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi"><input type="text" id="bP" placeholder="Prezzo (€/L)" oninput="formattaPrezzo(this)"><button class="btn-modal btn-save" onclick="salvaBenza()">SALVA</button><button class="btn-modal btn-close" onclick="chiudiModali()">X</button></div></div>
 
         <div class="sticky-footer no-print">
             <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-            <button class="btn-full" onclick="apriReport()">REPORT / BACKUP / STAMPA</button>
-            <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
+            <button class="btn-full" onclick="apriReport()">REPORT / PDF / BACKUP</button>
+            <button class="btn-reset-soft" onclick="if(confirm('Azzera tutto?')) {localStorage.clear();location.reload();}">AZZERA DATABASE</button>
         </div>
     </div>
 
@@ -127,54 +131,53 @@
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     
-    // Auto-scroll per input (Benzina/Turno)
     document.addEventListener('focusin', (e) => { if(e.target.tagName==='INPUT') setTimeout(() => e.target.scrollIntoView({behavior:'smooth',block:'center'}), 300); });
 
-    function salvaBackup() {
-        const blob = new Blob([JSON.stringify({db:db}, null, 2)], { type: "application/json" });
-        const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-        a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click();
-    }
-
-    document.getElementById("fileBackup").addEventListener("change", (e) => {
-        const reader = new FileReader(); reader.onload = (evt) => { 
-            db = JSON.parse(evt.target.result).db; localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); location.reload();
-        }; reader.readAsText(e.target.files[0]);
-    });
-
-    function formattaPrezzo(i) { let v = i.value.replace(/[^\d]/g, ''); if(v.length>1) i.value = v.substring(0,1)+'.'+v.substring(1,4); }
-    function startClock() { setInterval(() => { const n=new Date(); document.getElementById('liveClock').innerText = `${n.getDate().toString().padStart(2,'0')}/${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear().toString().substring(2)} ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`; }, 1000); }
     function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); calcola(); }
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+    function formattaPrezzo(i) { let v = i.value.replace(/[^\d]/g, ''); if(v.length>1) i.value = v.substring(0,1)+'.'+v.substring(1,4); }
 
     function calcola() {
         const tag = `${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`;
         let lA = db.turni.reduce((a,b)=>a+b.lordo,0), ore = db.turni.reduce((a,b)=>a+b.ore,0), km = db.turni.reduce((a,b)=>a+b.km,0);
         let liS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)),0), spB = db.rifornimenti.reduce((a,b)=>a+b.euro,0);
         let uP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-        let cBT = liS * uP, nA = lA - (lA*(db.tax/100)) - cBT, tN = db.targets[tag]||0;
+        let cBT = liS * uP, nA = lA - (lA*(db.tax/100)) - cBT;
         document.getElementById('lordo').innerText = lA.toFixed(2); document.getElementById('netto').innerText = '€'+nA.toFixed(2);
         document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = liS.toFixed(1)+'L';
         document.getElementById('kml').innerText = liS>0?(km/liS).toFixed(1):'0.0'; document.getElementById('spesaB').innerText = '€'+spB.toFixed(2);
-        document.getElementById('targetIn').value = tN||""; document.getElementById('taxIn').value = db.tax;
-        let lN = (tN+cBT)/(1-(db.tax/100)), mL = lN-lA; document.getElementById('mancante').innerText = '€'+(mL>0?mL.toFixed(2):"0.00");
+        let tN = db.targets[tag]||0; document.getElementById('targetIn').value = tN||""; document.getElementById('taxIn').value = db.tax;
+        let mL = ((tN+cBT)/(1-(db.tax/100)))-lA; document.getElementById('mancante').innerText = '€'+(mL>0?mL.toFixed(2):"0.00");
         let p = tN>0?Math.min((nA/tN)*100,100):0; document.getElementById('perc').innerText = Math.round(p)+'%'; document.getElementById('bar').style.width = p+'%';
     }
 
+    function apriStorico() {
+        let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
+        tutti.forEach(i => {
+            const isT = i.tipo==='T';
+            h += `<div class="storico-item" style="border-left:4px solid ${isT?'var(--primary)':'var(--orange)'}">
+                <div class="storico-info">
+                    <div class="tipo-label" style="color:${isT?'var(--primary)':'var(--orange)'}">${isT?'TURNO':'BENZINA'}</div>
+                    <div class="storico-date">${i.data}</div>
+                    <div class="storico-main">€${(isT?i.lordo:i.euro).toFixed(2)}</div>
+                    <div class="storico-sub">${isT ? i.km+'km | '+i.ore+'h' : i.prezzo+'€/L'}</div>
+                </div>
+                <button onclick="elimina('${isT?'turni':'rifornimenti'}',${i.id})" style="background:none; border:none; color:red; font-size:20px;">×</button>
+            </div>`;
+        });
+        document.getElementById('listaStorico').innerHTML = h || "Nessun dato";
+        document.getElementById('histView').style.display = 'block';
+    }
+
+    function elimina(cat, id) { if(confirm('Eliminare?')) { db[cat] = db[cat].filter(x => x.id !== id); salvaDB(); apriStorico(); } }
+
     function apriReport() {
         let tH="", rH="", tL=0, tO=0, tK=0, tLS=0, tEB=0;
-        db.turni.forEach(t => { let l=t.km*(t.cons/100); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH+=`<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; });
-        db.rifornimenti.forEach(r => { tEB+=r.euro; rH+=`<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH||"<tr><td colspan='6'>No dati</td></tr>";
-        document.getElementById('repBenzaBody').innerHTML = rH||"<tr><td colspan='4'>No dati</td></tr>";
+        db.turni.forEach(t => { let l=t.km*(t.cons/100); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH+=`<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}</td></tr>`; });
+        db.rifornimenti.forEach(r => { tEB+=r.euro; rH+=`<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}</td></tr>`; });
+        document.getElementById('repTurniBody').innerHTML = tH; document.getElementById('repBenzaBody').innerHTML = rH;
         let taxV = tL*(db.tax/100), uP = db.rifornimenti.length>0?db.rifornimenti[db.rifornimenti.length-1].prezzo:1.85, cBS = tLS*uP;
-        document.getElementById('repFinalSummary').innerHTML = `
-            <div class="summary-row"><span>ORE: ${tO.toFixed(1)}h | KM: ${tK} | KM/L: ${tLS>0?(tK/tLS).toFixed(1):0}</span></div>
-            <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
-            <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
-            <div class="summary-row"><span>BENZINA STIMATA:</span><span>-€${cBS.toFixed(2)}</span></div>
-            <div class="summary-row total"><span>NETTO REALE:</span><span>€${(tL-taxV-cBS).toFixed(2)}</span></div>
-            <div class="summary-row monitor"><span>MONITOR SPESA VERA RIFORNIMENTI: €${tEB.toFixed(2)}</span></div>`;
+        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>H: ${tO.toFixed(1)} | KM: ${tK} | KM/L: ${tLS>0?(tK/tLS).toFixed(1):0}</span></div><div class="summary-row"><span>LORDO:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE:</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA:</span><span>-€${cBS.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-cBS).toFixed(2)}</span></div><div class="summary-row monitor"><span>SPESA VERA: €${tEB.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display='block';
     }
 
@@ -191,7 +194,20 @@
     function salvaBenza() { const d=`${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax=parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = () => { calcola(); startClock(); };
+    
+    function salvaBackup() {
+        const blob = new Blob([JSON.stringify({db:db}, null, 2)], { type: "application/json" });
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_rider.json`; a.click();
+    }
+
+    document.getElementById("fileBackup").addEventListener("change", (e) => {
+        const reader = new FileReader(); reader.onload = (evt) => { 
+            db = JSON.parse(evt.target.result).db; localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); location.reload();
+        }; reader.readAsText(e.target.files[0]);
+    });
+
+    setInterval(() => { const n=new Date(); document.getElementById('liveClock').innerText = n.toLocaleTimeString(); }, 1000);
+    window.onload = calcola;
 </script>
 </body>
 </html>
