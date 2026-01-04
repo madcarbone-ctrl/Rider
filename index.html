@@ -3,56 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RIDER TRACKER PRO V4.7</title>
+    <title>RIDER TRACKER V3.9 FINAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; --input-bg:#252525; }
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --danger:#d32f2f; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0; }
         
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); height: 100vh; width: 100vw; display: flex; flex-direction: column; padding: 8px; overflow: hidden; position: fixed; }
-        
-        /* DASHBOARD (CONGELATA) */
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); height:100vh; padding:8px; display:flex; flex-direction:column; overflow:hidden; position:fixed; width:100%; }
+
+        /* SCHERMATA INIZIALE V3.9 (RIPRISTINO TOTALE) */
         .app-title-container { text-align: center; padding: 15px 0; border-bottom: 2px solid #333; margin-bottom: 10px; }
-        .app-title { font-size: 26px; font-weight: 900; color: var(--primary); text-transform: uppercase; }
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom: 5px; }
-        .card { background:var(--card); border-radius:12px; border:1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 65px; }
-        .label { font-size:7px; color:var(--dim); font-weight:bold; text-transform:uppercase; }
-        .val { font-size:13px; font-weight:bold; color: #fff; }
+        .app-title { font-size: 26px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .app-title span { font-size: 12px; color: var(--dim); vertical-align: middle; margin-left: 8px; }
+
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom: 10px; }
+        .card { background:var(--card); border-radius:12px; border:1px solid #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 75px; }
+        .label { font-size:8px; color:var(--dim); font-weight:bold; text-transform:uppercase; margin-bottom:4px; }
+        .val { font-size:14px; font-weight:bold; color: #fff; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid var(--primary); color:#fff; text-align:center; font-size:14px; outline:none; }
 
+        /* BARRA PERCENTUALE E OBIETTIVO */
+        .progress-section { background: var(--card); padding: 15px; border-radius: 18px; border: 1px solid #333; margin-bottom: 10px; }
+        .progress-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-bottom: 8px; color: var(--primary); }
+        .progress-bar { background:#222; height:26px; border-radius:13px; overflow:hidden; border: 1px solid #444; }
+        #bar { background: linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.5s; }
+        #liveClock { font-size:14px; color:var(--primary); margin-top: 12px; text-align: center; font-weight: bold; letter-spacing: 1px; }
+
+        /* FOOTER E TASTI */
         .sticky-footer { background:#161616; padding:12px; border-radius:20px; border:2px solid #333; margin-top: auto; margin-bottom: 70px; display: flex; flex-direction: column; gap: 10px; }
         .btn-group-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .foot-btn { background:#222; color:#fff; padding:12px 5px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; }
-        .btn-full-action { width: 100%; padding:16px; border-radius:12px; font-weight:900; border:none; text-transform: uppercase; font-size: 12px; cursor:pointer; }
+        .foot-btn { background:#222; color:#fff; padding:12px 5px; border-radius:12px; font-size:10px; display:flex; flex-direction:column; align-items:center; border:1px solid #444; cursor:pointer; }
+        .foot-btn i { font-size:20px; color:var(--primary); margin-bottom:4px; }
+        .btn-full { width: 100%; padding:16px; border-radius:12px; font-weight:900; border:none; text-transform: uppercase; font-size: 12px; cursor:pointer; }
+        .btn-report { background:var(--primary); color:#000; }
+        .btn-danger { background:var(--danger); color:#fff; }
 
-        /* MODALE CORRETTA - NON SPARISCE IN ALTO */
-        .modal { 
-            display:none; position:fixed; inset:0; z-index:9999; 
-            background:rgba(0,0,0,0.92); 
-            display: none; align-items: center; justify-content:center;
-            padding: 10px; /* Spazio dai bordi dello schermo */
-        }
-        .modal-content { 
-            background:var(--card); padding:20px; border-radius:24px; 
-            width:100%; max-width:340px; border:2px solid var(--primary);
-            max-height: 95vh; overflow-y: auto; /* Permette lo scroll se serve */
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-        .modal h3 { margin-bottom: 20px; text-align: center; color: var(--primary); font-size: 20px; text-transform: uppercase; }
-        .modal input { 
-            width:100%; padding:14px; background:var(--input-bg); 
-            border:1px solid #444; color:#fff; border-radius:12px; 
-            margin-bottom:12px; font-size: 16px; outline: none;
-        }
-        .modal input:focus { border-color: var(--primary); background: #2a2a2a; }
+        /* MODALI (FIX TASTIERA SENZA CAMBIARE ESTETICA) */
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items: center; justify-content:center; padding:10px; overflow-y: auto; }
+        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:95%; max-width:340px; border:2px solid var(--primary); position: relative; }
+        .modal h3 { color:var(--primary); text-transform:uppercase; margin-bottom:15px; text-align:center; }
+        .modal input { width:100%; padding:14px; background:#252525; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:12px; font-size:16px; outline:none; }
 
-        /* REPORT (CONGELATO) */
+        /* REPORT (STILE SCREENSHOT V1.0) */
         #winReport { display:none; position:fixed; inset:0; z-index:10000; background:#fff; color:#000; flex-direction:column; padding:15px; overflow-y:auto; }
+        .rep-header { display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:5px; margin-bottom:15px; font-weight:bold; }
+        .rep-title { font-size:18px; font-weight:900; margin:15px 0 8px 0; text-transform:uppercase; }
+        .rep-table { width:100%; border-collapse:collapse; font-size:10px; text-align:center; margin-bottom:15px; }
+        .rep-table th, .rep-table td { border:1px solid #000; padding:6px; }
+        .riepilogo-box { border:2px solid #000; padding:12px; margin-bottom:20px; }
+        .riep-row { display:flex; justify-content:space-between; font-size:12px; border-bottom:1px dotted #ccc; padding:3px 0; }
+        .riep-row.main { border-bottom:2px solid #000; font-weight:bold; font-size:14px; }
     </style>
 </head>
 <body>
 
-    <div class="app-title-container"><h1 class="app-title">RIDER TRACKER <span>V4.7</span></h1></div>
+    <div class="app-title-container">
+        <h1 class="app-title">RIDER TRACKER <span>V3.9</span></h1>
+    </div>
 
     <div class="grid">
         <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -66,13 +73,20 @@
         <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante" style="color:var(--primary)">€0.00</span></div>
     </div>
 
+    <div class="progress-section">
+        <div class="progress-header"><span>OBIETTIVO MENSILE</span><span id="perc">0%</span></div>
+        <div class="progress-bar"><div id="bar"></div></div>
+        <div id="liveClock">00/00/0000 | 00:00:00</div>
+    </div>
+
     <div class="sticky-footer">
         <div class="btn-group-3">
-            <div class="foot-btn" onclick="toggleWin('winTurno', true)"><i class="fas fa-plus-circle" style="font-size:20px; color:var(--primary); margin-bottom:4px;"></i>TURNO</div>
-            <div class="foot-btn" onclick="toggleWin('winBenza', true)"><i class="fas fa-gas-pump" style="font-size:20px; color:var(--primary); margin-bottom:4px;"></i>BENZINA</div>
-            <div class="foot-btn" onclick="toggleWin('winStorico', true)"><i class="fas fa-history" style="font-size:20px; color:var(--primary); margin-bottom:4px;"></i>STORICO</div>
+            <div class="foot-btn" onclick="toggleWin('winTurno', true)"><i class="fas fa-plus-circle"></i>TURNO</div>
+            <div class="foot-btn" onclick="toggleWin('winBenza', true)"><i class="fas fa-gas-pump"></i>BENZINA</div>
+            <div class="foot-btn" onclick="toggleWin('winStorico', true)"><i class="fas fa-history"></i>STORICO</div>
         </div>
-        <button class="btn-full-action" style="background:var(--primary); color:#000;" onclick="apriReport()">GENERA REPORT PDF</button>
+        <button class="btn-full btn-report" onclick="apriReport()">GENERA REPORT PDF</button>
+        <button class="btn-full btn-danger" onclick="resetTotale()">AZZERA TUTTO IL DATABASE</button>
     </div>
 
     <div id="winTurno" class="modal">
@@ -82,48 +96,94 @@
             <input type="number" id="tO" placeholder="Ore">
             <input type="number" id="tK" placeholder="KM">
             <input type="number" id="tC" placeholder="L/100km">
-            <button class="btn-full-action" style="background:var(--primary); color:#000; margin-bottom:10px;" onclick="salvaAzione('T')">SALVA DATI</button>
-            <button class="btn-full-action" style="background:#333; color:#fff;" onclick="toggleWin('winTurno', false)">ANNULLA</button>
+            <button class="btn-full btn-report" onclick="salvaAzione('T')">SALVA DATI</button>
+            <button class="btn-full" style="background:#444; color:#fff; margin-top:8px;" onclick="toggleWin('winTurno', false)">CHIUDI</button>
         </div>
     </div>
 
-    <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final')) || { turni: [], benza: [], tax: 20, target: 0 };
+    <div id="winBenza" class="modal">
+        <div class="modal-content">
+            <h3>Rifornimento</h3>
+            <input type="number" id="bE" placeholder="Euro (€)">
+            <input type="number" id="bP" placeholder="Prezzo €/L">
+            <button class="btn-full btn-report" onclick="salvaAzione('B')">SALVA DATI</button>
+            <button class="btn-full" style="background:#444; color:#fff; margin-top:8px;" onclick="toggleWin('winBenza', false)">CHIUDI</button>
+        </div>
+    </div>
 
-        function toggleWin(id, show) { 
-            const el = document.getElementById(id);
-            el.style.display = show ? 'flex' : 'none'; 
-            if(show) {
-                // Piccola correzione per scrollare in alto se la tastiera era già attiva
-                window.scrollTo(0,0);
-            }
-        }
+    <div id="winReport">
+        <div class="rep-header"><span>REPORT ATTIVITÀ</span><span>RIDER TRACKER PRO V1.0</span></div>
+        <div class="rep-title">DETTAGLIO TURNI</div>
+        <table class="rep-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table>
+        <div class="rep-title">DETTAGLIO RIFORNIMENTI</div>
+        <table class="rep-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table>
+        <div class="riepilogo-box" id="riepilogoContent"></div>
+        <div style="background:#f9f9f9; padding:15px; border:2px dashed #ccc; border-radius:15px; margin-bottom:20px;">
+            <button class="btn-full" style="background:var(--primary); margin-bottom:8px;" onclick="exportJSON()">ESPORTA DATABASE (.JSON)</button>
+            <button class="btn-full" style="background:#444; color:#fff;" onclick="importJSON()">IMPORTA DATABASE (.JSON)</button>
+        </div>
+        <button class="btn-full" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button>
+        <button class="btn-full" style="background:#666; color:#fff; margin-top:10px;" onclick="toggleWin('winReport', false)">TORNA INDIETRO</button>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('rider_db_v39')) || { turni: [], benza: [], tax: 20, target: 0 };
+
+        function toggleWin(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
 
         function salvaAzione(tipo) {
             const d = new Date().toLocaleDateString('it-IT');
             if(tipo==='T') {
-                db.turni.push({ 
-                    id:Date.now(), data:d, 
-                    lordo:parseFloat(document.getElementById('tL').value)||0, 
-                    ore:parseFloat(document.getElementById('tO').value)||0, 
-                    km:parseFloat(document.getElementById('tK').value)||0, 
-                    cons:parseFloat(document.getElementById('tC').value)||0 
-                });
+                db.turni.push({ id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0 });
+            } else {
+                db.benza.push({ id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0 });
             }
-            localStorage.setItem('rider_db_final', JSON.stringify(db));
-            aggiornaDati(); 
-            toggleWin('winTurno', false);
-            // Pulisce campi
-            document.getElementById('tL').value = ""; document.getElementById('tO').value = "";
-            document.getElementById('tK').value = ""; document.getElementById('tC').value = "";
+            localStorage.setItem('rider_db_v39', JSON.stringify(db));
+            aggiornaDati(); toggleWin(tipo==='T'?'winTurno':'winBenza', false);
         }
 
         function aggiornaDati() {
+            db.tax = parseFloat(document.getElementById('taxIn').value) || 20;
+            db.target = parseFloat(document.getElementById('targetIn').value) || 0;
             let lordo = db.turni.reduce((a,b)=>a+b.lordo, 0);
+            let ore = db.turni.reduce((a,b)=>a+b.ore, 0);
+            let km = db.turni.reduce((a,b)=>a+b.km, 0);
+            let litriT = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0);
+            let spesaB = db.benza.reduce((a,b)=>a+b.euro, 0);
+            let netto = lordo - (lordo*(db.tax/100)) - (litriT * 1.85);
+
             document.getElementById('lordo').innerText = lordo.toFixed(2);
+            document.getElementById('netto').innerText = '€' + netto.toFixed(2);
+            document.getElementById('ore').innerText = ore.toFixed(1);
+            document.getElementById('cons').innerText = litriT.toFixed(1);
+            document.getElementById('spesaB').innerText = '€' + spesaB.toFixed(2);
+            document.getElementById('kml').innerText = litriT > 0 ? (km/litriT).toFixed(1) : '0.0';
+            
+            let p = db.target > 0 ? Math.min((netto/db.target)*100, 100) : 0;
+            document.getElementById('bar').style.width = p + '%';
+            document.getElementById('perc').innerText = Math.round(p) + '%';
+            let manca = db.target - netto;
+            document.getElementById('mancante').innerText = '€' + (manca > 0 ? manca.toFixed(2) : '0.00');
         }
 
-        window.onload = aggiornaDati;
+        function apriReport() {
+            let tH = "", bH = "";
+            db.turni.forEach(t => tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}</td><td>${t.km}</td><td>${t.cons}</td><td>${(t.km*(t.cons/100)).toFixed(1)}</td></tr>`);
+            db.benza.forEach(b => bH += `<tr><td>${b.data}</td><td>€${b.euro.toFixed(2)}</td><td>€${b.prezzo.toFixed(3)}</td><td>${(b.prezzo>0?b.euro/b.prezzo:0).toFixed(2)}</td></tr>`);
+            document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>";
+            document.getElementById('repBenzaBody').innerHTML = bH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+            
+            let lordo = db.turni.reduce((a,b)=>a+b.lordo,0);
+            let nettoReale = lordo - (lordo*(db.tax/100)) - (db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)),0) * 1.85);
+            document.getElementById('riepilogoContent').innerHTML = `<div class="riep-row main"><span>NETTO REALE:</span><span>€${nettoReale.toFixed(2)}</span></div>`;
+            toggleWin('winReport', true);
+        }
+
+        function exportJSON() { const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download="rider_backup.json"; a.click(); }
+        function importJSON() { const i=document.createElement('input'); i.type='file'; i.onchange=e=>{ const r=new FileReader(); r.onload=ev=>{ db=JSON.parse(ev.target.result); aggiornaDati(); location.reload(); }; r.readAsText(e.target.files[0]); }; i.click(); }
+        function resetTotale() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
+        setInterval(() => { const n = new Date(); document.getElementById('liveClock').innerText = n.toLocaleDateString('it-IT') + " | " + n.toLocaleTimeString('it-IT'); }, 1000);
+        window.onload = () => { document.getElementById('taxIn').value=db.tax; document.getElementById('targetIn').value=db.target; aggiornaDati(); };
     </script>
 </body>
 </html>
