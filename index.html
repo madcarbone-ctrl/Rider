@@ -31,7 +31,7 @@
         window.eseguiLogin = () => {
             const e = document.getElementById('emailLogin').value;
             const p = document.getElementById('passLogin').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Errore: " + err.message));
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Errore login: " + err.message));
         };
 
         window.eseguiRegistrazione = () => {
@@ -43,7 +43,7 @@
         window.logout = () => { if(confirm("Vuoi uscire?")) { signOut(auth).then(() => { localStorage.clear(); location.reload(); }); } };
 
         window.sincronizzaConCloud = async (dati) => {
-            if (auth.currentUser) { await setDoc(doc(dbCloud, "utenti", auth.currentUser.uid), dati); }
+            if (auth.currentUser) { try { await setDoc(doc(dbCloud, "utenti", auth.currentUser.uid), dati); } catch(e) { console.error(e); } }
         };
 
         onAuthStateChanged(auth, async (user) => {
@@ -52,9 +52,9 @@
                 document.getElementById('mainContainer').style.display = 'block';
                 const snap = await getDoc(doc(dbCloud, "utenti", user.uid));
                 if (snap.exists()) {
-                    db = snap.data();
-                    localStorage.setItem('rider_db_final_v30', JSON.stringify(db));
-                    calcola();
+                    window.db = snap.data();
+                    localStorage.setItem('rider_db_final_v30', JSON.stringify(window.db));
+                    if(typeof window.calcola === "function") window.calcola();
                 }
             } else {
                 document.getElementById('authOverlay').style.display = 'flex';
@@ -65,55 +65,50 @@
 
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; outline:none; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
         
         #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: var(--card); padding: 30px; border-radius: 20px; border: 2px solid var(--primary); width: 100%; max-width: 350px; }
-        .auth-card input { width: 100%; padding: 15px; margin: 10px 0; background: var(--input-bg); border: 1px solid #444; color: white; border-radius: 12px; font-size: 16px; outline: none; }
-        .auth-card button { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 15px; font-weight: 900; cursor: pointer; margin-top: 10px; }
+        .auth-card input { width: 100%; padding: 15px; margin: 10px 0; background: var(--input-bg); border: 1px solid #444; color: white; border-radius: 12px; font-size: 16px; }
+        .auth-card button { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 15px; font-weight: 900; cursor: pointer; }
 
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; cursor:pointer; }
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
-        .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
-        #netto { color:var(--accent)!important; }
-        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
+        #lordo, #mancante { color:var(--primary); } 
+        #netto { color:var(--accent); }
+        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; }
         
         .progress-container { background:var(--card); padding:15px; border-radius:15px; border:1px solid #333; display:flex; flex-direction:column; gap:12px; }
-        .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; }
+        .progress-header { display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:var(--primary); }
         .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; position:relative; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
-        #liveClock { font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; margin-top: 2px; }
+        #liveClock { font-size:16px; font-weight:bold; color:var(--primary); }
 
-        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-        .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0; }
-        .m-grid input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; font-size: 16px; outline:none; }
+        .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; padding:15px; }
+        .modal-content { background:var(--card); padding:25px; border-radius:24px; width:100%; max-width:400px; border:2px solid var(--primary); }
+        .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+        .m-grid input { width:100%; padding:14px; background:var(--input-bg); border:1px solid #333; color:#fff; border-radius:12px; font-size:16px; }
         
-        .date-row { display:flex; gap:8px; margin-bottom:10px; width: 100%; }
-        .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; font-size: 14px; }
+        .date-row { display:flex; gap:8px; margin-bottom:15px; }
+        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:1px solid #444; font-size:14px; }
 
-        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size: 15px; text-transform: uppercase; }
+        .btn-modal { width:100%; padding:16px; border-radius:15px; border:none; font-weight:bold; margin-top:10px; font-size:14px; text-transform: uppercase; cursor:pointer; }
         .btn-save { background:var(--primary); color:#000; }
-        .btn-close { background:#333 !important; color:#fff !important; }
+        .btn-close { background:#333; color:#fff; }
 
         .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; border-radius:25px; border:1px solid #333; }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; cursor:pointer; font-weight: bold; }
-        .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; font-size:14px; border:none; text-transform:uppercase; margin-top: 5px; }
-        .btn-reset-soft { grid-column:span 3; background:var(--red-soft); color:#ccc; border:none; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; margin-top: 10px; text-transform: uppercase; }
+        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; cursor:pointer; }
+        .foot-btn i { font-size:24px; color:var(--primary); margin-bottom:6px; }
+        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; font-size:14px; border:none; text-transform:uppercase; cursor:pointer; }
+        .btn-reset-final { grid-column:span 3; background:var(--red-soft); color:#fff; padding:12px; border-radius:15px; font-weight:bold; font-size:12px; border:none; margin-top:-5px; cursor:pointer; }
         
-        #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
-        #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #333; -webkit-overflow-scrolling: touch; }
-        .storico-item { background:#0f0f0f; padding:15px 5px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; }
-        .storico-info { flex:1; text-align:left; padding: 0 10px; }
-        .tipo-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; }
-        .storico-date-row { display: flex; align-items: baseline; gap: 8px; font-weight: bold; font-size: 14px; }
-        .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
-        .storico-sub { font-size:10px; color:var(--dim); line-height: 1.4; }
+        #histView { display:none; position:fixed; inset:0; z-index:10000; background:var(--bg); flex-direction:column; padding:15px; }
+        .hist-list { flex:1; overflow-y:auto; margin-bottom:15px; }
+        .hist-item { background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--primary); }
     </style>
 </head>
     <body>
@@ -129,15 +124,15 @@
 
     <div id="mainContainer" style="display:none;">
         <div style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 5px;">
-            <div class="app-title" onclick="document.getElementById('modalConfirm').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
+            <div class="app-title" onclick="document.getElementById('modalFineMese').style.display='flex'">RIDER TRACKER PRO V1.0</div>
             <i class="fas fa-sign-out-alt" onclick="logout()" style="position: absolute; right: 10px; color: var(--accent); font-size: 18px; cursor: pointer;"></i>
         </div>
 
         <div class="grid no-print">
-            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
+            <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+            <div class="card"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
             <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
+            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="litri">0.0L</span></div>
             <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
             <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
             <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
@@ -156,117 +151,122 @@
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
             <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-            <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
+            <button class="btn-reset-final" onclick="document.getElementById('modalFineMese').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
 
     <div id="modalTurno" class="modal"><div class="modal-content">
         <h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div>
         <div class="m-grid">
-            <input type="number" id="tL" placeholder="Lordo (€)"><input type="number" id="tO" placeholder="Ore">
-            <input type="number" id="tK" placeholder="Km"><input type="number" id="tC" placeholder="Consumo">
+            <input type="number" id="tL" placeholder="Lordo €"><input type="number" id="tO" placeholder="Ore">
+            <input type="number" id="tK" placeholder="Km"><input type="number" id="tC" placeholder="Consumo KM/L">
         </div>
         <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
         <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
     </div></div>
 
-    <div id="modalBenza" class="modal"><div class="modal-content" style="border-color: var(--orange);">
-        <h3>Rifornimento</h3><div id="dateB" class="date-row"></div>
+    <div id="modalBenza" class="modal"><div class="modal-content">
+        <h3 style="color:var(--orange)">Rifornimento</h3><div id="dateB" class="date-row"></div>
         <div class="m-grid">
-            <input type="number" id="bE" placeholder="Euro (€)"><input type="number" id="bP" placeholder="Prezzo/L">
+            <input type="number" id="bE" placeholder="Euro €"><input type="number" id="bP" placeholder="Prezzo/L">
         </div>
         <button class="btn-modal btn-save" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
         <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
     </div></div>
 
-    <div id="histView"><div id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
-    <div id="modalConfirm" class="modal"><div class="modal-content"><h3>RESET</h3><p>Azzerare tutto?</p><button class="btn-modal btn-save" style="background:var(--accent)" onclick="confermaReset()">OK</button><button class="btn-modal btn-close" onclick="chiudiModali()">NO</button></div></div>
+    <div id="histView"><div class="hist-list" id="listaStorico"></div><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div>
+    <div id="modalFineMese" class="modal"><div class="modal-content"><h3>RESET</h3><p>Cancellare tutto il mese?</p><button class="btn-modal btn-save" style="background:var(--accent)" onclick="resetDati()">AZZERA TUTTO</button><button class="btn-modal btn-close" onclick="chiudiModali()">NO</button></div></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
-        const mesiNomi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        window.db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
 
-        function salvaDB() { localStorage.setItem('rider_db_final_v30', JSON.stringify(db)); if(window.sincronizzaConCloud) window.sincronizzaConCloud(db); calcola(); }
-        function chiudiModali() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
-        function confermaReset() { db={turni:[],rifornimenti:[],targets:{},tax:20}; salvaDB(); chiudiModali(); }
+        function salvaDB() { 
+            localStorage.setItem('rider_db_final_v30', JSON.stringify(window.db)); 
+            if(window.sincronizzaConCloud) window.sincronizzaConCloud(window.db);
+            window.calcola(); 
+        }
 
-        function calcola() {
+        window.calcola = function() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
-            let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0), ore = db.turni.reduce((a,b)=>a+b.ore, 0);
-            let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
-            let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
-            let nettoA = lordoA - (lordoA * (db.tax/100)) - (litriS * ultP);
+            let lordoA = window.db.turni.reduce((a,b)=>a+b.lordo, 0), oreA = window.db.turni.reduce((a,b)=>a+b.ore, 0);
+            let kmA = window.db.turni.reduce((a,b)=>a+b.km, 0), spesaB = window.db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
+            let tNetto = window.db.targets[tag] || 0;
             
             document.getElementById('lordo').innerText = lordoA.toFixed(2);
-            document.getElementById('netto').innerText = '€' + nettoA.toFixed(2);
-            document.getElementById('ore').innerText = ore.toFixed(1);
-            document.getElementById('cons').innerText = litriS.toFixed(1) + 'L';
+            document.getElementById('ore').innerText = oreA.toFixed(1);
             document.getElementById('spesaB').innerText = '€' + spesaB.toFixed(2);
-            
-            let tNetto = db.targets[tag] || 0;
+            document.getElementById('taxIn').value = window.db.tax;
             document.getElementById('targetIn').value = tNetto || "";
-            document.getElementById('taxIn').value = db.tax;
+
+            let litriS = window.db.turni.reduce((a,b)=>a+(b.km/b.cons), 0) || 0;
+            document.getElementById('litri').innerText = litriS.toFixed(1) + 'L';
+            document.getElementById('kml').innerText = (kmA / litriS || 0).toFixed(1);
+
+            let ultP = window.db.rifornimenti.length > 0 ? window.db.rifornimenti[window.db.rifornimenti.length-1].prezzo : 1.80;
+            let nettoA = lordoA - (lordoA * (window.db.tax/100)) - (litriS * ultP);
+            document.getElementById('netto').innerText = '€' + nettoA.toFixed(2);
+
             let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0;
             document.getElementById('perc').innerText = Math.round(p) + '%';
             document.getElementById('bar').style.width = p + '%';
             document.getElementById('mancante').innerText = '€' + Math.max(tNetto - nettoA, 0).toFixed(2);
-        }
+        };
 
-        function apriM(id) { 
+        function apriM(id) {
             const n = new Date(); let d='', m='', y='';
-            for(let i=1; i<=31; i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`;
-            mesiNomi.forEach((nm,i) => m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`);
-            for(let i=2025; i<=2030; i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`;
+            const nomiM = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+            for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`;
+            nomiM.forEach((nm,i)=> m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm}</option>`);
+            for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`;
             const p = id==='modalTurno' ? 'dateT' : 'dateB';
             document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
-            document.getElementById(id).style.display='flex'; 
+            document.getElementById(id).style.display='flex';
         }
+
+        function chiudiModali() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
 
         function salvaTurno() {
             const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-            db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
+            window.db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0});
             salvaDB(); chiudiModali();
         }
 
         function salvaBenza() {
             const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
-            db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0});
+            window.db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0});
             salvaDB(); chiudiModali();
         }
 
         function apriStorico() {
-            let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
-            tutti.forEach(i => {
-                const color = i.tipo==='T' ? 'var(--primary)' : 'var(--orange)';
-                h += `<div class="storico-item" style="border-left:4px solid ${color};">
-                    <div class="storico-info">
-                        <div class="tipo-label" style="color:${color}">${i.tipo==='T'?'TURNO':'BENZINA'}</div>
-                        <div class="storico-date-row">${i.data} <span style="font-size:11px; color:#888">${i.ora}</span></div>
-                        <div class="storico-main">€${(i.lordo||i.euro).toFixed(2)}</div>
-                    </div>
-                    <button onclick="eliminaItem(${i.id},'${i.tipo}')" style="background:none; border:none; color:red; font-size:20px;">×</button>
-                </div>`;
+            const l = document.getElementById('listaStorico'); l.innerHTML='';
+            const t = [...window.db.turni.map(x=>({...x,tipo:'T'})), ...window.db.rifornimenti.map(x=>({...x,tipo:'B'}))].sort((a,b)=>b.id-a.id);
+            t.forEach(i => {
+                const div = document.createElement('div'); div.className='hist-item';
+                div.style.borderLeftColor = i.tipo==='T'?'var(--primary)':'var(--orange)';
+                div.innerHTML = `<div><b>${i.data}</b> - ${i.tipo==='T'?'Turno':'Benza'}<br>€${(i.lordo||i.euro).toFixed(2)}</div><button onclick="eliminaItem(${i.id},'${i.tipo}')" style="background:none;border:none;color:red;font-size:20px">×</button>`;
+                l.appendChild(div);
             });
-            document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
+            document.getElementById('histView').style.display='flex';
         }
 
-        function eliminaItem(id, tipo) { if(confirm("Eliminare?")) { if(tipo==='T') db.turni=db.turni.filter(x=>x.id!==id); else db.rifornimenti=db.rifornimenti.filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
-        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
-        function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
+        function eliminaItem(id, tipo) { if(confirm("Eliminare?")) { if(tipo==='T') window.db.turni=window.db.turni.filter(x=>x.id!==id); else window.db.rifornimenti=window.db.rifornimenti.filter(x=>x.id!==id); salvaDB(); apriStorico(); } }
+        function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; window.db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaTax() { window.db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
+        function resetDati() { if(confirm("Azzero tutto?")) { window.db.turni=[]; window.db.rifornimenti=[]; salvaDB(); chiudiModali(); } }
 
         function apriReport() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.text("REPORT RIDER TRACKER", 10, 10);
-            const data = db.turni.map(t=>[t.data, t.lordo.toFixed(2), t.ore.toFixed(1)]);
+            const data = window.db.turni.map(t=>[t.data, t.lordo.toFixed(2), t.ore.toFixed(1)]);
             doc.autoTable({ head: [['Data', 'Lordo €', 'Ore']], body: data });
-            doc.save("Report_Rider.pdf");
+            doc.save("Report.pdf");
         }
 
-        setInterval(() => { const n = new Date(); document.getElementById('liveClock').innerText = n.toLocaleString(); }, 1000);
-        window.onload = calcola;
+        setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
+        window.onload = window.calcola;
     </script>
 </body>
 </html>
