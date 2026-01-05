@@ -32,7 +32,7 @@
 
         window.logout = () => signOut(auth).then(() => { localStorage.clear(); location.reload(); });
 
-        window.sincronizzaConCloud = async (dati) => {
+        window.sincronizzaCloud = async (dati) => {
             if (auth.currentUser) await setDoc(doc(dbCloud, "utenti", auth.currentUser.uid), dati);
         };
 
@@ -63,40 +63,43 @@
         .auth-card input { width: 100%; padding: 15px; margin: 10px 0; background: #252525; border: 1px solid #444; color: white; border-radius: 12px; }
         .auth-card button { width: 100%; padding: 16px; background: var(--primary); color: #000; border: none; border-radius: 15px; font-weight: 900; }
 
-        .app-title { margin:5px 0 15px; font-size:20px; font-weight:800; color:var(--primary); text-transform:uppercase; text-align: center; }
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:10px; }
-        .card { background:var(--card); height:80px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:15px; border:1px solid #333; }
-        .label { font-size:8px; color:var(--dim); text-transform:uppercase; font-weight:bold; margin-bottom:4px; }
-        .val { font-size:14px; font-weight:bold; }
+        .app-title { margin:5px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; text-align: center; }
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:15px; }
+        .card { background:var(--card); height:85px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:18px; border:1px solid #333; }
+        .label { font-size:9px; color:var(--dim); text-transform:uppercase; font-weight:bold; margin-bottom:5px; }
+        .val { font-size:15px; font-weight:bold; }
         #lordo, #mancante { color:var(--primary); } 
         #netto { color:var(--accent); }
-        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; }
+        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:15px; }
         
-        .progress-container { background:var(--card); padding:12px; border-radius:18px; border:1px solid #333; margin-bottom: 15px; }
-        .progress-header { display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:8px; }
-        .progress-bar { background:#222; height:25px; border-radius:8px; overflow:hidden; border:1px solid #444; }
+        .progress-container { background:var(--card); padding:15px; border-radius:20px; border:1px solid #333; margin-bottom: 20px; }
+        .progress-header { display:flex; justify-content:space-between; font-size:13px; font-weight:bold; color:var(--primary); margin-bottom:10px; }
+        .progress-bar { background:#222; height:30px; border-radius:10px; overflow:hidden; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        .sticky-footer { background:#161616; padding:15px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; border-radius:25px; border:1px solid #333; margin-top: auto; }
-        .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:10px; cursor: pointer; }
-        .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:5px; }
-        .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:16px; border-radius:15px; font-weight:900; font-size:14px; border:none; text-transform:uppercase; }
+        /* FOOTER BOTTONI */
+        .footer-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: auto; padding-bottom: 10px; }
+        .nav-item { background: var(--card); border: 1px solid #333; border-radius: 20px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .nav-item i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
+        .nav-item span { font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--text); }
+        
+        .btn-action { background: var(--primary); color: #000; padding: 18px; border-radius: 20px; font-weight: 900; font-size: 15px; border: none; text-transform: uppercase; width: 100%; margin: 10px 0; }
+        .btn-reset { background: #8b0000; color: #fff; padding: 12px; border-radius: 15px; font-weight: bold; font-size: 12px; border: none; text-transform: uppercase; width: 100%; }
 
+        /* MODALI */
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:25px; width:95%; max-width:400px; border:2px solid var(--primary); }
-        .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0; }
-        .m-grid input { width:100%; padding:12px; background:#252525; border:1px solid #444; color:#fff; border-radius:10px; font-size:15px; }
-        .date-row { display:flex; gap:8px; margin-bottom:12px; }
-        .date-row select { background:#333; color:#fff; padding:10px; border-radius:8px; flex:1; border:1px solid #444; font-size:13px; }
+        .modal-content { background:var(--card); padding:25px; border-radius:30px; width:90%; max-width:400px; border:2px solid var(--primary); text-align: center; }
+        .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+        .m-grid input { width:100%; padding:15px; background:#252525; border:1px solid #444; color:#fff; border-radius:12px; font-size:16px; }
+        .date-row { display:flex; gap:8px; margin-bottom:15px; }
+        .date-row select { background:#333; color:#fff; padding:12px; border-radius:10px; flex:1; border:1px solid #444; }
 
-        /* TABELLA STORICO */
-        #storicoView { display:none; position:fixed; inset:0; z-index:10000; background:var(--bg); flex-direction:column; padding:15px; overflow: hidden; }
-        .table-container { flex:1; overflow-y:auto; background:var(--card); border-radius:15px; border:1px solid #333; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        th { background: #222; color: var(--primary); padding: 12px 8px; position: sticky; top: 0; text-transform: uppercase; border-bottom: 1px solid #333; }
-        td { padding: 12px 8px; border-bottom: 1px solid #252525; color: #fff; }
-        .row-benza { color: var(--orange) !important; }
-        .btn-del { color: var(--accent); border: none; background: none; font-size: 16px; cursor: pointer; }
+        /* STORICO */
+        #storicoView { display:none; position:fixed; inset:0; z-index:10000; background:var(--bg); flex-direction:column; padding:20px; }
+        .st-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .st-list { flex:1; overflow-y:auto; }
+        .st-card { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
+        .st-card.benza { border-left-color: var(--orange); }
     </style>
 </head>
     <body>
@@ -105,12 +108,12 @@
         <div class="auth-card">
             <input type="email" id="emailLogin" placeholder="Email">
             <input type="password" id="passLogin" placeholder="Password">
-            <button onclick="eseguiLogin()">ACCEDI</button>
+            <button onclick="eseguiLogin()">ACCEDI AL CLOUD</button>
         </div>
     </div>
 
     <div id="mainApp" style="display:none; height: 100%; flex-direction: column;">
-        <div class="app-title">RIDER TRACKER V1.0 <i class="fas fa-sign-out-alt" onclick="logout()" style="color:var(--accent); font-size:16px; margin-left:10px;"></i></div>
+        <div class="app-title">RIDER TRACKER V1.0 <i class="fas fa-sign-out-alt" onclick="logout()" style="color:var(--accent); font-size:18px; margin-left:10px;"></i></div>
 
         <div class="grid">
             <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
@@ -119,8 +122,8 @@
             <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="litri">0.0L</span></div>
             <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
             <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
-            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()"></div>
+            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaT()"></div>
+            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaX()"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
 
@@ -129,13 +132,14 @@
             <div class="progress-bar"><div id="bar"></div></div>
         </div>
 
-        <div class="sticky-footer">
-            <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
-            <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-            <div class="foot-btn" onclick="apriStoricoTabella()"><i class="fas fa-history"></i>STORICO</div>
-            <button class="btn-full" onclick="alert('Generazione Report...')">REPORT PDF</button>
-            <button onclick="if(confirm('Azzero tutto?')){window.db.turni=[];window.db.rifornimenti=[];window.salvaDB();}" style="grid-column:span 3; background:none; color:#555; border:none; font-size:9px; font-weight:bold;">RESET DATABASE</button>
+        <div class="footer-nav">
+            <div class="nav-item" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i><span>Turno</span></div>
+            <div class="nav-item" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i><span>Benzina</span></div>
+            <div class="nav-item" onclick="apriStorico()"><i class="fas fa-history"></i><span>Storico</span></div>
         </div>
+
+        <button class="btn-action" onclick="alert('Generazione PDF...')">REPORT PDF</button>
+        <button class="btn-reset" onclick="if(confirm('Azzero tutto?')){window.db.turni=[];window.db.rifornimenti=[];salvaDB();}">AZZERA DATABASE</button>
     </div>
 
     <div id="modalTurno" class="modal"><div class="modal-content">
@@ -143,41 +147,35 @@
         <div id="dateT" class="date-row"></div>
         <div class="m-grid">
             <input type="number" id="tL" placeholder="Lordo €"><input type="number" id="tO" placeholder="Ore">
-            <input type="number" id="tK" placeholder="Km Percorsi"><input type="number" id="tC" placeholder="Consumo KM/L">
+            <input type="number" id="tK" placeholder="Km Percorsi"><input type="number" id="tC" placeholder="Consumo">
         </div>
-        <button class="btn-full" onclick="salvaTurno()">SALVA TURNO</button>
-        <button onclick="chiudi()" style="background:none; border:none; color:#888; margin-top:15px; width:100%">Chiudi</button>
+        <button class="btn-action" onclick="salvaTurno()">SALVA TURNO</button>
+        <button onclick="chiudi()" style="background:none; border:none; color:var(--dim); margin-top:10px">ANNULLA</button>
     </div></div>
 
     <div id="modalBenza" class="modal"><div class="modal-content">
         <h3 style="color:var(--orange)">RIFORNIMENTO</h3>
         <div id="dateB" class="date-row"></div>
         <div class="m-grid"><input type="number" id="bE" placeholder="Euro €"><input type="number" id="bP" placeholder="Prezzo/L"></div>
-        <button class="btn-full" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
-        <button onclick="chiudi()" style="background:none; border:none; color:#888; margin-top:15px; width:100%">Chiudi</button>
+        <button class="btn-action" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
+        <button onclick="chiudi()" style="background:none; border:none; color:var(--dim); margin-top:10px">ANNULLA</button>
     </div></div>
 
     <div id="storicoView">
-        <h3 style="color:var(--primary); text-align:center; margin-bottom:15px;">RIEPILOGO ATTIVITÀ</h3>
-        <div class="table-container">
-            <table id="tabellaDati">
-                <thead><tr><th>Data</th><th>Tipo</th><th>Lordo/€</th><th>Note</th><th></th></tr></thead>
-                <tbody id="corpoTabella"></tbody>
-            </table>
-        </div>
-        <button class="btn-full" style="margin-top:15px;" onclick="document.getElementById('storicoView').style.display='none'">TORNA ALLA HOME</button>
+        <div class="st-header"><h2 style="color:var(--primary)">STORICO</h2><button onclick="document.getElementById('storicoView').style.display='none'" style="background:none; border:none; color:red; font-size:20px"><i class="fas fa-times"></i></button></div>
+        <div id="stList" class="st-list"></div>
     </div>
 
     <script>
         window.db = JSON.parse(localStorage.getItem('rider_db_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
 
-        window.salvaDB = function() { 
+        function salvaDB() { 
             localStorage.setItem('rider_db_v30', JSON.stringify(window.db)); 
-            if(window.sincronizzaConCloud) window.sincronizzaConCloud(window.db);
-            window.calcola(); 
-        };
+            if(window.sincronizzaCloud) window.sincronizzaCloud(window.db);
+            calcola(); 
+        }
 
-        window.calcola = function() {
+        function calcola() {
             const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
             let lA = window.db.turni.reduce((a,b)=>a+b.lordo, 0), oA = window.db.turni.reduce((a,b)=>a+b.ore, 0), kA = window.db.turni.reduce((a,b)=>a+b.km, 0);
             let sB = window.db.rifornimenti.reduce((a,b)=>a+b.euro, 0), litS = window.db.turni.reduce((a,b)=>a+(b.km/(b.cons||1)), 0);
@@ -198,9 +196,9 @@
             document.getElementById('perc').innerText = Math.round(p) + '%';
             document.getElementById('bar').style.width = p + '%';
             document.getElementById('mancante').innerText = '€' + Math.max(tN - nettoA, 0).toFixed(2);
-        };
+        }
 
-        window.apriM = function(id) {
+        function apriM(id) {
             const n = new Date(); let d='', m='', y='';
             for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`;
             ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"].forEach((nm,i)=> m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm}</option>`);
@@ -208,54 +206,39 @@
             const p = id==='modalTurno' ? 'dateT' : 'dateB';
             document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`;
             document.getElementById(id).style.display='flex';
-        };
+        }
 
-        window.chiudi = function() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); };
+        function chiudi() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
 
-        window.salvaTurno = function() {
+        function salvaTurno() {
             const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
             window.db.turni.push({id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||1});
-            window.salvaDB(); window.chiudi();
-        };
+            salvaDB(); chiudi();
+        }
 
-        window.salvaBenza = function() {
+        function salvaBenza() {
             const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
             window.db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0});
-            window.salvaDB(); window.chiudi();
-        };
+            salvaDB(); chiudi();
+        }
 
-        window.apriStoricoTabella = function() {
-            const corpo = document.getElementById('corpoTabella'); corpo.innerHTML='';
-            const tutti = [...window.db.turni.map(x=>({...x,t:'TURNO'})), ...window.db.rifornimenti.map(x=>({...x,t:'BENZA'}))].sort((a,b)=>b.id-a.id);
-            
-            tutti.forEach(i => {
-                const tr = document.createElement('tr');
-                if(i.t==='BENZA') tr.className = 'row-benza';
-                tr.innerHTML = `
-                    <td>${i.data}</td>
-                    <td><b>${i.t}</b></td>
-                    <td>€${(i.lordo||i.euro).toFixed(2)}</td>
-                    <td>${i.t==='TURNO' ? i.ore+'h - '+i.km+'km' : i.prezzo+'€/L'}</td>
-                    <td><button class="btn-del" onclick="eliminaDato(${i.id},'${i.t}')"><i class="fas fa-trash"></i></button></td>
-                `;
-                corpo.appendChild(tr);
+        function apriStorico() {
+            const list = document.getElementById('stList'); list.innerHTML='';
+            const all = [...window.db.turni.map(x=>({...x,tipo:'T'})), ...window.db.rifornimenti.map(x=>({...x,tipo:'B'}))].sort((a,b)=>b.id-a.id);
+            all.forEach(i => {
+                const div = document.createElement('div'); div.className = 'st-card ' + (i.tipo==='B'?'benza':'');
+                div.innerHTML = `<div><b>${i.data}</b> - ${i.tipo==='T'?'TURNO':'BENZA'}<br>€${(i.lordo||i.euro).toFixed(2)}</div><i class="fas fa-trash" onclick="del(${i.id},'${i.tipo}')" style="color:red"></i>`;
+                list.appendChild(div);
             });
             document.getElementById('storicoView').style.display='flex';
-        };
+        }
 
-        window.eliminaDato = function(id, tipo) {
-            if(confirm("Eliminare questa voce?")) {
-                if(tipo==='TURNO') window.db.turni = window.db.turni.filter(x=>x.id!==id);
-                else window.db.rifornimenti = window.db.rifornimenti.filter(x=>x.id!==id);
-                window.salvaDB(); window.apriStoricoTabella();
-            }
-        };
-
-        window.aggiornaTarget = function() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; window.db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; window.salvaDB(); };
-        window.aggiornaTax = function() { window.db.tax = parseFloat(document.getElementById('taxIn').value)||20; window.salvaDB(); };
-
+        function del(id,tipo) { if(confirm("Eliminare?")){ if(tipo==='T') window.db.turni=window.db.turni.filter(x=>x.id!==id); else window.db.rifornimenti=window.db.rifornimenti.filter(x=>x.id!==id); salvaDB(); apriStorico(); }}
+        function aggiornaT() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; window.db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
+        function aggiornaX() { window.db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
+        
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        window.onload = window.calcola;
+        window.onload = calcola;
     </script>
 </body>
 </html>
