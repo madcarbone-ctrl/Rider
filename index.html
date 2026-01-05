@@ -55,7 +55,7 @@
 
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --orange:#ffa500; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; outline:none; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
         
         #authOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
@@ -83,18 +83,23 @@
         .btn-full { grid-column:span 3; background:var(--primary); color:#000; padding:16px; border-radius:15px; font-weight:900; font-size:14px; border:none; text-transform:uppercase; }
 
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
-        .modal-content { background:var(--card); padding:20px; border-radius:25px; width:90%; max-width:350px; border:2px solid var(--primary); }
+        .modal-content { background:var(--card); padding:20px; border-radius:25px; width:95%; max-width:400px; border:2px solid var(--primary); }
         .m-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0; }
         .m-grid input { width:100%; padding:12px; background:#252525; border:1px solid #444; color:#fff; border-radius:10px; font-size:15px; }
         .date-row { display:flex; gap:8px; margin-bottom:12px; }
         .date-row select { background:#333; color:#fff; padding:10px; border-radius:8px; flex:1; border:1px solid #444; font-size:13px; }
 
-        #storicoView { display:none; position:fixed; inset:0; z-index:10000; background:var(--bg); flex-direction:column; padding:20px; overflow: hidden; }
-        #listaStorico { flex:1; overflow-y:auto; margin:15px 0; padding-right: 5px; }
-        .h-item { background:var(--card); padding:12px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--primary); font-size: 14px; }
+        /* TABELLA STORICO */
+        #storicoView { display:none; position:fixed; inset:0; z-index:10000; background:var(--bg); flex-direction:column; padding:15px; overflow: hidden; }
+        .table-container { flex:1; overflow-y:auto; background:var(--card); border-radius:15px; border:1px solid #333; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        th { background: #222; color: var(--primary); padding: 12px 8px; position: sticky; top: 0; text-transform: uppercase; border-bottom: 1px solid #333; }
+        td { padding: 12px 8px; border-bottom: 1px solid #252525; color: #fff; }
+        .row-benza { color: var(--orange) !important; }
+        .btn-del { color: var(--accent); border: none; background: none; font-size: 16px; cursor: pointer; }
     </style>
 </head>
-<body>
+    <body>
     <div id="authOverlay">
         <div class="app-title">RIDER TRACKER PRO</div>
         <div class="auth-card">
@@ -120,42 +125,47 @@
         </div>
 
         <div class="progress-container">
-            <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span> <span id="clock" style="font-family:monospace"></span></div>
+            <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span> <span id="clock"></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
         </div>
 
         <div class="sticky-footer">
             <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
-            <div class="foot-btn" onclick="window.apriStorico()"><i class="fas fa-history"></i>STORICO</div>
-            <button class="btn-full" onclick="alert('Funzione PDF in arrivo')">REPORT PDF</button>
-            <button onclick="if(confirm('Azzero tutto?')){window.db.turni=[];window.db.rifornimenti=[];window.salvaDB();}" style="grid-column:span 3; background:#333; color:red; border:none; padding:10px; border-radius:10px; font-size:10px; font-weight:bold;">RESET DATI</button>
+            <div class="foot-btn" onclick="apriStoricoTabella()"><i class="fas fa-history"></i>STORICO</div>
+            <button class="btn-full" onclick="alert('Generazione Report...')">REPORT PDF</button>
+            <button onclick="if(confirm('Azzero tutto?')){window.db.turni=[];window.db.rifornimenti=[];window.salvaDB();}" style="grid-column:span 3; background:none; color:#555; border:none; font-size:9px; font-weight:bold;">RESET DATABASE</button>
         </div>
     </div>
 
     <div id="modalTurno" class="modal"><div class="modal-content">
-        <h3>NUOVO TURNO</h3>
+        <h3 style="color:var(--primary)">NUOVO TURNO</h3>
         <div id="dateT" class="date-row"></div>
         <div class="m-grid">
             <input type="number" id="tL" placeholder="Lordo €"><input type="number" id="tO" placeholder="Ore">
-            <input type="number" id="tK" placeholder="Km"><input type="number" id="tC" placeholder="Consumo">
+            <input type="number" id="tK" placeholder="Km Percorsi"><input type="number" id="tC" placeholder="Consumo KM/L">
         </div>
         <button class="btn-full" onclick="salvaTurno()">SALVA TURNO</button>
-        <button class="btn-full" style="background:#333; color:#fff; margin-top:10px;" onclick="chiudi()">ANNULLA</button>
+        <button onclick="chiudi()" style="background:none; border:none; color:#888; margin-top:15px; width:100%">Chiudi</button>
     </div></div>
 
     <div id="modalBenza" class="modal"><div class="modal-content">
-        <h3 style="color:var(--orange)">BENZINA</h3>
+        <h3 style="color:var(--orange)">RIFORNIMENTO</h3>
         <div id="dateB" class="date-row"></div>
         <div class="m-grid"><input type="number" id="bE" placeholder="Euro €"><input type="number" id="bP" placeholder="Prezzo/L"></div>
-        <button class="btn-full" style="background:var(--orange)" onclick="salvaBenza()">SALVA</button>
-        <button class="btn-full" style="background:#333; color:#fff; margin-top:10px;" onclick="chiudi()">ANNULLA</button>
+        <button class="btn-full" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
+        <button onclick="chiudi()" style="background:none; border:none; color:#888; margin-top:15px; width:100%">Chiudi</button>
     </div></div>
 
     <div id="storicoView">
-        <h2 style="color:var(--primary); text-align:center;">STORICO</h2>
-        <div id="listaStorico"></div>
-        <button class="btn-full" onclick="document.getElementById('storicoView').style.display='none'">CHIUDI STORICO</button>
+        <h3 style="color:var(--primary); text-align:center; margin-bottom:15px;">RIEPILOGO ATTIVITÀ</h3>
+        <div class="table-container">
+            <table id="tabellaDati">
+                <thead><tr><th>Data</th><th>Tipo</th><th>Lordo/€</th><th>Note</th><th></th></tr></thead>
+                <tbody id="corpoTabella"></tbody>
+            </table>
+        </div>
+        <button class="btn-full" style="margin-top:15px;" onclick="document.getElementById('storicoView').style.display='none'">TORNA ALLA HOME</button>
     </div>
 
     <script>
@@ -203,39 +213,48 @@
         window.chiudi = function() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); };
 
         window.salvaTurno = function() {
-            try {
-                const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-                window.db.turni.push({id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||1});
-                window.salvaDB(); window.chiudi();
-            } catch(e) { alert("Compila tutti i campi data!"); }
+            const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
+            window.db.turni.push({id:Date.now(), data:d, lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||1});
+            window.salvaDB(); window.chiudi();
         };
 
         window.salvaBenza = function() {
-            try {
-                const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
-                window.db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0});
-                window.salvaDB(); window.chiudi();
-            } catch(e) { alert("Compila tutti i campi data!"); }
+            const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`;
+            window.db.rifornimenti.push({id:Date.now(), data:d, euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value)||0});
+            window.salvaDB(); window.chiudi();
         };
 
-        window.apriStorico = function() {
-            const l = document.getElementById('listaStorico'); l.innerHTML='';
-            const t = [...window.db.turni.map(x=>({...x,tipo:'T'})), ...window.db.rifornimenti.map(x=>({...x,tipo:'B'}))].sort((a,b)=>b.id-a.id);
-            if(t.length === 0) l.innerHTML = "<p style='text-align:center; color:gray;'>Nessun dato presente</p>";
-            t.forEach(i => {
-                const div = document.createElement('div'); div.className='h-item';
-                div.style.borderLeftColor = i.tipo==='T'?'var(--primary)':'var(--orange)';
-                div.innerHTML = `<div><b>${i.data}</b> - ${i.tipo==='T'?'Turno':'Benza'}<br>€${(i.lordo||i.euro).toFixed(2)}</div><i class="fas fa-trash" onclick="eliminaItem(${i.id},'${i.tipo}')" style="color:red; font-size:18px;"></i>`;
-                l.appendChild(div);
+        window.apriStoricoTabella = function() {
+            const corpo = document.getElementById('corpoTabella'); corpo.innerHTML='';
+            const tutti = [...window.db.turni.map(x=>({...x,t:'TURNO'})), ...window.db.rifornimenti.map(x=>({...x,t:'BENZA'}))].sort((a,b)=>b.id-a.id);
+            
+            tutti.forEach(i => {
+                const tr = document.createElement('tr');
+                if(i.t==='BENZA') tr.className = 'row-benza';
+                tr.innerHTML = `
+                    <td>${i.data}</td>
+                    <td><b>${i.t}</b></td>
+                    <td>€${(i.lordo||i.euro).toFixed(2)}</td>
+                    <td>${i.t==='TURNO' ? i.ore+'h - '+i.km+'km' : i.prezzo+'€/L'}</td>
+                    <td><button class="btn-del" onclick="eliminaDato(${i.id},'${i.t}')"><i class="fas fa-trash"></i></button></td>
+                `;
+                corpo.appendChild(tr);
             });
             document.getElementById('storicoView').style.display='flex';
         };
 
-        window.eliminaItem = function(id, tipo) { if(confirm("Eliminare?")) { if(tipo==='T') window.db.turni=window.db.turni.filter(x=>x.id!==id); else window.db.rifornimenti=window.db.rifornimenti.filter(x=>x.id!==id); window.salvaDB(); window.apriStorico(); } };
+        window.eliminaDato = function(id, tipo) {
+            if(confirm("Eliminare questa voce?")) {
+                if(tipo==='TURNO') window.db.turni = window.db.turni.filter(x=>x.id!==id);
+                else window.db.rifornimenti = window.db.rifornimenti.filter(x=>x.id!==id);
+                window.salvaDB(); window.apriStoricoTabella();
+            }
+        };
+
         window.aggiornaTarget = function() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; window.db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; window.salvaDB(); };
         window.aggiornaTax = function() { window.db.tax = parseFloat(document.getElementById('taxIn').value)||20; window.salvaDB(); };
 
-        setInterval(() => { const n = new Date(); document.getElementById('clock').innerText = n.toLocaleTimeString(); }, 1000);
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         window.onload = window.calcola;
     </script>
 </body>
