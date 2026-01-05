@@ -152,7 +152,7 @@
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
-    <script>
+<script>
     const APP_VER = "1.0.0";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v30')) || { turni: [], rifornimenti: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
@@ -212,7 +212,8 @@
         let costoB_Turni = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
         document.getElementById('lordo').innerText = lordoA.toFixed(2); document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
-        document.getElementById('kml').innerText = litriS > 0 ? (km/splitriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
+        // CORREZIONE QUI: variabile litriS corretta
+        document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
         let tNetto = db.targets[tag] || 0; document.getElementById('targetIn').value = tNetto || ""; document.getElementById('taxIn').value = db.tax;
         let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
