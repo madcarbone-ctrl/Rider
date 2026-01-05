@@ -6,79 +6,72 @@
 ## 🇮🇹 SEZIONE ITALIANO
 
 ### **1. FILOSOFIA E SCOPO DEL PROGETTO**
-**Rider Tracker Pro 1.0** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno.
+**Rider Tracker Pro 1.0** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno. Il "Lordo" è ingannevole: questa app calcola il **Netto Reale** sottraendo tasse e costi carburante in tempo reale. Tutto risiede nella memoria locale del tuo smartphone (LocalStorage).
 
-* **Perché è stato ideato:** Nel delivery, il "Lordo" è ingannevole. Questa app elimina l'incertezza calcolando il **Netto Reale** sottraendo tasse e costi carburante in tempo reale.
-* **Privacy:** Nessun dato viene inviato a server esterni. Tutto risiede nella memoria locale del tuo smartphone (LocalStorage).
+### **2. LOGICA DEI COMANDI: COSA SUCCEDE QUANDO PREMI...**
 
-### **2. GUIDA OPERATIVA E FUNZIONI**
+#### **Pulsanti della Dashboard (Interazioni Rapide)**
+* **Titolo "RIDER TRACKER PRO" (in alto):** Se lo premi, il sistema forza l'apertura del messaggio "Fine Mese" per permetterti di accedere velocemente alla stampa del report anche se non è il primo del mese.
+* **Input "TARGET":** Quando digiti un numero, il sistema ricalcola istantaneamente la barra di progresso e la cifra "Mancante". Salva il valore automaticamente per il mese corrente.
+* **Input "TAX %":** Cambiando questo numero (es. da 20 a 15), il sistema ricalcola immediatamente il Netto e il Mancante su tutti i dati salvati.
 
-#### **A. DASHBOARD (Schermata Principale)**
-* **LORDO:** Totale guadagnato dalle app.
-* **NETTO:** Guadagno pulito (Lordo - Tasse - Benzina Stimata).
-* **ORE:** Tempo totale in strada.
-* **LITRI STIM.:** Carburante consumato calcolato sui KM e il consumo medio del mezzo.
-* **KM/L:** Efficienza del veicolo (Kilometri per litro).
-* **SPESA BENZ.:** Totale euro pagati realmente ai distributori (Monitoraggio cassa).
-* **TARGET & TAX %:** Campi dove inserire l'obiettivo netto e l'aliquota fiscale.
-* **MANCANTE:** Calcola il **Lordo Necessario** per raggiungere il target netto desiderato.
+#### **Pulsanti della Navigazione (Sticky Footer)**
+* **Tasto TURNO (+):** 1. Apre una finestra (modal) che blocca il resto dell'app.
+    2. Genera automaticamente i menu a tendina con la data odierna.
+    3. Attiva il sistema "Auto-Scroll" che sposta i campi in alto per non farli coprire dalla tastiera del telefono.
+* **Tasto BENZINA (⛽):**
+    1. Apre la finestra di rifornimento.
+    2. Attiva il filtro "Prezzo": mentre scrivi, il sistema inserisce i punti decimali corretti per evitare errori di battitura.
+* **Tasto STORICO (🕒):**
+    1. Interroga il database e crea una lista cronologica di tutte le attività.
+    2. Per ogni elemento, calcola statistiche specifiche (es. km/l esatti di quel turno).
+* **Tasto GENERA REPORT PDF (Verde Grande):**
+    1. Nasconde l'interfaccia dell'app e attiva la "Modalità Documento".
+    2. Esegue la somma finale di tutti i dati del mese e genera le tabelle stampabili.
+* **Tasto AZZERA DATABASE (Rosso):**
+    1. Apre un avviso di sicurezza. Se confermi, il sistema cancella ogni dato dalla memoria e riavvia l'app.
 
-#### **B. MODULI DI INSERIMENTO**
-* **Pulsante TURNO (+):** Inserisci Lordo, Ore, KM e Consumo. Include l'**Auto-Scroll** che centra i campi sopra la tastiera.
-* **Pulsante BENZINA (⛽):** Inserisci Euro spesi e Prezzo al Litro. L'ultimo prezzo inserito aggiorna il valore economico dei consumi di tutti i turni.
+#### **Pulsanti all'interno delle Finestre (Modal)**
+* **Tasto SALVA (Turno/Benzina):**
+    1. Controlla la validità dei dati.
+    2. Se è il primo inserimento assoluto, obbliga l'impostazione di un prezzo benzina iniziale.
+    3. Registra i dati, chiude la finestra e **attiva il pop-up di Backup** per la sicurezza dei dati.
+* **Tasto "X" (nello Storico):**
+    1. Apre una finestra di conferma.
+    2. Se confermi, rimuove l'elemento e ricalcola istantaneamente i totali della Dashboard.
+* **Tasto ANNULLA / CHIUDI:** Svuota i campi e chiude la finestra senza salvare.
 
-#### **C. STORICO E REPORT**
-* **STORICO (🕒):** Visualizza, controlla ed elimina inserimenti errati. Calcola per ogni singolo turno i litri effettivi e la media km/l specifica.
-* **GENERA REPORT PDF:** Crea tabelle fiscali e calcola il "Netto Reale Lavoro" per la stampa.
-* **ALERT FINE MESE:** Promemoria automatico il 1° di ogni mese per il backup dei dati.
+#### **Pulsanti dell'Area Backup & Report**
+* **ESPORTA DATABASE (.JSON):** Scarica un file fisico con tutta la tua storia lavorativa.
+* **IMPORTA DATABASE (.JSON):** Permette di caricare un vecchio file di backup per ripristinare i dati.
+* **STAMPA ORA:** Attiva la funzione di stampa del sistema operativo (o salvataggio in PDF).
 
-#### **D. SICUREZZA DATI (Backup & Restore)**
-* **SALVA BACKUP:** Scarica un file `.json` con tutto il tuo database.
-* **CARICA BACKUP:** Ripristina i dati da un file (utile per cambio dispositivo).
-* **CRONOLOGIA:** Mostra gli ultimi 5 backup effettuati per sicurezza.
+### **3. GUIDA OPERATIVA E FUNZIONI**
+* **LORDO/NETTO:** Monitoraggio in tempo reale del guadagno pulito.
+* **LITRI STIMATI:** Calcolo preciso del consumo basato sulla resa del veicolo.
+* **SICUREZZA PREZZO INIZIALE:** Garantisce che il calcolo del carburante sia accurato fin dal primo KM.
+* **AUTO-FORMAT PREZZO:** Correzione automatica del formato decimale durante la digitazione.
 
 ### **⚠️ AVVERTENZE TECNICHE**
-1. **DECIMALI:** Usa sempre il **PUNTO (.)** e non la virgola (es. **3.5**).
-2. **MEMORIA:** I dati sono nel browser. **Salva periodicamente un Backup** per evitare perdite pulendo la cache.
+1.  **OTTIMIZZAZIONE MOBILE:** Progettato per l'uso a una mano, con protezione anti-zoom e supporto per notch/display curvi.
+2.  **DECIMALI:** Prediligi sempre il **PUNTO (.)** (es. 1.752).
 
 ---
 
 ## 🇺🇸 ENGLISH SECTION
 
-### **1. PHILOSOPHY AND SCOPE**
-**Rider Tracker Pro 1.0** gives professional Riders total control over their real earnings.
-
-* **Why it was created:** "Gross" income is misleading. This app calculates **Real Net** by subtracting taxes and fuel costs.
-* **Privacy:** No data is sent to external servers. Everything is stored locally on your device.
+### **1. BUTTON LOGIC: WHAT HAPPENS WHEN YOU PRESS...**
+* **SHIFT BUTTON (+):** Opens entry form with current date and enables keyboard auto-scroll.
+* **FUEL BUTTON (⛽):** Opens refueling form with real-time price formatting.
+* **SAVE BUTTON:** Validates data, writes to memory, and triggers the **Proactive Backup** prompt.
+* **HISTORY (🕒):** Recalls all entries and calculates per-shift efficiency.
+* **PDF REPORT:** Compiles monthly stats into a printable format.
+* **RESET (Red):** Full data wipe after safety confirmation.
 
 ### **2. OPERATIONAL GUIDE**
-
-#### **A. DASHBOARD**
-* **LORDO (GROSS):** Total income from apps.
-* **NETTO (NET):** Clean earnings (Gross - Taxes - Estimated Fuel).
-* **ORE (HOURS):** Total time on the road.
-* **LITRI STIM. (EST. LITERS):** Fuel burned based on KM and vehicle consumption.
-* **KM/L:** Vehicle efficiency (Kilometers per liter).
-* **SPESA BENZ. (FUEL SPENT):** Total actual cash paid at gas stations.
-* **TARGET & TAX %:** Boxes to set your goals and tax rates.
-* **MANCANTE (MISSING):** Required Gross to hit your net goal.
-
-#### **B. ENTRY MODULES**
-* **SHIFT Button (+):** Enter Gross, Hours, KM, and Consumption. Features **Auto-Scroll**.
-* **FUEL Button (⛽):** Enter Euro spent and Price per Liter.
-
-#### **C. HISTORY AND REPORTS**
-* **HISTORY (🕒):** View and delete entries. Displays specific fuel consumption for every shift.
-* **PDF REPORT:** Creates printable fiscal tables and "Real Net Work Profit."
-* **MONTH-END ALERT:** Automatic reminder on the 1st of each month.
-
-#### **D. DATA SECURITY (Backup & Restore)**
-* **SAVE BACKUP:** Download a `.json` file of your database.
-* **LOAD BACKUP:** Restore data from a previously saved file.
-
-### **⚠️ CRITICAL TECHNICAL NOTES**
-1. **DECIMALS:** Always use a **DOT (.)** (e.g., **3.5**).
-2. **STORAGE:** Regularly export a **Backup file** to prevent data loss.
+* **GROSS/NET:** Real-time earnings tracking.
+* **INITIAL PRICE LOCK:** Ensures accuracy from the very first entry.
+* **PROACTIVE BACKUP:** Prompted after every save to prevent data loss.
 
 ---
 
