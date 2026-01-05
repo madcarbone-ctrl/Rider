@@ -114,6 +114,9 @@
 
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        
+        <div id="modalInizio" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">⛽ ULTIMO PREZZO</h3><p style="font-size: 11px; color: var(--dim); margin-bottom: 15px; text-transform: uppercase;">Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:</p><input type="text" id="pIniziale" placeholder="0.000" inputmode="decimal" oninput="formattaPrezzo(this)" style="text-align: center; font-size: 24px; color: var(--primary); font-weight: bold;"><button class="btn-modal btn-save" onclick="confermaPrezzoIniziale()">IMPOSTA E SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
         <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
         <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
@@ -245,16 +248,31 @@
 
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     
+    // LOGICA DI CONTROLLO RIFORNIMENTI (MODIFICATA)
     function salvaTurno() { 
-        const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
         if (db.rifornimenti.length === 0) {
-            let pRif = prompt("⚠️ NESSUN RIFORNIMENTO TROVATO!\nPer calcolare il netto, inserisci il prezzo al litro dell'ultimo rifornimento (es. 1.752):");
-            if (pRif === null || pRif === "" || isNaN(pRif.replace(',','.'))) {
-                alert("Operazione annullata. Devi inserire un prezzo valido per salvare il turno.");
-                return;
-            }
-            db.rifornimenti.push({ id: Date.now() - 1000, data: d, ora: "00:00", euro: 0, prezzo: parseFloat(pRif.replace(',','.')) });
+            document.getElementById('modalInizio').style.display = 'flex';
+            return; 
         }
+        effettuaSalvataggioTurno();
+    }
+
+    function confermaPrezzoIniziale() {
+        const pStr = document.getElementById('pIniziale').value;
+        const pVal = parseFloat(pStr.replace(',','.'));
+        if (!pStr || isNaN(pVal) || pVal <= 0) {
+            alert("Inserisci un prezzo valido (es. 1.752)");
+            return;
+        }
+        const n = new Date();
+        const d = `${n.getDate().toString().padStart(2,'0')}/${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
+        db.rifornimenti.push({ id: Date.now() - 1000, data: d, ora: "00:00", euro: 0, prezzo: pVal });
+        document.getElementById('modalInizio').style.display = 'none';
+        effettuaSalvataggioTurno();
+    }
+
+    function effettuaSalvataggioTurno() {
+        const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
         db.turni.push({
             id: Date.now(), 
             data: d, 
