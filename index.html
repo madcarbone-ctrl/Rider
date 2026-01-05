@@ -212,7 +212,7 @@
         let costoB_Turni = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
         document.getElementById('lordo').innerText = lordoA.toFixed(2); document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
-        document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
+        document.getElementById('kml').innerText = litriS > 0 ? (km/splitriS).toFixed(1) : '0.0'; document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
         let tNetto = db.targets[tag] || 0; document.getElementById('targetIn').value = tNetto || ""; document.getElementById('taxIn').value = db.tax;
         let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
@@ -248,7 +248,6 @@
 
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     
-    // LOGICA DI CONTROLLO RIFORNIMENTI (MODIFICATA)
     function salvaTurno() { 
         if (db.rifornimenti.length === 0) {
             document.getElementById('modalInizio').style.display = 'flex';
