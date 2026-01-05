@@ -151,13 +151,22 @@
         </div>
     </div>
 
-    <div id="modalTurno" class="modal"><div class="modal-content">
-        <h3 style="color:var(--primary);margin-top:0">NUOVO TURNO</h3>
-        <div class="date-row"><input type="number" id="dateTD" placeholder="GG"><input type="number" id="dateTM" placeholder="MM"><input type="number" id="dateTY" placeholder="AAAA"></div>
-        <div class="m-grid"><input type="number" id="tL" placeholder="Lordo €"><input type="number" id="tO" placeholder="Ore"><input type="number" id="tK" placeholder="Km Percorsi"><input type="number" id="tC" placeholder="Consumo KM/L"></div>
-        <button class="btn-full" onclick="salvaTurno()">SALVA TURNO</button>
-        <button onclick="chiudiModali()" style="background:none;border:none;color:var(--dim);margin-top:15px;width:100%">Annulla</button>
-    </div></div>
+    <div id="modalTurno" class="modal no-print">
+    <div class="modal-content">
+        <h3>Nuovo Turno</h3>
+        <div id="dateT" class="date-row"></div> 
+        
+        <div class="m-grid">
+            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off">
+            <input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off">
+            <input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off">
+            <input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off">
+        </div>
+        
+        <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
+        <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
+    </div>
+</div>
 
     <div id="modalBenza" class="modal"><div class="modal-content">
         <h3 style="color:var(--orange);margin-top:0">RIFORNIMENTO</h3>
