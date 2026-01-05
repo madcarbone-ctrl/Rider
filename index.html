@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e0f11">
+<title>RIDER TRACKER PRO</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root{
+--bg:#0e0f11;
+--card:#17191d;
+--primary:#00ccbc;
+--accent:#ff4d4d;
+--text:#f2f2f2;
+--muted:#8a8f98;
+--glass:rgba(30,30,30,0.75);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+margin:0;
+padding:12px;
+font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;
+background:var(--bg);
+color:var(--text);
+position:fixed;
+inset:0;
+overflow:hidden;
+}
+
+.app-title{
+text-align:center;
+font-weight:800;
+letter-spacing:1px;
+color:var(--primary);
+font-size:20px;
+margin:8px 0 16px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+}
+
+.card{
+background:var(--card);
+border-radius:16px;
+padding:10px 6px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+box-shadow:0 6px 16px rgba(0,0,0,.35);
+}
+
+.card.main .val{font-size:18px;color:var(--primary)}
+
+.label{
+font-size:9px;
+letter-spacing:1px;
+color:var(--muted);
+font-weight:700;
+margin-bottom:4px;
+}
+
+.val{font-size:13px;font-weight:700}
+
+.card input{
+width:90%;
+background:transparent;
+border:none;
+border-bottom:1px solid #333;
+color:white;
+text-align:center;
+font-size:14px;
+outline:none;
+}
+
+.progress-container{
+margin-top:16px;
+background:var(--card);
+border-radius:20px;
+padding:16px;
+box-shadow:0 8px 20px rgba(0,0,0,.4);
+}
+
+.progress-header{
+text-align:center;
+font-weight:700;
+letter-spacing:1px;
+color:var(--primary);
+font-size:13px;
+margin-bottom:10px;
+}
+
+.progress-bar{
+height:28px;
+background:#222;
+border-radius:14px;
+overflow:hidden;
+}
+
+#bar{
+height:100%;
+width:0;
+background:linear-gradient(90deg,var(--primary),#baff00);
+transition:.3s;
+}
+
+#liveClock{
+text-align:center;
+margin-top:10px;
+font-size:12px;
+color:var(--muted);
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.modal-content{
+width:90%;
+max-width:340px;
+background:var(--card);
+border-radius:26px;
+padding:22px;
+box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+
+.modal h3{
+margin-top:0;
+color:var(--primary);
+text-align:center;
+}
+
+.modal input{
+width:100%;
+padding:14px;
+margin-bottom:10px;
+border-radius:14px;
+border:1px solid #333;
+background:#1f2228;
+color:white;
+font-size:15px;
+}
+
+.btn-modal{
+width:100%;
+padding:15px;
+border-radius:16px;
+border:none;
+font-weight:800;
+margin-top:8px;
+}
+
+.btn-save{background:var(--primary);color:#000}
+.btn-close{background:#2a2a2a;color:#fff}
+
+.sticky-footer{
+position:fixed;
+left:12px;
+right:12px;
+bottom:12px;
+background:var(--glass);
+backdrop-filter:blur(12px);
+border-radius:26px;
+padding:16px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+box-shadow:0 20px 40px rgba(0,0,0,.6);
+}
+
+.foot-btn{
+background:#1e2127;
+border-radius:18px;
+padding:14px 6px;
+display:flex;
+flex-direction:column;
+align-items:center;
+font-size:11px;
+font-weight:700;
+}
+
+.foot-btn i{
+font-size:22px;
+margin-bottom:6px;
+color:var(--primary);
+}
+
+.btn-full{
+grid-column:span 3;
+background:var(--primary);
+color:#000;
+border:none;
+border-radius:18px;
+padding:18px;
+font-weight:900;
+letter-spacing:1px;
+}
+
+.btn-reset-soft{
+grid-column:span 3;
+background:#3a1212;
+color:#ffbcbc;
+border:none;
+border-radius:14px;
+padding:12px;
+font-size:11px;
+letter-spacing:1px;
+}
+</style>
+</head>
+<body>
+
+<div id="mainContainer">
+
+<div class="app-title" onclick="document.getElementById('modalFineMese').style.display='flex'">
+RIDER TRACKER PRO
+</div>
+
+<div class="grid">
+<div class="card main"><span class="label">Lordo</span><span class="val">€<span id="lordo">0.00</span></span></div>
+<div class="card main"><span class="label">Netto</span><span class="val" id="netto">€0.00</span></div>
+<div class="card"><span class="label">Ore</span><span class="val" id="ore">0.0</span></div>
+<div class="card"><span class="label">Litri</span><span class="val" id="cons">0.0L</span></div>
+<div class="card"><span class="label">Km/L</span><span class="val" id="kml">0.0</span></div>
+<div class="card"><span class="label">Spesa</span><span class="val" id="spesaB">€0.00</span></div>
+<div class="card"><span class="label">Target</span><input id="targetIn" type="number" oninput="aggiornaTarget()"></div>
+<div class="card"><span class="label">Tax %</span><input id="taxIn" type="number" oninput="aggiornaTax()"></div>
+<div class="card"><span class="label">Mancante</span><span class="val" id="mancante">€0.00</span></div>
+</div>
+
+<div class="progress-container">
+<div class="progress-header">OBIETTIVO <span id="perc">0%</span></div>
+<div class="progress-bar"><div id="bar"></div></div>
+<div id="liveClock">--/--/--</div>
+</div>
+
+<div class="modal" id="modalTurno">
+<div class="modal-content">
+<h3>Nuovo Turno</h3>
+<div id="dateT"></div>
+<input id="tL" type="number" placeholder="Lordo €">
+<input id="tO" type="number" placeholder="Ore">
+<input id="tK" type="number" placeholder="Km">
+<input id="tC" type="number" placeholder="Consumo">
+<button class="btn-modal btn-save" onclick="salvaTurno()">Salva</button>
+<button class="btn-modal btn-close" onclick="chiudiModali()">Annulla</button>
+</div>
+</div>
+
+<div class="sticky-footer">
+<div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>Turno</div>
+<div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>Benzina</div>
+<div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>Storico</div>
+<button class="btn-full" onclick="apriReport()">Genera Report PDF</button>
+<button class="btn-reset-soft" onclick="localStorage.clear();location.reload()">Azzera Database</button>
+</div>
+
+</div>
+
+<script>
+const APP_VER="1.0.0";
+let db=JSON.parse(localStorage.getItem("rider_db_final_v30"))||{turni:[],rifornimenti:[],targets:{},tax:20};
+const mesi=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+function salvaDB(){localStorage.setItem("rider_db_final_v30",JSON.stringify(db));calcola();}
+
+function calcola(){
+let lordoA=db.turni.reduce((a,b)=>a+b.lordo,0);
+let ore=db.turni.reduce((a,b)=>a+b.ore,0);
+let km=db.turni.reduce((a,b)=>a+b.km,0);
+let litriS=db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)),0);
+let spesaB=db.rifornimenti.reduce((a,b)=>a+b.euro,0);
+let ultP=db.rifornimenti.length?db.rifornimenti.at(-1).prezzo:1.85;
+let netto=lordoA-(lordoA*(db.tax/100))-(litriS*ultP);
+
+lordo.textContent=lordoA.toFixed(2);
+netto.textContent="€"+netto.toFixed(2);
+ore.textContent=ore.toFixed(1);
+cons.textContent=litriS.toFixed(1)+"L";
+kml.textContent=litriS?(km/litriS).toFixed(1):"0.0";
+spesaB.textContent="€"+spesaB.toFixed(2);
+
+let key=`${String(new Date().getMonth()+1).padStart(2,"0")}/${new Date().getFullYear()}`;
+let target=db.targets[key]||0;
+targetIn.value=target;
+taxIn.value=db.tax;
+
+let lordoNec=(target+(litriS*ultP))/(1-(db.tax/100));
+let manca=lordoNec-lordoA;
+mancante.textContent="€"+(manca>0?manca.toFixed(2):"0.00");
+
+let p=target?Math.min((netto/target)*100,100):0;
+perc.textContent=Math.round(p)+"%";
+bar.style.width=p+"%";
+}
+
+function aggiornaTarget(){
+let key=`${String(new Date().getMonth()+1).padStart(2,"0")}/${new Date().getFullYear()}`;
+db.targets[key]=parseFloat(targetIn.value)||0;
+salvaDB();
+}
+
+function aggiornaTax(){db.tax=parseFloat(taxIn.value)||20;salvaDB();}
+
+function apriM(id){
+let n=new Date(),d="",m="",y="";
+for(let i=1;i<=31;i++)d+=`<option ${i==n.getDate()?"selected":""}>${i}</option>`;
+mesi.forEach((x,i)=>m+=`<option ${i==n.getMonth()?"selected":""}>${x}</option>`);
+for(let i=2025;i<=2030;i++)y+=`<option ${i==n.getFullYear()?"selected":""}>${i}</option>`;
+document.getElementById(id).querySelector("#dateT").innerHTML=`<select id="d">${d}</select><select id="m">${m}</select><select id="y">${y}</select>`;
+document.getElementById(id).style.display="flex";
+}
+
+function salvaTurno(){
+db.turni.push({id:Date.now(),data:new Date().toLocaleDateString(),ora:new Date().toLocaleTimeString().slice(0,5),
+lordo:+tL.value||0,ore:+tO.value||0,km:+tK.value||0,cons:+tC.value||0});
+salvaDB();chiudiModali();
+}
+
+function chiudiModali(){document.querySelectorAll(".modal").forEach(m=>m.style.display="none");}
+
+window.onload=()=>{calcola();setInterval(()=>liveClock.textContent=new Date().toLocaleString(),1000);}
+</script>
+
+</body>
+</html>
