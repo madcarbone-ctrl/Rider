@@ -40,20 +40,45 @@
 * **Tasto "X" (Storico):** Previa conferma, elimina definitivamente un singolo errore di inserimento.
 * **Tasto ANNULLA:** Chiude la finestra senza apportare modifiche.
 
-#### **Area Backup & Sicurezza**
-* **ESPORTA DATABASE (.JSON):** Crea un file di salvataggio fisico del tuo database.
-* **IMPORTA DATABASE (.JSON):** Permette di ripristinare i tuoi dati su un nuovo dispositivo o dopo una pulizia del browser.
+---
 
-### **3. GUIDA OPERATIVA E FUNZIONI**
-* **LORDO/NETTO:** Monitoraggio in tempo reale del guadagno pulito.
-* **LITRI STIMATI:** Calcolo del consumo basato sulla resa dichiarata del veicolo.
-* **SICUREZZA PREZZO INIZIALE:** L'app richiede un prezzo benzina iniziale per garantire la precisione dei calcoli fin dal primo utilizzo.
+## 🇺🇸 ENGLISH SECTION
 
-### **⚠️ AVVERTENZE TECNICHE**
-1.  **OTTIMIZZAZIONE MOBILE:** Progettato per l'uso a una mano con tastiera intelligente.
-2.  **DECIMALI:** Usa sempre il **PUNTO (.)** (es. 1.752) per i valori numerici.
+### **1. PHILOSOPHY AND SCOPE**
+**Rider Tracker Pro 1.0** gives professional Riders total control over their real earnings. "Gross" income is misleading: this app calculates **Real Net** by subtracting taxes and fuel costs in real-time. All data is stored locally on your smartphone.
+
+### **2. BUTTON LOGIC: WHAT HAPPENS WHEN YOU PRESS...**
+
+#### **Navigation Buttons (Sticky Footer)**
+
+* **SHIFT Button (+):** Opens the window to log your work activity.
+    * **Gross (€):** Enter the total earned at the end of the shift (check your delivery app).
+    * **Hours worked:** Enter your actual working time.
+    * **Kilometers traveled:** Data to be verified on your vehicle's odometer at the end of the shift.
+    * **Consumption (L/100km):** Find this data on your vehicle's dashboard/trip computer.
+    * *Note:* If your vehicle does not have a consumption monitor, **leave the field empty**.
+
+* **FUEL Button (⛽):** Opens the window to log fuel expenses.
+    * **Euro spent (€):** The total amount paid at the gas station.
+    * **Price (€/L):** The cost of fuel per liter shown on the pump at the time of refueling.
+    * *Note:* Both data points should be verified and entered at the time of refueling.
+
+* **HISTORY Button (🕒):** Shows a chronological list of shifts and refuels, calculating specific efficiency for each entry.
+
+* **GENERATE PDF REPORT:** Compiles all monthly totals and creates a professional printable document.
+
+* **RESET DATABASE (Red):** Permanently deletes all saved data to start a new period.
+
+#### **Modal Window Buttons**
+* **SAVE Button:** Validates and records data, then **automatically triggers the Backup pop-up** to secure your new entries.
+* **"X" Button (History):** After confirmation, deletes a single entry error.
+* **CANCEL Button:** Closes the window without making changes.
 
 ---
+
+### **⚠️ TECHNICAL NOTES / AVVERTENZE**
+1. **MOBILE OPTIMIZATION:** Designed for one-handed use with a smart keyboard.
+2. **DECIMALS:** Always use a **DOT (.)** (e.g., 1.752) for numerical values.
 
 **PROGETTATO E PENSATO DA: [MARCO CARBONE](https://facebook.com/madmaddj)**
 
