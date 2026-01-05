@@ -108,38 +108,54 @@
     </style>
 </head>
     <body>
-    <div id="authOverlay">
-        <div class="app-title" style="margin-bottom:20px;">RIDER TRACKER PRO</div>
-        <div class="auth-card">
-            <input type="email" id="emailLogin" placeholder="Email">
-            <input type="password" id="passLogin" placeholder="Password">
-            <button onclick="eseguiLogin()">ACCEDI AL CLOUD</button>
-            <button onclick="eseguiRegistrazione()" style="background:transparent; color:var(--dim); border:1px solid #444; margin-top:15px;">REGISTRATI</button>
-        </div>
-    </div>
-
-    <div id="mainAppContainer" style="display:none;">
-        <div style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 5px;">
-            <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
-            <i class="fas fa-sign-out-alt" onclick="logout()" style="position: absolute; right: 10px; color: var(--accent); font-size: 18px; cursor: pointer;"></i>
-        </div>
-
+     <div id="mainContainer">
+        <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.0</div>
+        
         <div class="grid no-print">
-            <div class="card"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-            <div class="card"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
+            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
+            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
             <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="litri">0.0L</span></div>
+            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
             <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
             <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()"></div>
-            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()"></div>
+            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" autocomplete="off"></div>
+            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
 
         <div class="progress-container no-print">
-            <div class="progress-header">OBIETTIVO <span id="perc">0%</span></div>
+            <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
             <div id="liveClock">--/--/-- 00:00:00</div>
+        </div>
+
+        <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
+        <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
+        <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
+        <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
+        <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
+
+        <div id="reportView">
+            <div class="report-scroll-area">
+                <div class="report-header-mini"><h2 id="repMonthTitle">RIEPILOGO MESE DI ---</h2></div>
+                <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
+                <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
+                <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
+            </div>
+            
+            <div class="report-fixed-footer no-print">
+                <div class="backup-section">
+                    <h3 style="margin:0 0 10px 0; font-size:14px; text-align:center;">AREA BACKUP & SICUREZZA</h3>
+                    <button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA DATABASE (.JSON)</button>
+                    <button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button>
+                    <input type="file" id="fileBackup" accept=".json" hidden>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button>
+                    <button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button>
+                </div>
+            </div>
         </div>
 
         <div class="sticky-footer no-print">
@@ -147,38 +163,9 @@
             <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
             <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
             <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-            <button class="btn-reset" onclick="document.getElementById('modalFineMese').style.display='flex'">AZZERA DATABASE</button>
+            <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
     </div>
-
-    <div id="modalTurno" class="modal no-print">
-    <div class="modal-content">
-        <h3>Nuovo Turno</h3>
-        <div id="dateT" class="date-row"></div> 
-        
-        <div class="m-grid">
-            <input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off">
-            <input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off">
-            <input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off">
-            <input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off">
-        </div>
-        
-        <button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button>
-        <button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button>
-    </div>
-</div>
-
-    <div id="modalBenza" class="modal"><div class="modal-content">
-        <h3 style="color:var(--orange);margin-top:0">RIFORNIMENTO</h3>
-        <div class="date-row"><input type="number" id="dateBD" placeholder="GG"><input type="number" id="dateBM" placeholder="MM"><input type="number" id="dateBY" placeholder="AAAA"></div>
-        <div class="m-grid"><input type="number" id="bE" placeholder="Euro spesi €"><input type="number" id="bP" placeholder="Prezzo al litro €"></div>
-        <button class="btn-full" style="background:var(--orange)" onclick="salvaBenza()">SALVA BENZINA</button>
-        <button onclick="chiudiModali()" style="background:none;border:none;color:var(--dim);margin-top:15px;width:100%">Annulla</button>
-    </div></div>
-
-    <div id="modalStorico" class="modal"><div class="modal-content" style="max-width:500px"><h3>STORICO</h3><div id="storicoLista"></div><button class="btn-full" style="margin-top:20px;background:#444" onclick="chiudiModali()">CHIUDI</button></div></div>
-    <div id="modalFineMese" class="modal"><div class="modal-content"><h3>RESET</h3><p>Cancellare tutto?</p><button class="btn-full" style="background:var(--accent)" onclick="resetDati()">AZZERA TUTTO</button><button onclick="chiudiModali()">No</button></div></div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 
