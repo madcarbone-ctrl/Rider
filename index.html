@@ -86,7 +86,7 @@
         .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-confirm-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; cursor: pointer; }
-@media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .report-scroll-area { overflow: visible; } }
+        @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .report-scroll-area { overflow: visible; } }
     </style>
 </head>
 <body>
@@ -121,7 +121,6 @@
         <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
         <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
         
-        <!-- NUOVO MODAL PER ESPORTAZIONE BACKUP -->
         <div id="modalBackupExport" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">💾 ESPORTA DATABASE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi esportare un backup del database aggiornato?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="rifiutaBackup()">NO</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="accettaBackup()">SI</button></div></div></div>
 
         <div id="reportView">
@@ -182,7 +181,6 @@
         URL.revokeObjectURL(url);
     }
 
-    // NUOVE FUNZIONI PER GESTIRE IL MODAL DI BACKUP
     function mostraModalBackup() {
         document.getElementById('modalBackupExport').style.display = 'flex';
     }
@@ -258,7 +256,7 @@
             ultP = rifornimentiOrdinati[rifornimentiOrdinati.length - 1].prezzo;
         }
         let taxV = tL * (db.tax/100), costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI:</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'flex';
     }
 
@@ -285,7 +283,7 @@
         document.getElementById('modalInizio').style.display = 'none';
         effettuaSalvataggioTurno();
     }
-function effettuaSalvataggioTurno() {
+    function effettuaSalvataggioTurno() {
         const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
         db.turni.push({
             id: Date.now(), 
@@ -298,7 +296,6 @@ function effettuaSalvataggioTurno() {
         }); 
         salvaDB(); 
         chiudiModali();
-        // MOSTRA IL MODAL DI BACKUP DOPO IL SALVATAGGIO
         mostraModalBackup();
     }
 
@@ -313,7 +310,6 @@ function effettuaSalvataggioTurno() {
         }); 
         salvaDB(); 
         chiudiModali();
-        // MOSTRA IL MODAL DI BACKUP DOPO IL SALVATAGGIO
         mostraModalBackup();
     }
     
