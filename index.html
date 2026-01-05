@@ -117,8 +117,7 @@
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
         <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
         <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
-        <div id="modalElimina"
-class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
+        <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
 
         <div id="reportView">
             <div class="report-scroll-area">
@@ -156,7 +155,6 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     let catElimina = ''; let idElimina = null;
 
-    // Fix Tastiera Samsung A34 a -170px
     function gestisciTastiera() {
         const inputs = document.querySelectorAll('.modal input');
         inputs.forEach(input => {
@@ -178,6 +176,7 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
         const a = document.createElement("a"); a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click();
         URL.revokeObjectURL(url);
     }
+
     document.getElementById("fileBackup").addEventListener("change", function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
@@ -197,11 +196,16 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
     function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('.modal-content').forEach(c => c.style.transform = 'translateY(0)'); m.querySelectorAll('input').forEach(i => i.value=""); }); }
     function confermaReset() { localStorage.clear(); location.reload(); }
     function elimina(categoria, id) { catElimina = categoria; idElimina = id; document.getElementById('btnConfermaElimina').onclick = function() { db[catElimina] = db[catElimina].filter(x => x.id !== idElimina); salvaDB(); apriStorico(); chiudiModali(); }; document.getElementById('modalElimina').style.display = 'flex'; }
+    
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
         let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0), ore = db.turni.reduce((a,b)=>a+b.ore, 0), km = db.turni.reduce((a,b)=>a+b.km, 0);
         let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0), spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
-        let ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85;
+        let ultP = 0;
+        if (db.rifornimenti && db.rifornimenti.length > 0) {
+            const rifornimentiOrdinati = [...db.rifornimenti].sort((a,b) => a.id - b.id);
+            ultP = rifornimentiOrdinati[rifornimentiOrdinati.length - 1].prezzo;
+        }
         let costoB_Turni = litriS * ultP, nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
         document.getElementById('lordo').innerText = lordoA.toFixed(2); document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
@@ -211,6 +215,7 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
         let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; document.getElementById('perc').innerText = Math.round(p) + '%'; document.getElementById('bar').style.width = p + '%';
     }
+
     function apriStorico() {
         let h = ""; const tutti = [...db.turni.map(t=>({...t,tipo:'T'})), ...db.rifornimenti.map(r=>({...r,tipo:'B'}))].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
@@ -220,6 +225,7 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
     }
+
     function apriReport() {
         const n = new Date();
         document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
@@ -227,12 +233,41 @@ class="modal no-print"><div class="modal-content" style="border-color: var(--acc
         db.turni.sort((a,b)=>a.id-b.id).forEach(t => { let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(1)}L</td></tr>`; });
         db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
         document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>"; document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        let taxV = tL * (db.tax/100), ultP = db.rifornimenti.length > 0 ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 1.85, costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+        let ultP = 0;
+        if (db.rifornimenti && db.rifornimenti.length > 0) {
+            const rifornimentiOrdinati = [...db.rifornimenti].sort((a,b) => a.id - b.id);
+            ultP = rifornimentiOrdinati[rifornimentiOrdinati.length - 1].prezzo;
+        }
+        let taxV = tL * (db.tax/100), costoB_Stimata = tLS * ultP, mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
         document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TOTALI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO REALE LAVORO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><hr style="border:0; border-top:1px solid #eee; margin:10px 0;"><div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'flex';
     }
+
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2025;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; const p = id==='modalTurno'?'dateT':'dateB'; document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
-    function salvaTurno() { const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`; db.turni.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), lordo:parseFloat(document.getElementById('tL').value)||0, ore:parseFloat(document.getElementById('tO').value)||0, km:parseFloat(document.getElementById('tK').value)||0, cons:parseFloat(document.getElementById('tC').value)||0}); salvaDB(); chiudiModali(); }
+    
+    function salvaTurno() { 
+        const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
+        if (db.rifornimenti.length === 0) {
+            let pRif = prompt("⚠️ NESSUN RIFORNIMENTO TROVATO!\nPer calcolare il netto, inserisci il prezzo al litro dell'ultimo rifornimento (es. 1.752):");
+            if (pRif === null || pRif === "" || isNaN(pRif.replace(',','.'))) {
+                alert("Operazione annullata. Devi inserire un prezzo valido per salvare il turno.");
+                return;
+            }
+            db.rifornimenti.push({ id: Date.now() - 1000, data: d, ora: "00:00", euro: 0, prezzo: parseFloat(pRif.replace(',','.')) });
+        }
+        db.turni.push({
+            id: Date.now(), 
+            data: d, 
+            ora: new Date().toLocaleTimeString().substring(0,5), 
+            lordo: parseFloat(document.getElementById('tL').value)||0, 
+            ore: parseFloat(document.getElementById('tO').value)||0, 
+            km: parseFloat(document.getElementById('tK').value)||0, 
+            cons: parseFloat(document.getElementById('tC').value)||0
+        }); 
+        salvaDB(); 
+        chiudiModali(); 
+    }
+
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value.replace(',','.'))||0}); salvaDB(); chiudiModali(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
