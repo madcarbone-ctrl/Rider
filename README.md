@@ -1,5 +1,5 @@
 # RIDER TRACKER PRO 1.0 - Manuale Integrale
-**Versione: 1.0.0 (Ufficiale)**
+**Versione: 1.1 (Ufficiale)**
 
 ---
 
