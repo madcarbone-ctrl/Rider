@@ -1,112 +1,303 @@
-# RIDER TRACKER PRO 1.0 - Manuale Integrale
-**Versione: 1.1 (Ufficiale)**
+# 🚴 RIDER TRACKER PRO 1.1
+**Controllo reale del guadagno per Rider professionisti**
 
 ---
 
-## 🇮🇹 SEZIONE ITALIANO
+## 📌 COS’È RIDER TRACKER PRO
+**Rider Tracker Pro** è una Progressive Web App (PWA) pensata per Rider professionisti che vogliono capire **quanto guadagnano davvero**, non solo quanto incassano.
 
-### **1. FILOSOFIA E SCOPO DEL PROGETTO**
-**Rider Tracker Pro 1.0** nasce per dare ai Rider professionisti il controllo totale sul proprio reale guadagno. Il "Lordo" è ingannevole: questa app calcola il **Netto Reale** sottraendo tasse e costi carburante in tempo reale. Tutto risiede nella memoria locale del tuo smartphone (LocalStorage).
+Il “Lordo” è un numero incompleto.  
+Questa app calcola il **Netto Economico Reale**, sottraendo:
+- tasse
+- costo carburante imputato ai turni
 
-### **2. LOGICA DEI COMANDI: COSA SUCCEDE QUANDO PREMI...**
-
-#### **Pulsanti della Dashboard (Interazioni Rapide)**
-* **Titolo "RIDER TRACKER PRO":** Forza l'apertura del messaggio "Fine Mese" per accedere alla stampa del report in qualsiasi momento.
-* **Input "TARGET":** Ricalcola istantaneamente la barra di progresso e la cifra "Mancante" in base all'obiettivo netto mensile.
-* **Input "TAX %":** Aggiorna l'aliquota fiscale applicata al lordo per il calcolo del netto.
-
-#### **Pulsanti della Navigazione (Sticky Footer)**
-
-* **Tasto TURNO (+):** Apre la finestra per registrare l'attività lavorativa.
-    * **Lordo (€):** Inserisci quanto guadagnato a fine turno (dato recuperabile dall'app di delivery).
-    * **Ore lavorate:** Inserisci il tempo effettivo di lavoro.
-    * **Chilometri percorsi:** Dato da verificare sul contachilometri del veicolo a fine turno.
-    * **Consumo (L/100km):** Verifica questo dato sulla dashboard/computer di bordo del tuo veicolo. 
-    * *Nota:* Se il tuo veicolo non è dotato di monitoraggio elettronico dei consumi, **lascia il campo vuoto**.
-
-* **Tasto BENZINA (⛽):** Apre la finestra per registrare le spese di carburante.
-    * **Euro spesi (€):** L'importo totale pagato al distributore.
-    * **Prezzo (€/L):** Il costo della benzina al litro esposto alla pompa nel momento del rifornimento.
-    * *Nota:* Entrambi i dati vanno verificati e inseriti nel momento in cui si effettua benzina.
-
-* **Tasto STORICO (🕒):** Mostra la lista cronologica di turni e rifornimenti, calcolando l'efficienza specifica per ogni singola voce.
-
-* **Tasto GENERA REPORT PDF:** Compila tutte le somme del mese e genera un documento professionale stampabile o salvabile in PDF.
-
-* **Tasto AZZERA DATABASE (Rosso):** Cancella permanentemente tutti i dati salvati per ricominciare un nuovo periodo.
-
-#### **Pulsanti all'interno delle Finestre (Modal)**
-* **Tasto SALVA:** Valida i dati, li registra nel database e **attiva automaticamente il pop-up di Backup** per mettere al sicuro i nuovi inserimenti.
-* **Tasto "X" (Storico):** Previa conferma, elimina definitivamente un singolo errore di inserimento.
-* **Tasto ANNULLA:** Chiude la finestra senza apportare modifiche.
-
-#### **Area Backup & Sicurezza**
-* **ESPORTA DATABASE (.JSON):** Crea un file di salvataggio fisico del tuo database.
-* **IMPORTA DATABASE (.JSON):** Permette di ripristinare i tuoi dati su un nuovo dispositivo o dopo una pulizia del browser.
-
-### **3. GUIDA OPERATIVA E FUNZIONI**
-* **LORDO/NETTO:** Monitoraggio in tempo reale del guadagno pulito.
-* **LITRI STIMATI:** Calcolo del consumo basato sulla resa dichiarata del veicolo.
-* **SICUREZZA PREZZO INIZIALE:** L'app richiede un prezzo benzina iniziale per garantire la precisione dei calcoli fin dal primo utilizzo.
-
-### **⚠️ AVVERTENZE TECNICHE**
-1.  **OTTIMIZZAZIONE MOBILE:** Progettato per l'uso a una mano con tastiera intelligente.
-2.  **DECIMALI:** Usa sempre il **PUNTO (.)** (es. 1.752) per i valori numerici.
+Tutti i dati restano **esclusivamente sul tuo dispositivo** tramite **LocalStorage**.  
+Nessun account, nessun cloud, nessuna dipendenza esterna.
 
 ---
 
-## 🇺🇸 ENGLISH SECTION
+## 🎯 FILOSOFIA DEL PROGETTO
+Rider Tracker Pro **non è un gestionale fiscale** e non vuole esserlo.
 
-### **1. PHILOSOPHY AND SCOPE**
-**Rider Tracker Pro 1.0** was created to give professional Riders total control over their real earnings. "Gross" income is misleading: this app calculates **Real Net** by subtracting taxes and fuel costs in real-time. Everything is stored locally on your smartphone (LocalStorage).
+È uno strumento di:
+- **controllo di gestione personale**
+- **analisi dell’efficienza lavorativa**
+- **supporto decisionale**
 
-### **2. COMMAND LOGIC: WHAT HAPPENS WHEN YOU PRESS...**
-
-#### **Dashboard Buttons (Quick Interactions)**
-* **"RIDER TRACKER PRO" Title:** Forces the "End of Month" message to open, allowing you to access the report printout at any time.
-* **"TARGET" Input:** Instantly recalculates the progress bar and the "Missing" amount based on your monthly net goal.
-* **"TAX %" Input:** Updates the tax rate applied to the gross income for the net calculation.
-
-#### **Navigation Buttons (Sticky Footer)**
-
-* **SHIFT Button (+):** Opens the window to log your work activity.
-    * **Gross (€):** Enter the amount earned at the end of the shift (recoverable from your delivery app).
-    * **Hours worked:** Enter the actual working time.
-    * **Kilometers traveled:** Data to be verified on the vehicle's odometer at the end of the shift.
-    * **Consumption (L/100km):** Verify this data on your vehicle's dashboard/trip computer.
-    * *Note:* If your vehicle is not equipped with electronic fuel monitoring, **leave the field empty**.
-
-* **FUEL Button (⛽):** Opens the window to log fuel expenses.
-    * **Euro spent (€):** The total amount paid at the gas station.
-    * **Price (€/L):** The cost of fuel per liter shown on the pump at the time of refueling.
-    * *Note:* Both data points must be verified and entered at the time of refueling.
-
-* **HISTORY Button (🕒):** Shows the chronological list of shifts and refuels, calculating the specific efficiency for each entry.
-
-* **GENERATE PDF REPORT:** Compiles all monthly totals and generates a professional document that can be printed or saved as a PDF.
-
-* **RESET DATABASE (Red):** Permanently deletes all saved data to start a new period.
-
-#### **Modal Window Buttons**
-* **SAVE Button:** Validates the data, records it in the database, and **automatically triggers the Backup pop-up** to secure new entries.
-* **"X" Button (History):** After confirmation, permanently deletes a single entry error.
-* **CANCEL Button:** Closes the window without making changes.
-
-#### **Backup & Security Area**
-* **EXPORT DATABASE (.JSON):** Creates a physical backup file of your database.
-* **IMPORT DATABASE (.JSON):** Allows you to restore your data on a new device or after a browser cleanup.
-
-### **3. OPERATIONAL GUIDE AND FUNCTIONS**
-* **GROSS/NET:** Real-time monitoring of clean earnings.
-* **ESTIMATED LITERS:** Consumption calculation based on the vehicle's declared efficiency.
-* **INITIAL PRICE SECURITY:** The app requires an initial fuel price to ensure calculation accuracy from the first use.
-
-### **⚠️ TECHNICAL NOTES**
-1. **MOBILE OPTIMIZATION:** Designed for one-handed use with a smart keyboard.
-2. **DECIMALS:** Always use a **DOT (.)** (e.g., 1.752) for numerical values.
+L’obiettivo non è la precisione “da commercialista”, ma:
+> **evitare decisioni sbagliate basate su numeri ingannevoli**
 
 ---
 
-**PROGETTATO E PENSATO DA: [MARCO CARBONE](https://facebook.com/madmaddj)**
+## 🧠 COME FUNZIONA IL MODELLO DI CALCOLO
 
-**P.S. LALLA INFAME**
+### 🔹 Turni
+Ogni turno registra:
+- lordo
+- ore
+- chilometri
+- consumo (L/100km)
+
+Il consumo è **dichiarativo**:
+- se il veicolo non lo fornisce → il campo può restare vuoto
+- il sistema usa solo dati realmente inseriti
+
+---
+
+### 🔹 Rifornimenti (⛽)
+I rifornimenti **NON vengono scaricati direttamente sul netto**.
+
+Servono a:
+- definire il **prezzo al litro valido**
+- che viene associato automaticamente ai turni successivi
+
+Il costo carburante viene calcolato come:
+
+litri stimati × prezzo €/L del periodo
+
+Questo evita:
+- mesi falsamente “in perdita”
+- distorsioni dovute ai pieni anticipati
+
+---
+
+### 🔹 Prezzo iniziale
+Se il mese inizia senza rifornimenti:
+- l’app chiede il **prezzo dell’ultimo rifornimento noto**
+- garantendo continuità di calcolo
+
+---
+
+## 📊 ANALISI EFFICIENZA OPERATIVA (NOVITÀ v1.1)
+
+La versione **1.1** introduce un’analisi avanzata **senza modificare l’interfaccia**.
+
+Nel **Report PDF** viene aggiunta una sezione di:
+
+### 🔍 Analisi dei Periodi di Consumo
+Il sistema:
+- analizza i turni in ordine cronologico
+- individua **cambi strutturali di consumo**
+- segmenta automaticamente il mese in **periodi omogenei**
+
+Per ogni periodo vengono calcolati:
+- consumo medio
+- costo carburante
+- netto
+- netto orario (€ / h)
+- netto chilometrico (€ / km)
+
+Questa analisi è **diagnostica** e **non modifica** i calcoli economici.
+
+---
+
+## 🧾 REPORT PDF
+Il report mensile include:
+- dettaglio turni
+- dettaglio rifornimenti
+- analisi efficienza operativa
+- riepilogo finale netto
+
+Pensato per:
+- stampa
+- archiviazione
+- confronto tra mesi
+
+---
+
+## 💾 BACKUP & SICUREZZA
+Funzioni disponibili:
+- **Esporta database (.json)**
+- **Importa database (.json)**
+
+Utile per:
+- cambio dispositivo
+- pulizia browser
+- sicurezza dei dati
+
+---
+
+## ⚠️ NOTE TECNICHE
+- App ottimizzata per **uso mobile**
+- Funziona **offline**
+- Usa **solo il punto (.)** come separatore decimale
+- Nessun dato viene inviato online
+
+---
+
+## 🧑‍💻 TECNOLOGIE
+- HTML5
+- CSS3
+- JavaScript Vanilla
+- LocalStorage
+- PWA-ready
+
+---
+
+## 👤 AUTORE
+**Progettato e pensato da:**  
+[Marco Carbone](https://facebook.com/madmaddj)
+
+---
+
+## 📝 DISCLAIMER
+Questo software fornisce **stime economiche operative**  
+e non sostituisce strumenti fiscali o consulenza professionale.
+
+---
+
+**Versione:** 1.1  
+**Stato:** stabile
+
+***ENGLISH VERSION
+
+# 🚴 RIDER TRACKER PRO 1.1
+**Real earnings control for professional Riders**
+
+---
+
+## 📌 WHAT RIDER TRACKER PRO IS
+**Rider Tracker Pro** is a Progressive Web App (PWA) designed for professional Riders who want to understand **how much they actually earn**, not just how much they collect.
+
+“Gross” income is misleading.  
+This app calculates **Real Economic Net**, subtracting:
+- taxes
+- fuel costs allocated to work shifts
+
+All data is stored **exclusively on your device** using **LocalStorage**.  
+No accounts, no cloud, no external dependencies.
+
+---
+
+## 🎯 PROJECT PHILOSOPHY
+Rider Tracker Pro **is not a tax management tool** and does not aim to be one.
+
+It is a tool for:
+- **personal cost control**
+- **work efficiency analysis**
+- **decision support**
+
+The goal is not accountant-level precision, but to:
+> **avoid bad decisions based on misleading numbers**
+
+---
+
+## 🧠 HOW THE CALCULATION MODEL WORKS
+
+### 🔹 Shifts
+Each shift records:
+- gross income
+- hours worked
+- kilometers traveled
+- consumption (L/100km)
+
+Consumption is **declarative**:
+- if your vehicle does not provide it → the field can be left empty
+- the system only uses data that is actually entered
+
+---
+
+### 🔹 Refuels (⛽)
+Refuels are **NOT directly subtracted from net earnings**.
+
+They are used to:
+- define the **valid fuel price per liter**
+- which is automatically applied to subsequent shifts
+
+Fuel cost is calculated as:
+
+estimated liters × €/L price of the period
+
+This prevents:
+- falsely “negative” months
+- distortions caused by advance refueling
+
+---
+
+### 🔹 Initial price
+If a month starts without any refuels:
+- the app asks for the **last known fuel price**
+- ensuring calculation continuity
+
+---
+
+## 📊 OPERATIONAL EFFICIENCY ANALYSIS (NEW v1.1)
+
+Version **1.1** introduces advanced analysis **without modifying the interface**.
+
+In the **PDF Report**, an additional section is included:
+
+### 🔍 Consumption Period Analysis
+The system:
+- analyzes shifts in chronological order
+- detects **structural changes in consumption**
+- automatically segments the month into **homogeneous periods**
+
+For each period, it calculates:
+- average consumption
+- fuel cost
+- net earnings
+- net hourly rate (€ / h)
+- net per kilometer (€ / km)
+
+This analysis is **diagnostic only** and does **not** alter economic calculations.
+
+---
+
+## 🧾 PDF REPORT
+The monthly report includes:
+- shift details
+- refuel details
+- efficiency analysis
+- final net summary
+
+Designed for:
+- printing
+- personal archiving
+- month-to-month comparison
+
+---
+
+## 💾 BACKUP & SECURITY
+Available functions:
+- **Export database (.json)**
+- **Import database (.json)**
+
+Useful for:
+- device changes
+- browser cleanup
+- data safety
+
+---
+
+## ⚠️ TECHNICAL NOTES
+- Optimized for **mobile use**
+- Works **offline**
+- Uses **dot (.) only** as decimal separator
+- No data is sent online
+
+---
+
+## 🧑‍💻 TECHNOLOGIES
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- LocalStorage
+- PWA-ready
+
+---
+
+## 👤 AUTHOR
+**Designed and developed by:**  
+[Marco Carbone](https://facebook.com/madmaddj)
+
+---
+
+## 📝 DISCLAIMER
+This software provides **operational economic estimates**  
+and does not replace tax tools or professional consulting.
+
+---
+
+**Version:** 1.1  
+**Status:** stable
