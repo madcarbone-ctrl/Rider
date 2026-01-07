@@ -3,10 +3,10 @@
 
 ---
 
-## 📌 COS’È RIDER TRACKER PRO
+## 📌 COS'È RIDER TRACKER PRO
 **Rider Tracker Pro** è una Progressive Web App (PWA) pensata per Rider professionisti che vogliono capire **quanto guadagnano davvero**, non solo quanto incassano.
 
-Il “Lordo” è un numero incompleto.  
+Il "Lordo" è un numero incompleto.  
 Questa app calcola il **Netto Economico Reale**, sottraendo:
 - tasse
 - costo carburante imputato ai turni
@@ -21,10 +21,10 @@ Rider Tracker Pro **non è un gestionale fiscale** e non vuole esserlo.
 
 È uno strumento di:
 - **controllo di gestione personale**
-- **analisi dell’efficienza lavorativa**
+- **analisi dell'efficienza lavorativa**
 - **supporto decisionale**
 
-L’obiettivo non è la precisione “da commercialista”, ma:
+L'obiettivo non è la precisione "da commercialista", ma:
 > **evitare decisioni sbagliate basate su numeri ingannevoli**
 
 ---
@@ -53,24 +53,53 @@ Servono a:
 
 Il costo carburante viene calcolato come:
 
-litri stimati × prezzo €/L del periodo
+**litri stimati × prezzo €/L del periodo**
 
 Questo evita:
-- mesi falsamente “in perdita”
+- mesi falsamente "in perdita"
 - distorsioni dovute ai pieni anticipati
 
 ---
 
 ### 🔹 Prezzo iniziale
 Se il mese inizia senza rifornimenti:
-- l’app chiede il **prezzo dell’ultimo rifornimento noto**
+- l'app chiede il **prezzo dell'ultimo rifornimento noto**
 - garantendo continuità di calcolo
+
+---
+
+### ℹ️ DIFFERENZA TRA "SPESA BENZINA" E "RIFORNIMENTI"
+
+**SPESA BENZINA** (mostrata nel dashboard):
+- è il **costo stimato del carburante consumato durante i turni**
+- calcolato come: km percorsi × consumo × prezzo/litro del periodo
+- rappresenta il costo **imputabile all'attività lavorativa**
+
+**RIFORNIMENTI** (visibili nel report):
+- sono gli **importi reali pagati al distributore**
+- servono solo come **marcatori di prezzo** per calcolare i costi dei turni
+
+È **normale** che questi due valori siano diversi:
+- se fai un pieno prima dell'inizio del mese, quella spesa non impatta il calcolo del mese corrente
+- se finisci il mese con il serbatoio mezzo pieno, quella benzina verrà "pagata" economicamente nei turni già registrati
+
+**Esempio pratico:**
+```
+Turni di gennaio: 800 km × 4L/100km × €1.85/L = €59.20 (SPESA BENZINA)
+Rifornimenti di gennaio: €35 (10 gen) + €40 (28 gen) = €75 (RIFORNIMENTI REALI)
+
+La differenza (€15.80) dipende da:
+- pieno fatto a fine dicembre
+- serbatoio non completamente vuoto a fine gennaio
+```
+
+Il modello **"imputazione al consumo"** è più corretto economicamente rispetto al modello **"cassa"** (pago → scarico).
 
 ---
 
 ## 📊 ANALISI EFFICIENZA OPERATIVA (NOVITÀ v1.1)
 
-La versione **1.1** introduce un’analisi avanzata **senza modificare l’interfaccia**.
+La versione **1.1** introduce un'analisi avanzata **senza modificare l'interfaccia**.
 
 Nel **Report PDF** viene aggiunta una sezione di:
 
@@ -88,6 +117,11 @@ Per ogni periodo vengono calcolati:
 - netto chilometrico (€ / km)
 
 Questa analisi è **diagnostica** e **non modifica** i calcoli economici.
+
+**Utilità pratica:**
+- individuare cali di efficienza (es. problema meccanico, cambio percorsi)
+- confrontare performance in condizioni diverse (meteo, orari, zone)
+- ottimizzare strategie di lavoro basandosi su dati oggettivi
 
 ---
 
@@ -149,7 +183,9 @@ e non sostituisce strumenti fiscali o consulenza professionale.
 **Versione:** 1.1  
 **Stato:** stabile
 
-***ENGLISH VERSION
+---
+
+---
 
 # 🚴 RIDER TRACKER PRO 1.1
 **Real earnings control for professional Riders**
@@ -159,7 +195,7 @@ e non sostituisce strumenti fiscali o consulenza professionale.
 ## 📌 WHAT RIDER TRACKER PRO IS
 **Rider Tracker Pro** is a Progressive Web App (PWA) designed for professional Riders who want to understand **how much they actually earn**, not just how much they collect.
 
-“Gross” income is misleading.  
+"Gross" income is misleading.  
 This app calculates **Real Economic Net**, subtracting:
 - taxes
 - fuel costs allocated to work shifts
@@ -206,10 +242,10 @@ They are used to:
 
 Fuel cost is calculated as:
 
-estimated liters × €/L price of the period
+**estimated liters × €/L price of the period**
 
 This prevents:
-- falsely “negative” months
+- falsely "negative" months
 - distortions caused by advance refueling
 
 ---
@@ -218,6 +254,35 @@ This prevents:
 If a month starts without any refuels:
 - the app asks for the **last known fuel price**
 - ensuring calculation continuity
+
+---
+
+### ℹ️ DIFFERENCE BETWEEN "FUEL EXPENSE" AND "REFUELS"
+
+**FUEL EXPENSE** (shown in dashboard):
+- is the **estimated cost of fuel consumed during shifts**
+- calculated as: km traveled × consumption × price/liter of the period
+- represents the cost **attributable to work activity**
+
+**REFUELS** (visible in report):
+- are the **actual amounts paid at gas stations**
+- serve only as **price markers** to calculate shift costs
+
+It is **normal** for these two values to differ:
+- if you refuel before the month starts, that expense doesn't impact the current month's calculation
+- if you end the month with a half-full tank, that fuel will be "paid for" economically in already recorded shifts
+
+**Practical example:**
+```
+January shifts: 800 km × 4L/100km × €1.85/L = €59.20 (FUEL EXPENSE)
+January refuels: €35 (Jan 10) + €40 (Jan 28) = €75 (ACTUAL REFUELS)
+
+The difference (€15.80) depends on:
+- refuel made at end of December
+- tank not completely empty at end of January
+```
+
+The **"consumption allocation"** model is more economically correct than the **"cash basis"** model (pay → deduct).
 
 ---
 
@@ -241,6 +306,11 @@ For each period, it calculates:
 - net per kilometer (€ / km)
 
 This analysis is **diagnostic only** and does **not** alter economic calculations.
+
+**Practical utility:**
+- identify efficiency drops (e.g., mechanical issues, route changes)
+- compare performance under different conditions (weather, schedules, areas)
+- optimize work strategies based on objective data
 
 ---
 
