@@ -56,7 +56,7 @@
         .btn-close { background:#333; color:#fff; }
         .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
-        .foot-btn i { font-size:22px; color:var(--primary); margin-bottom:6px; }
+        .foot-btn i { font-size:22px; margin-bottom:6px; }
         .btn-full { grid-column:span 4; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; }
         .btn-reset-soft { grid-column:span 4; background:var(--red-soft); color:#ccc; border:none; padding:12px; border-radius:12px; font-weight:bold; font-size:11px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .storico-item { background:#0f0f0f; padding:15px 5px; border-top:1px solid #333; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px; position: relative; }
@@ -94,7 +94,6 @@
         
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        
         <div id="modalExtra" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color:var(--accent)">KM EXTRA</h3><div id="dateE" class="date-row"></div><input type="number" id="extraKmInput" placeholder="Chilometri percorsi" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--accent); color: #fff;" onclick="salvaExtraKm()">SALVA EXTRA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         
         <div id="modalInizio" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">⛽ ULTIMO PREZZO</h3><p style="font-size: 11px; color: var(--dim); margin-bottom: 15px; text-transform: uppercase;">Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:</p><input type="text" id="pIniziale" placeholder="0.000" inputmode="decimal" oninput="formattaPrezzo(this)" style="text-align: center; font-size: 24px; color: var(--primary); font-weight: bold;"><button class="btn-modal btn-save" onclick="confermaPrezzoIniziale()">IMPOSTA E SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
@@ -120,10 +119,10 @@
         </div>
 
         <div class="sticky-footer no-print">
-            <div class="foot-btn" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle"></i>TURNO</div>
-            <div class="foot-btn" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump"></i>BENZINA</div>
+            <div class="foot-btn" style="color:var(--primary)" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle" style="color:var(--primary)"></i>TURNO</div>
+            <div class="foot-btn" style="color:var(--orange)" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump" style="color:var(--orange)"></i>BENZINA</div>
             <div class="foot-btn" style="color:var(--accent)" onclick="apriM('modalExtra')"><i class="fas fa-road" style="color:var(--accent)"></i>EXTRA</div>
-            <div class="foot-btn" onclick="apriStorico()"><i class="fas fa-history"></i>STORICO</div>
+            <div class="foot-btn" style="color:#ffffff" onclick="apriStorico()"><i class="fas fa-history" style="color:#ffffff"></i>STORICO</div>
             <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
             <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
         </div>
