@@ -41,9 +41,9 @@
         .report-table th, .report-table td { border:1px solid #000; padding:4px; text-align: center; }
         .report-table th { background: #eee; }
         .summary-box { border:2px solid #000; padding:10px; background:#fff; }
-        .summary-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #000; font-size:11px; }
+        .summary-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px dashed #000; font-size:11px; }
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; border-bottom:none; }
-        .summary-row.monitor { color: #555; border-bottom: none; font-style: italic; }
+        .summary-row.extra-row { color: #d32f2f; font-weight: bold; border-bottom: 1px solid #eee; }
         .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 10px; color: #000; text-transform: uppercase; font-size: 12px; }
         .btn-save-backup { background: var(--primary); }
         .btn-load-backup { background: #444; color: #fff; }
@@ -255,7 +255,7 @@
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div>
             <div class="summary-row"><span>KILOMETRI TURNI:</span><span>${tK} km</span></div>
-            <div class="summary-row monitor"><span>KM EXTRA:</span><span>${getTotaleKmExtra()} km</span></div>
+            <div class="summary-row extra-row"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div>
             <div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div>
             <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
             <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
@@ -263,7 +263,7 @@
             <div class="summary-row"><span>BENZINA TURNI (STIMATA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div>
             <div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div>
             <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-            <div class="summary-row monitor"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+            <div class="summary-row" style="color:#555; border:none;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
         
         document.getElementById('reportView').style.display = 'flex';
     }
@@ -303,5 +303,3 @@
 </script>
 </body>
 </html>
-        
-                                                                                                                                                                        </div>
