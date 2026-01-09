@@ -20,7 +20,7 @@
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
         
-        /* MODIFICA: margin-bottom a 10px */
+        /* Spaziatura Griglia: 10px */
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:10px; }
         
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
@@ -30,7 +30,7 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        /* MODIFICA: margin-top 0 e margin-bottom 10px */
+        /* Spaziatura Progress Container: 10px sopra e sotto */
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 0px; margin-bottom:10px; border:1px solid #333; display: flex; flex-direction: column; gap: 8px; }
         
         .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; letter-spacing: 1px; }
@@ -68,7 +68,7 @@
         .summary-row { display:flex; justify-content:space-between; padding:4px 0; font-size:11px; color: #000; }
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; padding-bottom: 10px; }
         
-        /* MODIFICA: position static per far salire il blocco sotto la percentuale */
+        /* Footer Statico per mantenere i 10px di spazio dalla progress bar */
         .sticky-footer { position:static; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; margin-top:0px; }
         
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
@@ -93,81 +93,7 @@
         .date-row { display:flex; gap:8px; margin-bottom:10px; }
         .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; font-size: 14px; }
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .report-scroll-area { overflow: visible; } }
-    </style>
-</head>
-<body>
-    <div id="mainContainer">
-        <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.1</div>
-        <div class="grid no-print">
-            <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
-            <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
-            <div class="card"><span class="label">ORE</span><span class="val" id="ore">0.0</span></div>
-            <div class="card"><span class="label">LITRI STIM.</span><span class="val" id="cons">0.0L</span></div>
-            <div class="card"><span class="label">KM/L</span><span class="val" id="kml">0.0</span></div>
-            <div class="card"><span class="label">SPESA BENZ.</span><span class="val" id="spesaB">€0.00</span></div>
-            <div class="card"><span class="label">TARGET</span><input type="number" id="targetIn" oninput="aggiornaTarget()" autocomplete="off"></div>
-            <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
-            <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
-        </div>
-        <div class="progress-container no-print">
-            <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
-            <div class="progress-bar"><div id="bar"></div></div>
-            <div class="dash-info">
-                <div id="liveClock">--/--/-- 00:00:00</div>
-                <div id="mediaOraria">MEDIA: €0.00/h</div>
-            </div>
-        </div>
-        
-        <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        <div id="modalExtra" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color:var(--accent)">KM EXTRA</h3><div id="dateE" class="date-row"></div><input type="number" id="extraKmInput" placeholder="Chilometri percorsi" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--accent); color: #fff;" onclick="salvaExtraKm()">SALVA EXTRA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        <div id="modalInizio" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">⛽ ULTIMO PREZZO</h3><p style="font-size: 11px; color: var(--dim); margin-bottom: 15px; text-transform: uppercase;">Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:</p><input type="text" id="pIniziale" placeholder="0.000" inputmode="decimal" oninput="formattaPrezzo(this)" style="text-align: center; font-size: 24px; color: var(--primary); font-weight: bold;"><button class="btn-modal btn-save" onclick="confermaPrezzoIniziale()">IMPOSTA E SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
-        <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
-        <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
-        <div id="modalBackupExport" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">💾 ESPORTA DATABASE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi esportare un backup del database aggiornato?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="rifiutaBackup()">NO</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="accettaBackup()">SI</button></div></div></div>
-
-        <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
-        
-        <div id="reportView">
-            <div class="report-scroll-area">
-                <div class="report-header-mini"><h2 id="repMonthTitle">RIEPILOGO MESE DI ---</h2></div>
-                <div class="report-section"><h3>DETTAGLIO TURNI</h3><table class="report-table"><thead><tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>LITRI</th></tr></thead><tbody id="repTurniBody"></tbody></table></div>
-                <div class="report-section"><h3>DETTAGLIO RIFORNIMENTI</h3><table class="report-table"><thead><tr><th>DATA</th><th>SPESA</th><th>PREZZO/L</th><th>LITRI</th></tr></thead><tbody id="repBenzaBody"></tbody></table></div>
-                <div class="report-section"><h3>ANALISI EFFICIENZA OPERATIVA</h3><table class="report-table"><thead><tr><th>PERIODO</th><th>TURNI</th><th>KM</th><th>CONS. MEDIO</th><th>BENZINA</th><th>NETTO</th><th>€/H</th><th>€/KM</th></tr></thead><tbody id="repEfficienzaBody"></tbody></table></div>
-                <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
-            </div>
-            
-            <div class="report-fixed-footer no-print">
-                <div class="backup-grid">
-                    <button class="btn-rep-uniform btn-grey-light" onclick="salvaBackup()">
-                        <i class="fas fa-file-export"></i> Esporta DB
-                    </button>
-                    <button class="btn-rep-uniform btn-grey-light" onclick="document.getElementById('fileBackup').click()">
-                        <i class="fas fa-file-import"></i> Importa DB
-                    </button>
-                    <input type="file" id="fileBackup" accept=".json" hidden>
-                </div>
-                <div class="action-grid">
-                    <button class="btn-rep-uniform btn-black" onclick="window.print()">
-                        <i class="fas fa-print"></i> Stampa PDF
-                    </button>
-                    <button class="btn-rep-uniform btn-grey-dark" onclick="document.getElementById('reportView').style.display='none'">
-                        <i class="fas fa-times"></i> Chiudi
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="sticky-footer no-print">
-            <div class="foot-btn" style="color:var(--primary)" onclick="apriM('modalTurno')"><i class="fas fa-plus-circle" style="color:var(--primary)"></i>TURNO</div>
-            <div class="foot-btn" style="color:var(--orange)" onclick="apriM('modalBenza')"><i class="fas fa-gas-pump" style="color:var(--orange)"></i>BENZINA</div>
-            <div class="foot-btn" style="color:var(--accent)" onclick="apriM('modalExtra')"><i class="fas fa-road" style="color:var(--accent)"></i>EXTRA</div>
-            <div class="foot-btn" style="color:#ffffff" onclick="apriStorico()"><i class="fas fa-history" style="color:#ffffff"></i>STORICO</div>
-            <button class="btn-full" onclick="apriReport()">GENERA REPORT PDF</button>
-            <button class="btn-reset-soft" onclick="document.getElementById('modalConfirm').style.display='flex'">AZZERA DATABASE</button>
-        </div>
-    </div>
+                         </style>
     <script>
     const APP_VER = "1.1.0";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v34')) || { turni: [], rifornimenti: [], extraKm: [], targets: {}, tax: 20 };
@@ -181,7 +107,8 @@
             input.addEventListener('blur', () => { const content = input.closest('.modal-content'); if(content) content.style.transform = 'translateY(0)'; });
         });
     }
-        function salvaBackup() {
+
+    function salvaBackup() {
         const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.1", db: db };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -283,18 +210,49 @@
     function getTotaleKmExtra(){ return (db.extraKm || []).reduce((a,b)=>a+b.km, 0); }
 
     function apriReport() {
-        const n = new Date(); document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
+        const n = new Date(); 
+        document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
         const turni = [...db.turni].sort((a,b)=>a.id-b.id);
         let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
-        turni.forEach(t => { let l = (t.km*(t.cons/100)); tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${l.toFixed(2)}L</td></tr>`; });
-        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='6'>Nessun turno</td></tr>"; 
+
+        // Modifica Intestazione Tabella Turni nel Report per includere KM/L
+        const tableHeader = document.querySelector('.report-section table thead tr');
+        if(tableHeader) tableHeader.innerHTML = '<th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>KM/L</th><th>LITRI</th>';
+
+        turni.forEach(t => { 
+            let l = (t.km*(t.cons/100)); 
+            let kmlTurno = t.cons > 0 ? (100 / t.cons).toFixed(1) : "0.0"; 
+            tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; 
+            tH += `<tr>
+                    <td>${t.data}</td>
+                    <td>€${t.lordo.toFixed(2)}</td>
+                    <td>${t.ore}h</td>
+                    <td>${t.km}</td>
+                    <td>${t.cons}</td>
+                    <td>${kmlTurno}</td>
+                    <td>${l.toFixed(2)}L</td>
+                   </tr>`; 
+        });
+
+        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { 
+            tEB_Reale += r.euro; 
+            rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; 
+        });
+
+        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='7'>Nessun turno</td></tr>"; 
         document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        const periodi = calcolaPeriodiConsumo(turni, db.tax); let eff = "";
-        periodi.forEach((p,i)=>{ eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td><td>${p.euroKm.toFixed(2)}</td></tr>`; });
+
+        const periodi = calcolaPeriodiConsumo(turni, db.tax); 
+        let eff = "";
+        periodi.forEach((p,i)=>{ 
+            eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td><td>${p.euroKm.toFixed(2)}</td></tr>`; 
+        });
         document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='8'>Dati insufficienti</td></tr>";
+
         let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
-        let taxV = tL * (db.tax/100); let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+        let taxV = tL * (db.tax/100); 
+        let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div>
             <div class="summary-row"><span>KILOMETRI TURNI:</span><span>${tK} km</span></div>
@@ -306,6 +264,7 @@
             <div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div>
             <div class="summary-row" style="font-weight:bold; border:none; padding-top:10px; color:#000;"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div>
             <div class="summary-row" style="font-weight:bold; border:none; padding-top:5px; color:#000;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+        
         document.getElementById('reportView').style.display = 'flex';
     }
 
