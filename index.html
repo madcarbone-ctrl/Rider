@@ -44,29 +44,13 @@
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #333; border-bottom: 1px solid #333; -webkit-overflow-scrolling: touch; }
         
-        /* --- SEZIONE REPORT: TUTTI I TASTI UGUALI --- */
+        /* --- SEZIONE REPORT: TASTI UNIFORMATI --- */
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; flex-direction:column; text-align:left; }
         .report-scroll-area { flex: 1; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
         .report-fixed-footer { padding: 20px 15px 45px 15px; border-top: 2px solid #eee; background: #fff; }
-        
         .backup-grid, .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .backup-grid { margin-bottom: 10px; }
-        
-        .btn-rep-uniform { 
-            width: 100%; 
-            padding: 16px 5px; 
-            border-radius: 14px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            font-size: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            cursor: pointer;
-            border: none;
-        }
-        
+        .btn-rep-uniform { width: 100%; padding: 16px 5px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; }
         .btn-grey-light { background: #f0f0f0; color: #333; border: 1px solid #ccc; }
         .btn-black { background: #000; color: #fff; }
         .btn-grey-dark { background: #444; color: #fff; }
@@ -260,7 +244,11 @@
         ].sort((a,b)=>b.id-a.id);
         tutti.forEach(i => {
             let color, label, sub, val, icon;
-            if(i.tipo==='T') { icon='fa-wallet'; color='var(--primary)'; label='TURNO'; val=`€${i.lordo.toFixed(2)}`; sub=`${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${(i.km*(i.cons/100)).toFixed(2)}L | Prezzo: €${(i.prezzo||0).toFixed(3)}`; }
+            if(i.tipo==='T') { 
+                icon='fa-wallet'; color='var(--primary)'; label='TURNO'; val=`€${i.lordo.toFixed(2)}`; 
+                let kmlSub = i.cons > 0 ? (100 / i.cons).toFixed(1) : '0.0'; // CALCOLO KM/L
+                sub=`${i.km}km | ${i.ore}h | Cons. ${i.cons}/100 (${kmlSub} km/l)<br>${(i.km*(i.cons/100)).toFixed(2)}L | Prezzo: €${(i.prezzo||0).toFixed(3)}`; 
+            }
             else if(i.tipo==='B') { icon='fa-gas-pump'; color='var(--orange)'; label='BENZINA'; val=`€${i.euro.toFixed(2)}`; sub=`${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`; }
             else { icon='fa-road'; color='var(--accent)'; label='EXTRA'; val=`${i.km} KM`; sub=`Chilometri extra isolati`; }
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}"><i class="fas ${icon}"></i>${label}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora || ''}</span></div><div class="storico-main">${val}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${i.tipo==='T'?'turni':(i.tipo==='B'?'rifornimenti':'extraKm')}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
