@@ -16,7 +16,6 @@
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
-        /* Feedback tattile tasti */
         .foot-btn:active, .btn-full:active { transform: scale(0.95); transition: 0.1s; }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
@@ -33,12 +32,10 @@
         .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
         
-        /* Zona Dashboard Orario/Media */
         .dash-info { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-top: 5px; }
         #liveClock { font-weight:bold; color:var(--dim); font-size:11px; text-transform: uppercase; }
         #mediaOraria { font-weight:bold; color:var(--primary); font-size:12px; }
 
-        /* Effetto Blur Modali */
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:90%; max-width:320px; border:2px solid var(--primary); margin: auto; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal h3 { margin-top: 0; font-size: 18px; color: var(--primary); text-transform: uppercase; }
@@ -49,7 +46,11 @@
         
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; flex-direction:column; text-align:left; }
         .report-scroll-area { flex: 1; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
-        .report-fixed-footer { padding: 15px; border-top: 2px solid #eee; background: #fff; }
+        
+        /* FOOTER REPORT UNIFORMATO */
+        .report-fixed-footer { padding: 15px 15px 40px 15px; border-top: 2px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 10px; }
+        .report-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
         .report-header-mini { border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px; text-align: center; }
         .report-header-mini h2 { font-size:16px; margin:0; text-transform:uppercase; color: #000; letter-spacing: 1px; }
         .report-table { width:100%; border-collapse:collapse; font-size:9px; margin-bottom: 15px; }
@@ -73,15 +74,20 @@
         .storico-main { font-size:18px; font-weight:bold; margin-top: 2px; }
         .storico-sub { font-size:10px; color:var(--dim); line-height: 1.4; }
         
-        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; margin-top:8px; font-size: 15px; }
+        .btn-modal { width:100%; padding:14px; border-radius:12px; border:none; font-weight:bold; font-size: 14px; }
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
         .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-confirm-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
-        .btn-backup { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; margin-bottom: 10px; color: #000; text-transform: uppercase; font-size: 12px; }
-        .btn-save-backup { background: var(--primary); }
-        .btn-load-backup { background: #444; color: #fff; }
+        
+        /* Uniformazione pulsanti Report */
+        .btn-rep-action { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; text-transform: uppercase; font-size: 11px; }
+        .btn-backup-save { background: var(--primary); color: #000; }
+        .btn-backup-load { background: #444; color: #fff; }
+        .btn-rep-print { background: #000; color: #fff; }
+        .btn-rep-close { background: #888; color: #fff; }
+
         .date-row { display:flex; gap:8px; margin-bottom:10px; }
         .date-row select { background:#333; color:#fff; padding:10px; border-radius:10px; flex:1; border:1px solid #444; font-size: 14px; }
         @media print { body * { visibility: hidden; } #reportView, #reportView * { visibility: visible; } .no-print { display: none !important; visibility: hidden !important; } #reportView { position: absolute; left: 0; top: 0; width: 100%; display: block !important; } .report-scroll-area { overflow: visible; } }
@@ -90,6 +96,7 @@
 <body>
     <div id="mainContainer">
         <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.1</div>
+        
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -101,6 +108,7 @@
             <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
+
         <div class="progress-container no-print">
             <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
@@ -130,9 +138,16 @@
                 <div class="report-section"><h3>ANALISI EFFICIENZA OPERATIVA</h3><table class="report-table"><thead><tr><th>PERIODO</th><th>TURNI</th><th>KM</th><th>CONS. MEDIO</th><th>BENZINA</th><th>NETTO</th><th>€/H</th><th>€/KM</th></tr></thead><tbody id="repEfficienzaBody"></tbody></table></div>
                 <div class="report-section"><h3>RIEPILOGO FINALE</h3><div class="summary-box" id="repFinalSummary"></div></div>
             </div>
+            
             <div class="report-fixed-footer no-print">
-                <div class="backup-section"><h3 style="margin:0 0 10px 0; font-size:14px; text-align:center;">AREA BACKUP & SICUREZZA</h3><button class="btn-backup btn-save-backup" onclick="salvaBackup()">💾 ESPORTA DATABASE (.JSON)</button><button class="btn-backup btn-load-backup" onclick="document.getElementById('fileBackup').click()">📂 IMPORTA DATABASE (.JSON)</button><input type="file" id="fileBackup" accept=".json" hidden></div>
-                <div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-modal btn-save" style="background:#000; color:#fff;" onclick="window.print()">STAMPA PDF ORA</button><button class="btn-modal btn-close" onclick="document.getElementById('reportView').style.display='none'">CHIUDI</button></div>
+                <h3 style="margin:0 0 5px 0; font-size:12px; text-align:center; color:#888; text-transform:uppercase;">Gestione Dati & Stampa</h3>
+                <div class="report-footer-grid">
+                    <button class="btn-rep-action btn-backup-save" onclick="salvaBackup()">💾 Esporta (.JSON)</button>
+                    <button class="btn-rep-action btn-backup-load" onclick="document.getElementById('fileBackup').click()">📂 Importa (.JSON)</button>
+                    <button class="btn-rep-action btn-rep-print" onclick="window.print()">🖨️ Stampa PDF</button>
+                    <button class="btn-rep-action btn-rep-close" onclick="document.getElementById('reportView').style.display='none'">❌ Chiudi</button>
+                </div>
+                <input type="file" id="fileBackup" accept=".json" hidden>
             </div>
         </div>
 
@@ -200,18 +215,14 @@
         let spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
         let costoB_Turni = db.turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
         let nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
-        
         document.getElementById('lordo').innerText = lordoA.toFixed(2); 
         document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); 
         document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
         document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
         document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
-        
-        // Calcolo Media Oraria (Netto)
         let mediaO = ore > 0 ? (nettoA / ore).toFixed(2) : "0.00";
         document.getElementById('mediaOraria').innerText = `MEDIA: €${mediaO}/h`;
-
         let tNetto = db.targets[tag] || 0; 
         document.getElementById('targetIn').value = tNetto || ""; 
         document.getElementById('taxIn').value = db.tax;
@@ -229,13 +240,11 @@
             ...db.rifornimenti.map(r=>({...r,tipo:'B'})),
             ...(db.extraKm || []).map(e=>({...e, tipo:'E'}))
         ].sort((a,b)=>b.id-a.id);
-
         tutti.forEach(i => {
             let color, label, sub, val, icon;
             if(i.tipo==='T') { icon='fa-wallet'; color='var(--primary)'; label='TURNO'; val=`€${i.lordo.toFixed(2)}`; sub=`${i.km}km | ${i.ore}h | Cons. ${i.cons}/100<br>${(i.km*(i.cons/100)).toFixed(2)}L | Prezzo: €${(i.prezzo||0).toFixed(3)}`; }
             else if(i.tipo==='B') { icon='fa-gas-pump'; color='var(--orange)'; label='BENZINA'; val=`€${i.euro.toFixed(2)}`; sub=`${i.prezzo.toFixed(3)}€/L | ${(i.euro/i.prezzo).toFixed(2)}L`; }
             else { icon='fa-road'; color='var(--accent)'; label='EXTRA'; val=`${i.km} KM`; sub=`Chilometri extra isolati`; }
-
             h += `<div class="storico-item" style="border-left:4px solid ${color}; border-right:4px solid ${color};"><div class="storico-info"><div class="tipo-label" style="color:${color}"><i class="fas ${icon}"></i>${label}</div><div class="storico-date-row"><span>${i.data}</span><span class="storico-hour">${i.ora || ''}</span></div><div class="storico-main">${val}</div><div class="storico-sub">${sub}</div></div><button onclick="elimina('${i.tipo==='T'?'turni':(i.tipo==='B'?'rifornimenti':'extraKm')}',${i.id})" style="background:none; border:none; color:red; font-size:24px; padding-right:10px;">×</button></div>`;
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
@@ -243,9 +252,7 @@
 
     function calcolaPeriodiConsumo(turni, tax) {
         if (!turni.length) return [];
-        const SOGLIA = 0.10;
-        let periodi = [];
-        let base = turni[0].cons;
+        const SOGLIA = 0.10; let periodi = []; let base = turni[0].cons;
         let corrente = { start: turni[0].data, end: turni[0].data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 };
         turni.forEach(t => {
             const diff = Math.abs(t.cons - base) / base;
@@ -260,9 +267,7 @@
         });
     }
 
-    function getTotaleKmExtra(){
-        return (db.extraKm || []).reduce((a,b)=>a+b.km, 0);
-    }
+    function getTotaleKmExtra(){ return (db.extraKm || []).reduce((a,b)=>a+b.km, 0); }
 
     function apriReport() {
         const n = new Date(); document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
@@ -277,7 +282,6 @@
         document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='8'>Dati insufficienti</td></tr>";
         let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
         let taxV = tL * (db.tax/100); let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        
         document.getElementById('repFinalSummary').innerHTML = `
             <div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div>
             <div class="summary-row"><span>KILOMETRI TURNI:</span><span>${tK} km</span></div>
@@ -289,7 +293,6 @@
             <div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div>
             <div class="summary-row" style="font-weight:bold; border:none; padding-top:10px; color:#000;"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div>
             <div class="summary-row" style="font-weight:bold; border:none; padding-top:5px; color:#000;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
-        
         document.getElementById('reportView').style.display = 'flex';
     }
 
