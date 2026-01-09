@@ -37,17 +37,80 @@
         #liveClock { font-weight:bold; color:var(--dim); font-size:11px; text-transform: uppercase; }
         #mediaOraria { font-weight:bold; color:var(--primary); font-size:12px; }
 
-        /* Footer a 8px dalla barra sopra */
+        /* Footer a 8px dalla barra sopra */<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f0f0f">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>RIDER TRACKER PRO V1.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
+        
+        /* Stile Standard (Browser) */
+        body { 
+            font-family:sans-serif; 
+            background:var(--bg); 
+            color:var(--text); 
+            margin:0; 
+            padding:10px; 
+            text-align:center; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow-x: hidden; 
+        }
+
+        /* MODIFICA PWA: Si attiva solo se installata su Home */
+        @media (display-mode: standalone) {
+            body {
+                padding-top: 55px; /* Spazio extra dal bordo superiore */
+            }
+            .app-title {
+                margin-top: 15px !important;
+                margin-bottom: 25px !important;
+            }
+        }
+        
+        .foot-btn:active, .btn-full:active { transform: scale(0.95); transition: 0.1s; }
+        .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
+        
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px; }
+        .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
+        .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
+        .val { font-size:14px; font-weight:bold; }
+        .card.main .val, #lordo, #mancante { color:var(--primary)!important; } 
+        #netto { color:var(--accent)!important; }
+        .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
+        
+        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 0; margin-bottom:8px; border:1px solid #333; display: flex; flex-direction: column; gap: 8px; }
+        .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; letter-spacing: 1px; }
+        .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; }
+        #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
+        
+        .dash-info { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-top: 5px; }
+        #liveClock { font-weight:bold; color:var(--dim); font-size:11px; text-transform: uppercase; }
+        #mediaOraria { font-weight:bold; color:var(--primary); font-size:12px; }
+
         .sticky-footer { position:relative; margin-top:0; background:#161616; padding:15px; display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; border-radius:25px; border:1px solid #333; z-index:1000; margin-bottom: 20px; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:12px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:10px; font-weight: bold; }
         .foot-btn i { font-size:20px; margin-bottom:5px; }
         .btn-full { grid-column:span 4; background:var(--primary); color:#000; padding:16px; border-radius:15px; font-weight:900; border:none; font-size: 13px; text-transform: uppercase; }
         .btn-reset-soft { grid-column:span 4; background:var(--red-soft); color:#ccc; border:none; padding:10px; border-radius:12px; font-weight:bold; font-size:10px; margin-top: 5px; text-transform: uppercase; }
 
-        /* NUOVI STILI TASTI REPORT (Più piccoli e carini) */
         .report-fixed-footer { padding: 15px; border-top: 1px solid #eee; background: #fff; }
         .backup-grid, .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
         .btn-rep-uniform { width: 100%; padding: 10px 5px; border-radius: 10px; font-weight: 700; text-transform: uppercase; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1.5px solid transparent; transition: 0.2s; }
+        .btn-grey-light { background: #f8f8f8; color: #555; border-color: #ddd; }
+        .btn-black { background: #1a1a1a; color: #fff; }
+        .btn-grey-dark { background: #666; color: #fff; }
+        .btn-rep-uniform i { font-size: 12px; }
         .btn-grey-light { background: #f8f8f8; color: #555; border-color: #ddd; }
         .btn-black { background: #1a1a1a; color: #fff; }
         .btn-grey-dark { background: #666; color: #fff; }
