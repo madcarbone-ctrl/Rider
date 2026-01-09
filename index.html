@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0f0f0f">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RiderTracker">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -14,8 +20,24 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
         
+        html, body { 
+            font-family:sans-serif; 
+            background:var(--bg); 
+            color:var(--text); 
+            margin:0; 
+            padding:10px; 
+            text-align:center; 
+            overflow: hidden !important; 
+            height: 100%; 
+            width: 100vw; 
+            position: fixed; 
+            left:0; 
+            top:0;
+            overscroll-behavior: none; /* Blocca il trascinamento/rimbalzo su Android */
+        }
+        
+        /* Feedback tattile tasti */
         .foot-btn:active, .btn-full:active { transform: scale(0.95); transition: 0.1s; }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
@@ -81,7 +103,6 @@
         .btn-confirm-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
         .btn-confirm-cancel { background: #333; color: white; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; }
         
-        /* Uniformazione pulsanti Report */
         .btn-rep-action { width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; text-transform: uppercase; font-size: 11px; }
         .btn-backup-save { background: var(--primary); color: #000; }
         .btn-backup-load { background: #444; color: #fff; }
@@ -96,7 +117,6 @@
 <body>
     <div id="mainContainer">
         <div class="app-title no-print" onclick="document.getElementById('modalFineMese').style.display = 'flex';">RIDER TRACKER PRO V1.1</div>
-        
         <div class="grid no-print">
             <div class="card main"><span class="label">LORDO</span><span class="val">€<span id="lordo">0.00</span></span></div>
             <div class="card main"><span class="label">NETTO</span><span class="val" id="netto">€0.00</span></div>
@@ -108,7 +128,6 @@
             <div class="card"><span class="label">TAX %</span><input type="number" id="taxIn" oninput="aggiornaTax()" autocomplete="off"></div>
             <div class="card"><span class="label">MANCANTE</span><span class="val" id="mancante">€0.00</span></div>
         </div>
-
         <div class="progress-container no-print">
             <div class="progress-header"><span>OBIETTIVO <span id="perc">0%</span></span></div>
             <div class="progress-bar"><div id="bar"></div></div>
@@ -121,7 +140,6 @@
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalExtra" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color:var(--accent)">KM EXTRA</h3><div id="dateE" class="date-row"></div><input type="number" id="extraKmInput" placeholder="Chilometri percorsi" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--accent); color: #fff;" onclick="salvaExtraKm()">SALVA EXTRA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
-        
         <div id="modalInizio" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">⛽ ULTIMO PREZZO</h3><p style="font-size: 11px; color: var(--dim); margin-bottom: 15px; text-transform: uppercase;">Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:</p><input type="text" id="pIniziale" placeholder="0.000" inputmode="decimal" oninput="formattaPrezzo(this)" style="text-align: center; font-size: 24px; color: var(--primary); font-weight: bold;"><button class="btn-modal btn-save" onclick="confermaPrezzoIniziale()">IMPOSTA E SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalConfirm" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Reset</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi azzerare tutto il database?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button class="btn-confirm-ok" style="background: var(--accent); color: white;" onclick="confermaReset()">OK</button></div></div></div>
         <div id="modalFineMese" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">🔔 FINE MESE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">CHIUDI</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="stampaDirettaDaAlert()">STAMPA ORA</button></div></div></div>
