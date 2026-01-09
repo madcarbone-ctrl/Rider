@@ -19,7 +19,10 @@
         .foot-btn:active, .btn-full:active { transform: scale(0.95); transition: 0.1s; }
         
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
-        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; }
+        
+        /* MODIFICA: margin-bottom a 10px */
+        .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:10px; }
+        
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
         .val { font-size:14px; font-weight:bold; }
@@ -27,7 +30,9 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 15px; margin-bottom:10px; border:1px solid #333; display: flex; flex-direction: column; gap: 8px; }
+        /* MODIFICA: margin-top 0 e margin-bottom 10px */
+        .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 0px; margin-bottom:10px; border:1px solid #333; display: flex; flex-direction: column; gap: 8px; }
+        
         .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; letter-spacing: 1px; }
         .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; }
         #bar { background:linear-gradient(90deg, var(--primary), #ccff00); height:100%; width:0%; transition:0.3s; }
@@ -63,7 +68,9 @@
         .summary-row { display:flex; justify-content:space-between; padding:4px 0; font-size:11px; color: #000; }
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; padding-bottom: 10px; }
         
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
+        /* MODIFICA: position static per far salire il blocco sotto la percentuale */
+        .sticky-footer { position:static; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; margin-top:0px; }
+        
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
         .foot-btn i { font-size:22px; margin-bottom:6px; }
         .btn-full { grid-column:span 4; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; }
