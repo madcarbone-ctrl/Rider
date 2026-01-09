@@ -14,11 +14,11 @@
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; overflow: hidden !important; height: 100%; width: 100vw; position: fixed; left:0; top:0; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; height: 100vh; width: 100vw; overflow-x: hidden; }
+        
         .foot-btn:active, .btn-full:active { transform: scale(0.95); transition: 0.1s; }
         .app-title { margin:10px 0 15px; font-size:22px; font-weight:800; color:var(--primary); text-transform:uppercase; user-select:none; cursor: pointer; }
         
-        /* MODIFICA: Spaziatura 10px */
         .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:10px; }
         .card { background:var(--card); height:75px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:12px; border:1px solid #333; }
         .label { font-size:8px; color:var(--dim); text-transform:uppercase; margin-bottom:4px; font-weight:bold; }
@@ -27,7 +27,7 @@
         #netto { color:var(--accent)!important; }
         .card input { width:80%; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center; font-size:14px; outline:none; }
         
-        /* MODIFICA: Spaziatura 10px sopra e sotto la barra */
+        /* Barra progresso con margine 10px sotto */
         .progress-container { background:var(--card); padding:15px; border-radius:15px; margin-top: 10px; margin-bottom:10px; border:1px solid #333; display: flex; flex-direction: column; gap: 8px; }
         .progress-header { display:flex; justify-content:center; font-weight:bold; color:var(--primary); font-size:14px; text-transform: uppercase; letter-spacing: 1px; }
         .progress-bar { background:#222; height:28px; border-radius:8px; overflow:hidden; border:1px solid #444; }
@@ -63,8 +63,8 @@
         .summary-row { display:flex; justify-content:space-between; padding:4px 0; font-size:11px; color: #000; }
         .summary-row.total { font-weight:bold; font-size:14px; border-top:2px solid #000; margin-top:5px; padding-bottom: 10px; }
         
-        /* RIPRISTINATO: Footer fisso originale */
-        .sticky-footer { position:fixed; bottom:15px; left:10px; right:10px; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; }
+        /* MODIFICA: Footer non più fisso, si alza a 10px dalla barra */
+        .sticky-footer { position:relative; margin-top:10px; background:#161616; padding:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; border-radius:25px; border:1px solid #333; z-index:1000; margin-bottom: 20px; }
         .foot-btn { background:#222; border:1px solid #444; color:#fff; padding:15px 5px; border-radius:15px; display:flex; flex-direction:column; align-items:center; font-size:11px; font-weight: bold; }
         .foot-btn i { font-size:22px; margin-bottom:6px; }
         .btn-full { grid-column:span 4; background:var(--primary); color:#000; padding:18px; border-radius:15px; font-weight:900; border:none; font-size: 14px; text-transform: uppercase; }
@@ -109,6 +109,7 @@
                 <div id="mediaOraria">MEDIA: €0.00/h</div>
             </div>
         </div>
+        
         <div id="modalTurno" class="modal no-print"><div class="modal-content"><h3>Nuovo Turno</h3><div id="dateT" class="date-row"></div><input type="number" id="tL" placeholder="Lordo (€)" step="0.01" autocomplete="off"><input type="number" id="tO" placeholder="Ore lavorate" step="0.1" autocomplete="off"><input type="number" id="tK" placeholder="Chilometri percorsi" autocomplete="off"><input type="number" id="tC" placeholder="Consumo L/100km" autocomplete="off"><button class="btn-modal btn-save" onclick="salvaTurno()">SALVA TURNO</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalBenza" class="modal no-print"><div class="modal-content" style="border-color: var(--orange);"><h3>Rifornimento</h3><div id="dateB" class="date-row"></div><input type="number" id="bE" placeholder="Euro spesi (€)" step="0.01" autocomplete="off"><input type="text" id="bP" placeholder="Prezzo (€/L)" inputmode="decimal" oninput="formattaPrezzo(this)" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--orange);" onclick="salvaBenza()">SALVA BENZINA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
         <div id="modalExtra" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color:var(--accent)">KM EXTRA</h3><div id="dateE" class="date-row"></div><input type="number" id="extraKmInput" placeholder="Chilometri percorsi" autocomplete="off"><button class="btn-modal btn-save" style="background: var(--accent); color: #fff;" onclick="salvaExtraKm()">SALVA EXTRA</button><button class="btn-modal btn-close" onclick="chiudiModali()">ANNULLA</button></div></div>
@@ -118,6 +119,7 @@
         <div id="modalElimina" class="modal no-print"><div class="modal-content" style="border-color: var(--accent);"><h3 style="color: var(--accent); font-size: 16px;">Conferma Eliminazione</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Sei sicuro di voler eliminare questo elemento dallo storico?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="chiudiModali()">ANNULLA</button><button id="btnConfermaElimina" class="btn-confirm-ok" style="background: var(--accent); color: white;">ELIMINA</button></div></div></div>
         <div id="modalBackupExport" class="modal no-print"><div class="modal-content" style="border-color: var(--primary);"><h3 style="font-size: 16px;">💾 ESPORTA DATABASE</h3><p style="font-size: 13px; color: var(--text); margin: 15px 0;">Vuoi esportare un backup del database aggiornato?</p><div class="confirm-buttons"><button class="btn-confirm-cancel" onclick="rifiutaBackup()">NO</button><button class="btn-confirm-ok" style="background: var(--primary); color: #000;" onclick="accettaBackup()">SI</button></div></div></div>
         <div id="histView" class="no-print"><div class="hist-header"><h2 style="color:var(--primary); text-align:center;">STORICO</h2></div><div id="listaStorico"></div><div class="hist-footer"><button class="btn-modal btn-close" onclick="document.getElementById('histView').style.display='none'">CHIUDI</button></div></div>
+        
         <div id="reportView">
             <div class="report-scroll-area">
                 <div class="report-header-mini"><h2 id="repMonthTitle">RIEPILOGO MESE DI ---</h2></div>
@@ -125,15 +127,7 @@
                     <h3>DETTAGLIO TURNI</h3>
                     <table class="report-table">
                         <thead>
-                            <tr>
-                                <th>DATA</th>
-                                <th>LORDO</th>
-                                <th>ORE</th>
-                                <th>KM</th>
-                                <th>L/100</th>
-                                <th>KM/L</th>
-                                <th>LITRI</th>
-                            </tr>
+                            <tr><th>DATA</th><th>LORDO</th><th>ORE</th><th>KM</th><th>L/100</th><th>KM/L</th><th>LITRI</th></tr>
                         </thead>
                         <tbody id="repTurniBody"></tbody>
                     </table>
@@ -176,26 +170,11 @@
             input.addEventListener('blur', () => { const content = input.closest('.modal-content'); if(content) content.style.transform = 'translateY(0)'; });
         });
     }
-    function salvaBackup() {
-        const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.1", db: db };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click();
-        URL.revokeObjectURL(url);
-    }
+    function salvaBackup() { const data = { timestamp: Date.now(), app: "RIDER TRACKER PRO", versione: "1.1", db: db }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `backup_rider_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); }
     function mostraModalBackup() { document.getElementById('modalBackupExport').style.display = 'flex'; }
     function accettaBackup() { salvaBackup(); document.getElementById('modalBackupExport').style.display = 'none'; }
     function rifiutaBackup() { document.getElementById('modalBackupExport').style.display = 'none'; }
-    document.getElementById("fileBackup").addEventListener("change", function(e) {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            try {
-                const json = JSON.parse(evt.target.result); if (!json.db) throw "Errore";
-                db = json.db; localStorage.setItem('rider_db_final_v34', JSON.stringify(db)); alert("Database importato con successo!"); location.reload();
-            } catch(err) { alert("File di backup non valido."); }
-        }; reader.readAsText(file);
-    });
+    document.getElementById("fileBackup").addEventListener("change", function(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(evt) { try { const json = JSON.parse(evt.target.result); if (!json.db) throw "Errore"; db = json.db; localStorage.setItem('rider_db_final_v34', JSON.stringify(db)); alert("Database importato con successo!"); location.reload(); } catch(err) { alert("File di backup non valido."); } }; reader.readAsText(file); });
     function formattaPrezzo(input) { let val = input.value.replace(/[^\d]/g, ''); if (val.length > 1) { input.value = val.substring(0, 1) + '.' + val.substring(1, 4); } else { input.value = val; } }
     function startClock() { const update = () => { const now = new Date(); document.getElementById('liveClock').innerText = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear().toString().substring(2)} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`; }; update(); setInterval(update, 1000); }
     function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
@@ -206,21 +185,15 @@
     function elimina(categoria, id) { catElimina = categoria; idElimina = id; document.getElementById('btnConfermaElimina').onclick = function() { db[catElimina] = db[catElimina].filter(x => x.id !== idElimina); salvaDB(); apriStorico(); chiudiModali(); }; document.getElementById('modalElimina').style.display = 'flex'; }
     function calcola() {
         const n = new Date(); const tag = `${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`;
-        let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0);
-        let ore = db.turni.reduce((a,b)=>a+b.ore, 0);
-        let km = db.turni.reduce((a,b)=>a+b.km, 0);
-        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0);
-        let spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
+        let lordoA = db.turni.reduce((a,b)=>a+b.lordo, 0); let ore = db.turni.reduce((a,b)=>a+b.ore, 0); let km = db.turni.reduce((a,b)=>a+b.km, 0);
+        let litriS = db.turni.reduce((a,b)=>a+(b.km*(b.cons/100)), 0); let spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
         let costoB_Turni = db.turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
         let nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
-        document.getElementById('lordo').innerText = lordoA.toFixed(2); 
-        document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
-        document.getElementById('ore').innerText = ore.toFixed(1); 
-        document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
+        document.getElementById('lordo').innerText = lordoA.toFixed(2); document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
+        document.getElementById('ore').innerText = ore.toFixed(1); document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
         document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
         document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
-        let mediaO = ore > 0 ? (nettoA / ore).toFixed(2) : "0.00";
-        document.getElementById('mediaOraria').innerText = `MEDIA: €${mediaO}/h`;
+        let mediaO = ore > 0 ? (nettoA / ore).toFixed(2) : "0.00"; document.getElementById('mediaOraria').innerText = `MEDIA: €${mediaO}/h`;
         let tNetto = db.targets[tag] || 0; document.getElementById('targetIn').value = tNetto || ""; document.getElementById('taxIn').value = db.tax;
         let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
@@ -238,41 +211,21 @@
         });
         document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
     }
-    function calcolaPeriodiConsumo(turni, tax) {
-        if (!turni.length) return [];
-        const SOGLIA = 0.10; let periodi = []; let base = turni[0].cons; let corrente = { start: turni[0].data, end: turni[0].data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 };
-        turni.forEach(t => { const diff = Math.abs(t.cons - base) / base; if (diff > SOGLIA && corrente.turni >= 3) { periodi.push({...corrente}); base = t.cons; corrente = { start: t.data, end: t.data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; } const litri = t.km * (t.cons / 100); const costo = litri * (t.prezzo || 0); corrente.turni++; corrente.end = t.data; corrente.km += t.km; corrente.ore += t.ore; corrente.lordo += t.lordo; corrente.litri += litri; corrente.costoB += costo; });
-        periodi.push(corrente); return periodi.map(p => { const tasse = p.lordo * (tax / 100); const netto = p.lordo - tasse - p.costoB; return { periodo: `${p.start} → ${p.end}`, ...p, netto, euroOra: p.ore ? netto / p.ore : 0, euroKm: p.km ? netto / p.km : 0, consumoMedio: p.litri && p.km ? (p.litri / p.km) * 100 : 0 }; });
-    }
+    function calcolaPeriodiConsumo(turni, tax) { if (!turni.length) return []; const SOGLIA = 0.10; let periodi = []; let base = turni[0].cons; let corrente = { start: turni[0].data, end: turni[0].data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; turni.forEach(t => { const diff = Math.abs(t.cons - base) / base; if (diff > SOGLIA && corrente.turni >= 3) { periodi.push({...corrente}); base = t.cons; corrente = { start: t.data, end: t.data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; } const litri = t.km * (t.cons / 100); const costo = litri * (t.prezzo || 0); corrente.turni++; corrente.end = t.data; corrente.km += t.km; corrente.ore += t.ore; corrente.lordo += t.lordo; corrente.litri += litri; corrente.costoB += costo; }); periodi.push(corrente); return periodi.map(p => { const tasse = p.lordo * (tax / 100); const netto = p.lordo - tasse - p.costoB; return { periodo: `${p.start} → ${p.end}`, ...p, netto, euroOra: p.ore ? netto / p.ore : 0, euroKm: p.km ? netto / p.km : 0, consumoMedio: p.litri && p.km ? (p.litri / p.km) * 100 : 0 }; }); }
     function getTotaleKmExtra(){ return (db.extraKm || []).reduce((a,b)=>a+b.km, 0); }
     function apriReport() {
         const n = new Date(); document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
-        const turni = [...db.turni].sort((a,b)=>a.id-b.id);
-        let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
-        turni.forEach(t => { 
-            let l = (t.km*(t.cons/100)); let kmlVal = t.cons > 0 ? (100 / t.cons).toFixed(1) : "0.0";
-            tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; 
-            tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${kmlVal}</td><td>${l.toFixed(2)}L</td></tr>`; 
-        });
+        const turni = [...db.turni].sort((a,b)=>a.id-b.id); let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
+        turni.forEach(t => { let l = (t.km*(t.cons/100)); let kmlVal = t.cons > 0 ? (100 / t.cons).toFixed(1) : "0.0"; tL+=t.lordo; tO+=t.ore; tK+=t.km; tLS+=l; tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${kmlVal}</td><td>${l.toFixed(2)}L</td></tr>`; });
         db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='7'>Nessun turno</td></tr>"; 
-        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        const periodi = calcolaPeriodiConsumo(turni, db.tax); let eff = "";
-        periodi.forEach((p,i)=>{ eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td><td>${p.euroKm.toFixed(2)}</td></tr>`; });
+        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='7'>Nessun turno</td></tr>"; document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+        const periodi = calcolaPeriodiConsumo(turni, db.tax); let eff = ""; periodi.forEach((p,i)=>{ eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td><td>${p.euroKm.toFixed(2)}</td></tr>`; });
         document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='8'>Dati insufficienti</td></tr>";
-        let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
-        let taxV = tL * (db.tax/100); let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+        let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0); let taxV = tL * (db.tax/100); let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
         document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TURNI:</span><span>${tK} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:2px solid #000; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMATA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><div class="summary-row" style="font-weight:bold; border:none; padding-top:10px; color:#000;"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div><div class="summary-row" style="font-weight:bold; border:none; padding-top:5px; color:#000;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
         document.getElementById('reportView').style.display = 'flex';
     }
-    function apriM(id) { 
-        const n = new Date(); let d='', m='', y=''; 
-        for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; 
-        mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); 
-        for(let i=2024;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; 
-        let p = id==='modalTurno'?'dateT':(id==='modalBenza'?'dateB':'dateE');
-        document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; 
-    }
+    function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2024;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; let p = id==='modalTurno'?'dateT':(id==='modalBenza'?'dateB':'dateE'); document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaExtraKm(){ const km = parseFloat(document.getElementById('extraKmInput').value) || 0; if(km <= 0) return; const d = `${document.getElementById('dateED').value.padStart(2,'0')}/${document.getElementById('dateEM').value.padStart(2,'0')}/${document.getElementById('dateEY').value}`; db.extraKm.push({ id: Date.now(), data: d, km: km }); salvaDB(); chiudiModali(); mostraModalBackup(); }
     function salvaTurno() { if (db.rifornimenti.length === 0) { document.getElementById('modalInizio').style.display = 'flex'; return; } effettuaSalvataggioTurno(); }
     function confermaPrezzoIniziale() { const pStr = document.getElementById('pIniziale').value; const pVal = parseFloat(pStr.replace(',','.')); if (!pStr || isNaN(pVal) || pVal <= 0) { alert("Inserisci un prezzo valido"); return; } const n = new Date(); const d = `${n.getDate().toString().padStart(2,'0')}/${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()}`; db.rifornimenti.push({ id: Date.now() - 1000, data: d, ora: "00:00", euro: 0, prezzo: pVal }); document.getElementById('modalInizio').style.display = 'none'; effettuaSalvataggioTurno(); }
