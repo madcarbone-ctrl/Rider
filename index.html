@@ -13,7 +13,7 @@
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: none; }
         
-        /* Blocca lo scroll della pagina principale e adatta al 100% dello schermo */
+        /* Layout fisso anti-scroll */
         html, body { 
             height: 100%; 
             width: 100%; 
@@ -30,17 +30,16 @@
             display: flex; 
             flex-direction: column; 
             padding: 10px 12px;
-            justify-content: space-between; /* Distribuisce i blocchi verticalmente */
+            justify-content: space-between;
         }
 
         .app-title { height: 6vh; margin: 0; font-size: 18px; font-weight: 800; color: var(--primary); text-transform: uppercase; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; }
         
-        /* Griglia adattiva basata sull'altezza dello schermo */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 8px; 
-            height: 35vh;
+            height: 36vh; /* Adattato per stare in una schermata */
         }
         
         .card { 
@@ -58,25 +57,23 @@
         .val { font-size: 13px; font-weight: bold; }
         .card.highlight .val, #lordo, #mancante { color: var(--primary); } 
         #netto { color: var(--accent); }
-        .card input { width: 85%; background: rgba(255,255,255,0.05); border: none; border-radius: 4px; color: #fff; text-align: center; font-size: 13px; outline: none; padding: 2px 0; }
+        .card input { width: 85%; background: rgba(255,255,255,0.05); border: none; border-radius: 4px; color: #fff; text-align: center; font-size: 13px; outline: none; }
         
-        /* Progress Container adattivo */
         .progress-container { 
             background: var(--card); 
             padding: 10px; 
             border-radius: 15px; 
             border: 1px solid #333; 
-            height: 15vh; 
+            height: 14vh; 
             display: flex; 
             flex-direction: column; 
             justify-content: center;
         }
-        .progress-header { font-weight: bold; color: var(--primary); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
+        .progress-header { font-weight: bold; color: var(--primary); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
         .progress-bar { background: #222; height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid #444; }
         #bar { background: linear-gradient(90deg, var(--primary), #ccff00); height: 100%; width: 0%; transition: 0.3s; }
         .dash-info { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 9px; }
         
-        /* Azioni rapide adattive */
         .actions-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -87,7 +84,6 @@
         .action-card i { font-size: 18px; }
         .action-card span { font-size: 8px; font-weight: 800; text-transform: uppercase; }
 
-        /* Area pulsanti di controllo */
         .wide-actions { 
             display: flex; 
             flex-direction: column; 
@@ -99,24 +95,21 @@
         .btn-primary { background: var(--primary); color: #000; }
         .btn-reset-ui { background: var(--red-soft); color: #ccc; font-size: 9px; padding: 6px; }
 
-        /* Modali e Viste sopraelevate */
+        /* Modali e Viste (Scroll ammesso solo qui dentro) */
         .modal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; touch-action: auto; }
         .modal-content { background:var(--card); padding:20px; border-radius:24px; width:85%; max-width:320px; border:2px solid var(--primary); }
         .modal input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px; outline:none; font-size: 16px; }
         
         #histView { display:none; position:fixed; inset:0; z-index:9000; background:var(--bg); flex-direction: column; padding: 15px; touch-action: auto; }
         #listaStorico { flex-grow: 1; overflow-y: auto; margin: 10px 0; border-top: 1px solid #333; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        #listaStorico::-webkit-scrollbar { display: none; }
         
         #reportView { display:none; position:fixed; inset:0; z-index:8000; background:#fff; color:#000; flex-direction:column; touch-action: auto; }
         .report-scroll-area { flex: 1; overflow-y: auto; padding: 15px; }
         
         .confirm-buttons { display: flex; gap: 10px; margin-top: 15px; }
         .confirm-buttons button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; }
-        
         .date-row { display:flex; gap:5px; margin-bottom:10px; }
         .date-row select { background:#333; color:#fff; padding:8px; border-radius:8px; flex:1; border:1px solid #444; font-size: 12px; }
-        
         .btn-modal { width:100%; padding:12px; border-radius:10px; border:none; font-weight:bold; margin-top:8px; text-transform: uppercase; }
         .btn-save { background:var(--primary); color:#000; }
         .btn-close { background:#333; color:#fff; }
@@ -210,19 +203,24 @@
         let spesaB_Reale = db.rifornimenti.reduce((a,b)=>a+b.euro, 0);
         let costoB_Turni = db.turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0);
         let nettoA = lordoA - (lordoA * (db.tax/100)) - costoB_Turni;
+        
         document.getElementById('lordo').innerText = lordoA.toFixed(2); 
         document.getElementById('netto').innerText = '€' + nettoA.toFixed(2); 
         document.getElementById('ore').innerText = ore.toFixed(1); 
         document.getElementById('cons').innerText = litriS.toFixed(1) + 'L'; 
         document.getElementById('kml').innerText = litriS > 0 ? (km/litriS).toFixed(1) : '0.0'; 
         document.getElementById('spesaB').innerText = '€' + spesaB_Reale.toFixed(2);
+        
         let mediaO = ore > 0 ? (nettoA / ore).toFixed(2) : "0.00";
         document.getElementById('mediaOraria').innerText = `MEDIA: €${mediaO}/h`;
+        
         let tNetto = db.targets[tag] || 0; 
         document.getElementById('targetIn').value = tNetto || ""; 
         document.getElementById('taxIn').value = db.tax;
+        
         let lordoNecessario = (tNetto + costoB_Turni) / (1 - (db.tax/100)), mancaL = lordoNecessario - lordoA; 
         document.getElementById('mancante').innerText = '€' + (mancaL > 0 ? mancaL.toFixed(2) : "0.00");
+        
         let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; 
         document.getElementById('perc').innerText = Math.round(p) + '%'; 
         document.getElementById('bar').style.width = p + '%';
@@ -261,8 +259,9 @@
 
     function salvaTurno() {
         const d = `${document.getElementById('dateTD').value.padStart(2,'0')}/${document.getElementById('dateTM').value.padStart(2,'0')}/${document.getElementById('dateTY').value}`;
-        const prezzo = db.rifornimenti.length ? db.rifornimenti[db.rifornimenti.length-1].prezzo : 0;
-        db.turni.push({ id: Date.now(), data: d, lordo: parseFloat(document.getElementById('tL').value)||0, ore: parseFloat(document.getElementById('tO').value)||0, km: parseFloat(document.getElementById('tK').value)||0, cons: parseFloat(document.getElementById('tC').value)||0, prezzo: prezzo });
+        const rifOrdinati = [...db.rifornimenti].sort((a,b) => a.id - b.id);
+        const prezzoCorrente = rifOrdinati.length ? rifOrdinati[rifOrdinati.length - 1].prezzo : 0;
+        db.turni.push({ id: Date.now(), data: d, lordo: parseFloat(document.getElementById('tL').value)||0, ore: parseFloat(document.getElementById('tO').value)||0, km: parseFloat(document.getElementById('tK').value)||0, cons: parseFloat(document.getElementById('tC').value)||0, prezzo: prezzoCorrente });
         salvaDB(); chiudiModali(); mostraModalBackup();
     }
 
