@@ -193,7 +193,7 @@
     function checkFineMese() { if (new Date().getDate() === 1) { setTimeout(() => { document.getElementById('modalFineMese').style.display = 'flex'; }, 2000); } }
     function stampaDirettaDaAlert() { chiudiModali(); apriReport(); window.print(); }
     function salvaDB() { localStorage.setItem('rider_db_final_v34', JSON.stringify(db)); calcola(); }
-    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { m.style.display='none'; m.querySelectorAll('.modal-content').forEach(c => c.style.transform = 'translateY(0)'); m.querySelectorAll('input').forEach(i => i.value=""); }); }
+    function chiudiModali() { document.querySelectorAll('.modal').forEach(m => { if(m.id !== 'modalBackupExport') { m.style.display='none'; m.querySelectorAll('.modal-content').forEach(c => c.style.transform = 'translateY(0)'); m.querySelectorAll('input').forEach(i => i.value=""); } }); }
     function confermaReset() { localStorage.clear(); location.reload(); }
     function elimina(categoria, id) { catElimina = categoria; idElimina = id; document.getElementById('btnConfermaElimina').onclick = function() { db[catElimina] = db[catElimina].filter(x => x.id !== idElimina); salvaDB(); apriStorico(); chiudiModali(); }; document.getElementById('modalElimina').style.display = 'flex'; }
     function calcola() {
