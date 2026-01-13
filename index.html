@@ -11,6 +11,7 @@
     <meta http-equiv="Expires" content="0">
     <title>RIDER TRACKER PRO V1.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
@@ -268,7 +269,7 @@ turni.forEach(t => {
     function salvaBenza() { const d = `${document.getElementById('dateBD').value.padStart(2,'0')}/${document.getElementById('dateBM').value.padStart(2,'0')}/${document.getElementById('dateBY').value}`; db.rifornimenti.push({ id:Date.now(), data:d, ora:new Date().toLocaleTimeString().substring(0,5), euro:parseFloat(document.getElementById('bE').value)||0, prezzo:parseFloat(document.getElementById('bP').value.replace(',','.'))||0 }); salvaDB(); chiudiModali(); mostraModalBackup(); }
     function aggiornaTarget() { const f=`${(new Date().getMonth()+1).toString().padStart(2,'0')}/${new Date().getFullYear()}`; db.targets[f]=parseFloat(document.getElementById('targetIn').value)||0; salvaDB(); }
     function aggiornaTax() { db.tax = parseFloat(document.getElementById('taxIn').value)||20; salvaDB(); }
-    window.onload = function() { calcola(); startClock(); checkFineMese(); gestisciTastiera(); };
+    window.onload = function() { calcola(); startClock(); checkFineMese(); gestisciTastiera(); if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js'); } };
 </script>
 </body>
 </html>
