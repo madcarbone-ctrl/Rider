@@ -173,19 +173,6 @@
         </div>
     </div>
     <script>
-        // Blocca il pull-to-refresh intercettando il movimento touch
-let touchStart;
-window.addEventListener('touchstart', (e) => {
-    touchStart = e.touches[0].pageY;
-}, { passive: false });
-
-window.addEventListener('touchmove', (e) => {
-    const touchMove = e.touches[0].pageY;
-    // Se l'utente trascina verso il basso ed è in cima alla pagina
-    if (touchMove > touchStart && window.scrollY <= 0) {
-        e.preventDefault(); // Blocca il refresh
-    }
-}, { passive: false });
     const APP_VER = "1.1.0";
     let db = JSON.parse(localStorage.getItem('rider_db_final_v34')) || { turni: [], rifornimenti: [], extraKm: [], targets: {}, tax: 20 };
     const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
