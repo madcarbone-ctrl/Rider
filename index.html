@@ -229,7 +229,7 @@
     let resaChartInstance = null;
     function apriResaView(){ document.getElementById('reportView').style.display = 'none'; document.getElementById('resaView').style.display = 'block'; disegnaGraficoResa(); }
     function chiudiResaView(){ document.getElementById('resaView').style.display = 'none'; document.getElementById('reportView').style.display = 'flex'; }
-function disegnaGraficoResa(){
+    function disegnaGraficoResa(){
         const labels = []; const resaOra = []; const resaKm = [];
         db.turni.forEach(t => { 
             if (t.ore <= 0 || t.km <= 0) return; 
@@ -242,7 +242,7 @@ function disegnaGraficoResa(){
             resaKm.push((netto / t.km).toFixed(2)); 
         });
 
-        // Forza Android a non scorrere la pagina quando tocchi il grafico
+        // 1. QUESTO SBLOCCA IL TOCCO SU ANDROID
         document.getElementById('resaChart').style.touchAction = 'none';
 
         const ctx = document.getElementById('resaChart').getContext('2d'); 
@@ -263,25 +263,27 @@ function disegnaGraficoResa(){
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 0.5, // Scala 0.5 - 1.0 - 1.5
+                            // 2. QUESTO CREA LA SCALA A 0.5 CHE VOLEVI
+                            stepSize: 0.5, 
                             callback: function(value) { return value.toFixed(1); }
                         }
                     }
                 },
                 plugins: {
                     legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                    // 3. QUESTO ATTIVA EFFETTIVAMENTE LO ZOOM
                     zoom: {
                         zoom: {
                             wheel: { enabled: true },
-                            pinch: { enabled: true }, // ATTIVA LE DITA SU ANDROID
-                            mode: 'y',
+                            pinch: { enabled: true }, // Fondamentale per le dita
+                            mode: 'y'
                         },
                         pan: { enabled: true, mode: 'y' }
                     }
                 }
             }
         });
-    }
+}
 </script>
 </body>
 </html>
