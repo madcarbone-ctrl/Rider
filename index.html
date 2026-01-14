@@ -3,20 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0f0f0f">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>RIDER TRACKER PRO V1.1</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <style>
-        #resaChart { touch-action: none; }
+        #resaChart { touch-action: none; background: #1a1a1a; border-radius: 8px; }
         :root { --bg:#0f0f0f; --card:#1a1a1a; --primary:#00CCBC; --accent:#ff4d4d; --text:#e0e0e0; --dim:#888; --input-bg:#252525; --orange:#ffa500; --red-soft:#8b0000; }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action: manipulation; }
         body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; text-align:center; height: 100vh; width: 100vw; overflow: hidden; position: fixed; inset: 0; }
@@ -231,60 +222,54 @@
     function apriResaView(){ document.getElementById('reportView').style.display = 'none'; document.getElementById('resaView').style.display = 'block'; disegnaGraficoResa(); }
     function chiudiResaView(){ document.getElementById('resaView').style.display = 'none'; document.getElementById('reportView').style.display = 'flex'; }
     function disegnaGraficoResa(){
-        const labels = []; const resaOra = []; const resaKm = [];
-        db.turni.forEach(t => { 
-            if (t.ore <= 0 || t.km <= 0) return; 
-            const litri = t.km * (t.cons / 100); 
-            const costoB = litri * (t.prezzo || 0); 
-            const tasse = t.lordo * (db.tax / 100); 
-            const netto = t.lordo - tasse - costoB; 
-            labels.push(t.data); 
-            resaOra.push((netto / t.ore).toFixed(2)); 
-            resaKm.push((netto / t.km).toFixed(2)); 
-        });
-
-        // 1. QUESTO SBLOCCA IL TOCCO SU ANDROID
-        document.getElementById('resaChart').style.touchAction = 'none';
-
-        const ctx = document.getElementById('resaChart').getContext('2d'); 
-        if (resaChartInstance) { resaChartInstance.destroy(); }
-        resaChartInstance = new Chart(ctx, { 
-            type: 'line', 
-            data: { 
-                labels: labels, 
-                datasets: [ 
-                    { label: '€ / ORA (netto)', data: resaOra, borderWidth: 2, tension: 0.3, borderColor: '#00CCBC', backgroundColor: '#00CCBC' }, 
-                    { label: '€ / KM (netto)', data: resaKm, borderDash: [6,4], borderWidth: 2, tension: 0.3, borderColor: '#ffa500', backgroundColor: '#ffa500' } 
-                ] 
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            // 2. QUESTO CREA LA SCALA A 0.5 CHE VOLEVI
-                            stepSize: 0.5, 
-                            callback: function(value) { return value.toFixed(1); }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
-                    // 3. QUESTO ATTIVA EFFETTIVAMENTE LO ZOOM
-                    zoom: {
-                        zoom: {
-                            wheel: { enabled: true },
-                            pinch: { enabled: true }, // Fondamentale per le dita
-                            mode: 'y'
-                        },
-                        pan: { enabled: true, mode: 'y' }
+    const labels = []; const resaOra = []; const resaKm = [];
+    db.turni.forEach(t => { 
+        if (t.ore <= 0 || t.km <= 0) return; 
+        const litri = t.km * (t.cons / 100); 
+        const costoB = litri * (t.prezzo || 0); 
+        const tasse = t.lordo * (db.tax / 100); 
+        const netto = t.lordo - tasse - costoB; 
+        labels.push(t.data); 
+        resaOra.push((netto / t.ore).toFixed(2)); 
+        resaKm.push((netto / t.km).toFixed(2)); 
+    });
+    const ctx = document.getElementById('resaChart').getContext('2d'); 
+    if (resaChartInstance) { resaChartInstance.destroy(); }
+    resaChartInstance = new Chart(ctx, { 
+        type: 'line', 
+        data: { 
+            labels: labels, 
+            datasets: [ 
+                { label: '€ / ORA (netto)', data: resaOra, borderWidth: 2, tension: 0.3, borderColor: '#00CCBC' }, 
+                { label: '€ / KM (netto)', data: resaKm, borderDash: [6,4], borderWidth: 2, tension: 0.3, borderColor: '#ffa500' } 
+            ] 
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 0.5, // Scala dettagliata 0.5 - 1.0 - 1.5
+                        callback: function(value) { return value.toFixed(1); }
                     }
                 }
+            },
+            plugins: {
+                legend: { position: 'bottom' },
+                zoom: {
+                    zoom: {
+                        wheel: { enabled: true },
+                        pinch: { enabled: true }, // ATTIVA ZOOM DUE DITA SU ANDROID
+                        mode: 'y'
+                    },
+                    pan: { enabled: true, mode: 'y' }
+                }
             }
-        });
-}
+        }
+    });
+    }
 </script>
 </body>
 </html>
