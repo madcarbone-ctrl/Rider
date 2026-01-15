@@ -33,14 +33,14 @@ L'obiettivo non è la precisione "da commercialista", ma:
 
 ### 🔹 Turni
 Ogni turno registra:
-- lordo
-- ore
-- chilometri
-- consumo (L/100km)
+- lordo (€ incassati)
+- ore lavorate
+- chilometri percorsi
+- consumo del veicolo (L/100km)
 
 Il consumo è **dichiarativo**:
 - se il veicolo non lo fornisce → il campo può restare vuoto
-- il sistema usa solo dati realmente inseriti
+- il sistema usa solo dati realmente inseriti dall'utente
 
 ---
 
@@ -48,7 +48,7 @@ Il consumo è **dichiarativo**:
 I rifornimenti **NON vengono scaricati direttamente sul netto**.
 
 Servono a:
-- definire il **prezzo al litro valido**
+- definire il **prezzo al litro valido** nel periodo
 - che viene associato automaticamente ai turni successivi
 
 Il costo carburante viene calcolato come:
@@ -62,9 +62,9 @@ Questo evita:
 ---
 
 ### 🔹 Prezzo iniziale
-Se il mese inizia senza rifornimenti:
+Se il mese inizia senza rifornimenti registrati:
 - l'app chiede il **prezzo dell'ultimo rifornimento noto**
-- garantendo continuità di calcolo
+- garantendo continuità di calcolo tra i mesi
 
 ---
 
@@ -73,14 +73,16 @@ La percentuale di tasse è **personalizzabile** nel campo "TAX %":
 - si applica automaticamente al lordo di ogni turno
 - il calcolo è: **Netto = Lordo - (Lordo × TAX%) - Costo Benzina**
 - modificabile in qualsiasi momento per adattarsi al proprio regime fiscale
+- valore predefinito: 20%
 
 ---
 
 ### 🔹 Sistema Target
-Imposta un obiettivo mensile di guadagno:
+Imposta un obiettivo mensile di guadagno netto:
 - visualizzazione percentuale obiettivo raggiunto
-- calcolo automatico dell'importo mancante
-- motivazione visiva del progresso
+- calcolo automatico dell'importo lordo mancante
+- barra di progresso visiva
+- motivazione continua durante il mese
 
 ---
 
@@ -113,31 +115,33 @@ Il modello **"imputazione al consumo"** è più corretto economicamente rispetto
 
 ---
 
-## 📊 ANALISI EFFICIENZA OPERATIVA (NOVITÀ v1.1)
+## 📊 ANALISI EFFICIENZA OPERATIVA
 
-La versione **1.1** introduce un'analisi avanzata **senza modificare l'interfaccia**.
+Nel **Report PDF** è presente una sezione di analisi avanzata che segmenta automaticamente il mese in periodi omogenei.
 
-Nel **Report PDF** viene aggiunta una sezione di:
-
-### 🔍 Analisi dei Periodi di Consumo
+### 🔍 Come Funziona
 Il sistema:
 - analizza i turni in ordine cronologico
-- individua **cambi strutturali di consumo**
+- individua **cambi strutturali di consumo** (variazioni superiori al 10%)
 - segmenta automaticamente il mese in **periodi omogenei**
+- richiede almeno 3 turni per creare un periodo
 
 Per ogni periodo vengono calcolati:
-- consumo medio
-- costo carburante
-- netto
-- netto orario (€ / h)
-- netto chilometrico (€ / km)
+- numero turni
+- km totali
+- consumo medio (km/l)
+- costo carburante totale
+- netto del periodo
+- netto orario (€/h)
 
-Questa analisi è **diagnostica** e **non modifica** i calcoli economici.
-
-**Utilità pratica:**
+### 📈 Utilità Pratica
+Questa analisi permette di:
 - individuare cali di efficienza (es. problema meccanico, cambio percorsi)
 - confrontare performance in condizioni diverse (meteo, orari, zone)
 - ottimizzare strategie di lavoro basandosi su dati oggettivi
+- identificare il periodo più profittevole del mese
+
+**Importante**: questa analisi è **diagnostica** e **non modifica** i calcoli economici del dashboard.
 
 ---
 
@@ -145,303 +149,1422 @@ Questa analisi è **diagnostica** e **non modifica** i calcoli economici.
 
 La funzione **KM EXTRA** permette di registrare chilometri percorsi **fuori dall'attività lavorativa**.
 
-**A cosa serve:**
-- monitorare l'uso personale del veicolo
-- calcolare i consumi reali complessivi
-- separare km lavorativi da km privati
+### A cosa serve
+- Monitorare l'uso personale del veicolo
+- Calcolare i consumi reali complessivi
+- Separare km lavorativi da km privati
+- Tracciare il chilometraggio totale per manutenzioni
 
-**Come funziona:**
-- i km extra vengono registrati con data e descrizione
-- visibili nello storico separatamente dai turni
-- utilizzati per l'analisi del consumo medio reale del veicolo
+### Come funziona
+- I km extra vengono registrati con data
+- Sono visibili nello storico separatamente dai turni
+- NON influenzano i calcoli economici
+- Servono solo per monitoraggio personale
 
-**Utilità:**
-- capire se i consumi dichiarati nei turni sono realistici
-- individuare anomalie nel consumo (es. perdite, problemi meccanici)
-- pianificare manutenzioni basandosi sul chilometraggio totale
+### Utilità
+- Capire se i consumi dichiarati nei turni sono realistici
+- Individuare anomalie nel consumo (es. perdite, problemi meccanici)
+- Pianificare manutenzioni basandosi sul chilometraggio totale
+- Distinguere uso lavorativo da uso personale del veicolo
 
 ---
 
 ## 📱 INTERFACCIA E FUNZIONALITÀ
 
 ### Dashboard Principale
-Mostra in tempo reale:
-- **Lordo**: totale incassato nel mese
-- **Netto**: guadagno reale dopo tasse e benzina
-- **Ore**: ore totali lavorate
-- **Litri Stim.**: litri di carburante consumati stimati
+La schermata principale mostra in tempo reale:
+
+**Prima riga (metriche principali):**
+- **LORDO**: totale incassato nel mese corrente
+- **NETTO**: guadagno reale dopo tasse e benzina
+- **ORE**: ore totali lavorate
+
+**Seconda riga (efficienza):**
+- **LITRI STIM.**: litri di carburante consumati (stimati)
 - **KM/L**: efficienza media del veicolo
-- **Spesa Benz.**: costo carburante imputato ai turni
-- **Target**: obiettivo mensile e percentuale raggiunta
-- **Mancante**: quanto manca per raggiungere il target
-- **Media**: guadagno orario medio (€/h)
-- **Timestamp**: data e ora dell'ultimo aggiornamento
+- **SPESA BENZ.**: costo carburante imputato ai turni
 
-### Tabs di Navigazione
-L'app è organizzata in **4 sezioni principali**:
+**Terza riga (configurazione):**
+- **TARGET**: obiettivo mensile netto (campo modificabile)
+- **TAX %**: percentuale tasse (campo modificabile)
+- **MANCANTE**: quanto manca in lordo per raggiungere il target
 
-1. **TURNO** - Registrazione nuovo turno di lavoro
-2. **BENZINA** - Registrazione rifornimenti
-3. **EXTRA** - Registrazione km non lavorativi
-4. **STORICO** - Consultazione dati storici e generazione report
+**Barra di progresso:**
+- Mostra percentuale obiettivo raggiunto
+- Colore gradiente da turchese a giallo-verde
+- Aggiornamento in tempo reale
+
+**Informazioni live:**
+- **Orologio**: data e ora corrente (GG/MM/AA HH:MM:SS)
+- **MEDIA**: guadagno orario medio (€/h)
+
+### Pulsanti Azione Principale
+Nella parte inferiore dello schermo, 4 pulsanti colorati:
+
+1. **TURNO** (verde turchese)
+   - Icona: portafoglio
+   - Funzione: registra nuovo turno di lavoro
+
+2. **BENZINA** (arancione)
+   - Icona: pompa di benzina
+   - Funzione: registra rifornimento
+
+3. **EXTRA** (rosso)
+   - Icona: strada
+   - Funzione: registra km non lavorativi
+
+4. **STORICO** (bianco)
+   - Icona: orologio storico
+   - Funzione: visualizza tutti i dati inseriti
+
+### Pulsante Multi-Funzione
+Un grande pulsante turchese diviso in 3 sezioni:
+
+**RIEPILOGO | GRAFICO | STAMPA**
+
+Apre la vista Report completa con accesso a:
+- Report PDF dettagliato del mese
+- Grafici di analisi resa (€/ora e €/km)
+- Funzione stampa/salvataggio PDF
+- Export/Import database
+
+### Pulsante Reset
+Un pulsante rosso scuro in fondo:
+- **AZZERA DATABASE**
+- Elimina completamente tutti i dati
+- Richiede doppia conferma
+- Usa con estrema cautela
+
+---
+
+## 📈 GRAFICI DI ANALISI RESA
+
+Accessibili dal Report PDF tramite il pulsante **"GRAFICO RESA"**.
+
+### Due Grafici Interattivi
+
+**1. € / ORA (NETTO)**
+- Linea continua color turchese
+- Mostra il guadagno orario netto per ogni turno
+- Evidenzia trend dell'efficienza temporale
+- Identifica i turni più profittevoli per ora lavorata
+
+**2. € / KM (NETTO)**
+- Linea tratteggiata color rosso
+- Mostra il guadagno per chilometro percorso
+- Evidenzia l'efficienza operativa per distanza
+- Identifica le zone/percorsi più redditizi
+
+### Come Interpretarli
+
+**Grafico €/Ora:**
+- Valori alti = turno molto profittevole per tempo investito
+- Valori bassi = molte ore con poco guadagno
+- Trend crescente = efficienza in miglioramento
+- Trend decrescente = possibile saturazione o zone meno profittevoli
+
+**Grafico €/Km:**
+- Valori alti = percorsi brevi ma remunerativi
+- Valori bassi = molti km con poche consegne
+- Utile per capire se vale la pena fare lunghe distanze
+
+### Utilizzo Pratico
+- Confronta turni dello stesso giorno della settimana
+- Identifica fasce orarie più profittevoli
+- Ottimizza zone di lavoro
+- Decidi se accettare ordini lunghi o corti
+
+### Caratteristiche Tecniche
+- Costruiti con Chart.js
+- Responsive e ottimizzati per mobile
+- Interpolazione smooth per linee fluide
+- Scale automatiche basate sui dati reali
+- Legenda sempre visibile
 
 ---
 
 ## 🔔 GESTIONE FINE MESE
 
-All'inizio di ogni nuovo mese, l'app:
-- **rileva automaticamente** il cambio mese
-- mostra un **popup di notifica**
-- propone di **stampare il report PDF** del mese concluso
-- permette di scegliere se stampare subito o chiudere
+L'app riconosce automaticamente l'inizio di un nuovo mese.
 
-**Funzionalità aggiuntive:**
-- **Export database**: propone il backup automatico prima del nuovo mese
-- **Continuità dati**: mantiene l'ultimo prezzo benzina per il mese successivo
-- **Reset automatico**: azzera i contatori mantenendo lo storico
+### Cosa Succede il Giorno 1
+Quando apri l'app il primo giorno del mese:
+- Dopo 2 secondi appare un **popup di notifica**
+- Titolo: "🔔 FINE MESE"
+- Messaggio: "Il mese è terminato. Vuoi stampare il Report PDF delle tue attività?"
+- Due opzioni: **CHIUDI** o **STAMPA ORA**
 
-Questo garantisce:
-- nessuna perdita di dati
-- tracciabilità mensile completa
-- archivio storico sempre disponibile
+### Se Scegli "STAMPA ORA"
+- Il popup si chiude
+- Si apre automaticamente la vista Report
+- Viene mostrato il report completo del mese appena concluso
+- Puoi stamparlo o salvarlo come PDF
 
----
+### Se Scegli "CHIUDI"
+- Il popup si chiude
+- Puoi stampare il report in qualsiasi momento manualmente
+- L'avviso non si ripresenterà fino al prossimo mese
 
-## 🧾 REPORT PDF
-
-Il report mensile include:
-
-### Dettaglio Turni
-Tabella completa con:
-- data e ora
-- lordo e netto
-- ore lavorate
-- km percorsi
-- consumo (L/100km e KM/L)
-- litri consumati
-
-### Dettaglio Rifornimenti
-Elenco di tutti i rifornimenti con:
-- data
-- spesa totale
-- prezzo al litro
-- litri riforniti
-
-### Analisi Efficienza Operativa
-Segmentazione automatica in periodi con:
-- numero turni per periodo
-- km totali
-- consumo medio
-- spesa benzina
-- netto del periodo
-- €/h (netto orario)
-- €/km (netto chilometrico)
-
-### Riepilogo Finale
-Totali mensili:
-- turni totali
-- ore lavorate
-- lordo totale
-- tasse pagate
-- spesa benzina
-- **netto finale**
-- guadagno orario medio
-- km totali percorsi
-
-**Pensato per:**
-- stampa e archiviazione cartacea
-- confronto tra mesi
-- analisi trend nel tempo
-- documentazione fiscale di supporto
+### Continuità Dati
+- L'ultimo prezzo benzina viene mantenuto per il mese successivo
+- I totali del dashboard vengono azzerati automaticamente
+- Lo storico completo rimane disponibile
+- Nessuna perdita di dati
 
 ---
 
-## 💾 BACKUP & SICUREZZA
+## 💾 SISTEMA DI BACKUP AUTOMATICO
 
-### Esportazione Database
-- genera un file **.json** con tutti i dati
-- include: turni, rifornimenti, km extra, configurazioni
-- nome file: `RiderTrackerBackup_AAAA-MM-GG.json`
-- compatibile con qualsiasi dispositivo
+### Proposta Backup Dopo Ogni Salvataggio
+Ogni volta che salvi un elemento (turno, benzina, km extra):
+- Appare un popup: "💾 ESPORTA DATABASE"
+- Messaggio: "Vuoi esportare un backup del database aggiornato?"
+- Due opzioni: **NO** o **SI**
 
-### Importazione Database
-- carica un file di backup precedente
-- **sovrascrive** completamente il database locale
-- utile per: ripristino dati, migrazione dispositivo, sincronizzazione
+Questo garantisce che tu abbia sempre un backup recente prima di chiudere l'app.
 
-### Reset Database
-- azzera **completamente** tutti i dati
-- richiede **doppia conferma**
-- azione **irreversibile**
-- da usare con cautela
+### Come Funziona
+**Se scegli SI:**
+- Viene generato un file JSON
+- Il browser scarica automaticamente il file
+- Nome file: `backup_rider_AAAA-MM-GG.json`
 
-**Quando fare il backup:**
-- prima di cambiare dispositivo
-- prima di pulire cache/dati del browser
-- periodicamente per sicurezza
-- prima di un reset database
+**Se scegli NO:**
+- Il popup si chiude
+- Puoi continuare a usare l'app normalmente
+- Il backup può essere fatto manualmente in seguito
 
----
-
-## ✏️ MODIFICA ED ELIMINAZIONE DATI
-
-### Modifica Elementi
-Ogni elemento nello storico può essere **modificato**:
-- clicca sull'elemento da modificare
-- i dati vengono caricati nel form corrispondente
-- modifica i valori
-- salva le modifiche
-
-**Modificabile:**
-- turni (lordo, ore, km, consumo)
-- rifornimenti (spesa, prezzo/litro, litri)
-- km extra (km, descrizione)
-
-### Eliminazione Elementi
-Ogni elemento può essere **eliminato singolarmente**:
-- clicca sull'icona cestino (🗑️)
-- conferma l'eliminazione
-- l'elemento viene rimosso permanentemente
-
-**Aggiornamento automatico:**
-- tutti i calcoli vengono ricalcolati
-- il dashboard si aggiorna in tempo reale
-- lo storico si riorganizza automaticamente
+### Struttura File Backup
+```json
+{
+  "timestamp": 1736899200000,
+  "app": "RIDER TRACKER PRO",
+  "versione": "1.1",
+  "db": {
+    "turni": [...],
+    "rifornimenti": [...],
+    "extraKm": [...],
+    "targets": {"01/2025": 1200},
+    "tax": 20
+  }
+}
+```
 
 ---
 
-## 🖨️ STAMPA REPORT
+## 📥 IMPORTAZIONE DATABASE
 
-Due modalità di stampa:
+### Come Ripristinare un Backup
 
-### 1. Stampa da Popup Fine Mese
-- si attiva automaticamente al cambio mese
-- stampa il report del mese appena concluso
-- include tutti i dati fino all'ultimo giorno
+**Dal Report PDF:**
+1. Clicca sul pulsante **"IMPORTA BACKUP"**
+2. Seleziona il file `.json` salvato in precedenza
+3. L'app valida il file
+4. Se valido: sovrascrive completamente il database locale
+5. La pagina si ricarica automaticamente
+6. Tutti i dati vengono ripristinati
 
-### 2. Stampa Manuale
-- pulsante **"GENERA REPORT PDF"** sempre disponibile
-- permette di stampare il mese corrente in qualsiasi momento
-- utile per controlli intermedi
+### Validazione File
+L'app controlla che il file contenga:
+- Il campo `db` obbligatorio
+- Struttura dati valida
+- Formato JSON corretto
 
-**Ottimizzato per:**
-- stampa A4
-- visualizzazione PDF
-- salvataggio digitale
-- condivisione via email
+Se il file non è valido:
+- Appare un alert: "File di backup non valido"
+- Nessun dato viene modificato
+- Puoi ritentare con un file diverso
 
----
+### Quando Usarlo
+- Cambio dispositivo
+- Ripristino dopo reset accidentale
+- Trasferimento dati tra browser
+- Recupero da cancellazione cache
 
-## ⚠️ NOTE TECNICHE
-
-### Requisiti
-- Browser moderno (Chrome, Firefox, Safari, Edge)
-- JavaScript abilitato
-- LocalStorage disponibile
-
-### Compatibilità
-- **Mobile-first**: ottimizzato per smartphone
-- **Responsive**: funziona su tablet e desktop
-- **Cross-platform**: iOS, Android, Windows, macOS
-
-### Separatore Decimale
-- usa **solo il punto (.)** come separatore decimale
-- esempi corretti: `15.50`, `4.2`, `1.85`
-- esempi errati: `15,50`, `4,2`, `1,85`
-
-### Offline-First
-- funziona **completamente offline**
-- nessuna connessione richiesta
-- dati salvati localmente
-- **nessun dato inviato online**
-
-### Installazione PWA
-L'app può essere **installata come app nativa**:
-- su Android: "Aggiungi a schermata Home"
-- su iOS: "Aggiungi a Home"
-- su Desktop: icona di installazione nella barra indirizzi
+**ATTENZIONE**: L'importazione **sovrascrive completamente** i dati attuali. Assicurati di avere un backup del database corrente prima di importare.
 
 ---
 
-## 📲 COME INSTALLARE L'APP SULLO SMARTPHONE
+## 🗑️ ELIMINAZIONE ELEMENTI
 
-### 📱 Android (Chrome/Edge)
-1. Apri il link dell'app con Chrome o Edge
-2. Tocca il menu (tre puntini) in alto a destra
-3. Seleziona **"Aggiungi a schermata Home"** o **"Installa app"**
-4. Conferma toccando **"Aggiungi"** o **"Installa"**
-5. L'icona dell'app apparirà nella schermata Home
-6. Aprila come una normale app: funzionerà anche offline!
+### Come Eliminare un Elemento
+Nello **Storico**:
+1. Trova l'elemento da eliminare
+2. Clicca sul pulsante **×** rosso a destra
+3. Appare un popup di conferma
+4. Due opzioni: **ANNULLA** o **ELIMINA**
 
-**Alternativa veloce:**
-- Cerca il banner/popup automatico **"Installa Rider Tracker Pro"**
-- Tocca **"Installa"**
+### Conferma Eliminazione
+**Popup:**
+- Titolo: "Conferma Eliminazione"
+- Messaggio: "Sei sicuro di voler eliminare questo elemento dallo storico?"
+- Pulsante grigio: **ANNULLA** (chiude il popup)
+- Pulsante rosso: **ELIMINA** (rimuove l'elemento)
 
-### 🍎 iPhone/iPad (Safari)
-1. Apri il link dell'app con **Safari** (non Chrome!)
-2. Tocca l'icona **Condividi** (quadrato con freccia verso l'alto) in basso
-3. Scorri verso il basso e seleziona **"Aggiungi alla schermata Home"**
-4. Modifica il nome se vuoi (es. "Rider Pro")
-5. Tocca **"Aggiungi"** in alto a destra
-6. L'icona apparirà nella Home del tuo iPhone/iPad
-7. Aprila come una normale app!
+### Cosa Succede Dopo
+Se confermi l'eliminazione:
+- L'elemento viene rimosso dal database
+- Tutti i calcoli vengono ricalcolati automaticamente
+- Il dashboard si aggiorna in tempo reale
+- Lo storico si riorganizza
+- Il popup si chiude automaticamente
 
-**IMPORTANTE per iOS:**
-- Usa **solo Safari**, gli altri browser non supportano l'installazione PWA
-- L'app funzionerà offline dopo la prima apertura
+### Elementi Eliminabili
+- ✅ Turni (tutti i dati del turno)
+- ✅ Rifornimenti (spesa e prezzo)
+- ✅ KM Extra (chilometri extra)
 
-### ✅ Vantaggi dell'installazione
-- **Icona dedicata** nella schermata Home
-- **Apertura rapida** come app nativa
-- **Schermo intero** senza barra del browser
-- **Funzionamento offline** completo
-- **Notifiche** (se abilitate)
-- **Prestazioni migliori**
+### Sicurezza
+- Ogni elemento ha un ID univoco
+- Doppia conferma sempre richiesta
+- Nessuna eliminazione accidentale possibile
+- **L'azione è irreversibile** - fai backup regolari
 
----
-
-## 🧑‍💻 TECNOLOGIE
-
-- **HTML5**: struttura semantica
-- **CSS3**: styling moderno e responsive
-- **JavaScript Vanilla**: nessuna dipendenza esterna
-- **LocalStorage**: persistenza dati locale
-- **PWA**: installabile come app
-- **jsPDF**: generazione report PDF
+**IMPORTANTE**: Non esiste funzione di modifica diretta. Per correggere un dato errato:
+1. Elimina l'elemento sbagliato
+2. Ricrealo con i dati corretti
 
 ---
 
-## 🔄 CHANGELOG
+## 📜 STORICO COMPLETO
 
-### v1.1 - Versione Attuale
-- ✅ Analisi efficienza operativa con segmentazione periodi
-- ✅ Sistema di gestione target personalizzabile
-- ✅ Percentuale tasse configurabile
-- ✅ Alert automatico fine mese con proposta stampa
-- ✅ Export/import database JSON
-- ✅ Modifica ed eliminazione elementi storici
-- ✅ Gestione KM extra
-- ✅ Calcolo consumo medio reale (KM/L)
-- ✅ Timestamp ultimo aggiornamento
-- ✅ Report PDF con analisi dettagliata
+### Accesso allo Storico
+Clicca sul pulsante **STORICO** (bianco, icona orologio) nella barra inferiore.
 
-### v1.0 - Release Iniziale
-- Gestione turni base
-- Registrazione rifornimenti
-- Calcolo netto con tasse fisse
-- Storico mensile
-- Report PDF semplificato
+### Cosa Visualizza
+Lo storico mostra **tutti gli elementi** registrati in ordine cronologico inverso (più recenti prima):
+- Turni
+- Rifornimenti
+- KM Extra
+
+Ogni elemento è identificabile visivamente da colore e icona.
+
+### Tipologie di Elementi
+
+**🔷 TURNO (bordo turchese)**
+- Icona: portafoglio (fa-wallet)
+- Etichetta: "TURNO" in turchese
+- Data e ora del turno
+- Valore principale: Lordo in €
+- Dettagli:
+  - Chilometri percorsi
+  - Ore lavorate
+  - Consumo dichiarato (L/100km)
+  - Km/L effettivi
+  - Litri stimati consumati
+  - Prezzo carburante del periodo
+
+**🟠 BENZINA (bordo arancione)**
+- Icona: pompa benzina (fa-gas-pump)
+- Etichetta: "BENZINA" in arancione
+- Data e ora del rifornimento
+- Valore principale: Spesa in €
+- Dettagli:
+  - Prezzo al litro (€/L con 3 decimali)
+  - Litri riforniti (calcolati automaticamente)
+
+**🔴 EXTRA (bordo rosso)**
+- Icona: strada (fa-road)
+- Etichetta: "EXTRA" in rosso
+- Data del tragitto
+- Valore principale: Chilometri percorsi
+- Dettagli: "Chilometri extra isolati"
+
+### Pulsante Elimina
+Ogni elemento ha un pulsante **×** rosso sulla destra:
+- Clicca per aprire conferma eliminazione
+- Vedi sezione "Eliminazione Elementi"
+
+### Chiudere lo Storico
+In fondo alla lista:
+- Pulsante grigio **"CHIUDI"**
+- Riporta al dashboard principale
 
 ---
 
-## 👤 AUTORE
+## 🧾 REPORT PDF COMPLETO
+
+### Accesso al Report
+Clicca sul grande pulsante **RIEPILOGO | GRAFICO | STAMPA** nella barra inferiore.
+
+### Struttura del Report
+
+**INTESTAZIONE**
+- Titolo: "RIEPILOGO MESE DI [MESE] [ANNO]"
+- Es. "RIEPILOGO MESE DI GENNAIO 2025"
+- Formattazione professionale per stampa
+
+---
+
+**SEZIONE 1: DETTAGLIO TURNI**
+
+Tabella con le seguenti colonne:
+- **DATA**: giorno/mese/anno del turno
+- **LORDO**: importo lordo in €
+- **NETTO**: importo netto dopo tasse e benzina
+- **ORE**: ore lavorate
+- **KM**: chilometri percorsi
+- **L/100**: consumo dichiarato
+- **KM/L**: efficienza effettiva
+- **LITRI**: litri stimati consumati
+
+**Riga finale (bordo doppio):**
+- Totali di tutte le colonne
+- In grassetto per evidenziare
+
+---
+
+**SEZIONE 2: DETTAGLIO RIFORNIMENTI**
+
+Tabella con le seguenti colonne:
+- **DATA**: giorno/mese/anno del rifornimento
+- **SPESA**: importo pagato in €
+- **PREZZO/L**: prezzo al litro (3 decimali)
+- **LITRI**: litri riforniti
+
+**Riga finale (bordo doppio):**
+- Totale spesa sostenuta
+- Totale litri riforniti
+- In grassetto
+
+---
+
+**SEZIONE 3: ANALISI EFFICIENZA OPERATIVA**
+
+Tabella con periodi automatici:
+- **PERIODO**: es. "P1 - 15/01 → 20/01" (su 2 righe)
+- **TURNI**: numero turni nel periodo
+- **CHILOMETRI**: km totali del periodo
+- **MEDIA**: consumo medio km/l
+- **BENZINA**: costo carburante totale
+- **NETTO**: guadagno netto del periodo
+- **€/H**: guadagno orario medio
+
+**Nota**: Le date sono compatte senza anno completo per risparmiare spazio.
+
+---
+
+**SEZIONE 4: RIEPILOGO FINALE**
+
+Box riepilogativo con:
+
+**Metriche operative:**
+- Ore totali lavorate
+- Kilometri turni
+- Media consumo (KM/L)
+
+**Separatore visivo (linea doppia)**
+
+**Calcolo economico:**
+- Lordo totale
+- Tasse pagate (con percentuale)
+- Benzina turni stimata
+- **NETTO FINALE** (evidenziato in grassetto)
+
+**Separatore**
+
+**Monitoraggio aggiuntivo:**
+- Totale chilometri extra
+- Monitoraggio rifornimenti (spesa reale pagata)
+
+---
+
+### Azioni Disponibili dal Report
+
+**BARRA INFERIORE (4 pulsanti in griglia):**
+
+**Prima riga:**
+- **ESPORTA BACKUP** (turchese)
+  - Icona: file-export
+  - Scarica database JSON
+
+- **IMPORTA BACKUP** (turchese)
+  - Icona: file-import
+  - Carica database JSON
+
+**Seconda riga:**
+- **STAMPA** (nero)
+  - Icona: stampante
+  - Apre dialog stampa browser
+
+- **GRAFICO RESA** (rosso)
+  - Icona: grafico a linee
+  - Apre i grafici €/ora e €/km
+
+**Terza riga:**
+- **CHIUDI** (grigio scuro, occupa 2 colonne)
+  - Icona: X
+  - Torna al dashboard
+
+---
+
+## 🖨️ STAMPA E SALVATAGGIO PDF
+
+### Metodo 1: Stampa da Fine Mese
+1. Si apre automaticamente il primo giorno del mese
+2. Clicca **"STAMPA ORA"** nel popup
+3. Si apre la vista Report
+4. La finestra di stampa si apre automaticamente
+
+### Metodo 2: Stampa Manuale
+1. Apri il Report dal pulsante principale
+2. Clicca **"STAMPA"** nella barra inferiore
+3. Si apre la finestra di stampa del browser
+
+### Finestra di Stampa
+Opzioni disponibili:
+- **Destinazione**: Stampante fisica o "Salva come PDF"
+- **Layout**: Verticale (consigliato)
+- **Margini**: Predefiniti
+- **Scala**: 100%
+- **Pagine**: Tutte
+
+### Ottimizzazioni Automatiche
+Quando stampi, l'app nasconde automaticamente:
+- Pulsanti di navigazione
+- Barra inferiore con azioni
+- Popup e modal
+- Elementi interattivi
+
+Rimane visibile solo:
+- Il report completo
+- Tutte le tabelle
+- Tutti i dati
+
+### Salvataggio PDF
+**Da Computer:**
+- Seleziona "Salva come PDF" come destinazione
+- Clicca "Salva"
+- Scegli nome e posizione
+
+**Da Mobile:**
+- Seleziona "Salva come PDF"
+- Il file viene salvato nella cartella Download
+- Puoi condividerlo via email, WhatsApp, Drive, ecc.
+
+### Formato Ottimale
+- **Dimensione**: A4
+- **Orientamento**: Verticale
+- **Font**: Leggibili anche stampati
+- **Tabelle**: Bordi netti
+- **Layout**: Professionale
+
+---
+
+## ⚙️ REGISTRAZIONE NUOVO TURNO
+
+### Apertura Modal Turno
+Clicca sul pulsante **TURNO** (verde) nella barra inferiore.
+
+### Selezione Data
+Tre menu a tendina già pre-compilati con la data odierna:
+- **Giorno**: 1-31 (giorno corrente selezionato)
+- **Mese**: Gen-Dic (mese corrente selezionato)
+- **Anno**: 2024-2030 (anno corrente selezionato)
+
+Puoi modificare qualsiasi valore per registrare turni retroattivi.
+
+### Campi da Compilare
+
+**LORDO (€)**
+- Importo lordo incassato
+- Formato: numero con punto decimale
+- Esempio: 45.50
+- Campo obbligatorio
+
+**ORE LAVORATE**
+- Ore di lavoro effettive
+- Formato: numero con decimale
+- Esempio: 4.5 (4 ore e 30 minuti)
+- Campo obbligatorio
+
+**CHILOMETRI PERCORSI**
+- Km totali del turno
+- Formato: numero intero
+- Esempio: 85
+- Campo obbligatorio
+
+**CONSUMO L/100KM**
+- Consumo del veicolo
+- Formato: numero con decimale
+- Esempio: 4.2
+- Campo opzionale (se non disponibile lascia vuoto)
+
+### Gestione Prezzo Carburante
+
+**Se è il primo turno del mese:**
+- Dopo aver cliccato "SALVA TURNO"
+- Se non ci sono rifornimenti registrati
+- Appare un popup: "⛽ ULTIMO PREZZO"
+- Messaggio: "Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:"
+- Campo input con formattazione automatica
+- Digita il prezzo (es. 1850 diventa 1.850)
+- Clicca **"IMPOSTA E SALVA TURNO"**
+
+**Se ci sono già rifornimenti:**
+- Il prezzo viene preso automaticamente dall'ultimo rifornimento
+- Nessun popup appare
+- Il turno viene salvato immediatamente
+
+### Salvataggio
+Clicca **"SALVA TURNO"** (pulsante turchese):
+- Il turno viene aggiunto al database
+- Tutti i calcoli si aggiornano
+- Il modal si chiude
+- Appare il popup di proposta backup
+- Torni al dashboard aggiornato
+
+### Annullamento
+Clicca **"ANNULLA"** (pulsante grigio):
+- Il modal si chiude
+- Nessun dato viene salvato
+- Torni al dashboard
+
+---
+
+## ⛽ REGISTRAZIONE RIFORNIMENTO
+
+### Apertura Modal Benzina
+Clicca sul pulsante **BENZINA** (arancione) nella barra inferiore.
+
+### Selezione Data
+Tre menu a tendina pre-compilati con la data odierna:
+- Giorno, Mese, Anno
+- Funzionamento identico al modal Turno
+
+### Campi da Compilare
+
+**EURO SPESI (€)**
+- Importo pagato alla pompa
+- Formato: numero con punto decimale
+- Esempio: 35.00
+- Campo obbligatorio
+
+**PREZZO (€/L)**
+- Prezzo al litro
+- Formattazione automatica speciale
+- Digita solo numeri: 1850 → diventa 1.850
+- Prima cifra = parte intera
+- Successive 3 cifre = decimali
+- Campo obbligatorio
+
+### Formattazione Automatica Prezzo
+
+**Come digitare:**
+- Digita: `1850` → Appare: `1.850`
+- Digita: `2` → Appare: `2`
+- Digita: `2005` → Appare: `2.005`
+- Digita: `1749` → Appare: `1.749`
+
+Il sistema:
+- Accetta solo cifre (0-9)
+- Rimuove automaticamente caratteri non numerici
+- Formatta mentre digiti
+- Massimo 4 cifre totali (1 intera + 3 decimali)
+
+### Calcolo Litri Automatico
+L'app calcola automaticamente:
+- Litri riforniti = Euro spesi ÷ Prezzo al litro
+- Viene mostrato nel report e nello storico
+
+### Salvataggio
+Clicca **"SALVA BENZINA"** (pulsante arancione):
+- Il rifornimento viene aggiunto al database
+- Il prezzo diventa valido per i turni successivi
+- Il modal si chiude
+- Appare il popup di proposta backup
+- Torni al dashboard
+
+### Annullamento
+Clicca **"ANNULLA"** (pulsante grigio):
+- Il modal si chiude senza salvare
+
+---
+
+## 🛣️ REGISTRAZIONE KM EXTRA
+
+### Apertura Modal Extra
+Clicca sul pulsante **EXTRA** (rosso) nella barra inferiore.
+
+### Selezione Data
+Tre menu a tendina pre-compilati con la data odierna:
+- Giorno, Mese, Anno
+- Funzionamento identico agli altri modal
+
+### Campo da Compilare
+
+**CHILOMETRI PERCORSI**
+- Km percorsi fuori dall'attività lavorativa
+- Formato: numero intero
+- Esempio: 50
+- Campo obbligatorio
+
+### A Cosa Servono
+I km extra:
+- NON influenzano i calcoli economici
+- Servono solo per monitoraggio personale
+- Aiutano a tracciare l'uso totale del veicolo
+- Utili per programmare manutenzioni
+- Permettono di calcolare consumi reali complessivi
+
+### Salvataggio
+Clicca **"SALVA EXTRA"** (pulsante rosso con testo bianco):
+- I km extra vengono aggiunti al database
+- Sono visibili nello storico
+- Il totale appare nel riepilogo finale del report
+- Il modal si chiude
+- Appare il popup di proposta backup
+
+### Annullamento
+Clicca **"ANNULLA"** (pulsante grigio):
+- Il modal si chiude senza salvare
+
+---
+
+## 🎯 CONFIGURAZIONE TARGET E TASSE
+
+### Impostazione Target Mensile
+
+**Dove si trova:**
+- Dashboard principale
+- Card con etichetta "TARGET"
+- Campo input numerico
+
+**Come usarlo:**
+1. Clicca nel campo TARGET
+2. Digita l'importo netto che vuoi guadagnare
+3. Esempio: 1200 (per €1200 netti)
+4. Il valore si salva automaticamente mentre digiti
+5. Nessun pulsante "salva" necessario
+
+**Cosa succede:**
+- La barra di progresso si aggiorna
+- Appare la percentuale raggiunta
+- Il campo "MANCANTE" mostra quanto lordo serve ancora
+- Il calcolo è: quanto lordo devi fare per raggiungere quel netto, considerando tasse e benzina
+
+### Impostazione Percentuale Tasse
+
+**Dove si trova:**
+- Dashboard principale
+- Card con etichetta "TAX %"
+- Campo input numerico
+
+**Come usarlo:**
+1. Clicca nel campo TAX %
+2. Digita la percentuale (solo numero)
+3. Esempio: 20 (per 20%)
+4. Il valore si salva automaticamente
+5. Valore predefinito: 20%
+
+**Cosa succede:**
+- Tutti i calcoli si aggiornano immediatamente
+- Il netto viene ricalcolato con la nuova percentuale
+- La formula è sempre: Netto = Lordo - (Lordo × TAX%) - Benzina
+
+### Quando Modificare la TAX %
+- Regime forfettario: imposta la tua aliquota reale
+- Partita IVA ordinaria: considera IRPEF + contributi
+- Regime dei minimi: usa la percentuale effettiva
+- Cambi di regime fiscale durante l'anno
+
+**Nota**: Il calcolo è semplificato e non sostituisce la consulenza fiscale professionale.
+
+---
+
+## 📊 CALCOLI AUTOMATICI
+
+Tutti i calcoli avvengono automaticamente. Ecco come funzionano:
+
+### Dashboard - Metriche Principali
+
+**LORDO**
+```
+Somma di tutti i lordi dei turni
+```
+
+**ORE**
+```
+Somma di tutte le ore lavorate
+```
+
+**KM TOTALI**
+```
+Somma di tutti i km dei turni
+```
+
+**LITRI STIMATI**
+```
+Per ogni turno: km × (consumo ÷ 100)
+Poi somma tutti i litri
+```
+
+**KM/L MEDIO**
+```
+Se litri > 0:
+  km totali ÷ litri totali
+Altrimenti: 0
+```
+
+**SPESA BENZINA**
+```
+Per ogni turno:
+  litri stimati × prezzo del periodo
+Poi somma tutti i costi
+```
+
+**TASSE**
+```
+Lordo totale × (TAX% ÷ 100)
+```
+
+**NETTO**
+```
+Lordo - Tasse - Spesa Benzina
+```
+
+**MEDIA ORARIA**
+```
+Se ore > 0:
+  Netto ÷ Ore
+Altrimenti: 0
+```
+
+**MANCANTE**
+```
+Lordo necessario = (Target + Spesa Benzina) ÷ (1 - TAX%/100)
+Mancante = Lordo necessario - Lordo attuale
+Se mancante < 0: mostra 0
+```
+
+**PERCENTUALE TARGET**
+```
+Se target > 0:
+  (Netto ÷ Target) × 100
+  Massimo 100%
+Altrimenti: 0%
+```
+
+### Report - Calcoli per Turno Singolo
+
+**LITRI CONSUMATI**
+```
+km × (consumo ÷ 100)
+```
+
+**COSTO BENZINA TURNO**
+```
+litri × prezzo del periodo
+```
+
+**TASSE TURNO**
+```
+lordo × (TAX% ÷ 100)
+```
+
+**NETTO TURNO**
+```
+lordo - tasse - costo benzina
+```
+
+**KM/L TURNO**
+```
+Se consumo > 0:
+  100 ÷ consumo
+Altrimenti: 0
+```
+
+### Grafici - Calcoli Resa
+
+**€ / ORA**
+```
+Se ore > 0:
+  Netto turno ÷ ore turno
+Altrimenti: non mostrare nel grafico
+```
+
+**€ / KM**
+```
+Se km > 0:
+  Netto turno ÷ km turno
+Altrimenti: non mostrare nel grafico
+```
+
+---
+
+## 🔍 ALGORITMO ANALISI PERIODI
+
+### Come Funziona la Segmentazione
+
+**Parametri:**
+- Soglia variazione consumo: **10%**
+- Minimo turni per periodo: **3**
+
+**Processo:**
+1. Ordina i turni per data (dal più vecchio)
+2. Prende il consumo del primo turno come "base"
+3. Per ogni turno successivo:
+   - Calcola: `differenza = |consumo turno - consumo base| ÷ consumo base`
+   - Se differenza > 10% E periodo corrente ha ≥ 3 turni:
+     - Chiude il periodo corrente
+     - Inizia nuovo periodo con nuovo consumo base
+   - Altrimenti: aggiunge turno al periodo corrente
+4. Alla fine, chiude l'ultimo periodo
+
+### Dati Raccolti per Periodo
+
+Per ogni periodo vengono sommati:
+- Numero turni
+- Km totali
+- Ore totali
+- Lordo totale
+- Litri totali
+- Costo benzina totale
+
+Vengono memorizzate:
+- Data inizio periodo
+- Data fine periodo
+
+### Calcoli Finali per Periodo
+
+**Tasse periodo:**
+```
+lordo × (TAX% ÷ 100)
+```
+
+**Netto periodo:**
+```
+lordo - tasse - costo benzina
+```
+
+**€/Ora periodo:**
+```
+Se ore > 0:
+  netto ÷ ore
+Altrimenti: 0
+```
+
+**€/Km periodo:**
+```
+Se km > 0:
+  netto ÷ km
+Altrimenti: 0
+```
+
+**Consumo medio periodo:**
+```
+Se litri > 0:
+  km ÷ litri
+Altrimenti: 0
+```
+
+### Visualizzazione nel Report
+
+Formato tabella:
+```
+PERIODO          TURNI  KM    MEDIA  BENZINA  NETTO   €/H
+P1               5      420   22.5   €78.50   €320    €16.00
+15/01 → 20/01
+```
+
+**Nota**: Se non ci sono abbastanza turni (< 3) viene creato un unico periodo con tutti i dati.
+
+---
+
+## 📲 INSTALLAZIONE COME APP
+
+### 📱 Android (Chrome o Edge)
+
+**Metodo 1: Banner Automatico**
+1. Apri l'app con Chrome o Edge
+2. Cerca il banner "Installa Rider Tracker Pro" che appare automaticamente
+3. Tocca **"Installa"**
+4. L'app si installa sulla schermata Home
+
+**Metodo 2: Menu Browser**
+1. Apri l'app con Chrome o Edge
+2. Tocca il menu (⋮ tre puntini) in alto a destra
+3. Cerca e tocca **"Aggiungi a schermata Home"** o **"Installa app"**
+4. Nella finestra che appare, tocca **"Aggiungi"** o **"Installa"**
+5. L'icona "Rider Tracker Pro" appare nella schermata Home
+6. Toccala per aprire l'app a schermo intero
+
+**Risultato:**
+- Icona dedicata sulla Home
+- Apertura a schermo intero senza barra browser
+- Funziona offline come app nativa
+- Più veloce e fluida
+
+---
+
+### 🍎 iPhone/iPad (Solo Safari)
+
+**IMPORTANTE**: L'installazione PWA su iOS funziona **solo con Safari**. Se usi Chrome, Firefox o altri browser, non potrai installarla come app.
+
+**Procedura:**
+1. Apri l'app con **Safari**
+2. Tocca l'icona **Condividi** (quadrato con freccia ↑) in basso al centro
+3. Scorri il menu verso il basso
+4. Trova e tocca **"Aggiungi a Home"**
+5. (Opzionale) Modifica il nome in "Rider Pro" o lascia "Rider Tracker Pro"
+6. Tocca **"Aggiungi"** in alto a destra
+7. L'icona appare nella schermata Home del tuo iPhone/iPad
+8. Toccala per aprire l'app
+
+**Risultato:**
+- Icona dedicata sulla Home come le app native
+- Schermo intero senza barre Safari
+- Funzionamento offline completo
+- Padding automatico per il notch/Dynamic Island
+- Esperienza identica a un'app dello Store
+
+**Verifica modalità standalone:**
+- Se vedi la scritta "RIDER TRACKER PRO V1.1" un po' più in alto del normale, sei in modalità app
+- Non vedrai più la barra Safari in basso
+- L'app occupa tutto lo schermo disponibile
+
+---
+
+### 🖥️ Desktop (Windows/Mac)
+
+**Chrome o Edge:**
+1. Apri l'app con Chrome o Edge sul computer
+2. Guarda la barra degli indirizzi
+3. Cerca l'icona **"Installa"** (⊕ o +) a destra
+4. Clicca sull'icona
+5. Nella finestra popup, clicca **"Installa"**
+6. L'app si apre in una finestra dedicata
+7. Viene creata un'icona sul desktop e nel menu Start/Applicazioni
+
+**Risultato:**
+- Finestra dedicata senza barra browser
+- Icona nel menu Start (Windows) o Dock (Mac)
+- Avvio rapido come programma installato
+- Funziona offline
+
+---
+
+### ✅ Vantaggi dell'Installazione
+
+**Esperienza Migliorata:**
+- 🚀 Avvio più rapido
+- 📱 Schermo intero
+- 🎨 Interfaccia pulita senza barre browser
+- 💾 Funzionamento offline garantito
+- 🔔 Notifiche (se implementate in futuro)
+
+**Praticità:**
+- Icona sempre visibile nella Home
+- Non devi cercare il link nel browser
+- Non rischi di chiudere accidentalmente la tab
+- Esperienza identica a un'app nativa
+
+**Performance:**
+- Caricamento più veloce
+- Uso ottimizzato della RAM
+- Migliore gestione cache
+
+---
+
+## 💡 CASI D'USO PRATICI
+
+### Scenario 1: Monitoraggio Giornaliero
+
+**Situazione:**
+Sei un rider che lavora 5-6 giorni a settimana e vuoi sapere quanto stai guadagnando realmente.
+
+**Come usare l'app:**
+1. **Ogni sera dopo il turno:**
+   - Apri l'app
+   - Clicca TURNO
+   - Inserisci: lordo del giorno, ore lavorate, km fatti, consumo
+   - Salva
+   
+2. **Quando fai benzina:**
+   - Apri l'app
+   - Clicca BENZINA
+   - Inserisci: quanto hai speso, prezzo al litro
+   - Salva
+
+3. **Durante il mese:**
+   - Controlla il dashboard ogni giorno
+   - Vedi quanto hai fatto di netto reale
+   - Monitora la barra di progresso verso il target
+
+4. **A fine mese:**
+   - Stampa il report PDF
+   - Archivia per confronti futuri
+
+**Risultato:**
+Sai sempre esattamente quanto stai guadagnando, non quanto incassi.
+
+---
+
+### Scenario 2: Ottimizzazione Zone e Orari
+
+**Situazione:**
+Vuoi capire quali zone e fasce orarie sono più profittevoli.
+
+**Come usare l'app:**
+1. **Registra ogni turno con precisione:**
+   - Anche se lavori più volte al giorno, registra turni separati
+   - Esempio: pranzo (12-15) e cena (19-23) come 2 turni distinti
+
+2. **Dopo 2 settimane:**
+   - Apri Report → Grafico Resa
+   - Guarda il grafico €/Ora
+   - Identifica i picchi (turni più profittevoli)
+   
+3. **Analizza i pattern:**
+   - Weekend vs infrasettimanali
+   - Pranzo vs cena
+   - Maltempo vs bel tempo
+
+4. **Consulta l'Analisi Efficienza:**
+   - Vedi se ci sono periodi con resa diversa
+   - Confronta il €/H tra periodi
+
+**Risultato:**
+Sai quando conviene lavorare e quando no, basandoti su dati reali.
+
+---
+
+### Scenario 3: Verifica Problema Meccanico
+
+**Situazione:**
+Noti che stai spendendo troppo in benzina o che i consumi sono aumentati.
+
+**Come usare l'app:**
+1. **Controlla il KM/L nel dashboard:**
+   - Se è molto più basso del dichiarato dal costruttore → possibile problema
+
+2. **Apri il Report:**
+   - Vai all'Analisi Efficienza Operativa
+   - Vedi se c'è un periodo con consumo peggiore
+
+3. **Registra i km extra:**
+   - Quando usi la moto per uso personale, registra i km
+   - Aiuta a capire se il problema è nel lavoro o generale
+
+4. **Confronta i dati:**
+   - Il consumo medio del periodo dovrebbe essere coerente
+   - Un cambio brusco (>10%) indica un problema
+
+**Risultato:**
+Identifichi subito anomalie e puoi portare il veicolo in officina prima che peggiori.
+
+---
+
+### Scenario 4: Cambio Dispositivo
+
+**Situazione:**
+Hai comprato un nuovo smartphone e vuoi trasferire tutti i dati.
+
+**Come procedere:**
+1. **Sul vecchio smartphone:**
+   - Apri l'app
+   - Vai su Report
+   - Clicca **"ESPORTA BACKUP"**
+   - Salva il file `backup_rider_2025-01-15.json`
+   - Invialo a te stesso via email o salvalo su Google Drive
+
+2. **Sul nuovo smartphone:**
+   - Installa l'app (vedi sezione Installazione)
+   - Apri l'app per la prima volta
+   - Vai su Report
+   - Clicca **"IMPORTA BACKUP"**
+   - Seleziona il file salvato
+   - Attendi il caricamento
+
+3. **Verifica:**
+   - Controlla che i dati nel dashboard siano corretti
+   - Apri lo Storico e verifica che ci siano tutti gli elementi
+
+**Risultato:**
+Tutti i dati trasferiti in meno di 2 minuti, nessuna perdita.
+
+---
+
+### Scenario 5: Decisione su Target Mensile
+
+**Situazione:**
+Devi decidere quanto lavorare per raggiungere un obiettivo economico.
+
+**Come usare l'app:**
+1. **A inizio mese:**
+   - Decidi quanto vuoi guadagnare di netto (es. €1200)
+   - Inserisci 1200 nel campo TARGET
+   
+2. **Imposta la tua TAX% reale:**
+   - Se sei in forfettario al 15%: inserisci 15
+   - L'app calcola quanto lordo serve
+
+3. **Durante il mese:**
+   - Controlla la barra di progresso
+   - Guarda il campo MANCANTE
+   - Saprai sempre quanto lordo ti serve ancora
+
+4. **Pianifica i turni restanti:**
+   - Se mancano €300 lordi
+   - E fai mediamente €50 lordi a turno
+   - Ti servono 6 turni
+
+**Risultato:**
+Decisioni consapevoli basate su matematica, non su sensazioni.
+
+---
+
+## ❓ DOMANDE FREQUENTI
+
+### Dati e Sicurezza
+
+**Q: Dove vengono salvati i miei dati?**
+A: Solo sul tuo dispositivo, nel LocalStorage del browser. Nessun dato viene inviato online.
+
+**Q: Posso perdere i dati?**
+A: Sì, se cancelli i dati del browser o disinstalli l'app senza aver fatto backup. Esporta regolarmente il database.
+
+**Q: I dati sono sincronizzati tra dispositivi?**
+A: No, sono locali. Devi usare Export/Import per trasferirli manualmente.
+
+**Q: Qualcuno può vedere i miei dati?**
+A: No, restano solo sul tuo dispositivo. Nemmeno noi sviluppatori li vediamo.
+
+---
+
+### Funzionalità
+
+**Q: Posso modificare un turno già inserito?**
+A: No, al momento devi eliminarlo e ricrearlo. In futuro potrebbe esserci la modifica diretta.
+
+**Q: Posso tenere lo storico di più mesi?**
+A: Sì, lo storico è cumulativo. Ma il report e i grafici mostrano solo il mese corrente.
+
+**Q: Come confronto mesi diversi?**
+A: Stampa il report PDF a fine di ogni mese e confronta i file salvati.
+
+**Q: Posso usare l'app per più veicoli?**
+A: No, i dati sono unici. Se usi 2 veicoli, serve un backup per ognuno o un browser diverso.
+
+---
+
+### Calcoli
+
+**Q: Perché Spesa Benzina è diversa da Rifornimenti?**
+A: Spesa Benzina = consumo stimato dei turni. Rifornimenti = soldi realmente pagati alla pompa. Vedi sezione dedicata nel manuale.
+
+**Q: Il netto calcolato è quello che mi arriva in banca?**
+A: No, è una stima. Non considera contributi INPS, altre spese, deduzioni fiscali. Consulta un commercialista per i calcoli ufficiali.
+
+**Q: Posso fidarmi dei calcoli?**
+A: I calcoli matematici sono corretti, MA dipendono dai dati che inserisci. Garbage in, garbage out.
+
+**Q: Che percentuale di tasse devo mettere?**
+A: Dipende dal tuo regime fiscale. Forfettario 5%/15%, Ordinario considera IRPEF+contributi. Chiedi al commercialista.
+
+---
+
+### Uso Pratico
+
+**Q: Devo registrare ogni rifornimento?**
+A: Sì, ogni rifornimento aggiorna il prezzo del carburante per i calcoli futuri.
+
+**Q: Cosa succede se dimentico di inserire un turno?**
+A: Puoi inserirlo in seguito cambiando la data nel modal. L'app non blocca date passate.
+
+**Q: Posso usare virgola per i decimali?**
+A: Solo nel campo prezzo benzina (auto-formattato). Per tutti gli altri usa il punto (es. 4.5 non 4,5).
+
+**Q: L'app funziona senza internet?**
+A: Sì, completamente. Serve internet solo per il primo caricamento e per scaricare Chart.js e icone.
+
+---
+
+### Installazione
+
+**Q: Devo installarla o posso usarla da browser?**
+A: Funziona in entrambi i modi, ma installandola è più comoda e veloce.
+
+**Q: Su iPhone non trovo "Installa app"**
+A: iOS richiede Safari e il procedimento è diverso (Condividi → Aggiungi a Home). Vedi sezione Installazione.
+
+**Q: Occupa molto spazio sul telefono?**
+A: No, circa 50KB più i dati che inserisci (solitamente < 1MB).
+
+**Q: Posso disinstallarla?**
+A: Sì, come qualsiasi app. I dati verranno persi se non fai backup prima.
+
+---
+
+### Problemi Tecnici
+
+**Q: Il pulsante "Salva" non funziona**
+A: Controlla di aver compilato tutti i campi obbligatori. Se il problema persiste, ricarica la pagina.
+
+**Q: I grafici non si vedono**
+A: Serve connessione internet per caricare Chart.js la prima volta. Dopo funziona offline.
+
+**Q: L'orologio live non si aggiorna**
+A: Ricarica la pagina. Potrebbe essere un problema JavaScript temporaneo.
+
+**Q: Il backup non si scarica**
+A: Controlla le impostazioni download del browser. Potrebbe essere bloccato.
+
+---
+
+## 🔒 PRIVACY E SICUREZZA
+
+### Cosa Raccoglie l'App
+
+**NESSUN DATO.**
+
+L'app:
+- ❌ NON richiede registrazione
+- ❌ NON richiede email
+- ❌ NON usa cookies di tracciamento
+- ❌ NON invia analytics
+- ❌ NON comunica con server (eccetto CDN per librerie)
+- ❌ NON ha accesso alla tua posizione
+- ❌ NON ha accesso ai tuoi contatti
+
+### Dove Sono i Tuoi Dati
+
+**LocalStorage del browser:**
+- Salvati solo sul tuo dispositivo
+- Accessibili solo dall'app
+- Non condivisi tra siti
+- Cancellabili in qualsiasi momento da te
+
+**File di backup:**
+- Quando esporti, crei un file JSON
+- Il file resta sul tuo dispositivo
+- Sei tu a decidere dove salvarlo (Drive, email, ecc.)
+- Sei responsabile della sua sicurezza
+
+### Connessioni Esterne
+
+L'app si collega a:
+1. **cdn.jsdelivr.net** - per caricare Chart.js (grafici)
+2. **cdnjs.cloudflare.com** - per caricare Font Awesome (icone)
+
+Dopo il primo caricamento, **tutto funziona offline**.
+
+### GDPR Compliance
+
+L'app è conforme GDPR perché:
+- Non raccoglie dati personali identificativi
+- Non usa cookies di profilazione
+- Non trasferisce dati a terzi
+- L'utente ha pieno controllo (export, delete)
+- I dati restano sempre sul dispositivo dell'utente
+
+### Responsabilità dell'Utente
+
+**Sei responsabile di:**
+- Fare backup regolari del database
+- Proteggere il tuo dispositivo con password/PIN
+- Non condividere file backup contenenti dati sensibili
+- Conservare i backup in luoghi sicuri
+
+**Suggerimenti:**
+- Esporta backup almeno una volta a settimana
+- Salva backup su cloud privato (Drive, Dropbox)
+- Non inviare backup via WhatsApp o email non criptate
+- Elimina backup vecchi dal telefono
+
+---
+
+## 🆘 SUPPORTO E AIUTO
+
+### Problema Tecnico
+
+**Prima di contattare, prova:**
+
+1. **Ricarica la pagina**
+   - Ctrl+F5 (Windows) o Cmd+Shift+R (Mac)
+   - Forza il ricaricamento completo
+
+2. **Svuota cache**
+   - Impostazioni browser → Privacy → Cancella dati
+   - Seleziona solo "Cache" non "Cookies"
+
+3. **Disabilita estensioni**
+   - Alcune estensioni possono interferire
+   - Prova in modalità incognito
+
+4. **Aggiorna browser**
+   - Usa l'ultima versione di Chrome, Firefox o Safari
+
+5. **Esporta backup**
+   - Prima di qualsiasi azione drastica
+   - Salva i dati in un luogo sicuro
+
+**Se il problema persiste:**
+- Contatta l'autore su Facebook: /madmaddj
+- Descrivi il problema dettagliatamente
+- Indica browser e sistema operativo
+- Allega screenshot se possibile
+
+---
+
+### Richiesta Feature
+
+**Hai un'idea per migliorare l'app?**
+
+1. Contatta l'autore su Facebook: /madmaddj
+2. Descrivi la funzionalità che vorresti
+3. Spiega perché sarebbe utile
+4. Fornisci un esempio di caso d'uso
+
+**Ricorda:**
+- L'app è sviluppata nel tempo libero
+- Non ci sono garanzie sui tempi di rilascio
+- Alcune feature potrebbero non essere implementabili
+- La priorità è la semplicità d'uso
+
+---
+
+### Bug e Segnalazioni
+
+**Hai trovato un bug?**
+
+1. Verifica che sia riproducibile
+2. Annota i passaggi esatti per riprodurlo
+3. Fai screenshot del problema
+4. Contatta l'autore con tutti i dettagli
+
+**Informazioni utili da includere:**
+- Dispositivo (es. iPhone 12, Samsung Galaxy S21)
+- Sistema operativo (es. iOS 17, Android 13)
+- Browser (es. Safari 17, Chrome 119)
+- Modalità (browser o app installata)
+- Cosa stavi facendo quando è successo
+
+---
+
+## 👤 AUTORE E CONTATTI
 
 **Progettato e sviluppato da:**  
-[Marco Carbone](https://facebook.com/madmaddj)
+**Marco Carbone**
 
 **Contatti:**
-- Facebook: /madmaddj
+- Facebook: [facebook.com/madmaddj](https://facebook.com/madmaddj)
 - GitHub: madcarbone-ctrl
+
+**Motivazione del progetto:**
+
+Rider Tracker Pro è nato da un'esigenza personale: capire quanto guadagno realmente, non solo quanto incasso.
+
+Le app di delivery mostrano solo il lordo, ma il lordo non è il guadagno reale. Bisogna togliere tasse e benzina.
+
+Ho creato questa app per me, poi ho deciso di condividerla gratuitamente per aiutare altri rider a fare scelte informate.
+
+**Filosofia:**
+- Gratis per sempre
+- Nessun account richiesto
+- Privacy totale
+- Semplicità d'uso
+- Open source nello spirito
 
 ---
 
@@ -449,513 +1572,196 @@ L'app può essere **installata come app nativa**:
 
 Se questa app ti è utile e vuoi supportare il lavoro di sviluppo:
 
-**[☕ Offrimi un caffè](https://www.paypal.com/paypalme/madcarbone)**
+**[☕ Offrimi un caffè su PayPal](https://www.paypal.com/paypalme/madcarbone)**
 
-Rider Tracker Pro è gratuita e sempre lo sarà.  
-Il tuo supporto aiuta a mantenerla aggiornata e a sviluppare nuove funzionalità.
+### Perché Donare
 
-Ogni contributo è apprezzato! 🙏
+Rider Tracker Pro è **gratuita e sempre lo sarà**.
 
----
+Ma il tuo supporto aiuta a:
+- ⏰ Dedicare più tempo al progetto
+- 🐛 Correggere bug più velocemente
+- ✨ Sviluppare nuove funzionalità
+- 📱 Testare su più dispositivi
+- 📚 Migliorare la documentazione
 
-## 📝 DISCLAIMER
+### Anche Senza Donare
 
-Questo software fornisce **stime economiche operative**  
-e non sostituisce strumenti fiscali o consulenza professionale.
+Puoi supportare il progetto:
+- 🌟 Condividendolo con altri rider
+- 💬 Lasciando feedback costruttivo
+- 🐛 Segnalando bug e problemi
+- 💡 Proponendo miglioramenti
+- ⭐ Stellina su GitHub (se verrà pubblicato)
 
-**Limitazioni:**
-- i calcoli sono basati su dati dichiarativi inseriti dall'utente
-- non tiene conto di deduzioni fiscali specifiche
-- non gestisce contributi previdenziali
-- non è uno strumento di contabilità ufficiale
-
-**Per obblighi fiscali reali, consulta sempre un commercialista.**
-
----
-
-**Versione:** 1.1  
-**Stato:** stabile  
-**Licenza:** uso personale gratuito
-
--------
-
-# 🚴 RIDER TRACKER PRO 1.1
-**Real earnings control for professional Riders**
+**Ogni contributo, anche solo una parola di incoraggiamento, è apprezzato! 🙏**
 
 ---
 
-## 📌 WHAT RIDER TRACKER PRO IS
+## 📝 DISCLAIMER LEGALE
 
-**Rider Tracker Pro** is a Progressive Web App (PWA) designed for professional Riders who want to understand **how much they actually earn**, not just how much they collect.
+### Limitazioni d'Uso
 
-"Gross" income is misleading.  
-This app calculates **Real Economic Net**, subtracting:
-- taxes (configurable percentage)
-- fuel costs allocated to work shifts
+Questo software fornisce **stime economiche operative** e **non sostituisce** strumenti fiscali professionali o consulenza di un commercialista.
 
-All data is stored **exclusively on your device** using **LocalStorage**.  
-No accounts, no cloud, no external dependencies.
+**L'app NON considera:**
+- Deduzioni fiscali specifiche
+- Contributi previdenziali INPS/INAIL
+- Ammortamenti del veicolo
+- Svalutazioni patrimoniali
+- Altre spese deducibili
+- Specifiche normative locali
 
----
+**Per obblighi fiscali reali, consulta sempre un commercialista abilitato.**
 
-## 🎯 PROJECT PHILOSOPHY
+### Responsabilità
 
-Rider Tracker Pro **is not a tax management tool** and does not aim to be one.
+**L'autore NON è responsabile per:**
+- Perdita di dati dovuta a malfunzionamenti
+- Decisioni economiche basate sui calcoli dell'app
+- Errori nei calcoli dovuti a dati errati inseriti dall'utente
+- Problemi fiscali derivanti dall'uso dell'app
+- Interpretazioni fiscali errate
 
-It is a tool for:
-- **personal cost control**
-- **work efficiency analysis**
-- **decision support**
+### Utilizzo a Proprio Rischio
 
-The goal is not accountant-level precision, but to:
-> **avoid bad decisions based on misleading numbers**
+L'app è fornita **"così com'è"** senza garanzie di alcun tipo, esplicite o implicite.
 
----
+L'utente si assume **piena responsabilità** dell'utilizzo e delle conseguenze.
 
-## 🧠 HOW THE CALCULATION MODEL WORKS
+### Licenza
 
-### 🔹 Shifts
-Each shift records:
-- gross income
-- hours worked
-- kilometers traveled
-- consumption (L/100km)
+**Uso personale gratuito**
 
-Consumption is **declarative**:
-- if your vehicle does not provide it → the field can be left empty
-- the system only uses data that is actually entered
+Vietata:
+- Rivendita commerciale
+- Distribuzione con modifiche senza autorizzazione
+- Uso per scopi commerciali senza accordo
 
----
-
-### 🔹 Refuels (⛽)
-Refuels are **NOT directly subtracted from net earnings**.
-
-They are used to:
-- define the **valid fuel price per liter**
-- which is automatically applied to subsequent shifts
-
-Fuel cost is calculated as:
-
-**estimated liters × €/L price of the period**
-
-This prevents:
-- falsely "negative" months
-- distortions caused by advance refueling
+Consentito:
+- Uso personale illimitato
+- Condivisione del link originale
+- Studio del codice per scopi educativi
 
 ---
 
-### 🔹 Initial price
-If a month starts without any refuels:
-- the app asks for the **last known fuel price**
-- ensuring calculation continuity
+## 🔄 CRONOLOGIA VERSIONI
+
+### v1.1 - Gennaio 2025 (Versione Corrente)
+
+**Nuove Funzionalità:**
+- ✅ Grafici di analisi resa (€/ora e €/km) con Chart.js
+- ✅ Analisi efficienza operativa con segmentazione automatica periodi
+- ✅ Alert automatico fine mese con proposta stampa PDF
+- ✅ Sistema target personalizzabile
+- ✅ Percentuale tasse configurabile (campo TAX %)
+- ✅ Export/Import database JSON con timestamp
+- ✅ Eliminazione elementi storici con doppia conferma
+- ✅ Gestione KM extra separati dai turni
+- ✅ Orologio live in tempo reale
+- ✅ Proposta backup automatica dopo ogni salvataggio
+
+**Miglioramenti UI/UX:**
+- ✅ Modal con spostamento automatico per tastiera mobile
+- ✅ Auto-formattazione prezzo benzina (X.XXX)
+- ✅ Selezione data con pre-compilazione automatica
+- ✅ Pulsante multi-funzione "RIEPILOGO | GRAFICO | STAMPA"
+- ✅ Righe totale con bordo doppio nelle tabelle report
+- ✅ Ottimizzazione layout report efficienza
+- ✅ Feedback visivo su pulsanti (animazione scale)
+
+**Miglioramenti Tecnici:**
+- ✅ Calcolo consumo medio reale (KM/L)
+- ✅ Gestione istanze Chart.js (no memory leak)
+- ✅ Validazione file backup prima import
+- ✅ Sistema logging prezzo benzina per periodo
+
+### v1.0 - Dicembre 2024 (Prima Release)
+
+- ✅ Gestione turni base
+- ✅ Registrazione rifornimenti
+- ✅ Calcolo netto con tasse fisse 20%
+- ✅ Storico mensile
+- ✅ Report PDF base
+- ✅ Dashboard metriche
+- ✅ Target fisso
+- ✅ LocalStorage
+- ✅ PWA installabile
 
 ---
 
-### 🔹 Tax Management
-The tax percentage is **customizable** in the "TAX %" field:
-- automatically applied to gross income of each shift
-- calculation: **Net = Gross - (Gross × TAX%) - Fuel Cost**
-- modifiable anytime to adapt to your tax regime
+## 🎓 INFORMAZIONI TECNICHE
+
+### Tecnologie Utilizzate
+
+**Frontend:**
+- HTML5 (struttura)
+- CSS3 (stile, animazioni, responsive)
+- JavaScript Vanilla ES6+ (logica)
+
+**Librerie Esterne (CDN):**
+- Chart.js (grafici interattivi)
+- Font Awesome 6.0 (icone)
+
+**Storage:**
+- LocalStorage API (persistenza dati)
+
+**PWA:**
+- Service Worker (offline)
+- Web App Manifest (installazione)
+
+**Nessuna dipendenza server-side.**
+
+### Requisiti di Sistema
+
+**Browser Supportati:**
+- ✅ Chrome 90+
+- ✅ Edge 90+
+- ✅ Firefox 88+
+- ✅ Safari 14+
+
+**Sistemi Operativi:**
+- ✅ Android 8+
+- ✅ iOS 13+
+- ✅ Windows 10+
+- ✅ macOS 10.15+
+- ✅ Linux (qualsiasi distro con browser moderno)
+
+**Requisiti Minimi:**
+- JavaScript abilitato
+- LocalStorage disponibile
+- 1MB spazio disponibile
+
+### Prestazioni
+
+**Dimensioni:**
+- App: ~50KB (HTML+CSS+JS)
+- Chart.js: ~200KB (caricato da CDN)
+- Font Awesome: ~150KB (caricato da CDN)
+- Dati utente: < 1MB tipicamente
+
+**Velocità:**
+- Primo caricamento: ~1-2 secondi (dipende da connessione)
+- Caricamenti successivi: < 0.5 secondi (offline)
+- Calcoli: istantanei
+- Grafici: < 1 secondo per rendering
 
 ---
 
-### 🔹 Target System
-Set a monthly earning goal:
-- percentage visualization of target achieved
-- automatic calculation of missing amount
-- visual motivation of progress
+## 🌍 LICENZA E DISTRIBUZIONE
+
+**Versione:** 1.1.0  
+**Stato:** Stabile, production-ready  
+**Licenza:** Uso personale gratuito  
+**Codice:** Disponibile per consultazione educativa  
+**Contributi:** Benvenuti (contatta l'autore)
 
 ---
 
-### ℹ️ DIFFERENCE BETWEEN "FUEL EXPENSE" AND "REFUELS"
+**Fine della documentazione - Rider Tracker Pro v1.1**
 
-**FUEL EXPENSE** (shown in dashboard):
-- is the **estimated cost of fuel consumed during shifts**
-- calculated as: km traveled × consumption × price/liter of the period
-- represents the cost **attributable to work activity**
-
-**REFUELS** (visible in report):
-- are the **actual amounts paid at gas stations**
-- serve only as **price markers** to calculate shift costs
-
-It is **normal** for these two values to differ:
-- if you refuel before the month starts, that expense doesn't impact the current month's calculation
-- if you end the month with a half-full tank, that fuel will be "paid for" economically in already recorded shifts
-
-**Practical example:**
-```
-January shifts: 800 km × 4L/100km × €1.85/L = €59.20 (FUEL EXPENSE)
-January refuels: €35 (Jan 10) + €40 (Jan 28) = €75 (ACTUAL REFUELS)
-
-The difference (€15.80) depends on:
-- refuel made at end of December
-- tank not completely empty at end of January
-```
-
-The **"consumption allocation"** model is more economically correct than the **"cash basis"** model (pay → deduct).
+**Data ultimo aggiornamento:** Gennaio 2025
 
 ---
 
-## 📊 OPERATIONAL EFFICIENCY ANALYSIS (NEW v1.1)
-
-Version **1.1** introduces advanced analysis **without modifying the interface**.
-
-In the **PDF Report**, an additional section is included:
-
-### 🔍 Consumption Period Analysis
-The system:
-- analyzes shifts in chronological order
-- detects **structural changes in consumption**
-- automatically segments the month into **homogeneous periods**
-
-For each period, it calculates:
-- average consumption
-- fuel cost
-- net earnings
-- net hourly rate (€ / h)
-- net per kilometer (€ / km)
-
-This analysis is **diagnostic only** and does **not** alter economic calculations.
-
-**Practical utility:**
-- identify efficiency drops (e.g., mechanical issues, route changes)
-- compare performance under different conditions (weather, schedules, areas)
-- optimize work strategies based on objective data
-
----
-
-## 🚗 EXTRA KM MANAGEMENT
-
-The **EXTRA KM** function allows you to record kilometers traveled **outside work activity**.
-
-**Purpose:**
-- monitor personal vehicle use
-- calculate overall real consumption
-- separate work km from private km
-
-**How it works:**
-- extra km are recorded with date and description
-- visible in history separately from shifts
-- used for analyzing vehicle's real average consumption
-
-**Benefits:**
-- understand if consumption declared in shifts is realistic
-- identify consumption anomalies (e.g., leaks, mechanical issues)
-- plan maintenance based on total mileage
-
----
-
-## 📱 INTERFACE AND FEATURES
-
-### Main Dashboard
-Shows in real-time:
-- **Gross**: total earned in the month
-- **Net**: real earnings after taxes and fuel
-- **Hours**: total hours worked
-- **Est. Liters**: estimated fuel consumed
-- **KM/L**: vehicle average efficiency
-- **Fuel Exp.**: fuel cost allocated to shifts
-- **Target**: monthly goal and percentage achieved
-- **Missing**: amount needed to reach target
-- **Average**: average hourly earning (€/h)
-- **Timestamp**: date and time of last update
-
-### Navigation Tabs
-The app is organized into **4 main sections**:
-
-1. **SHIFT** - Record new work shift
-2. **FUEL** - Record refuels
-3. **EXTRA** - Record non-work km
-4. **HISTORY** - View historical data and generate reports
-
----
-
-## 🔔 END OF MONTH MANAGEMENT
-
-At the beginning of each new month, the app:
-- **automatically detects** the month change
-- shows a **notification popup**
-- proposes to **print the PDF report** of the concluded month
-- allows you to choose whether to print immediately or close
-
-**Additional features:**
-- **Database export**: proposes automatic backup before new month
-- **Data continuity**: keeps last fuel price for next month
-- **Automatic reset**: resets counters while maintaining history
-
-This ensures:
-- no data loss
-- complete monthly tracking
-- always available historical archive
-
----
-
-## 🧾 PDF REPORT
-
-The monthly report includes:
-
-### Shift Details
-Complete table with:
-- date and time
-- gross and net
-- hours worked
-- km traveled
-- consumption (L/100km and KM/L)
-- liters consumed
-
-### Refuel Details
-List of all refuels with:
-- date
-- total expense
-- price per liter
-- liters refueled
-
-### Operational Efficiency Analysis
-Automatic segmentation into periods with:
-- number of shifts per period
-- total km
-- average consumption
-- fuel expense
-- period net
-- €/h (net hourly)
-- €/km (net per kilometer)
-
-### Final Summary
-Monthly totals:
-- total shifts
-- hours worked
-- total gross
-- taxes paid
-- fuel expense
-- **final net**
-- average hourly earning
-- total km traveled
-
-**Designed for:**
-- printing and paper archiving
-- month-to-month comparison
-- trend analysis over time
-- supporting tax documentation
-
----
-
-## 💾 BACKUP & SECURITY
-
-### Database Export
-- generates a **.json** file with all data
-- includes: shifts, refuels, extra km, configurations
-- filename: `RiderTrackerBackup_YYYY-MM-DD.json`
-- compatible with any device
-
-### Database Import
-- loads a previous backup file
-- **completely overwrites** local database
-- useful for: data restoration, device migration, synchronization
-
-### Database Reset
-- **completely** clears all data
-- requires **double confirmation**
-- **irreversible** action
-- use with caution
-
-**When to backup:**
-- before changing device
-- before clearing browser cache/data
-- periodically for security
-- before a database reset
-
----
-
-## ✏️ DATA EDITING AND DELETION
-
-### Edit Items
-Each item in history can be **edited**:
-- click on the item to edit
-- data is loaded into the corresponding form
-- modify values
-- save changes
-
-**Editable:**
-- shifts (gross, hours, km, consumption)
-- refuels (expense, price/liter, liters)
-- extra km (km, description)
-
-### Delete Items
-Each item can be **deleted individually**:
-- click on trash icon (🗑️)
-- confirm deletion
-- item is permanently removed
-
-**Automatic update:**
-- all calculations are recalculated
-- dashboard updates in real-time
-- history reorganizes automatically
-
----
-
-## 🖨️ PRINT REPORT
-
-Two printing modes:
-
-### 1. Print from End-of-Month Popup
-- automatically activates at month change
-- prints report of just concluded month
-- includes all data up to last day
-
-### 2. Manual Print
-- **"GENERATE PDF REPORT"** button always available
-- allows printing current month anytime
-- useful for intermediate checks
-
-**Optimized for:**
-- A4 printing
-- PDF viewing
-- digital saving
-- email sharing
-
----
-
-## ⚠️ TECHNICAL NOTES
-
-### Requirements
-- Modern browser (Chrome, Firefox, Safari, Edge)
-- JavaScript enabled
-- LocalStorage available
-
-### Compatibility
-- **Mobile-first**: optimized for smartphones
-- **Responsive**: works on tablets and desktops
-- **Cross-platform**: iOS, Android, Windows, macOS
-
-### Decimal Separator
-- use **only dot (.)** as decimal separator
-- correct examples: `15.50`, `4.2`, `1.85`
-- incorrect examples: `15,50`, `4,2`, `1,85`
-
-### Offline-First
-- works **completely offline**
-- no connection required
-- data saved locally
-- **no data sent online**
-
-### PWA Installation
-The app can be **installed as a native app**:
-- on Android: "Add to Home Screen"
-- on iOS: "Add to Home"
-- on Desktop: install icon in address bar
-
----
-
-## 📲 HOW TO INSTALL THE APP ON SMARTPHONE
-
-### 📱 Android (Chrome/Edge)
-1. Open the app link with Chrome or Edge
-2. Tap the menu (three dots) in the top right corner
-3. Select **"Add to Home screen"** or **"Install app"**
-4. Confirm by tapping **"Add"** or **"Install"**
-5. The app icon will appear on your Home screen
-6. Open it like a regular app: it works offline too!
-
-**Quick alternative:**
-- Look for the automatic banner/popup **"Install Rider Tracker Pro"**
-- Tap **"Install"**
-
-### 🍎 iPhone/iPad (Safari)
-1. Open the app link with **Safari** (not Chrome!)
-2. Tap the **Share** icon (square with arrow pointing up) at the bottom
-3. Scroll down and select **"Add to Home Screen"**
-4. Edit the name if you want (e.g., "Rider Pro")
-5. Tap **"Add"** in the top right corner
-6. The icon will appear on your iPhone/iPad Home screen
-7. Open it like a regular app!
-
-**IMPORTANT for iOS:**
-- Use **only Safari**, other browsers don't support PWA installation
-- The app will work offline after the first opening
-
-### ✅ Installation Benefits
-- **Dedicated icon** on Home screen
-- **Quick launch** like native app
-- **Full screen** without browser bar
-- **Complete offline** functionality
-- **Notifications** (if enabled)
-- **Better performance**
-
----
-
-## 🧑‍💻 TECHNOLOGIES
-
-- **HTML5**: semantic structure
-- **CSS3**: modern and responsive styling
-- **Vanilla JavaScript**: no external dependencies
-- **LocalStorage**: local data persistence
-- **PWA**: installable as app
-- **jsPDF**: PDF report generation
-
----
-
-## 🔄 CHANGELOG
-
-### v1.1 - Current Version
-- ✅ Operational efficiency analysis with period segmentation
-- ✅ Customizable target system
-- ✅ Configurable tax percentage
-- ✅ Automatic end-of-month alert with print proposal
-- ✅ JSON database export/import
-- ✅ Historical item editing and deletion
-- ✅ Extra km management
-- ✅ Real average consumption calculation (KM/L)
-- ✅ Last update timestamp
-- ✅ PDF report with detailed analysis
-
-### v1.0 - Initial Release
-- Basic shift management
-- Refuel recording
-- Net calculation with fixed taxes
-- Monthly history
-- Simplified PDF report
-
----
-
-## 👤 AUTHOR
-
-**Designed and developed by:**  
-[Marco Carbone](https://facebook.com/madmaddj)
-
-**Contacts:**
-- Facebook: /madmaddj
-- GitHub: madcarbone-ctrl
-
----
-
-## ☕ SUPPORT THE PROJECT
-
-If this app is useful to you and you want to support the development work:
-
-**[☕ Buy me a coffee](https://www.paypal.com/paypalme/madcarbone)**
-
-Rider Tracker Pro is free and always will be.  
-Your support helps keep it updated and develop new features.
-
-Every contribution is appreciated! 🙏
-
----
-
-## 📝 DISCLAIMER
-
-This software provides **operational economic estimates**  
-and does not replace tax tools or professional consulting.
-
-**Limitations:**
-- calculations are based on declarative data entered by user
-- does not account for specific tax deductions
-- does not manage pension contributions
-- is not an official accounting tool
-
-**For real tax obligations, always consult an accountant.**
-
----
-
-**Version:** 1.1  
-**Status:** stable  
-**License:** free for personal use
+**Grazie per aver scelto Rider Tracker Pro! 🚴💨**
