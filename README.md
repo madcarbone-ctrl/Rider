@@ -1500,7 +1500,7 @@ L'app è conforme GDPR perché:
    - Salva i dati in un luogo sicuro
 
 **Se il problema persiste:**
-- Contatta l'autore su Facebook: /madmaddj
+- Contatta l'autore
 - Descrivi il problema dettagliatamente
 - Indica browser e sistema operativo
 - Allega screenshot se possibile
@@ -1511,7 +1511,7 @@ L'app è conforme GDPR perché:
 
 **Hai un'idea per migliorare l'app?**
 
-1. Contatta l'autore su Facebook: /madmaddj
+1. Contatta l'autore
 2. Descrivi la funzionalità che vorresti
 3. Spiega perché sarebbe utile
 4. Fornisci un esempio di caso d'uso
@@ -1548,7 +1548,7 @@ L'app è conforme GDPR perché:
 **Marco Carbone**
 
 **Contatti:**
-- Facebook: [facebook.com/madmaddj](https://facebook.com/madmaddj)
+
 - GitHub: madcarbone-ctrl
 
 **Motivazione del progetto:**
