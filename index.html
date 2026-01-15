@@ -224,22 +224,91 @@
     }
     function calcolaPeriodiConsumo(turni, tax) { if (!turni.length) return []; const SOGLIA = 0.10; let periodi = []; let base = turni[0].cons; let corrente = { start: turni[0].data, end: turni[0].data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; turni.forEach(t => { const diff = Math.abs(t.cons - base) / base; if (diff > SOGLIA && corrente.turni >= 3) { periodi.push({...corrente}); base = t.cons; corrente = { start: t.data, end: t.data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; } const litri = t.km * (t.cons / 100); const costo = litri * (t.prezzo || 0); corrente.turni++; corrente.end = t.data; corrente.km += t.km; corrente.ore += t.ore; corrente.lordo += t.lordo; corrente.litri += litri; corrente.costoB += costo; }); periodi.push(corrente); return periodi.map(p => { const tasse = p.lordo * (tax / 100); const netto = p.lordo - tasse - p.costoB; return { periodo: `${p.start} → ${p.end}`, ...p, netto, euroOra: p.ore ? netto / p.ore : 0, euroKm: p.km ? netto / p.km : 0, consumoMedio: p.litri ? (p.km / p.litri) : 0 }; }); }
     function getTotaleKmExtra(){ return (db.extraKm || []).reduce((a,b)=>a+b.km, 0); }
+        
     function apriReport() {
-        const n = new Date(); document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
-        const turni = [...db.turni].sort((a,b)=>a.id-b.id); let tH = "", rH = "", tL=0, tO=0, tK=0, tLS=0, tEB_Reale=0;
+        const n = new Date(); 
+        document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
+        
+        const turni = [...db.turni].sort((a,b)=>a.id-b.id); 
+        let tH = "", rH = "";
+        let tL=0, tO=0, tK=0, tLS=0, tNettoTot=0;
+
+        // --- DETTAGLIO TURNI ---
         turni.forEach(t => { 
-            let litri = t.km * (t.cons / 100); let costoB = litri * (t.prezzo || 0); let tasse = t.lordo * (db.tax / 100); let nettoTurno = t.lordo - tasse - costoB;
-            let kmlVal = t.cons > 0 ? (100 / t.cons).toFixed(1) : "0.0"; tL += t.lordo; tO += t.ore; tK += t.km; tLS += litri; 
+            let litri = t.km * (t.cons / 100); 
+            let costoB = litri * (t.prezzo || 0); 
+            let tasse = t.lordo * (db.tax / 100); 
+            let nettoTurno = t.lordo - tasse - costoB;
+            let kmlVal = t.cons > 0 ? (100 / t.cons).toFixed(1) : "0.0"; 
+            
+            tL += t.lordo; tO += t.ore; tK += t.km; tLS += litri; tNettoTot += nettoTurno;
+            
             tH += `<tr><td>${t.data}</td><td>€${t.lordo.toFixed(2)}</td><td>€${nettoTurno.toFixed(2)}</td><td>${t.ore}h</td><td>${t.km}</td><td>${t.cons}</td><td>${kmlVal}</td><td>${litri.toFixed(2)}L</td></tr>`; 
         });
-        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { tEB_Reale += r.euro; rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; });
-        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='8'>Nessun turno</td></tr>"; document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
-        const periodi = calcolaPeriodiConsumo(turni, db.tax); let eff = ""; periodi.forEach((p,i)=>{ eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td></tr>`;});
-        document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='8'>Dati insufficienti</td></tr>";
-        let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0); let taxV = tL * (db.tax/100); let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
-        document.getElementById('repFinalSummary').innerHTML = `<div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div><div class="summary-row"><span>KILOMETRI TURNI:</span><span>${Math.ceil(tK)} km</span></div><div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div><hr style="border:0; border-top:2px solid #000; margin:10px 0;"><div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div><div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div><div class="summary-row"><span>BENZINA TURNI (STIMATA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div><div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div><div class="summary-row" style="font-weight:bold; border:none; padding-top:10px; color:#000;"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div><div class="summary-row" style="font-weight:bold; border:none; padding-top:5px; color:#000;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+
+        if(turni.length > 0) {
+            // Riga Totale con bordo superiore doppio per staccarla visivamente
+            tH += `<tr style="font-weight:bold; background:#f9f9f9; border-top: 2px solid #000;">
+                <td>Totale</td>
+                <td>€${tL.toFixed(2)}</td>
+                <td>€${tNettoTot.toFixed(2)}</td>
+                <td>${tO.toFixed(1)}h</td>
+                <td>${tK.toFixed(1)}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>${tLS.toFixed(2)}L</td>
+            </tr>`;
+        }
+
+        // --- DETTAGLIO RIFORNIMENTI ---
+        let spesaTotB = 0, litriTotB = 0, tEB_Reale = 0;
+        db.rifornimenti.sort((a,b)=>a.id-b.id).forEach(r => { 
+            tEB_Reale += r.euro; 
+            spesaTotB += r.euro;
+            litriTotB += (r.euro / r.prezzo);
+            rH += `<tr><td>${r.data}</td><td>€${r.euro.toFixed(2)}</td><td>€${r.prezzo.toFixed(3)}</td><td>${(r.euro/r.prezzo).toFixed(2)}L</td></tr>`; 
+        });
+
+        if(db.rifornimenti.length > 0) {
+            // Riga Totale con bordo superiore doppio
+            rH += `<tr style="font-weight:bold; background:#f9f9f9; border-top: 2px solid #000;">
+                <td>Totale</td>
+                <td>€${spesaTotB.toFixed(2)}</td>
+                <td>-</td>
+                <td>${litriTotB.toFixed(2)}L</td>
+            </tr>`;
+        }
+
+        document.getElementById('repTurniBody').innerHTML = tH || "<tr><td colspan='8'>Nessun turno</td></tr>"; 
+        document.getElementById('repBenzaBody').innerHTML = rH || "<tr><td colspan='4'>Nessun rifornimento</td></tr>";
+        
+        // --- IL RESTO DEL CODICE RIMANE UGUALE ---
+        const periodi = calcolaPeriodiConsumo(turni, db.tax); 
+        let eff = ""; 
+        periodi.forEach((p,i)=>{ 
+            eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td></tr>`;
+        });
+        document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='7'>Dati insufficienti</td></tr>";
+        
+        let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0); 
+        let taxV = tL * (db.tax/100); 
+        let mediaKML = tLS > 0 ? (tK/tLS).toFixed(1) : "0.0";
+        
+        document.getElementById('repFinalSummary').innerHTML = `
+            <div class="summary-row"><span>ORE TOTALI LAVORATE:</span><span>${tO.toFixed(1)}h</span></div>
+            <div class="summary-row"><span>KILOMETRI TURNI:</span><span>${Math.ceil(tK)} km</span></div>
+            <div class="summary-row"><span>MEDIA CONSUMO (KM/L):</span><span>${mediaKML} km/l</span></div>
+            <hr style="border:0; border-top:2px solid #000; margin:10px 0;">
+            <div class="summary-row"><span>LORDO TOTALE:</span><span>€${tL.toFixed(2)}</span></div>
+            <div class="summary-row"><span>TASSE (${db.tax}%):</span><span>-€${taxV.toFixed(2)}</span></div>
+            <div class="summary-row"><span>BENZINA TURNI (STIMATA):</span><span>-€${costoB_Stimata.toFixed(2)}</span></div>
+            <div class="summary-row total"><span>NETTO:</span><span>€${(tL-taxV-costoB_Stimata).toFixed(2)}</span></div>
+            <div class="summary-row" style="font-weight:bold; border:none; padding-top:10px; color:#000;"><span>TOTALE CHILOMETRI EXTRA:</span><span>${getTotaleKmExtra()} km</span></div>
+            <div class="summary-row" style="font-weight:bold; border:none; padding-top:5px; color:#000;"><span>MONITORAGGIO RIFORNIMENTI:</span><span>€${tEB_Reale.toFixed(2)}</span></div>`;
+        
         document.getElementById('reportView').style.display = 'flex';
     }
+        
     function apriM(id) { const n = new Date(); let d='', m='', y=''; for(let i=1;i<=31;i++) d+=`<option value="${i}" ${i==n.getDate()?'selected':''}>${i}</option>`; mesi.forEach((nm,i)=>m+=`<option value="${i+1}" ${i==n.getMonth()?'selected':''}>${nm.substring(0,3)}</option>`); for(let i=2024;i<=2030;i++) y+=`<option value="${i}" ${i==n.getFullYear()?'selected':''}>${i}</option>`; let p = id==='modalTurno'?'dateT':(id==='modalBenza'?'dateB':'dateE'); document.getElementById(p).innerHTML = `<select id="${p}D">${d}</select><select id="${p}M">${m}</select><select id="${p}Y">${y}</select>`; document.getElementById(id).style.display='flex'; }
     function salvaExtraKm(){ const km = parseFloat(document.getElementById('extraKmInput').value) || 0; if(km <= 0) return; const d = `${document.getElementById('dateED').value.padStart(2,'0')}/${document.getElementById('dateEM').value.padStart(2,'0')}/${document.getElementById('dateEY').value}`; db.extraKm.push({ id: Date.now(), data: d, km: km }); salvaDB(); chiudiModali(); mostraModalBackup(); }
     function salvaTurno() { if (db.rifornimenti.length === 0) { document.getElementById('modalInizio').style.display = 'flex'; return; } effettuaSalvataggioTurno(); }
