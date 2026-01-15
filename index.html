@@ -286,8 +286,8 @@
         const periodi = calcolaPeriodiConsumo(turni, db.tax); 
         let eff = ""; 
         periodi.forEach((p,i)=>{ 
-            eff += `<tr><td>P${i+1}<br>${p.periodo}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td></tr>`;
-        });
+            eff += `<tr><td style="line-height: 1.2;">P${i+1}<br>${p.periodo.replace(/\/202\d/g, '')}</td><td>${p.turni}</td><td>${p.km.toFixed(0)}</td><td>${p.consumoMedio.toFixed(2)}</td><td>€${p.costoB.toFixed(2)}</td><td>€${p.netto.toFixed(2)}</td><td>${p.euroOra.toFixed(2)}</td></tr>`;
+            });
         document.getElementById("repEfficienzaBody").innerHTML = eff || "<tr><td colspan='7'>Dati insufficienti</td></tr>";
         
         let costoB_Stimata = turni.reduce((acc, t) => acc + ((t.km * (t.cons / 100)) * (t.prezzo || 0)), 0); 
