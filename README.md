@@ -37,10 +37,49 @@ Ogni turno registra:
 - ore lavorate
 - chilometri percorsi
 - consumo del veicolo (L/100km)
+- **mezzo utilizzato** (🚗 Auto, 🛵 Moto, 🚲 Bici)
 
 Il consumo è **dichiarativo**:
 - se il veicolo non lo fornisce → il campo può restare vuoto
+- per le **bici** il consumo carburante è **automaticamente 0**
 - il sistema usa solo dati realmente inseriti dall'utente
+
+---
+
+### 🔹 Selezione Mezzo di Trasporto
+
+**Nuova funzionalità v1.1:**
+
+Ogni turno può essere associato a un mezzo specifico:
+
+**Mezzi disponibili:**
+- 🚗 **Auto** - richiede consumo carburante
+- 🛵 **Moto** - richiede consumo carburante
+- 🚲 **Bici** - NO consumo carburante (zero automatico)
+
+**Come funziona:**
+
+Quando registri un turno:
+1. Clicca sul selettore mezzo (mostra "🚗 Auto" di default)
+2. Appare un modal con le 3 opzioni
+3. Scegli il mezzo utilizzato
+4. Se scegli **Bici**:
+   - Il campo "Consumo L/100km" viene nascosto
+   - Il consumo viene impostato automaticamente a 0
+   - Il costo carburante per quel turno sarà 0
+5. Se scegli **Auto** o **Moto**:
+   - Il campo consumo rimane visibile
+   - Devi inserire il consumo reale
+
+**Benefici:**
+- Tracciamento accurato per rider multi-veicolo
+- Nessun costo benzina per turni in bici
+- Calcoli netti più precisi
+- Statistiche separate per mezzo
+
+**Visualizzazione nello storico:**
+- I turni mostrano l'icona del mezzo utilizzato
+- Nella label "TURNO" viene aggiunta l'emoji corrispondente
 
 ---
 
@@ -59,12 +98,17 @@ Questo evita:
 - mesi falsamente "in perdita"
 - distorsioni dovute ai pieni anticipati
 
+**IMPORTANTE per turni in bici:**
+- I turni in bici hanno consumo 0
+- Quindi il costo carburante è sempre 0 indipendentemente dal prezzo al litro
+
 ---
 
 ### 🔹 Prezzo iniziale
 Se il mese inizia senza rifornimenti registrati:
 - l'app chiede il **prezzo dell'ultimo rifornimento noto**
 - garantendo continuità di calcolo tra i mesi
+- **ECCEZIONE**: se il primo turno è in bici, NON chiede il prezzo (non serve)
 
 ---
 
@@ -92,24 +136,34 @@ Imposta un obiettivo mensile di guadagno netto:
 - è il **costo stimato del carburante consumato durante i turni**
 - calcolato come: km percorsi × consumo × prezzo/litro del periodo
 - rappresenta il costo **imputabile all'attività lavorativa**
+- **i turni in bici hanno costo 0** e non influenzano questo valore
 
 **RIFORNIMENTI** (visibili nel report):
 - sono gli **importi reali pagati al distributore**
 - servono solo come **marcatori di prezzo** per calcolare i costi dei turni
+- vengono tracciati separatamente
 
 È **normale** che questi due valori siano diversi:
 - se fai un pieno prima dell'inizio del mese, quella spesa non impatta il calcolo del mese corrente
 - se finisci il mese con il serbatoio mezzo pieno, quella benzina verrà "pagata" economicamente nei turni già registrati
+- i turni in bici riducono la spesa benzina totale
 
 **Esempio pratico:**
-```
-Turni di gennaio: 800 km × 4L/100km × €1.85/L = €59.20 (SPESA BENZINA)
-Rifornimenti di gennaio: €35 (10 gen) + €40 (28 gen) = €75 (RIFORNIMENTI REALI)
 
-La differenza (€15.80) dipende da:
+Turni di gennaio:
+- 600 km in moto con consumo 4L/100km a prezzo €1.85/L = €44.40
+- 200 km in bici senza consumo carburante = €0.00
+- TOTALE SPESA BENZINA: €44.40
+
+Rifornimenti di gennaio: 
+- €35 pagati il 10 gennaio
+- €40 pagati il 28 gennaio
+- TOTALE RIFORNIMENTI REALI: €75
+
+La differenza dipende da:
 - pieno fatto a fine dicembre
 - serbatoio non completamente vuoto a fine gennaio
-```
+- turni in bici che non consumano carburante
 
 Il modello **"imputazione al consumo"** è più corretto economicamente rispetto al modello **"cassa"** (pago → scarico).
 
@@ -140,6 +194,7 @@ Questa analisi permette di:
 - confrontare performance in condizioni diverse (meteo, orari, zone)
 - ottimizzare strategie di lavoro basandosi su dati oggettivi
 - identificare il periodo più profittevole del mese
+- **vedere l'impatto dei turni in bici sul consumo medio**
 
 **Importante**: questa analisi è **diagnostica** e **non modifica** i calcoli economici del dashboard.
 
@@ -166,10 +221,7 @@ La funzione **KM EXTRA** permette di registrare chilometri percorsi **fuori dall
 - Individuare anomalie nel consumo (es. perdite, problemi meccanici)
 - Pianificare manutenzioni basandosi sul chilometraggio totale
 - Distinguere uso lavorativo da uso personale del veicolo
-
----
-
-## 📱 INTERFACCIA E FUNZIONALITÀ
+- ## 📱 INTERFACCIA E FUNZIONALITÀ
 
 ### Dashboard Principale
 La schermata principale mostra in tempo reale:
@@ -180,9 +232,9 @@ La schermata principale mostra in tempo reale:
 - **ORE**: ore totali lavorate
 
 **Seconda riga (efficienza):**
-- **LITRI STIM.**: litri di carburante consumati (stimati)
+- **LITRI STIM.**: litri di carburante consumati (stimati, esclusi turni bici)
 - **KM/L**: efficienza media del veicolo
-- **SPESA BENZ.**: costo carburante imputato ai turni
+- **SPESA BENZ.**: costo carburante imputato ai turni (esclusi turni bici)
 
 **Terza riga (configurazione):**
 - **TARGET**: obiettivo mensile netto (campo modificabile)
@@ -254,6 +306,7 @@ Accessibili dal Report PDF tramite il pulsante **"GRAFICO RESA"**.
 - Mostra il guadagno per chilometro percorso
 - Evidenzia l'efficienza operativa per distanza
 - Identifica le zone/percorsi più redditizi
+- **Turni in bici mostrano null** (non ha senso €/km senza costo carburante)
 
 ### Come Interpretarli
 
@@ -262,17 +315,20 @@ Accessibili dal Report PDF tramite il pulsante **"GRAFICO RESA"**.
 - Valori bassi = molte ore con poco guadagno
 - Trend crescente = efficienza in miglioramento
 - Trend decrescente = possibile saturazione o zone meno profittevoli
+- **I turni in bici possono avere €/h più alti** (zero costo carburante)
 
 **Grafico €/Km:**
 - Valori alti = percorsi brevi ma remunerativi
 - Valori bassi = molti km con poche consegne
 - Utile per capire se vale la pena fare lunghe distanze
+- **Turni in bici non compaiono** (non applicabile)
 
 ### Utilizzo Pratico
 - Confronta turni dello stesso giorno della settimana
 - Identifica fasce orarie più profittevoli
 - Ottimizza zone di lavoro
 - Decidi se accettare ordini lunghi o corti
+- **Confronta redditività tra mezzi diversi**
 
 ### Caratteristiche Tecniche
 - Costruiti con Chart.js
@@ -280,6 +336,7 @@ Accessibili dal Report PDF tramite il pulsante **"GRAFICO RESA"**.
 - Interpolazione smooth per linee fluide
 - Scale automatiche basate sui dati reali
 - Legenda sempre visibile
+- Gestione valori null per turni senza km validi
 
 ---
 
@@ -327,7 +384,7 @@ Questo garantisce che tu abbia sempre un backup recente prima di chiudere l'app.
 **Se scegli SI:**
 - Viene generato un file JSON
 - Il browser scarica automaticamente il file
-- Nome file: `backup_rider_AAAA-MM-GG.json`
+- Nome file: backup_rider_AAAA-MM-GG.json
 
 **Se scegli NO:**
 - Il popup si chiude
@@ -335,20 +392,14 @@ Questo garantisce che tu abbia sempre un backup recente prima di chiudere l'app.
 - Il backup può essere fatto manualmente in seguito
 
 ### Struttura File Backup
-```json
-{
-  "timestamp": 1736899200000,
-  "app": "RIDER TRACKER PRO",
-  "versione": "1.1",
-  "db": {
-    "turni": [...],
-    "rifornimenti": [...],
-    "extraKm": [...],
-    "targets": {"01/2025": 1200},
-    "tax": 20
-  }
-}
-```
+Il file contiene:
+- Timestamp del backup
+- Nome app e versione
+- Tutti i turni registrati
+- Tutti i rifornimenti
+- Tutti i km extra
+- Target mensili impostati
+- Percentuale tasse
 
 ---
 
@@ -358,7 +409,7 @@ Questo garantisce che tu abbia sempre un backup recente prima di chiudere l'app.
 
 **Dal Report PDF:**
 1. Clicca sul pulsante **"IMPORTA BACKUP"**
-2. Seleziona il file `.json` salvato in precedenza
+2. Seleziona il file .json salvato in precedenza
 3. L'app valida il file
 4. Se valido: sovrascrive completamente il database locale
 5. La pagina si ricarica automaticamente
@@ -366,7 +417,7 @@ Questo garantisce che tu abbia sempre un backup recente prima di chiudere l'app.
 
 ### Validazione File
 L'app controlla che il file contenga:
-- Il campo `db` obbligatorio
+- Il campo db obbligatorio
 - Struttura dati valida
 - Formato JSON corretto
 
@@ -410,7 +461,7 @@ Se confermi l'eliminazione:
 - Il popup si chiude automaticamente
 
 ### Elementi Eliminabili
-- ✅ Turni (tutti i dati del turno)
+- ✅ Turni (tutti i dati del turno, incluso il mezzo)
 - ✅ Rifornimenti (spesa e prezzo)
 - ✅ KM Extra (chilometri extra)
 
@@ -423,9 +474,6 @@ Se confermi l'eliminazione:
 **IMPORTANTE**: Non esiste funzione di modifica diretta. Per correggere un dato errato:
 1. Elimina l'elemento sbagliato
 2. Ricrealo con i dati corretti
-
----
-
 ## 📜 STORICO COMPLETO
 
 ### Accesso allo Storico
@@ -433,7 +481,7 @@ Clicca sul pulsante **STORICO** (bianco, icona orologio) nella barra inferiore.
 
 ### Cosa Visualizza
 Lo storico mostra **tutti gli elementi** registrati in ordine cronologico inverso (più recenti prima):
-- Turni
+- Turni (con indicazione mezzo utilizzato)
 - Rifornimenti
 - KM Extra
 
@@ -442,20 +490,25 @@ Ogni elemento è identificabile visivamente da colore e icona.
 ### Tipologie di Elementi
 
 **🔷 TURNO (bordo turchese)**
-- Icona: portafoglio (fa-wallet)
+- Icona: portafoglio
 - Etichetta: "TURNO" in turchese
 - Data e ora del turno
-- Valore principale: Lordo in €
+- Valore principale: 
+  - **Lordo (L)** in €
+  - **Netto (N)** in € con **colore dinamico**:
+    - 🟢 Verde = resa ottima (≥ media mensile)
+    - 🟡 Arancione = resa buona (≥ 80% media mensile)
+    - 🔴 Rosso = resa sotto media (< 80% media mensile)
 - Dettagli:
   - Chilometri percorsi
   - Ore lavorate
-  - Consumo dichiarato (L/100km)
-  - Km/L effettivi
+  - Consumo dichiarato (L/100km) con km/l effettivi
   - Litri stimati consumati
   - Prezzo carburante del periodo
+  - **Per bici: consumo 0/100 (∞ km/l)**
 
 **🟠 BENZINA (bordo arancione)**
-- Icona: pompa benzina (fa-gas-pump)
+- Icona: pompa benzina
 - Etichetta: "BENZINA" in arancione
 - Data e ora del rifornimento
 - Valore principale: Spesa in €
@@ -464,11 +517,31 @@ Ogni elemento è identificabile visivamente da colore e icona.
   - Litri riforniti (calcolati automaticamente)
 
 **🔴 EXTRA (bordo rosso)**
-- Icona: strada (fa-road)
+- Icona: strada
 - Etichetta: "EXTRA" in rosso
 - Data del tragitto
 - Valore principale: Chilometri percorsi
 - Dettagli: "Chilometri extra isolati"
+
+### Sistema di Colori Netto Turno
+
+Il netto di ogni turno viene colorato in base alla sua **resa oraria** rispetto alla **media mensile**:
+
+**Calcolo:**
+1. Media oraria mese = Netto totale ÷ Ore totali
+2. Resa turno = Netto turno ÷ Ore turno
+3. Confronto: resa turno vs media mese
+
+**Colori:**
+- 🟢 **Verde**: Turno ottimo, resa ≥ 100% media
+- 🟡 **Arancione**: Turno accettabile, resa ≥ 80% media
+- 🔴 **Rosso**: Turno sotto media, resa < 80% media
+
+**Utilità:**
+- Identificare a colpo d'occhio i turni migliori e peggiori
+- Capire quali turni abbassano la media
+- Ottimizzare orari e zone di lavoro
+- **I turni in bici spesso sono verdi** (zero costo carburante)
 
 ### Pulsante Elimina
 Ogni elemento ha un pulsante **×** rosso sulla destra:
@@ -504,9 +577,9 @@ Tabella con le seguenti colonne:
 - **NETTO**: importo netto dopo tasse e benzina
 - **ORE**: ore lavorate
 - **KM**: chilometri percorsi
-- **L/100**: consumo dichiarato
-- **KM/L**: efficienza effettiva
-- **LITRI**: litri stimati consumati
+- **L/100**: consumo dichiarato (0 per bici)
+- **KM/L**: efficienza effettiva (∞ per bici)
+- **LITRI**: litri stimati consumati (0.00L per bici)
 
 **Riga finale (bordo doppio):**
 - Totali di tutte le colonne
@@ -565,6 +638,7 @@ Box riepilogativo con:
 
 **Monitoraggio aggiuntivo:**
 - Totale chilometri extra
+- Totale km complessivi (extra + turni)
 - Monitoraggio rifornimenti (spesa reale pagata)
 
 ---
@@ -648,9 +722,6 @@ Rimane visibile solo:
 - **Font**: Leggibili anche stampati
 - **Tabelle**: Bordi netti
 - **Layout**: Professionale
-
----
-
 ## ⚙️ REGISTRAZIONE NUOVO TURNO
 
 ### Apertura Modal Turno
@@ -663,6 +734,29 @@ Tre menu a tendina già pre-compilati con la data odierna:
 - **Anno**: 2024-2030 (anno corrente selezionato)
 
 Puoi modificare qualsiasi valore per registrare turni retroattivi.
+
+### Selezione Mezzo di Trasporto
+
+**Nuovo campo v1.1:**
+
+Prima di compilare i dati del turno, seleziona il mezzo utilizzato:
+
+**Selettore visivo:**
+- Appare come un campo con icona a discesa
+- Default: 🚗 Auto
+- Clicca per aprire il modal di selezione
+
+**Modal Selezione Mezzo:**
+- **🚗 Auto** - pulsante con emoji auto
+- **🛵 Moto** - pulsante con emoji moto
+- **🚲 Bici** - pulsante con emoji bici
+- Pulsante ANNULLA per chiudere
+
+**Comportamento:**
+- Selezioni il mezzo → il modal si chiude
+- L'icona nel selettore si aggiorna
+- Se scegli **Bici**: il campo "Consumo L/100km" **si nasconde automaticamente**
+- Se scegli **Auto/Moto**: il campo consumo **riappare**
 
 ### Campi da Compilare
 
@@ -689,17 +783,19 @@ Puoi modificare qualsiasi valore per registrare turni retroattivi.
 - Formato: numero con decimale
 - Esempio: 4.2
 - Campo opzionale (se non disponibile lascia vuoto)
+- **Nascosto automaticamente se mezzo = Bici**
 
 ### Gestione Prezzo Carburante
 
 **Se è il primo turno del mese:**
 - Dopo aver cliccato "SALVA TURNO"
-- Se non ci sono rifornimenti registrati
-- Appare un popup: "⛽ ULTIMO PREZZO"
-- Messaggio: "Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:"
-- Campo input con formattazione automatica
-- Digita il prezzo (es. 1850 diventa 1.850)
-- Clicca **"IMPOSTA E SALVA TURNO"**
+- **Se mezzo = Bici**: il turno viene salvato direttamente (non serve prezzo)
+- **Se mezzo = Auto/Moto** e non ci sono rifornimenti registrati:
+  - Appare un popup: "⛽ ULTIMO PREZZO"
+  - Messaggio: "Database vuoto. Inserisci il prezzo dell'ultimo rifornimento:"
+  - Campo input con formattazione automatica
+  - Digita il prezzo (es. 1850 diventa 1.850)
+  - Clicca **"IMPOSTA E SALVA TURNO"**
 
 **Se ci sono già rifornimenti:**
 - Il prezzo viene preso automaticamente dall'ultimo rifornimento
@@ -751,10 +847,10 @@ Tre menu a tendina pre-compilati con la data odierna:
 ### Formattazione Automatica Prezzo
 
 **Come digitare:**
-- Digita: `1850` → Appare: `1.850`
-- Digita: `2` → Appare: `2`
-- Digita: `2005` → Appare: `2.005`
-- Digita: `1749` → Appare: `1.749`
+- Digita: 1850 → Appare: 1.850
+- Digita: 2 → Appare: 2
+- Digita: 2005 → Appare: 2.005
+- Digita: 1749 → Appare: 1.749
 
 Il sistema:
 - Accetta solo cifre (0-9)
@@ -869,208 +965,6 @@ Clicca **"ANNULLA"** (pulsante grigio):
 - Cambi di regime fiscale durante l'anno
 
 **Nota**: Il calcolo è semplificato e non sostituisce la consulenza fiscale professionale.
-
----
-
-## 📊 CALCOLI AUTOMATICI
-
-Tutti i calcoli avvengono automaticamente. Ecco come funzionano:
-
-### Dashboard - Metriche Principali
-
-**LORDO**
-```
-Somma di tutti i lordi dei turni
-```
-
-**ORE**
-```
-Somma di tutte le ore lavorate
-```
-
-**KM TOTALI**
-```
-Somma di tutti i km dei turni
-```
-
-**LITRI STIMATI**
-```
-Per ogni turno: km × (consumo ÷ 100)
-Poi somma tutti i litri
-```
-
-**KM/L MEDIO**
-```
-Se litri > 0:
-  km totali ÷ litri totali
-Altrimenti: 0
-```
-
-**SPESA BENZINA**
-```
-Per ogni turno:
-  litri stimati × prezzo del periodo
-Poi somma tutti i costi
-```
-
-**TASSE**
-```
-Lordo totale × (TAX% ÷ 100)
-```
-
-**NETTO**
-```
-Lordo - Tasse - Spesa Benzina
-```
-
-**MEDIA ORARIA**
-```
-Se ore > 0:
-  Netto ÷ Ore
-Altrimenti: 0
-```
-
-**MANCANTE**
-```
-Lordo necessario = (Target + Spesa Benzina) ÷ (1 - TAX%/100)
-Mancante = Lordo necessario - Lordo attuale
-Se mancante < 0: mostra 0
-```
-
-**PERCENTUALE TARGET**
-```
-Se target > 0:
-  (Netto ÷ Target) × 100
-  Massimo 100%
-Altrimenti: 0%
-```
-
-### Report - Calcoli per Turno Singolo
-
-**LITRI CONSUMATI**
-```
-km × (consumo ÷ 100)
-```
-
-**COSTO BENZINA TURNO**
-```
-litri × prezzo del periodo
-```
-
-**TASSE TURNO**
-```
-lordo × (TAX% ÷ 100)
-```
-
-**NETTO TURNO**
-```
-lordo - tasse - costo benzina
-```
-
-**KM/L TURNO**
-```
-Se consumo > 0:
-  100 ÷ consumo
-Altrimenti: 0
-```
-
-### Grafici - Calcoli Resa
-
-**€ / ORA**
-```
-Se ore > 0:
-  Netto turno ÷ ore turno
-Altrimenti: non mostrare nel grafico
-```
-
-**€ / KM**
-```
-Se km > 0:
-  Netto turno ÷ km turno
-Altrimenti: non mostrare nel grafico
-```
-
----
-
-## 🔍 ALGORITMO ANALISI PERIODI
-
-### Come Funziona la Segmentazione
-
-**Parametri:**
-- Soglia variazione consumo: **10%**
-- Minimo turni per periodo: **3**
-
-**Processo:**
-1. Ordina i turni per data (dal più vecchio)
-2. Prende il consumo del primo turno come "base"
-3. Per ogni turno successivo:
-   - Calcola: `differenza = |consumo turno - consumo base| ÷ consumo base`
-   - Se differenza > 10% E periodo corrente ha ≥ 3 turni:
-     - Chiude il periodo corrente
-     - Inizia nuovo periodo con nuovo consumo base
-   - Altrimenti: aggiunge turno al periodo corrente
-4. Alla fine, chiude l'ultimo periodo
-
-### Dati Raccolti per Periodo
-
-Per ogni periodo vengono sommati:
-- Numero turni
-- Km totali
-- Ore totali
-- Lordo totale
-- Litri totali
-- Costo benzina totale
-
-Vengono memorizzate:
-- Data inizio periodo
-- Data fine periodo
-
-### Calcoli Finali per Periodo
-
-**Tasse periodo:**
-```
-lordo × (TAX% ÷ 100)
-```
-
-**Netto periodo:**
-```
-lordo - tasse - costo benzina
-```
-
-**€/Ora periodo:**
-```
-Se ore > 0:
-  netto ÷ ore
-Altrimenti: 0
-```
-
-**€/Km periodo:**
-```
-Se km > 0:
-  netto ÷ km
-Altrimenti: 0
-```
-
-**Consumo medio periodo:**
-```
-Se litri > 0:
-  km ÷ litri
-Altrimenti: 0
-```
-
-### Visualizzazione nel Report
-
-Formato tabella:
-```
-PERIODO          TURNI  KM    MEDIA  BENZINA  NETTO   €/H
-P1               5      420   22.5   €78.50   €320    €16.00
-15/01 → 20/01
-```
-
-**Nota**: Se non ci sono abbastanza turni (< 3) viene creato un unico periodo con tutti i dati.
-
----
-
 ## 📲 INSTALLAZIONE COME APP
 
 ### 📱 Android (Chrome o Edge)
@@ -1177,7 +1071,9 @@ Sei un rider che lavora 5-6 giorni a settimana e vuoi sapere quanto stai guadagn
 1. **Ogni sera dopo il turno:**
    - Apri l'app
    - Clicca TURNO
-   - Inserisci: lordo del giorno, ore lavorate, km fatti, consumo
+   - Seleziona il mezzo utilizzato (auto/moto/bici)
+   - Inserisci: lordo del giorno, ore lavorate, km fatti
+   - Se auto/moto: inserisci consumo
    - Salva
    
 2. **Quando fai benzina:**
@@ -1209,6 +1105,7 @@ Vuoi capire quali zone e fasce orarie sono più profittevoli.
 1. **Registra ogni turno con precisione:**
    - Anche se lavori più volte al giorno, registra turni separati
    - Esempio: pranzo (12-15) e cena (19-23) come 2 turni distinti
+   - Indica sempre il mezzo corretto
 
 2. **Dopo 2 settimane:**
    - Apri Report → Grafico Resa
@@ -1219,6 +1116,7 @@ Vuoi capire quali zone e fasce orarie sono più profittevoli.
    - Weekend vs infrasettimanali
    - Pranzo vs cena
    - Maltempo vs bel tempo
+   - Auto/moto vs bici
 
 4. **Consulta l'Analisi Efficienza:**
    - Vedi se ci sono periodi con resa diversa
@@ -1229,7 +1127,35 @@ Sai quando conviene lavorare e quando no, basandoti su dati reali.
 
 ---
 
-### Scenario 3: Verifica Problema Meccanico
+### Scenario 3: Rider Multi-Veicolo
+
+**Situazione:**
+Lavori sia in bici che in moto/auto a seconda delle condizioni meteo o della zona.
+
+**Come usare l'app:**
+1. **Registra sempre il mezzo corretto:**
+   - Seleziona 🚲 Bici per turni in bicicletta
+   - Seleziona 🛵 Moto o 🚗 Auto per turni motorizzati
+
+2. **Osserva i netti colorati nello storico:**
+   - I turni in bici sono spesso verdi (resa alta, zero benzina)
+   - Confronta la redditività effettiva
+
+3. **Analizza i grafici:**
+   - Grafico €/Ora: confronta resa oraria tra mezzi
+   - I turni in bici potrebbero sorprenderti positivamente
+
+4. **Decisioni strategiche:**
+   - Capire quando conviene usare la bici
+   - Bilanciare velocità vs costi
+   - Ottimizzare in base al meteo e alle distanze
+
+**Risultato:**
+Scegli consapevolmente quale mezzo usare basandoti su dati economici reali.
+
+---
+
+### Scenario 4: Verifica Problema Meccanico
 
 **Situazione:**
 Noti che stai spendendo troppo in benzina o che i consumi sono aumentati.
@@ -1255,7 +1181,7 @@ Identifichi subito anomalie e puoi portare il veicolo in officina prima che pegg
 
 ---
 
-### Scenario 4: Cambio Dispositivo
+### Scenario 5: Cambio Dispositivo
 
 **Situazione:**
 Hai comprato un nuovo smartphone e vuoi trasferire tutti i dati.
@@ -1265,7 +1191,7 @@ Hai comprato un nuovo smartphone e vuoi trasferire tutti i dati.
    - Apri l'app
    - Vai su Report
    - Clicca **"ESPORTA BACKUP"**
-   - Salva il file `backup_rider_2025-01-15.json`
+   - Salva il file backup_rider_2025-01-15.json
    - Invialo a te stesso via email o salvalo su Google Drive
 
 2. **Sul nuovo smartphone:**
@@ -1279,13 +1205,14 @@ Hai comprato un nuovo smartphone e vuoi trasferire tutti i dati.
 3. **Verifica:**
    - Controlla che i dati nel dashboard siano corretti
    - Apri lo Storico e verifica che ci siano tutti gli elementi
+   - Verifica che i mezzi siano salvati correttamente
 
 **Risultato:**
 Tutti i dati trasferiti in meno di 2 minuti, nessuna perdita.
 
 ---
 
-### Scenario 5: Decisione su Target Mensile
+### Scenario 6: Decisione su Target Mensile
 
 **Situazione:**
 Devi decidere quanto lavorare per raggiungere un obiettivo economico.
@@ -1311,9 +1238,6 @@ Devi decidere quanto lavorare per raggiungere un obiettivo economico.
 
 **Risultato:**
 Decisioni consapevoli basate su matematica, non su sensazioni.
-
----
-
 ## ❓ DOMANDE FREQUENTI
 
 ### Dati e Sicurezza
@@ -1344,7 +1268,10 @@ A: Sì, lo storico è cumulativo. Ma il report e i grafici mostrano solo il mese
 A: Stampa il report PDF a fine di ogni mese e confronta i file salvati.
 
 **Q: Posso usare l'app per più veicoli?**
-A: No, i dati sono unici. Se usi 2 veicoli, serve un backup per ognuno o un browser diverso.
+A: Sì! Seleziona il mezzo corretto (auto/moto/bici) per ogni turno. L'app gestisce automaticamente i consumi.
+
+**Q: Se uso solo la bici devo registrare rifornimenti?**
+A: No, se lavori solo in bici non serve mai inserire rifornimenti. Il costo carburante sarà sempre 0.
 
 ---
 
@@ -1352,6 +1279,9 @@ A: No, i dati sono unici. Se usi 2 veicoli, serve un backup per ognuno o un brow
 
 **Q: Perché Spesa Benzina è diversa da Rifornimenti?**
 A: Spesa Benzina = consumo stimato dei turni. Rifornimenti = soldi realmente pagati alla pompa. Vedi sezione dedicata nel manuale.
+
+**Q: I turni in bici influenzano i calcoli?**
+A: Sì, ma positivamente: hanno costo benzina 0, quindi il netto è più alto. Non falsano i consumi medi.
 
 **Q: Il netto calcolato è quello che mi arriva in banca?**
 A: No, è una stima. Non considera contributi INPS, altre spese, deduzioni fiscali. Consulta un commercialista per i calcoli ufficiali.
@@ -1367,7 +1297,7 @@ A: Dipende dal tuo regime fiscale. Forfettario 5%/15%, Ordinario considera IRPEF
 ### Uso Pratico
 
 **Q: Devo registrare ogni rifornimento?**
-A: Sì, ogni rifornimento aggiorna il prezzo del carburante per i calcoli futuri.
+A: Sì, se usi auto o moto. Ogni rifornimento aggiorna il prezzo del carburante per i calcoli futuri. Se usi solo bici, non serve.
 
 **Q: Cosa succede se dimentico di inserire un turno?**
 A: Puoi inserirlo in seguito cambiando la data nel modal. L'app non blocca date passate.
@@ -1377,6 +1307,9 @@ A: Solo nel campo prezzo benzina (auto-formattato). Per tutti gli altri usa il p
 
 **Q: L'app funziona senza internet?**
 A: Sì, completamente. Serve internet solo per il primo caricamento e per scaricare Chart.js e icone.
+
+**Q: Cosa succede se dimentico di selezionare il mezzo?**
+A: Il default è "Auto". Se dimentichi, elimina il turno e ricrealo con il mezzo corretto.
 
 ---
 
@@ -1409,6 +1342,9 @@ A: Ricarica la pagina. Potrebbe essere un problema JavaScript temporaneo.
 
 **Q: Il backup non si scarica**
 A: Controlla le impostazioni download del browser. Potrebbe essere bloccato.
+
+**Q: Il campo consumo non scompare quando scelgo Bici**
+A: Ricarica la pagina. Se persiste, cancella cache del browser.
 
 ---
 
@@ -1539,9 +1475,6 @@ L'app è conforme GDPR perché:
 - Browser (es. Safari 17, Chrome 119)
 - Modalità (browser o app installata)
 - Cosa stavi facendo quando è successo
-
----
-
 ## 👤 AUTORE E CONTATTI
 
 **Progettato e sviluppato da:**  
@@ -1598,6 +1531,114 @@ Puoi supportare il progetto:
 
 ---
 
+## 📝 DISCLAIMER LEGALE
+
+### Limitazioni d'Uso
+
+Questo software fornisce **stime economiche operative** e **non sostituisce** strumenti fiscali professionali o consulenza di un commercialista.
+
+**L'app NON considera:**
+- Deduzioni fiscali specifiche
+- Contributi previdenziali INPS/INAIL
+- Ammortamenti del veicolo
+- Svalutazioni patrimoniali
+- Altre spese deducibili
+- Specifiche normative locali
+
+**Per obblighi fiscali reali, consulta sempre un commercialista abilitato.**
+
+### Responsabilità
+
+**L'autore NON è responsabile per:**
+- Perdita di dati dovuta a malfunzionamenti
+- Decisioni economiche basate sui calcoli dell'app
+- Errori nei calcoli dovuti a dati errati inseriti dall'utente
+- Problemi fiscali derivanti dall'uso dell'app
+- Interpretazioni fiscali errate
+
+### Utilizzo a Proprio Rischio
+
+L'app è fornita **"così com'è"** senza garanzie di alcun tipo, esplicite o implicite.
+
+L'utente si assume **piena responsabilità** dell'utilizzo e delle conseguenze.
+
+### Licenza
+
+**Uso personale gratuito**
+
+Vietata:
+- Rivendita commerciale
+- Distribuzione con modifiche senza autorizzazione
+- Uso per scopi commerciali senza accordo
+
+Consentito:
+- Uso personale illimitato
+- Condivisione del link originale
+- Studio del codice per scopi educativi
+
+---
+
+## 🔄 CRONOLOGIA VERSIONI
+
+### v1.1 - Gennaio 2025 (Versione Corrente)
+
+**Nuove Funzionalità:**
+- ✅ **Selezione mezzo di trasporto (Auto/Moto/Bici)** con gestione intelligente consumo
+- ✅ Grafici di analisi resa (€/ora e €/km) con Chart.js
+- ✅ Analisi efficienza operativa con segmentazione automatica periodi
+- ✅ Alert automatico fine mese con proposta stampa PDF
+- ✅ Sistema target personalizzabile
+- ✅ Percentuale tasse configurabile (campo TAX %)
+- ✅ Export/Import database JSON con timestamp
+- ✅ Eliminazione elementi storici con doppia conferma
+- ✅ Gestione KM extra separati dai turni
+- ✅ Orologio live in tempo reale
+- ✅ Proposta backup automatica dopo ogni salvataggio
+- ✅ **Colori dinamici netto nello storico** (verde/arancione/rosso)
+
+**Miglioramenti UI/UX:**
+- ✅ Modal con spostamento automatico per tastiera mobile
+- ✅ Auto-formattazione prezzo benzina (X.XXX)
+- ✅ Selezione data con pre-compilazione automatica
+- ✅ Pulsante multi-funzione "RIEPILOGO | GRAFICO | STAMPA"
+- ✅ Righe totale con bordo doppio nelle tabelle report
+- ✅ Ottimizzazione layout report efficienza
+- ✅ Feedback visivo su pulsanti (animazione scale)
+- ✅ **Modal selezione mezzo con pulsanti grandi**
+- ✅ **Campo consumo nascosto/visibile automaticamente**
+- ✅ **Gestione prezzo carburante intelligente per bici**
+
+**Miglioramenti Tecnici:**
+- ✅ Calcolo consumo medio reale (KM/L)
+- ✅ Gestione istanze Chart.js (no memory leak)
+- ✅ Validazione file backup prima import
+- ✅ Sistema logging prezzo benzina per periodo
+- ✅ **Salvataggio mezzo utilizzato per ogni turno**
+- ✅ **Calcolo litri e costi 0 per turni in bici**
+- ✅ **Gestione valori null/infinito nei grafici**
+- ✅ **Calcolo resa oraria con comparazione per colori**
+
+### v1.0 - Dicembre 2024 (Prima Release)
+
+- ✅ Gestione turni base
+- ✅ Registrazione rifornimenti
+- ✅ Calcolo netto con tasse fisse 20%
+- ✅ Storico mensile
+- ✅ Report PDF base
+- ✅ Dashboard metriche
+- ✅ Target fisso
+- ✅ LocalStorage
+- ✅ PWA installabile
+
+---
+
+## 🌍 LICENZA E DISTRIBUZIONE
+
+**Versione:** 1.1.0  
+**Stato:** Stabile, production-ready  
+**Licenza:** Uso personale gratuito  
+**Codice:** Disponibile per consultazione educativa  
+**Contributi:** Benvenuti (contatta l'autore)
 ## 🆕 AGGIORNAMENTO 18 GENNAIO 2026
 
 ### Nuove Funzionalità
@@ -1656,7 +1697,7 @@ Quando registri un nuovo turno:
 **Impatto sui grafici:**
 
 - **Grafico €/Ora**: i turni in bici spesso hanno valori più alti (zero costo carburante)
-- **Grafico €/Km**: i turni in bici mostrano `null` (non applicabile senza consumo)
+- **Grafico €/Km**: i turni in bici mostrano null (non applicabile senza consumo)
 
 **Calcolo intelligente:**
 
@@ -1680,171 +1721,62 @@ L'app riconosce automaticamente che:
 - I backup includono l'informazione sul mezzo
 - L'importazione mantiene la compatibilità con versioni precedenti
 - I vecchi turni (senza mezzo) vengono gestiti come "auto" di default
-```
-
-## 📝 DISCLAIMER LEGALE
-
-### Limitazioni d'Uso
-
-Questo software fornisce **stime economiche operative** e **non sostituisce** strumenti fiscali professionali o consulenza di un commercialista.
-
-**L'app NON considera:**
-- Deduzioni fiscali specifiche
-- Contributi previdenziali INPS/INAIL
-- Ammortamenti del veicolo
-- Svalutazioni patrimoniali
-- Altre spese deducibili
-- Specifiche normative locali
-
-**Per obblighi fiscali reali, consulta sempre un commercialista abilitato.**
-
-### Responsabilità
-
-**L'autore NON è responsabile per:**
-- Perdita di dati dovuta a malfunzionamenti
-- Decisioni economiche basate sui calcoli dell'app
-- Errori nei calcoli dovuti a dati errati inseriti dall'utente
-- Problemi fiscali derivanti dall'uso dell'app
-- Interpretazioni fiscali errate
-
-### Utilizzo a Proprio Rischio
-
-L'app è fornita **"così com'è"** senza garanzie di alcun tipo, esplicite o implicite.
-
-L'utente si assume **piena responsabilità** dell'utilizzo e delle conseguenze.
-
-### Licenza
-
-**Uso personale gratuito**
-
-Vietata:
-- Rivendita commerciale
-- Distribuzione con modifiche senza autorizzazione
-- Uso per scopi commerciali senza accordo
-
-Consentito:
-- Uso personale illimitato
-- Condivisione del link originale
-- Studio del codice per scopi educativi
 
 ---
 
-## 🔄 CRONOLOGIA VERSIONI
+**🎨 SISTEMA COLORI NETTO DINAMICO**
 
-### v1.1 - Gennaio 2025 (Versione Corrente)
+Lo storico ora mostra il netto di ogni turno con **colori intelligenti** basati sulla resa oraria.
 
-**Nuove Funzionalità:**
-- ✅ Grafici di analisi resa (€/ora e €/km) con Chart.js
-- ✅ Analisi efficienza operativa con segmentazione automatica periodi
-- ✅ Alert automatico fine mese con proposta stampa PDF
-- ✅ Sistema target personalizzabile
-- ✅ Percentuale tasse configurabile (campo TAX %)
-- ✅ Export/Import database JSON con timestamp
-- ✅ Eliminazione elementi storici con doppia conferma
-- ✅ Gestione KM extra separati dai turni
-- ✅ Orologio live in tempo reale
-- ✅ Proposta backup automatica dopo ogni salvataggio
+**Come funziona:**
 
-**Miglioramenti UI/UX:**
-- ✅ Modal con spostamento automatico per tastiera mobile
-- ✅ Auto-formattazione prezzo benzina (X.XXX)
-- ✅ Selezione data con pre-compilazione automatica
-- ✅ Pulsante multi-funzione "RIEPILOGO | GRAFICO | STAMPA"
-- ✅ Righe totale con bordo doppio nelle tabelle report
-- ✅ Ottimizzazione layout report efficienza
-- ✅ Feedback visivo su pulsanti (animazione scale)
+Il sistema calcola:
+1. **Media oraria mensile** = Netto totale ÷ Ore totali del mese
+2. **Resa del singolo turno** = Netto turno ÷ Ore turno
+3. **Confronto** automatico tra le due
 
-**Miglioramenti Tecnici:**
-- ✅ Calcolo consumo medio reale (KM/L)
-- ✅ Gestione istanze Chart.js (no memory leak)
-- ✅ Validazione file backup prima import
-- ✅ Sistema logging prezzo benzina per periodo
+**Codifica colori:**
 
-### v1.0 - Dicembre 2024 (Prima Release)
+- 🟢 **Verde**: Turno eccellente
+  - Resa ≥ 100% della media mensile
+  - Sopra o in linea con la media del mese
 
-- ✅ Gestione turni base
-- ✅ Registrazione rifornimenti
-- ✅ Calcolo netto con tasse fisse 20%
-- ✅ Storico mensile
-- ✅ Report PDF base
-- ✅ Dashboard metriche
-- ✅ Target fisso
-- ✅ LocalStorage
-- ✅ PWA installabile
+- 🟡 **Arancione**: Turno accettabile
+  - Resa ≥ 80% della media mensile
+  - Leggermente sotto media ma ancora buono
 
----
+- 🔴 **Rosso**: Turno sotto media
+  - Resa < 80% della media mensile
+  - Significativamente sotto la media
 
-## 🎓 INFORMAZIONI TECNICHE
+**Vantaggi pratici:**
 
-### Tecnologie Utilizzate
+- **Identificazione immediata**: a colpo d'occhio vedi quali turni sono stati più profittevoli
+- **Ottimizzazione strategica**: capisci quali fasce orarie/zone evitare
+- **Motivazione**: i turni verdi ti danno conferma che stai lavorando bene
+- **Alert rossi**: i turni rossi ti fanno capire quando qualcosa non ha funzionato
 
-**Frontend:**
-- HTML5 (struttura)
-- CSS3 (stile, animazioni, responsive)
-- JavaScript Vanilla ES6+ (logica)
+**Casi d'uso:**
 
-**Librerie Esterne (CDN):**
-- Chart.js (grafici interattivi)
-- Font Awesome 6.0 (icone)
+- **Turni in bici spesso verdi**: zero costo carburante = resa alta
+- **Turni lunghi con poche consegne**: spesso rossi o arancioni
+- **Fasce orarie di punta**: dovrebbero essere verdi
+- **Zone periferiche**: potresti notare più rossi (tanti km, poco guadagno)
 
-**Storage:**
-- LocalStorage API (persistenza dati)
+**Visualizzazione:**
 
-**PWA:**
-- Service Worker (offline)
-- Web App Manifest (installazione)
+Nel tuo storico vedrai:
+- L: €45.50 | N: €32.80 ← se verde: ottimo turno
+- L: €38.20 | N: €25.10 ← se arancione: turno ok
+- L: €52.00 | N: €28.50 ← se rosso: turno inefficiente
 
-**Nessuna dipendenza server-side.**
-
-### Requisiti di Sistema
-
-**Browser Supportati:**
-- ✅ Chrome 90+
-- ✅ Edge 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-
-**Sistemi Operativi:**
-- ✅ Android 8+
-- ✅ iOS 13+
-- ✅ Windows 10+
-- ✅ macOS 10.15+
-- ✅ Linux (qualsiasi distro con browser moderno)
-
-**Requisiti Minimi:**
-- JavaScript abilitato
-- LocalStorage disponibile
-- 1MB spazio disponibile
-
-### Prestazioni
-
-**Dimensioni:**
-- App: ~50KB (HTML+CSS+JS)
-- Chart.js: ~200KB (caricato da CDN)
-- Font Awesome: ~150KB (caricato da CDN)
-- Dati utente: < 1MB tipicamente
-
-**Velocità:**
-- Primo caricamento: ~1-2 secondi (dipende da connessione)
-- Caricamenti successivi: < 0.5 secondi (offline)
-- Calcoli: istantanei
-- Grafici: < 1 secondo per rendering
-
----
-
-## 🌍 LICENZA E DISTRIBUZIONE
-
-**Versione:** 1.1.0  
-**Stato:** Stabile, production-ready  
-**Licenza:** Uso personale gratuito  
-**Codice:** Disponibile per consultazione educativa  
-**Contributi:** Benvenuti (contatta l'autore)
+Il colore del valore netto cambia dinamicamente in base alla performance del turno rispetto alla tua media personale.
 
 ---
 
 **Fine della documentazione - Rider Tracker Pro v1.1**
 
-**Data ultimo aggiornamento:** Gennaio 2025
+**Data ultimo aggiornamento:** 18 Gennaio 2026
 
 ---
 
