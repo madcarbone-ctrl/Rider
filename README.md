@@ -1598,6 +1598,90 @@ Puoi supportare il progetto:
 
 ---
 
+## 🆕 AGGIORNAMENTO 18 GENNAIO 2026
+
+### Nuove Funzionalità
+
+**🚗🛵🚲 SELEZIONE MEZZO DI TRASPORTO**
+
+Ogni turno può ora essere associato a un mezzo specifico con gestione intelligente del consumo carburante.
+
+**Mezzi disponibili:**
+- 🚗 **Auto** - richiede consumo carburante
+- 🛵 **Moto** - richiede consumo carburante  
+- 🚲 **Bici** - consumo automaticamente a 0
+
+**Come funziona:**
+
+Quando registri un nuovo turno:
+
+1. **Selezione del mezzo:**
+   - Nel modal "Nuovo Turno" trovi un selettore con l'icona del mezzo
+   - Mostra "🚗 Auto" di default
+   - Clicca sul selettore per cambiare mezzo
+
+2. **Modal di selezione:**
+   - Si apre una finestra con 3 grandi pulsanti:
+     - 🚗 Auto
+     - 🛵 Moto  
+     - 🚲 Bici
+   - Clicca sul mezzo che hai utilizzato
+   - Il modal si chiude automaticamente
+
+3. **Se selezioni Bici:**
+   - Il campo "Consumo L/100km" **scompare automaticamente**
+   - Il consumo viene impostato a **0**
+   - Il costo carburante per quel turno sarà **0€**
+   - NON ti verrà mai chiesto il prezzo benzina (nemmeno al primo turno del mese)
+   - Il turno non influenzerà il calcolo "SPESA BENZ." nel dashboard
+
+4. **Se selezioni Auto o Moto:**
+   - Il campo "Consumo L/100km" rimane visibile
+   - Funzionamento normale con calcolo del costo carburante
+   - Se è il primo turno del mese, ti verrà chiesto il prezzo benzina
+
+**Vantaggi:**
+
+- **Calcoli più precisi**: i turni in bici non falsano i consumi medi
+- **Netto reale**: il guadagno dei turni in bici è più alto (zero spesa carburante)
+- **Analisi efficienza**: puoi confrontare la redditività tra mezzi diversi
+- **Flessibilità**: supporto per rider multi-veicolo
+
+**Visualizzazione nello storico:**
+
+- Ogni turno mostra l'icona del mezzo utilizzato nella label
+- I turni in bici mostrano "Cons. 0/100 (∞ km/l)" nei dettagli
+- Il calcolo del netto tiene conto del mezzo (bici = zero costo benzina)
+
+**Impatto sui grafici:**
+
+- **Grafico €/Ora**: i turni in bici spesso hanno valori più alti (zero costo carburante)
+- **Grafico €/Km**: i turni in bici mostrano `null` (non applicabile senza consumo)
+
+**Calcolo intelligente:**
+
+L'app riconosce automaticamente che:
+- Turni in bici → Litri consumati = 0
+- Turni in bici → Costo benzina turno = 0€
+- Turni in bici → KM/L = ∞ (infinito)
+- Il netto è più alto perché non viene sottratto alcun costo carburante
+
+**Interfaccia utente:**
+
+- Design coerente con il resto dell'app
+- Pulsanti grandi e facilmente cliccabili
+- Icone emoji per immediata riconoscibilità
+- Feedback visivo immediato sulla selezione
+- Campo consumo che appare/scompare dinamicamente
+
+**Compatibilità:**
+
+- Funziona con tutto il sistema esistente
+- I backup includono l'informazione sul mezzo
+- L'importazione mantiene la compatibilità con versioni precedenti
+- I vecchi turni (senza mezzo) vengono gestiti come "auto" di default
+```
+
 ## 📝 DISCLAIMER LEGALE
 
 ### Limitazioni d'Uso
