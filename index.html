@@ -344,18 +344,12 @@
         modal.querySelector('p').innerText = "Sei sicuro di voler eliminare questo elemento dallo storico?";
 
         document.getElementById('btnConfermaElimina').onclick = function() { 
-            db[catElimina] = db[catElimina].filter(x => x.id !== idElimina); 
-            salvaDB(); 
-            apriStorico(); 
-            chiudiModali(); 
-        }; 
-        document.getElementById('modalElimina').style.display = 'flex'; 
-    }
-    function calcola() {
+            db[catElimina] = db[catElimfunction calcola() {
     const n = new Date(); 
     const meseCorrente = (n.getMonth() + 1).toString().padStart(2, '0') + '/' + n.getFullYear();
     const tag = meseCorrente;
 
+    // Filtriamo i dati per mostrare solo il mese in corso nella Home
     const turniMese = db.turni.filter(t => t.data.endsWith(meseCorrente));
     const rifornimentiMese = db.rifornimenti.filter(r => r.data.endsWith(meseCorrente));
 
@@ -388,6 +382,18 @@
     let p = tNetto > 0 ? Math.min((nettoA/tNetto)*100, 100) : 0; 
     document.getElementById('perc').innerText = Math.round(p) + '%'; 
     document.getElementById('bar').style.width = p + '%';
+    
+    // CORREZIONE: Chiamiamo la funzione con il nome esatto che hai nel file
+    disegnaGraficoResa(turniMese);
+            }ina].filter(x => x.id !== idElimina); 
+            salvaDB(); 
+            apriStorico(); 
+            chiudiModali(); 
+        }; 
+        document.getElementById('modalElimina').style.display = 'flex'; 
+    }
+    function calcola() {
+    const n = new Date(); 
     
     disegnaGraficoResa(turniMese);
     }
@@ -701,47 +707,24 @@ function chiudiResaView(){
 function disegnaGraficoResa(turniDaMostrare) {
     // Se passiamo dei turni (quelli filtrati), usa quelli. Altrimenti usa tutto il database.
     const datiPerGrafico = turniDaMostrare || db.turni;
-
     const labels = []; const dataOra = []; const dataKm = [];
     
     datiPerGrafico.forEach(t => {
         if (t.ore <= 0) return;
-
         const isBici = t.mezzo === 'bici';
-        const litri = isBici ? 0 : t.km * (t.cons / 100);
-        const costoB = litri * (t.prezzo || 0);
-        const tasse = t.lordo * (db.tax / 100);
-        const netto = t.lordo - tasse - costoB;
-
+        const netto = t.lordo - (t.lordo * (db.tax / 100)) - (isBici ? 0 : (t.km * (t.cons / 100) * (t.prezzo || 0)));
         labels.push(t.data);
         dataOra.push((netto / t.ore).toFixed(2));
-
-        if (isBici || t.km <= 0) {
-            dataKm.push(null);
-        } else {
-            dataKm.push((netto / t.km).toFixed(2));
-        }
+        dataKm.push((!isBici && t.km > 0) ? (netto / t.km).toFixed(2) : null);
     });
 
-    const commonOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { 
-            legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } 
-        },
-        scales: {
-            y: { beginAtZero: false }
-        }
-    };
+    const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } } };
 
     const ctxOra = document.getElementById('chartOra').getContext('2d');
     if (chartOraInstance) chartOraInstance.destroy();
     chartOraInstance = new Chart(ctxOra, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{ label: '€ / ORA (NETTO)', data: dataOra, borderColor: '#00CCBC', backgroundColor: 'rgba(0, 204, 188, 0.1)', fill: true, borderWidth: 2, tension: 0.3 }]
-        },
+        data: { labels: labels, datasets: [{ label: '€ / ORA (NETTO)', data: dataOra, borderColor: '#00CCBC', backgroundColor: 'rgba(0, 204, 188, 0.1)', fill: true, borderWidth: 2, tension: 0.3 }] },
         options: commonOptions
     });
 
@@ -749,51 +732,14 @@ function disegnaGraficoResa(turniDaMostrare) {
     if (chartKmInstance) chartKmInstance.destroy();
     chartKmInstance = new Chart(ctxKm, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{ label: '€ / KM (NETTO)', data: dataKm, borderColor: '#ff4d4d', borderDash: [5, 5], borderWidth: 2, tension: 0.3 }]
-        },
+        data: { labels: labels, datasets: [{ label: '€ / KM (NETTO)', data: dataKm, borderColor: '#ff4d4d', borderDash: [5, 5], borderWidth: 2, tension: 0.3 }] },
         options: commonOptions
     });
 }
 
-    const commonOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { 
-            legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } 
-        },
-        scales: {
-            y: { beginAtZero: false } // Entrambi i grafici si adattano ai dati
-        }
-    };
-
-    const ctxOra = document.getElementById('chartOra').getContext('2d');
-    if (chartOraInstance) chartOraInstance.destroy();
-    chartOraInstance = new Chart(ctxOra, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{ label: '€ / ORA (NETTO)', data: dataOra, borderColor: '#00CCBC', backgroundColor: 'rgba(0, 204, 188, 0.1)', fill: true, borderWidth: 2, tension: 0.3 }]
-        },
-        options: commonOptions
-    });
-
-    const ctxKm = document.getElementById('chartKm').getContext('2d');
-    if (chartKmInstance) chartKmInstance.destroy();
-    chartKmInstance = new Chart(ctxKm, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{ label: '€ / KM (NETTO)', data: dataKm, borderColor: '#ff4d4d', borderDash: [5, 5], borderWidth: 2, tension: 0.3 }]
-        },
-        options: commonOptions
-    });
-}
 function selezionaMezzo(valore, testo) {
     document.getElementById('tMezzo').value = valore;
     document.getElementById('labelMezzo').innerText = testo;
-    
     gestisciMezzo();
     document.getElementById('modalSelectMezzo').style.display = 'none';
 }
