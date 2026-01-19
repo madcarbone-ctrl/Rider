@@ -548,8 +548,7 @@ function eseguiEliminazioneMese() {
         modal.querySelector('p').innerText = "Sei sicuro di voler eliminare questo elemento dallo storico?";
     }, 500);
 }
-        document.getElementById('listaStorico').innerHTML = h || "Vuoto"; document.getElementById('histView').style.display = 'flex';
-    }
+
     function calcolaPeriodiConsumo(turni, tax) { if (!turni.length) return []; const SOGLIA = 0.10; let periodi = []; let base = turni[0].cons; let corrente = { start: turni[0].data, end: turni[0].data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; turni.forEach(t => { const diff = Math.abs(t.cons - base) / base; if (diff > SOGLIA && corrente.turni >= 3) { periodi.push({...corrente}); base = t.cons; corrente = { start: t.data, end: t.data, turni: 0, km: 0, ore: 0, lordo: 0, litri: 0, costoB: 0 }; } const litri = t.km * (t.cons / 100); const costo = litri * (t.prezzo || 0); corrente.turni++; corrente.end = t.data; corrente.km += t.km; corrente.ore += t.ore; corrente.lordo += t.lordo; corrente.litri += litri; corrente.costoB += costo; }); periodi.push(corrente); return periodi.map(p => { const tasse = p.lordo * (tax / 100); const netto = p.lordo - tasse - p.costoB; return { periodo: `${p.start} → ${p.end}`, ...p, netto, euroOra: p.ore ? netto / p.ore : 0, euroKm: p.km ? netto / p.km : 0, consumoMedio: p.litri ? (p.km / p.litri) : 0 }; }); }
     function getTotaleKmExtra(){ return (db.extraKm || []).reduce((a,b)=>a+b.km, 0); }
         
