@@ -385,7 +385,12 @@ function apriStorico() {
     let ordineMesi = [];
     let nettoTotMese = 0, oreTotMese = 0;
 
-    db.turni.forEach(t => {
+    const n = new Date();
+const meseCorrente = `${(n.getMonth() + 1).toString().padStart(2, '0')}/${n.getFullYear()}`;
+// Filtra i turni per il grafico
+const turniFiltrati = db.turni.filter(t => t.data.endsWith(meseCorrente));
+
+turniFiltrati.forEach(t => {
         let tKey = t.data.substring(3);
         if (tKey === meseCorrenteKey) {
             let litri = t.km * (t.cons / 100);
@@ -556,7 +561,10 @@ function eseguiEliminazioneMese() {
         const n = new Date(); 
         document.getElementById('repMonthTitle').innerText = "RIEPILOGO MESE DI " + mesi[n.getMonth()].toUpperCase() + " " + n.getFullYear();
         
-        const turni = [...db.turni].sort((a,b)=>a.id-b.id); 
+        const n = new Date();
+const meseCorrente = `${(n.getMonth() + 1).toString().padStart(2, '0')}/${n.getFullYear()}`;
+// Filtra solo i turni del mese corrente
+const turni = db.turni.filter(t => t.data.endsWith(meseCorrente)).sort((a,b)=>a.id-b.id);
         let tH = "", rH = "";
         let tL=0, tO=0, tK=0, tLS=0, tNettoTot=0;
 
