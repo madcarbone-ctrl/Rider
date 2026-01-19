@@ -389,7 +389,7 @@
     document.getElementById('perc').innerText = Math.round(p) + '%'; 
     document.getElementById('bar').style.width = p + '%';
     
-    aggiornaGrafici(turniMese);
+    disegnaGraficoResa(turniMese);
     }
     let meseDaEliminare = null;
 
@@ -704,7 +704,7 @@ function disegnaGraficoResa(turniDaMostrare) {
 
     const labels = []; const dataOra = []; const dataKm = [];
     
-    datiPerGrafico.forEach(t => { 
+    datiPerGrafico.forEach(t => {
         if (t.ore <= 0) return;
 
         const isBici = t.mezzo === 'bici';
