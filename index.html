@@ -923,6 +923,14 @@ function eseguiEliminazioneAnno() {
         modal.querySelector('p').innerText = "Sei sicuro di voler eliminare questo elemento dallo storico?";
     }, 500);
 }
+        if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Nome del file aggiornato a quello che hai su GitHub
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker attivo:', reg.scope))
+            .catch(err => console.log('Errore SW:', err));
+    });
+        }
 </script>
 </body>
 </html>
