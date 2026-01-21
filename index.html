@@ -923,14 +923,24 @@ function eseguiEliminazioneAnno() {
         modal.querySelector('p').innerText = "Sei sicuro di voler eliminare questo elemento dallo storico?";
     }, 500);
 }
-        if ('serviceWorker' in navigator) {
+        // ... qui finisce la tua ultima funzione (quella dei grafici) ...
+
+// REGISTRAZIONE SERVICE WORKER
+if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Nome del file aggiornato a quello che hai su GitHub
         navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log('Service Worker attivo:', reg.scope))
+            .then(reg => console.log('SW attivo:', reg.scope))
             .catch(err => console.log('Errore SW:', err));
     });
-        }
+}
+
+// LOGICA PROMPT INSTALLAZIONE
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log("App pronta per l'installazione");
+});
 </script>
 </body>
 </html>
