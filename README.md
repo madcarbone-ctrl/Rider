@@ -25,113 +25,118 @@ Ci sono due impostazioni iniziali che danno senso a tutti i calcoli.
 
 ### 1️⃣ TAX % – cosa rappresenta davvero
 Il campo TAX % indica quanta parte del tuo lordo non è realmente tua.  
-Serve a stimare tasse e contributi per ottenere un netto realistico, non teorico.
+Serve a stimare tasse e contributi per ottenere un netto realistico.
 
 Valori indicativi:
 - Prestazione occasionale → 20%
 - Partita IVA (primi 5 anni – regime agevolato) → 22–25%
 - Partita IVA (oltre 5 anni) → 30–33%
 
-Non è una percentuale fiscale ufficiale, ma una stima pratica.  
-Puoi modificarla in qualsiasi momento e l’app ricalcolerà automaticamente tutti i dati.
-
 ### 2️⃣ TARGET mensile – l’obiettivo giusto
 Il TARGET è il guadagno netto che vuoi ottenere a fine mese.  
-Non è un valore lordo.  
-Include già tasse e carburante.  
-Rappresenta ciò che vuoi davvero portare a casa.
+Non è lordo.  
+Include già tasse e carburante.
 
-Esempio:  
-“Questo mese voglio arrivare a 1.600 € netti.”
-
-## 🧭 Schermata principale (Dashboard)
-La dashboard mostra sempre la situazione del mese corrente:
+## 🧭 Dashboard
+Mostra sempre il mese corrente:
 - LORDO
 - NETTO
 - ORE
 - SPESA CARBURANTE
 - MANCANTE per il target
 
-## ➕ Inserire un turno di lavoro
-Inserisci sempre:
+## ➕ Inserire un turno
+Inserisci:
 - data
 - lordo
 - ore
 - chilometri
-- mezzo utilizzato
+- mezzo
 
-Auto e Moto incidono sul costo del carburante.  
+Auto e Moto incidono sul carburante.  
 La Bici ha consumo carburante pari a zero.
 
-## ⛽ Carburante: come funziona il calcolo
-Per l’app, **carburante** indica qualsiasi tipo di alimentazione:
+## ⛽ Carburante: come funziona
+Per l’app, carburante significa qualsiasi alimentazione:
 - benzina
 - diesel
 - GPL
 - metano
 
-L’app non distingue il tipo di carburante.  
 Conta solo:
 - prezzo unitario (€/L o €/kg)
-- consumo coerente
+- consumo medio
 
-I rifornimenti non vengono sottratti direttamente dal netto.  
-Servono solo a definire il prezzo unitario valido per il periodo.
+I rifornimenti non vengono sottratti dal netto.  
+Il costo carburante viene calcolato solo sui chilometri lavorativi.
 
-Il costo carburante viene calcolato esclusivamente sui chilometri lavorativi.
+## 📐 Come calcolare il consumo senza computer di bordo
 
-## 📐 Come calcolare il consumo se non hai il computer di bordo
-Se la tua auto non mostra i consumi, puoi calcolarli facilmente a mano.
-
-### Metodo semplice
-1. Fai rifornimento completo
+### Metodo pratico
+1. Fai il pieno
 2. Azzera il contachilometri parziale
 3. Usa l’auto normalmente
-4. Al rifornimento successivo:
-   - segna i chilometri percorsi
-   - segna litri o kg riforniti
+4. Al pieno successivo segna:
+   - chilometri percorsi
+   - litri o kg riforniti
 
 ### Formula
-Consumo = (carburante rifornito ÷ chilometri percorsi) × 100
+Consumo = (carburante rifornito ÷ km percorsi) × 100
 
-Esempi:
-- 7 litri per 100 km → **7 L/100 km**
-- 5 kg per 100 km → **5 kg/100 km**
+### Esempi reali
+- 42 litri in 600 km  
+  → (42 ÷ 600) × 100 = **7 L/100 km**
 
-Inserisci questo valore come consumo medio.
+- 32 litri GPL in 420 km  
+  → (32 ÷ 420) × 100 = **7,6 L/100 km**
 
-👉 Più lungo è il periodo di misurazione, più il valore sarà realistico.
+- 12 kg metano in 260 km  
+  → (12 ÷ 260) × 100 = **4,6 kg/100 km**
+
+Inserisci questo valore come **consumo medio**.
+
+👉 Più chilometri includi nella misurazione, più il dato sarà accurato.
+
+## 📊 Consumi indicativi (solo riferimento)
+Questi valori servono solo come orientamento iniziale:
+
+- Auto benzina: **6–8 L/100 km**
+- Auto diesel: **4–6 L/100 km**
+- Auto GPL: **7–10 L/100 km**
+- Auto metano: **4–6 kg/100 km**
+- Scooter: **2,5–4 L/100 km**
+
+Se il tuo valore è molto diverso, verifica i dati inseriti.
 
 ## 🛣️ Chilometri extra
-I chilometri extra sono quelli fatti fuori dal lavoro.  
-Servono solo per monitoraggio personale.  
-Non influiscono mai sui guadagni.
+Solo monitoraggio personale.  
+Non influiscono sui guadagni.
 
 ## 📜 Storico
-Tutti i dati sono organizzati per mese.  
-Puoi eliminare singoli elementi o mesi interi con conferma.
+Tutti i dati divisi per mese.  
+Eliminazione singola o mensile con conferma.
 
-## 📊 Report mensile e grafici
-Report mensile completo con grafici €/ora e €/km.  
+## 📊 Report e grafici
+Report completo con grafici €/ora e €/km.  
 Stampabile o salvabile in PDF.
 
 ## 💾 Backup
-Fortemente consigliato.  
-L’importazione sostituisce completamente i dati esistenti.
+Consigliato spesso.  
+L’importazione sostituisce tutti i dati.
 
 ## 🔔 Fine mese
-Avviso automatico a inizio mese.  
-Puoi stampare subito o in seguito.
+Avviso automatico.  
+Puoi stampare subito o più tardi.
 
-## ⚠️ Errori comuni da evitare
+## ⚠️ Errori comuni
 - non impostare TAX %
 - usare il target come lordo
-- inserire un consumo non realistico
+- inserire consumi non realistici
 - pensare che il carburante funzioni “a cassa”
 - non fare backup
 
 ## 📲 Installazione
-Progressive Web App installabile da browser su smartphone e computer.
+Progressive Web App installabile da browser.
 
 ## ☕ Offrimi un caffè
 https://www.paypal.me/madmaddj
