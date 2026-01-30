@@ -2002,5 +2002,12 @@ document.getElementById('installPwaBtn')?.addEventListener('click', async () => 
   document.getElementById('installPwaBtn').hidden = true;
 });
 </script>
+    <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw-v1.3.js');
+  });
+}
+    </script>
 </body>
 </html>
