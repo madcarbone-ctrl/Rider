@@ -197,9 +197,43 @@
   document.getElementById("requestAccess").style.display = "none";
   }
 });
+<body>
+
+<style>
+  body { display: none; }
+</style>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<script>
+  if (!window.netlifyIdentity) {
+    alert("Errore autenticazione");
+  }
+
+  window.netlifyIdentity.on("init", user => {
+    document.body.style.display = "block"; // mostra sempre il body
+
+    if (!user) {
+      document.getElementById("loginHint").style.display = "block";
+      document.getElementById("requestAccess").style.display = "block";
+      window.netlifyIdentity.open(); // login Google
+    } else {
+      document.getElementById("loginHint").style.display = "none";
+      document.getElementById("requestAccess").style.display = "none";
+    }
+  });
 </script>
 
-<div id="requestAccess" style="display:none; max-width:420px; margin:40px auto; text-align:left; font-family:sans-serif;">
+<!-- MESSAGGIO DI AIUTO -->
+<div id="loginHint"
+     style="display:none; font-size:12px; color:#777; text-align:center; margin:10px auto;">
+  ℹ️ Se è la prima volta che accedi, chiudi questa finestra di login (❌)
+  e compila il modulo di richiesta qui sotto.
+</div>
+
+<!-- RICHIESTA ACCESSO -->
+<div id="requestAccess"
+     style="display:none; max-width:420px; margin:40px auto; text-align:left; font-family:sans-serif;">
 
   <p><strong>Accesso riservato</strong></p>
 
@@ -219,9 +253,9 @@
 
   <div style="font-size:12px; color:#aaa; margin:10px 0; line-height:1.4;">
     ⚠️ <strong>Verifica dell’accesso</strong><br>
-    L’accesso all’app è riservato agli utenti che seguono la pagina Facebook ufficiale del software.<br>
-    Verranno effettuate <strong>verifiche periodiche</strong> per confermare che l’utente sia ancora presente tra i follower della pagina.<br>
-    In caso di mancata conferma del follow, <strong>l’accesso all’app verrà revocato senza preavviso</strong>.
+    L’accesso è riservato ai follower della pagina.<br>
+    Verifiche periodiche confermeranno il follow.<br>
+    In caso negativo, l’accesso verrà revocato.
   </div>
 
   <label style="display:block; margin:10px 0;">
@@ -233,13 +267,15 @@
 
   <input id="fullName" placeholder="Nome e cognome" style="width:100%; margin:6px 0;">
   <input id="email" placeholder="Email Google" style="width:100%; margin:6px 0;">
-  <input id="facebook" placeholder="Profilo Facebook (link)" style="width:100%; margin:6px 0;">
+  <input id="facebook" placeholder="Profilo Facebook (link reale)" style="width:100%; margin:6px 0;">
 
   <button onclick="requestAccess()" style="margin-top:12px; width:100%;">
     Richiedi accesso
   </button>
-
 </div>
+
+<!-- QUI POI VA IL mainContainer -->
+
     
     <script>
   const followCheck = document.getElementById("followCheck");
@@ -1042,5 +1078,24 @@ if ('serviceWorker' in navigator) {
       &body=Nome: ${name}%0AEmail Google: ${mail}%0AFacebook: ${fb}`;
   }
 </script>
+    <div id="loginHint" style="
+  display:none;
+  position:fixed;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:13px;
+  z-index:9999;
+  text-align:center;
+  max-width:90%;
+">
+  <strong>Prima volta qui?</strong><br>
+  Se non hai mai effettuato l’accesso, chiudi questa finestra (✕)<br>
+  e compila il modulo di richiesta accesso.
+    </div>
 </body>
 </html>
