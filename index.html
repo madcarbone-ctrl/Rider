@@ -188,16 +188,15 @@
   }
 
   window.netlifyIdentity.on("init", user => {
-    if (!user) {
-      window.netlifyIdentity.open(); // login Google
-    } else {
-      document.body.style.display = "block"; // già loggato
-    }
-  });
-
-  window.netlifyIdentity.on("login", () => {
-    document.body.style.display = "block"; // dopo login
-  });
+  if (!user) {
+  document.body.style.display = "block";          // MOSTRA IL BODY
+  document.getElementById("requestAccess").style.display = "block";
+  window.netlifyIdentity.open(); // login Google
+  } else {
+  document.body.style.display = "block";
+  document.getElementById("requestAccess").style.display = "none";
+  }
+});
 </script>
 
 <div id="requestAccess" style="display:none; max-width:420px; margin:40px auto; text-align:left; font-family:sans-serif;">
@@ -242,6 +241,23 @@
 
 </div>
     
+    <script>
+  const followCheck = document.getElementById("followCheck");
+  const policyCheck = document.getElementById("policyCheck");
+  const btn = document.querySelector('#requestAccess button');
+
+  function updateButtonState() {
+    btn.disabled = !(followCheck.checked && policyCheck.checked);
+    btn.style.opacity = btn.disabled ? "0.5" : "1";
+    btn.style.cursor = btn.disabled ? "not-allowed" : "pointer";
+  }
+
+  followCheck.addEventListener("change", updateButtonState);
+  policyCheck.addEventListener("change", updateButtonState);
+
+  // stato iniziale
+  updateButtonState();
+</script>
     <div id="mainContainer">
        <div class="app-title no-print" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0 20px 0; line-height: 1;">
     
