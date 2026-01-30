@@ -175,6 +175,74 @@
     </style>
 </head>
 <body>
+
+<style>
+  body { display: none; }
+</style>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<script>
+  if (!window.netlifyIdentity) {
+    alert("Errore autenticazione");
+  }
+
+  window.netlifyIdentity.on("init", user => {
+    if (!user) {
+      window.netlifyIdentity.open(); // login Google
+    } else {
+      document.body.style.display = "block"; // già loggato
+    }
+  });
+
+  window.netlifyIdentity.on("login", () => {
+    document.body.style.display = "block"; // dopo login
+  });
+</script>
+    <div id="requestAccess" style="display:none; max-width:420px; margin:40px auto;">
+  <div id="requestAccess" style="display:none; max-width:420px; margin:40px auto; text-align:left; font-family:sans-serif;">
+
+  <p><strong>Accesso riservato</strong></p>
+
+  <p>
+  1️⃣ Segui la pagina Facebook ufficiale del software:<br>
+  <a href="https://www.facebook.com/share/1CPrtf9Ttn/"
+     target="_blank"
+     rel="noopener noreferrer">
+    👉 Vai alla pagina Facebook
+  </a>
+  </p>
+
+  <label style="display:block; margin:10px 0;">
+    <input type="checkbox" id="followCheck">
+    Confermo di aver seguito la pagina Facebook
+  </label>
+
+  <div style="font-size:12px; color:#aaa; margin:10px 0; line-height:1.4;">
+    ⚠️ <strong>Verifica dell’accesso</strong><br>
+    L’accesso all’app è riservato agli utenti che seguono la pagina Facebook ufficiale del software.<br>
+    Verranno effettuate <strong>verifiche periodiche</strong> per confermare che l’utente sia ancora presente tra i follower della pagina.<br>
+    In caso di mancata conferma del follow, <strong>l’accesso all’app verrà revocato senza preavviso</strong>.
+  </div>
+
+  <label style="display:block; margin:10px 0;">
+    <input type="checkbox" id="policyCheck">
+    Ho letto e accetto le condizioni di accesso
+  </label>
+
+  <hr>
+
+  <input id="fullName" placeholder="Nome e cognome" style="width:100%; margin:6px 0;">
+  <input id="email" placeholder="Email Google" style="width:100%; margin:6px 0;">
+  <input id="facebook" placeholder="Profilo Facebook (link)" style="width:100%; margin:6px 0;">
+
+  <button onclick="requestAccess()" style="margin-top:12px; width:100%;">
+    Richiedi accesso
+  </button>
+  </div>
+    </div>
+
+    
     <div id="mainContainer">
        <div class="app-title no-print" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0 20px 0; line-height: 1;">
     
@@ -932,5 +1000,32 @@ if ('serviceWorker' in navigator) {
   });
 }
     </script>
+<script>
+  function requestAccess() {
+    if (!document.getElementById("followCheck").checked) {
+      alert("Devi confermare di aver seguito la pagina Facebook.");
+      return;
+    }
+
+    if (!document.getElementById("policyCheck").checked) {
+      alert("Devi accettare le condizioni di accesso.");
+      return;
+    }
+
+    const name = fullName.value;
+    const mail = email.value;
+    const fb = facebook.value;
+
+    if (!name || !mail || !fb) {
+      alert("Compila tutti i campi.");
+      return;
+    }
+
+    window.location.href =
+      `mailto: leocaniggiali13@gmail.com
+      ?subject=Richiesta accesso Rider
+      &body=Nome: ${name}%0AEmail Google: ${mail}%0AFacebook: ${fb}`;
+  }
+</script>
 </body>
 </html>
