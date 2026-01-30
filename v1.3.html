@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <script>
+(function () {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (!isStandalone) {
+    document.body.innerHTML = `
+      <div style="
+        height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        font-family:sans-serif;
+        padding:24px;
+      ">
+        <div>
+          <h2>Versione PWA</h2>
+          <p>Questa versione è disponibile solo come app installata.</p>
+        </div>
+      </div>
+    `;
+  }
+})();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
