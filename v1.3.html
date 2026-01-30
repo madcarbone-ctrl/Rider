@@ -354,6 +354,21 @@
   <div>
     <h2>Versione PWA</h2>
     <p>Questa versione è disponibile solo come app installata.</p>
+      <button id="installPwaBtn"
+        hidden
+        style="
+          margin-top:20px;
+          padding:12px 18px;
+          font-size:16px;
+          border:none;
+          border-radius:8px;
+          background:#00CCBC;
+          color:#000;
+          font-weight:600;
+          cursor:pointer;
+        ">
+  Installa app
+      </button>
   </div>
 </div>
     
@@ -1966,6 +1981,26 @@ function eseguiEliminazioneAnno() {
     document.body.style.overflow = 'hidden';
   }
 })();
-    </script>
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.getElementById('installPwaBtn');
+  if (btn) btn.hidden = false;
+});
+
+document.getElementById('installPwaBtn')?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+
+  document.getElementById('installPwaBtn').hidden = true;
+});
+</script>
 </body>
 </html>
