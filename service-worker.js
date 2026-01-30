@@ -1,6 +1,7 @@
-const CACHE_NAME = "rider-v1.3.0";
+const CACHE_NAME = "rider-v1.3.1";
 
 const FILES_TO_CACHE = [
+  "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
