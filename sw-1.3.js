@@ -1,20 +1,40 @@
-const CACHE = "rider-tracker-v1";
-const FILES = [
-  "./",
-  "./index.html",
-  "./manifest.json",
+const CACHE_NAME = "rider-v1.3.1";
+
+const FILES_TO_CACHE = [
+  "./v1.3.html",
+  "./manifest-v1.3.json",
   "./icon-192.png",
   "./icon-512.png"
 ];
 
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(FILES))
+// INSTALL
+self.addEventListener("install", event => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
 });
 
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+// ACTIVATE
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    ).then(() => self.clients.claim())
+  );
+});
+
+// FETCH
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response =>
+      response || fetch(event.request)
+    )
   );
 });
