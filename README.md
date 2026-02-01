@@ -1,4 +1,4 @@
-# 🚴 RIDER TRACKER PRO 1.1
+# 🚴 RIDER TRACKER PRO
 **Controllo reale del guadagno per Rider professionisti**
 
 ---
