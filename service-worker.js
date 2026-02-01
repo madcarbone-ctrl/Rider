@@ -3,6 +3,8 @@ const CACHE_NAME = "rider-v1.3.1";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
+  "./app.html",
+  "./logo.jpg",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
