@@ -17,33 +17,28 @@
             padding: 0; 
             box-sizing: border-box; 
         }
+        
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #000;
             color: #fff;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            min-height: 100vh;
+            width: 100%;
         }
         
         #pwaInstallScreen {
-            position: fixed;
-            inset: 0;
+            min-height: 100vh;
+            width: 100%;
             background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            z-index: 10000;
+            padding: 40px 25px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .install-container {
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
+            max-width: 450px;
+            margin: 0 auto;
             animation: fadeInUp 0.6s ease-out;
-            
         }
         
         @keyframes fadeInUp {
@@ -58,7 +53,8 @@
         }
         
         .logo-container {
-            margin-bottom: 40px;
+            text-align: center;
+            margin-bottom: 30px;
             animation: pulse 2s ease-in-out infinite;
         }
         
@@ -72,31 +68,31 @@
         }
         
         .logo-container img {
-            width: 240px;
+            width: 100%;
+            max-width: 220px;
             height: auto;
-            max-width: 85%;
             filter: drop-shadow(0 10px 40px rgba(0, 204, 188, 0.3));
         }
         
-        
         .install-text {
-            margin-bottom: 35px;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
         .install-text h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: #00CCBC;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             letter-spacing: 1px;
         }
         
         .install-text p {
-            font-size: 16px;
+            font-size: 15px;
             color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 10px;
+            line-height: 1.5;
+            margin-bottom: 8px;
         }
         
         .install-text .highlight {
@@ -106,12 +102,12 @@
         
         #installButton {
             width: 100%;
-            padding: 18px 30px;
+            padding: 16px 30px;
             background: linear-gradient(135deg, #00CCBC 0%, #00a89e 100%);
             color: #000;
             border: none;
             border-radius: 16px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
@@ -122,6 +118,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            margin-bottom: 30px;
         }
         
         #installButton:active {
@@ -130,19 +127,18 @@
         }
         
         #installButton i {
-            font-size: 22px;
+            font-size: 20px;
         }
         
         .features-list {
-            margin-top: 40px;
-            text-align: left;
+            margin-bottom: 25px;
         }
         
         .feature-item {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 12px;
             padding: 12px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
@@ -151,27 +147,32 @@
         
         .feature-item i {
             color: #00CCBC;
-            font-size: 20px;
-            width: 25px;
+            font-size: 18px;
+            width: 22px;
             text-align: center;
+            flex-shrink: 0;
         }
         
         .feature-item span {
             color: #ccc;
-            font-size: 14px;
-            flex: 1;
+            font-size: 13px;
+            line-height: 1.4;
         }
         
         .install-note {
-            margin-top: 25px;
-            margin-bottom: 40px;
-            padding: 15px;
+            padding: 14px;
             background: rgba(255, 77, 77, 0.1);
             border: 1px solid rgba(255, 77, 77, 0.3);
             border-radius: 12px;
-            font-size: 13px;
+            font-size: 12px;
             color: #ff4d4d;
             line-height: 1.5;
+            margin-bottom: 40px;
+        }
+        
+        .install-note strong {
+            display: inline-block;
+            margin-bottom: 4px;
         }
         
         .hidden {
@@ -179,15 +180,15 @@
         }
         
         .ios-instructions {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 16px;
             background: rgba(0, 204, 188, 0.1);
             border: 1px solid rgba(0, 204, 188, 0.3);
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             color: #00CCBC;
             line-height: 1.6;
-            text-align: left;
             display: none;
         }
         
@@ -199,16 +200,48 @@
         .ios-instructions strong {
             display: block;
             margin-bottom: 10px;
-            font-size: 15px;
+            font-size: 14px;
         }
         
         .ios-instructions ol {
             margin-left: 20px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .ios-instructions li {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+        
+        /* Media query per schermi piccoli */
+        @media (max-height: 700px) {
+            #pwaInstallScreen {
+                padding: 30px 20px;
+            }
+            
+            .logo-container {
+                margin-bottom: 20px;
+            }
+            
+            .logo-container img {
+                max-width: 180px;
+            }
+            
+            .install-text h1 {
+                font-size: 20px;
+            }
+            
+            .install-text {
+                margin-bottom: 20px;
+            }
+            
+            .features-list {
+                margin-bottom: 20px;
+            }
+            
+            .feature-item {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -322,4 +355,3 @@
     </script>
 </body>
 </html>
-
