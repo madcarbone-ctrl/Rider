@@ -1,6 +1,6 @@
 {
-  "name": "Rider Tracker Pro v1.3",
-  "short_name": "Rider v1.3",
+  "name": "Rider Tracker Pro v1.2",
+  "short_name": "Rider v1.2",
   "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
